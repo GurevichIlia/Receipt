@@ -1,0 +1,172 @@
+https://material.angular.io/guide/getting-started
+
+מידע על rxjs
+https://www.youtube.com/watch?v=X9fdpGthrXA
+
+https://www.youtube.com/watch?v=dvJo2lqySj8&list=PLOa5YIicjJ-WLwQFA_aOnU7EuJvlkfrZ0&index=8
+
+
+
+--------------------------------------  מידע זה הועתק מפרוייקט אחר
+=============== API STUFF
+API PROJECT C:\onwork\JaffaAPI\JaffaAPI
+https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi?hl=en
+
+=======================================
+
+QuickStart
+https://angular.io/guide/quickstart
+
+Install Node.js® and npm if they are not already on your machine.
+
+Verify that you are running at least Node.js version 8.x or greater 
+and npm version 5.x or greater by running node -v and npm -v in a 
+terminal/console window. Older versions produce errors, but newer
+versions are fine.
+Then install the Angular CLI globally.
+
+npm install -g @angular/cli
+
+Generate a new project and default app by running the following command:
+ng new my-app
+
+cd my-app
+ng serve --open
+Using the --open (or just -o) option will automatically open
+your browser on http://localhost:4200/.
+
+
+add to angular.json
+
+replace 
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
+with
+
+            "styles": ["src/styles.css", "assets/css/bootstrap.min.css"],
+            "scripts": ["assets/js/bootstrap.min.js"]
+
+להודעות
+npm install bootbox 
+
+npm install font-awesome --save
+
+
+node_modules  להעביר מפיתוח קיים מ
+jquery
+
+
+יצירת קומפוננטה חדשה
+ng generate component keep-html
+ng g c newReceipt --module app
+
+-------------
+סרטוני הדרכה
+https://www.youtube.com/watch?v=9RG3MiEBEIw&list=PLqq-6Pq4lTTb7JGBTogaJ8bm7f8VCvFkj
+
+===========
+pooper חלונות
+https://www.youtube.com/channel/UCRthRrv06q1iOl86-tTKJhg
+https://www.youtube.com/watch?v=V1JOH4kS6Pc
+https://www.youtube.com/watch?v=gig4JNELrOg
+
+pdf js
+https://www.youtube.com/watch?v=CnprxD_sJFE&list=PLbu98QxRH81JVJdpxWB4mAHfLKrMVovCP
+
+
+icons
+https://www.flaticon.com
+https://realfavicongenerator.net/
+http://fontello.com/
+
+tools
+http://htmlshell.com/
+https://codepen.io/ettrics/
+
+https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/html/ltr/vertical-menu-template/index.html
+
+
+=======
+https://medium.freecodecamp.org/angular-what-is-the-new-briefly-e6837348dd3a
+ng add
+is a new command in Angular-cli that helps you install and download new packages in your angular apps. It works the same as npm, but it doesn’t replace it.
+
+ng update 
+is a new Angular-cli command too. It’s used to update and upgrade your packages. It’s really helpful, for example, when you want to upgrade from Angular 5 to Angular 6, or any other package in your Angular app.
+
+Declaring the providers inside the service itself
+Before this update, you had to the declare the providers array in app.module.ts
+Now with Angular 6, you can provide your service inside the supervisor itself by putting the providedIn:root property within the "@injectable" decorator.
+
+Use ng-template instead of template directive
+You can use ng-template to render the HTML instead of the template tag in the new version of Angular.
+ng-template is an Angular element, and it works when it is used with a structural directive
+such as *ngFor and *ngIf
+
+ng add @Angular/elements
+Angular elements - trusted HTML elements
+Angular 6 introduced us to Angular elements.
+You’re able to render your Angular elements as native web elements,
+and they’re interpreted as trusted HTML elements.
+Import createCustomElement in your component.
+Import {createCustomElement} from '@angular/elements';
+Then create your customized element!
+Import {DomSanitizer} from './alert/alert.component';
+@component({
+  selector :'app-root',
+  template :' <div [innerHtml]='content'>
+  </div>',
+  styleUrls : ['./app.component.css']
+})
+export class Appcomponet{
+  content=null;
+}
+
+constractor(private injector:injector,domsanitizer:DomSanitizer)
+{
+  const myElement = createCustomElement(myElement,{injector:this.injector})
+  customElements.define('my-elem',myElement)
+  this.content=domsanitizer.bypassSecurityTrustHtml("<my-elem name='Moshe'></my-elem>")
+}
+
+Note: you have to implement the DomSanitizer method from @angular/platform-browser to make your custom element a trusted HTML tag .
+======
+
+הוספת שדה דינמי
+http://www.gistia.com/create-use-custom-components-angular-2/
+https://blog.rangle.io/angular-2-ngmodel-and-custom-form-components/
+https://stackoverflow.com/questions/38007236/how-to-dynamically-add-and-remove-form-fields-in-angular-2
+https://stackoverflow.com/questions/44492968/angular-2-reactive-forms-create-input-fields-dynamically
+https://www.techiediaries.com/angular-forms/
+https://www.npmjs.com/package/angular2-input-text-mask
+
+
+--------
+כניסה מאובטחת
+http://jasonwatmore.com/post/2018/05/16/angular-6-user-registration-and-login-example-tutorial
+
+שיתוף מידע בין קומפוננטות
+https://www.youtube.com/watch?time_continue=224&v=I317BhehZKM
+
+-------------------
+npm i @agm/core  - גוגל מפות
+npm i ngx-page-scroll -S
+npm install --save ngx-lightbox
+npm install script-loader
+npm i ngx-owl-carousel-o@0.1.2
+npm install ng2-datepicker --save
+npm i @angular/http
+npm install --save rxjs-compat 
+npm i ngx-moment
+
+ERROR in node_modules/rxjs/BehaviorSubject.d.ts(1,15): error TS2307: Cannot find module 'rxjs-compat/BehaviorSubject'.
+node_modules/rxjs/Observable.d.ts(1,15): error TS2307: Cannot find module 'rxjs-compat/Observable'.
+
+ 'ng2-datepicker'.
+'date-fns/locale/en'.
+'@angular/http'.
+
+
+

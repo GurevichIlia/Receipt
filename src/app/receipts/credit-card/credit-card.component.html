@@ -1,0 +1,81 @@
+<!-- <mat-expansion-panel class="example-headers-align mb-1" [expanded]="receitService.step === 5"
+  hideToggle>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Credit card
+    </mat-panel-title>
+    <mat-panel-description>
+      <mat-icon>date_range</mat-icon>
+    </mat-panel-description>
+  </mat-expansion-panel-header> -->
+<mat-card class="mb-1">
+  <mat-card-header>
+    <mat-card-title>
+      <h3>Credit card</h3>
+    </mat-card-title>
+    <mat-card-subtitle>subtitle</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="creditCardForm" (ngSubmit)="submitCreditCard(creditCardForm)" novalidate>
+      <div class="row">
+        <mat-form-field class="col-12">
+          <mat-icon matPrefix>credit_card</mat-icon>
+          <input matInput placeholder="Card number" id="cc-number" formControlName="creditCard" type="tel"
+            autocomplete="cc-number" ccNumber>
+        </mat-form-field>
+        <mat-form-field class="col-6">
+          <mat-icon matPrefix>date_range</mat-icon>
+          <input matInput placeholder="Expiration" id="cc-exp-date" formControlName="expirationDate" type="tel"
+            autocomplete="cc-exp" ccExp>
+        </mat-form-field>
+        <mat-form-field class="col-4">
+          <mat-icon matPrefix>vpn_key</mat-icon>
+          <input matInput placeholder="CVV" id="cc-cvc" type="tel" formControlName="cvv" autocomplete="off" ccCVC>
+        </mat-form-field>
+        <mat-form-field class="col-6">
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput placeholder="TZ" type="tel" formControlName="tz" autocomplete="off">
+        </mat-form-field>
+        <mat-form-field class="col-6">
+          <mat-icon matPrefix>money</mat-icon>
+          <input matInput placeholder="Amount" type="tel" formControlName="amount" autocomplete="off" (change)="calculateAmountPay()">
+        </mat-form-field>
+        <mat-form-field class="col-6">
+          <mat-icon matPrefix>email</mat-icon>
+          <input matInput placeholder="Total payments" type="tel" formControlName="totalPayments" autocomplete="off">
+        </mat-form-field>
+        <mat-form-field class="col-6">
+          <mat-icon matPrefix>money</mat-icon>
+          <input matInput placeholder="Amount of first payment" type="tel" formControlName="amountOfFirstPay"
+            autocomplete="off">
+        </mat-form-field>
+        <mat-form-field class="col-12">
+          <mat-icon matPrefix>money</mat-icon>
+          <input matInput placeholder="Amount of each payment" type="tel" formControlName="amountOfEachPay"
+            autocomplete="off">
+        </mat-form-field>
+        <mat-form-field class="col-12">
+          <mat-icon matPrefix>email</mat-icon>
+          <input matInput placeholder="Manual approval number" type="tel" formControlName="manualApprNum"
+            autocomplete="off">
+        </mat-form-field>
+
+        <mat-form-field class="col-12">
+          <mat-select #Account placeholder="Account" >
+            <mat-option [value]="account" *ngFor="let account of accounts; let i = index" (click)="pickAccount(Account)">
+              {{account.AccountNameEng}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <p class="col-12">Terminal No: {{termNo}}</p>
+        <p class="col-12">Terminal name: {{termName}} </p>
+      </div>
+      <button type="submit" mat-raised-button color="accent"  (click)="submitCreditCard(); showMessege=!showMessege">Submit</button>
+    </form>
+  </mat-card-content>
+  <mat-card-actions>
+  </mat-card-actions>
+</mat-card>
+
+
+<!-- </mat-expansion-panel> -->

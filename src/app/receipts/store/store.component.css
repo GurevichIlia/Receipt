@@ -1,0 +1,25 @@
+.example-headers-align .mat-expansion-panel-header-title,
+.example-headers-align .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.example-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+mat-form-field {
+  margin-right: 12px;
+}
+.example-container {
+  height: 100%;
+  overflow: auto;
+  box-shadow: none !important;
+}
+
+table {
+  width: 100%;
+}
+.colName{
+width: 300px
+}

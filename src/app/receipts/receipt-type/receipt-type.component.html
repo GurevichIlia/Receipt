@@ -1,0 +1,83 @@
+<mat-expansion-panel class="example-headers-align mb-1" [expanded]="receiptService.step === 3"
+  (opened)="receiptService.setStep(3)" hideToggle>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Receipt type
+    </mat-panel-title>
+    <mat-panel-description>
+      {{selected_receiptIsForDonation? 'Donation': 'Sales'}}
+      <mat-icon>date_range</mat-icon>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+
+
+
+  <div *ngIf="changeOptions">
+
+    <div class="row">
+
+      <mat-form-field *ngIf="organisations.length !== 0" class="col-2">
+        <mat-select placeholder="Select organisation" [(ngModel)]="selectedOrg">
+          <mat-option *ngFor="let org of organisations" [value]="org.orgid" (click)="radButChanged()">{{org.orgname}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="col-9 ml-1">
+        <mat-form-field>
+          <mat-select placeholder="Select type">
+            <mat-option *ngFor="let type of newReceiptTypes" [value]="type.RecieptTypeId"
+              (click)="showRecieptTypeId(type.RecieptTypeId)">{{type.RecieptName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+
+
+      <div class="col-3">
+        <label id="example-radio-group-label">Receipt type</label>
+        <mat-radio-group aria-labelledby="example-radio-group-label" (change)="radButChanged()"
+          [(ngModel)]="selected_receiptIsForDonation" class="example-radio-group">
+          <mat-radio-button class="example-radio-button" [value]="true">
+            Donation
+          </mat-radio-button>
+          <mat-radio-button class="example-radio-button" [value]="false">
+            Sales
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="col-9">
+        <label id="example-radio-group-label">Card type</label>
+        <mat-radio-group #creditCard aria-labelledby="example-radio-group-label" (change)="radButChanged()"
+          [(ngModel)]="selected_receiptCreditOrDebit" class="example-radio-group">
+          <mat-radio-button class="example-radio-button" [value]="false">
+            Debit</mat-radio-button>
+
+          <mat-radio-button class="example-radio-button" [value]="true">
+            Credit
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div class="col-4">
+        <mat-form-field *ngIf="selected_receiptCreditOrDebit === true">
+          <input matInput placeholder="Credit password" type="tel" autocomplete="off">
+        </mat-form-field>
+      </div>
+
+    </div>
+  </div>
+  <button type="button" mat-flat-button color="primary"
+    (click)="changeOptions=!changeOptions">{{changeOptions? 'Hide':'Change options'}}</button>
+
+  <mat-action-row>
+    <button mat-button color="warn" (click)="receiptService.prevStep()">
+      Previous
+    </button>
+    <button type="button" mat-button color="primary" (click)="receiptService.nextStep()">
+      Next
+    </button>
+  </mat-action-row>
+</mat-expansion-panel>

@@ -1,0 +1,52 @@
+<!-- <ion-item *ngFor="let ReceiptType of ReceiptTypes; let i = index">
+    <ion-label> {{ ReceiptType.RecieptName}}</ion-label>
+  
+    <ion-radio
+      slot="start"
+      [value]="ReceiptType.RecieptTypeId"
+      name="receiptTypeid"
+    ></ion-radio>
+  </ion-item> -->
+
+<!-- | async -->
+<!-- <div *ngFor="let user of ReceiptTypes; let i = index">
+  <span>{{ user.RecieptTypeId }}</span>
+</div>
+
+<form> -->
+<!-- <mat-form-field>
+    <input matInput [matAutocomplete]="auto" [formControl]="myControl" />
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option
+        *ngFor="let user of ReceiptTypes; let i = index"
+        [value]="user.RecieptTypeId"
+      >
+        <span>{{ user.RecieptTypeId }}</span>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput [matAutocomplete]="auto" [formControl]="myControl" />
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option
+        *ngFor="let user of ReceiptTypes; let i = index"
+        [value]="user.RecieptTypeId"
+      >
+        <span>{{ user.RecieptTypeId }}</span>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field> -->
+<form>
+  <mat-form-field>
+    <input matInput [matAutocomplete]="auto" [formControl]="myControl" />
+    <mat-autocomplete #auto="matAutocomplete">
+      <!-- <mat-option
+        *ngFor="let CustomerSearch of filteredOptions; let i = index"
+        [value]="CustomerSearch.FileAs1"
+      >
+        <span>{{ CustomerSearch.FileAs1 }}</span>
+      </mat-option> -->
+    </mat-autocomplete>
+  </mat-form-field>
+</form>

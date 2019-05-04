@@ -1,0 +1,159 @@
+<mat-expansion-panel class="example-headers-align row mb-1" [expanded]="receiptService.step === 4"
+  (opened)="receiptService.setStep(4)" hideToggle>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Payment
+    </mat-panel-title>
+    <mat-panel-description>
+      Payment method
+      <mat-icon>date_range</mat-icon>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <mat-form-field *ngIf="paymentMethodId !== 2 && paymentMethodId !== 7" >
+    <input matInput type="number" min="1" placeholder="Payment amount">
+  </mat-form-field>
+
+  <mat-form-field class="ml-1" style="width: 100px">
+    <mat-select placeholder="Currency" [(ngModel)]="currency">
+      <mat-option [value]="currency" *ngFor="let currency of currencyTypes; let i = index">
+        {{currency.CurrencyId}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <p>
+    <mat-form-field *ngIf="paymentMethodId !== 2 && paymentMethodId !== 7">
+      <input matInput [matDatepicker]="picker" placeholder="Due date" [(ngModel)]="dueDate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </p>
+  <mat-form-field>
+    <mat-select placeholder="Payment for">
+      <mat-option [value]="donation" *ngFor="let donation of donationTypes; let i = index">
+        {{donation.DonationTypeEng}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- <p>
+    <button type="button" mat-button color="primary" (click)="showAccount=!showAccount">More</button>
+  </p> -->
+
+  <div>
+    <p>
+      <mat-form-field>
+        <mat-select placeholder="Account">
+          <mat-option [value]="account" *ngFor="let account of accounts; let i = index">
+            {{account.AccountNameEng}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field>
+        <mat-select #ProjCatName placeholder="Projects categories">
+          <mat-option [value]="cat.ProjectCategoryId" *ngFor="let cat of projectsCategories; let i = index">
+            {{cat.CategoryNameEng}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field>
+        <mat-select placeholder="Projects">
+          <mat-option [value]="project"
+            *ngFor="let project of projects | filterProductsByCat: ProjCatName.value; let i = index">
+            {{project.ProjectName}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </p>
+  </div>
+
+  <!-- FIELD FOR PAYMENTS AS CHECK AND WIRE -->
+  <div *ngIf="paymentMethodId === 2 || paymentMethodId === 7">
+    <form #myForm="ngForm" (ngSubmit)="addPayment(myForm)" class="mb-2">
+
+      <mat-form-field class="ml-1" style="width: 150px">
+        <input matInput type="text" min="1" placeholder="Account No" #Account="ngModel" name="account"
+          [(ngModel)]="newCheckOrWire.account" required>
+      </mat-form-field>
+
+      <mat-form-field class="ml-1" style="width: 150px">
+        <input #DueDate="ngModel" matInput [matDatepicker]="picker" placeholder="Due date" name="dueDate"
+          [(ngModel)]="newCheckOrWire.dueDate" required>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- <mat-form-field class="ml-1" style="width: 150px">
+        <mat-select #Bank="ngModel" placeholder="Bank" name="bank" [(ngModel)]="newCheckOrWire.bank" required>
+          <mat-option (click)="test(bank)" [value]="bank" *ngFor="let bank of banks">{{bank.BankNameEng}}
+          </mat-option>
+        </mat-select> -->
+
+      <mat-form-field class="ml-1" style="width: 150px">
+        <input #Bank="ngModel" name="bank" type="text" placeholder="Bank" [matAutocomplete]="auto" [(ngModel)]="newCheckOrWire.bank" matInput required>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let bank of filteredOptions; let i = index" [value]="bank.BankNameEng">
+            {{bank.BankNameEng}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+
+      <mat-form-field class="ml-1" style="width: 150px">
+        <input matInput type="number" min="1" placeholder="Amount" #Amount="ngModel" name="amount"
+          [(ngModel)]="newCheckOrWire.amount" required>
+      </mat-form-field>
+
+      <mat-form-field class="ml-1" style="width: 150px">
+        <input matInput type="text" min="1" placeholder="Branch No" #Branch="ngModel" name="branch"
+          [(ngModel)]="newCheckOrWire.branch" required>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="paymentMethodId === 2" class="ml-1" style="width: 150px">
+        <input matInput type="number" min="1" placeholder="Cheque No" #CheckNum="ngModel" name="checkNum"
+          [(ngModel)]="newCheckOrWire.checkNum" required>
+      </mat-form-field>
+      <button [disabled]="myForm.invalid" class="ml-1" mat-raised-button color="primary" type="submit">Add</button>
+    </form>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Account</th>
+          <th scope="col">Date</th>
+          <th scope="col">Bank</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Branch</th>
+          <th *ngIf="paymentMethodId === 2" scope="col">Check number</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let check of checksOrWires">
+          <th>{{check.account}}</th>
+          <td>{{check.dueDate}} </td>
+          <td>{{check.bank}}</td>
+          <td>{{check.amount}}</td>
+          <td>{{check.branch}}</td>
+          <td *ngIf="paymentMethodId === 2">{{check.checkNum}}</td>
+          <td><button mat-button color="warn" (click)="deletePayment(check)">Delete</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+
+  <mat-action-row>
+    <button mat-button color="warn" (click)="receiptService.prevStep()">
+      Previous
+    </button>
+    <button type="button" mat-button color="primary" (click)="receiptService.nextStep()">
+      Next
+    </button>
+  </mat-action-row>
+</mat-expansion-panel>
