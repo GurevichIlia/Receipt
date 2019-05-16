@@ -4,6 +4,9 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ReceiptsService } from 'src/app/services/receipts.service';
 import { MatDialogRef } from '@angular/material';
 import { CreditCardValidator } from 'angular-cc-library';
+import { delay } from 'rxjs/operators';
+import { pipe } from 'rxjs/internal/util/pipe';
+
 
 @Component({
   selector: 'app-credit-card',
@@ -29,8 +32,8 @@ export class CreditCardComponent implements OnInit {
       tz: ['', [Validators.required]],
       amount: ['', [Validators.required]],
       totalPayments: ['', [Validators.required]],
-      amountOfFirstPay: ['', [Validators.required]],
-      amountOfEachPay: ['', [Validators.required]],
+      amountOfFirstPay: ['', ],
+      amountOfEachPay: ['', ],
       manualApprNum: ['', [Validators.required]],
       account: [null],
     });
@@ -40,12 +43,13 @@ export class CreditCardComponent implements OnInit {
     this.generalService.receiptData.subscribe(data => {
       this.accounts = data['Accounts'];
     });
-    this.creditCardForm.controls.amount.valueChanges.subscribe(data => {
-      console.log(data);
-      this.creditCardForm.controls.amountOfEachPay.setValue(data / 3)
-    }
-    )
+    // this.creditCardForm.valueChanges
+    //   .subscribe(data => {
+    //     console.log(data);
+    //     // this.creditCardForm.controls.amountOfEachPay.setValue((data.amount - data.amountOfFirstPay) / data.totalPayments)
+    //   })
   }
+
   calculateAmountPay() {
     console.log(this.creditCardForm.controls.amount)
 
@@ -55,6 +59,10 @@ export class CreditCardComponent implements OnInit {
   }
   submitCreditCard(form) {
     console.log(form)
+    form.value.expirationDate = form.value.expirationDate.substring(0, 9);
+    form.value.cvv = form.value.cvv.substring(0, 4);
+    console.log(form.value.expirationDate);
+    console.log(form.value.cvv);
   }
   pickAccount(account: object) {
     this.creditCardForm.controls.account.setValue(account['value'].AccountId);
@@ -62,4 +70,6 @@ export class CreditCardComponent implements OnInit {
     this.termName = account['value'].Username;
     console.log(this.termNo, this.termName, account);
   }
+
+
 }

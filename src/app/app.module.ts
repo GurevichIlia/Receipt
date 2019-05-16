@@ -29,6 +29,7 @@ import { CreditCardComponent } from './receipts/credit-card/credit-card.componen
 import { ProccessRecieptComponent } from './receipts/proccess-reciept/proccess-reciept.component';
 import { FilterProductsByCatPipe } from './myPipes/filter-products-by-cat.pipe';
 import { MAT_DATE_LOCALE } from '@angular/material';
+import { KeysPipe } from './myPipes/keysPipe.pipe';
 
 
 @NgModule({
@@ -43,7 +44,9 @@ import { MAT_DATE_LOCALE } from '@angular/material';
     PaymentComponent,
     CreditCardComponent,
     ProccessRecieptComponent,
-    FilterProductsByCatPipe],
+    FilterProductsByCatPipe,
+    KeysPipe
+  ],
   imports: [
     BrowserModule,
     FormsModule,

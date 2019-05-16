@@ -1,5 +1,5 @@
-<mat-expansion-panel class="example-headers-align mb-1 row" [expanded]="receitService.step === 2"
-  (opened)="receitService.setStep(2)" hideToggle>
+<mat-expansion-panel *ngIf="receiptService.step === 2" class="example-headers-align mb-1 row"
+  [expanded]="receiptService.step === 2" (opened)="receiptService.setStep(2)" hideToggle>
   <mat-expansion-panel-header>
     <mat-panel-title>
       Store
@@ -36,8 +36,7 @@
 
     <mat-form-field class="col-12">
       <input #ProductAmount="ngModel" (keyup)="totalPriceForProd(ProductAmount.value)" (change)="totalPriceForProd()"
-        required min="1" type="number" name="prodAmount" matInput placeholder="Amount"
-        [(ngModel)]="product.prodAmount" />
+        min="1" type="number" name="prodAmount" matInput placeholder="Amount" [(ngModel)]="product.prodAmount" />
     </mat-form-field>
     <!-- <p>
       <strong>Amount:
@@ -61,41 +60,48 @@
   <!--  -->
 
   <!--  -->
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col-3">Name</th>
-        <th scope="col-2">Amount</th>
-        <th scope="col-2">Price</th>
-        <th scope="col-2">Total</th>
-        <th scope="col-1"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let product of addedProdToORder">
-        <th>{{product.prodName}}</th>
-        <td>
-          <mat-select #Amount [value]="product.prodAmount"
-            (selectionChange)="changeAmountInList(product, Amount.value)">
-            <mat-option [value]="i + 1" *ngFor="let number of arrayOfNumbers; let i = index">{{number + 1}}</mat-option>
-          </mat-select>
-        </td>
-        <!-- <input #Amount type="number" (keyup)="changeAmountInList(product, Amount.value)" (change)="changeAmountInList(product, Amount.value)"  matInput [value]="product.prodAmount">-->
+  <div *ngIf="addedProdToOrder.length > 0">
+    <table class="table-striped" >
+      <thead>
+        <tr>
+          <th scope="col-3">№</th>
+          <th scope="col-3">Name</th>
+          <th scope="col-2">Amount</th>
+          <th scope="col-2">Price</th>
+          <th scope="col-2">Total</th>
+          <th scope="col-1"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of addedProdToOrder; let i = index">
+          <td>{{i+1}}.</td>
+          <th>{{product.prodName}}</th>
+          <td>
+            <mat-select #Amount [value]="product.prodAmount"
+              (selectionChange)="changeAmountInList(product, Amount.value)">
+              <mat-option [value]="i + 1" *ngFor="let number of arrayOfNumbers; let i = index">{{number + 1}}
+              </mat-option>
+            </mat-select>
+          </td>
+          <!-- <input #Amount type="number" (keyup)="changeAmountInList(product, Amount.value)" (change)="changeAmountInList(product, Amount.value)"  matInput [value]="product.prodAmount">-->
 
-        <td>{{product.prodPrice | currency : ' NIS ' : number : '1.2-2'}}
-        </td>
-        <td>{{product.totalPrice | currency : ' NIS ' : number : '1.2-2'}}</td>
-        <td><button mat-button color="warn" (click)="deleteProduct(product.prodId)">Delete</button></td>
+          <td>{{product.prodPrice | currency : ' NIS ' : number : '1.2-2'}}
+          </td>
+          <td>{{product.totalPrice | currency : ' NIS ' : number : '1.2-2'}}</td>
+          <td><button mat-button color="warn" (click)="deleteProduct(product.prodId)">
+              <mat-icon>delete</mat-icon>
+            </button></td>
 
-      </tr>
-    </tbody>
-  </table>
-  <h3>Total: {{totalPriceForOrder | currency : ' NIS ' : number : '1.2-2'}} </h3>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Total: {{totalPriceForOrder | currency : ' NIS ' : number : '1.2-2'}} </h3>
+  </div>
   <mat-action-row>
-    <button mat-button color="warn"  (click)="backToPayment()">
+    <button mat-raised-button color="accent" (click)="receiptService.prevStep()" class="mr-1">
       Previous
     </button>
-    <button mat-button color="primary" (click)="receitService.nextStep()">
+    <button mat-raised-button color="primary" (click)="receiptService.nextStep(); addProductsToReceipt()">
       Next
     </button>
   </mat-action-row>

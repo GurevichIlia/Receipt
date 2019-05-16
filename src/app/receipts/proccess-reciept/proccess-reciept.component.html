@@ -1,86 +1,109 @@
-<mat-expansion-panel class="example-headers-align mb-1" [expanded]="receiptService.step === 5"
-  (opened)="receiptService.setStep(5)" hideToggle>
+<mat-expansion-panel *ngIf="receiptService.step === 5" class="example-headers-align mb-1"
+  [expanded]="receiptService.step === 5" (opened)="receiptService.setStep(5)" hideToggle>
   <mat-expansion-panel-header>
     <mat-panel-title>
       Proccess receipt
     </mat-panel-title>
     <mat-panel-description>
+      Proccess receipt
       <mat-icon>date_range</mat-icon>
     </mat-panel-description>
   </mat-expansion-panel-header>
-  <form [formGroup]="proccessReceipt">
+  <form [formGroup]="proccessReceipt" (ngSubmit)="addProccessReceiptToReceipt(proccessReceipt)">
+      <h5>Customer name: {{customerName}}</h5>
+    <h5>Name of the receipt: {{selectedReceiptName}}</h5>
+    <h5>Total amount: {{totalAmount | currency : ' NIS ' : number : '1.2'}}</h5>
+
     <div class="row">
-
-    <h4>Total amount: will be</h4>
-    <mat-form-field class="col-12">
-      <mat-select placeholder="Name suggestion" >
-        <mat-option [value]="customerName" *ngFor="let customerName of customerNamesForReceipt | keyvalue; let i = index">
-          {{customerName.value.value}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field class="col-12">
+      <!-- <mat-form-field class="col-12">
       <input matInput placeholder="Name of customer" formControlName="customerName">
-    </mat-form-field>
+    </mat-form-field> -->
+      <div class="col-12">
+        <mat-form-field *ngIf="customerName === ''">
+          <mat-select placeholder="Name suggestion" formControlName="customerName">
+            <span *ngFor="let customerName of customerNamesForReceipt | keyvalue">
+              <mat-option [value]="value.value" *ngFor="let value of customerName.value | keyvalue">
+                {{value.value}}
+              </mat-option>
+            </span>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-    <mat-form-field class="col-12">
-      <mat-select placeholder="For" formControlName="receipFor">
-        <mat-option [value]="receipt.id" *ngFor="let receipt of receiptForList">
-          {{receipt.note}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+      <div class="col-12">
+        <mat-form-field>
+          <mat-select placeholder="For" formControlName="receipFor" required>
+            <mat-option [value]="receipt.id" *ngFor="let receipt of receiptForList">
+              {{receipt.note}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12">
+        <mat-form-field class="col-12" required>
+          <input matInput placeholder="Address" formControlName="addressOnTheReceipt">
+        </mat-form-field>
 
 
-    <mat-checkbox class="col-12">Address on the receipt</mat-checkbox>
-    <mat-form-field class="col-12">
-      <input matInput placeholder="Address" formControlName="adress">
-    </mat-form-field>
+        <mat-form-field class="col-12">
+          <mat-select placeholder="Receipt print template" formControlName="receiptTemplate" required>
+            <mat-option *ngFor="let letter of thanksLetters" [value]="letter.ThanksLetterId"
+              (click)="getSelectedReceiptType()">
+              {{letter.ThanksLetterName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-    <hr>
+        <mat-form-field class="col-12">
+          <textarea matInput placeholder="Textarea" formControlName="textarea"></textarea>
+        </mat-form-field>
 
-    <div class="col-12">
-      <mat-form-field class="col-12">
-        <mat-select placeholder="Receipt print template" formControlName="receiptTemplate">
-          <mat-option>
+        <mat-radio-group #sendReceipt aria-labelledby="example-radio-group-label" class="example-radio-group"
+          formControlName="sendTo">
+          <mat-radio-button class="example-radio-button" [value]="'email'" (click)="test(proccessReceipt)">
+            Send to email
+          </mat-radio-button>
+          <mat-radio-button class="example-radio-button ml-1" [value]="'whatsApp'">
+            Send to WhatsApp
+          </mat-radio-button>
+          <mat-radio-button class="example-radio-button ml-1" [value]="'dontSend'" (click)="test(proccessReceipt)">
+            Don't send
+          </mat-radio-button>
+        </mat-radio-group>
+        <mat-form-field class="col-12" *ngIf="sendReceiptTo === 'email'">
+          <input matInput placeholder="Email" formControlName="sendToEmail">
+        </mat-form-field>
+        <mat-form-field class="col-12" *ngIf="sendReceiptTo === 'whatsApp'">
+          <input matInput placeholder="Phone number" formControlName="sendToPhone">
+        </mat-form-field>
+        <hr>
+        <mat-radio-group #showOnScreen aria-labelledby="example-radio-group-label" class="example-radio-group"
+          formControlName="showOnScreen">
+          <mat-radio-button class="example-radio-button" [value]="true">
+            Show receip on screen
+          </mat-radio-button>
+          <mat-radio-button class="example-radio-button ml-1" [value]="false">
+            Don't show
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
 
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field class="col-12">
-        <textarea matInput placeholder="Textarea" formControlName="textarea"></textarea>
-      </mat-form-field>
-
-      <mat-radio-group #sendEmail aria-labelledby="example-radio-group-label" class="example-radio-group" formControlName="sendToEmail">
-        <mat-radio-button class="example-radio-button" [value]="true">
-          Send to email</mat-radio-button>
-        <mat-radio-button class="example-radio-button" [value]="false">
-          Don't send
-        </mat-radio-button>
-      </mat-radio-group>
-      <mat-form-field class="col-12">
-        <input matInput placeholder="Email" formControlName="email">
-      </mat-form-field>
-      <hr>
-      <mat-radio-group #showOnScreen aria-labelledby="example-radio-group-label" class="example-radio-group" formControlName="showOnScreen">
-        <mat-radio-button class="example-radio-button" [value]="true">
-          Show receip on screen</mat-radio-button>
-        <mat-radio-button class="example-radio-button" [value]="false">
-          Don't show
-        </mat-radio-button>
-      </mat-radio-group>
     </div>
-
-  </div>
   </form>
   <mat-action-row>
-    <button mat-button color="warn" (click)="receiptService.prevStep()">
+    <button mat-raised-button color="accent" class="mr-1" (click)="receiptService.prevStep()">
       Previous
     </button>
-    <button type="button" mat-button color="primary" (click)="receiptService.nextStep()">
+    <button type="button" mat-raised-button color="primary" [disabled]="proccessReceipt.invalid"
+      (click)="receiptService.nextStep(); receiptService.sendReceiptToServer(); addProccessReceiptToReceipt(proccessReceipt)">
       Finish
     </button>
+
   </mat-action-row>
 </mat-expansion-panel>
+
+<div *ngIf="receiptService.step === 6 || receiptService.step === 6 ">
+  <h2>Receipt success</h2>
+  <button mat-raised-button color="primary" (click)="createNewReceipt()">Create the new receipt</button>
+</div>

@@ -1,149 +1,154 @@
-<mat-expansion-panel class="mb-1 example-headers-align" [expanded]="receiptService.step === 1"
-  (opened)="receiptService.setStep(1)" hideToggle>
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      Customer Info
-    </mat-panel-title>
-    <mat-panel-description>
-      <span>{{customerInfoTitle || 'Customer Name'}} </span>
-      <mat-icon class="text-right">account_circle</mat-icon>
-    </mat-panel-description>
-  </mat-expansion-panel-header>
+<div *ngIf="receiptService.step === 1 || receiptService.step === 0" class="mb-1 example-headers-align">
+  <mat-card-title>קבלה חדשה </mat-card-title>
+  <mat-expansion-panel [expanded]="receiptService.step === 1 || receiptService.step === 0"
+    (opened)="receiptService.setStep(1)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h5>Customer Info</h5>
+      </mat-panel-title>
+      <mat-panel-description>
+        <span>{{customerInfoTitle || 'Customer Name'}} </span>
+        <mat-icon class="text-right">account_circle</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
 
 
-  <form [formGroup]="userInfoGroup" (ngSubmit)="submit(userInfoGroup)">
-    <div formGroupName="name">
-      <mat-form-field hidden class="col-12">
+    <form [formGroup]="userInfoGroup" (ngSubmit)="submit()">
+      <div formGroupName="name">
+        <mat-form-field hidden class="col-12">
+          <input formControlName="customerId" matInput placeholder="Customer Id" />
+        </mat-form-field>
 
-        <input formControlName="customerId" matInput placeholder="Customer Id" />
+        <mat-form-field class="col-12">
+          <input #firstName formControlName="firstName" matInput placeholder="First name" [required]="requiredField" />
+        </mat-form-field>
+
+        <mat-form-field class="col-12">
+          <input #lastName formControlName="lastName" matInput placeholder="Last name" [required]="requiredField" />
+        </mat-form-field>
+
+        <mat-form-field class="col-12">
+          <input #company formControlName="company" matInput placeholder="Company" [required]="requiredField" />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field *ngIf="!disabledPayMethod">
+        <mat-select #PaymentMethod placeholder="Payment Method" formControlName='payMath' required
+          (ngModelChange)="checkPayType(PaymentMethod.value); creditCardModalOpen(PaymentMethod.value)">
+          <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods">
+            {{payment.PaymentTypeEng}}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
 
-      <mat-form-field class="col-12">
-        <input formControlName="firstName" matInput placeholder="First name" />
-      </mat-form-field>
+      <div *ngIf="customerFound">
+        <div>
+          <div formGroupName="moreInfo">
+            <mat-form-field class="col-12">
+              <input formControlName="customerType" matInput placeholder="Customer type">
+            </mat-form-field>
 
-      <mat-form-field class="col-12">
-        <input formControlName="lastName" matInput placeholder="Last name" />
-      </mat-form-field>
+            <mat-form-field class="col-12">
+              <input formControlName="title" matInput placeholder="Title">
+            </mat-form-field>
 
-      <mat-form-field class="col-12">
-        <input formControlName="company" matInput placeholder="Company" />
-      </mat-form-field>
-    </div>
+            <mat-form-field class="col-12">
+              <input formControlName="gender" matInput placeholder="Gender">
+            </mat-form-field>
 
-    <mat-form-field>
-      <mat-select #PaymentMethod placeholder="Payment Method" formControlName='payMath'>
-        <mat-option (click)="checkPayType(PaymentMethod.value); creditCardModalOpen(PaymentMethod.value) "
-          [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods">
-          {{payment.PaymentTypeEng}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+            <mat-form-field class="col-12">
+              <input formControlName="tZ" matInput placeholder="T.Z">
+            </mat-form-field>
 
-    <div *ngIf="!customerFound">
-      <div>
-        <div formGroupName="moreInfo">
-          <mat-form-field class="col-12">
-            <input formControlName="customerType" matInput placeholder="Customer type">
-          </mat-form-field>
+            <mat-form-field class="col-12">
+              <input formControlName="spouseName" matInput placeholder="Spouse name">
+            </mat-form-field>
 
-          <mat-form-field class="col-12">
-            <input formControlName="title" matInput placeholder="Title">
-          </mat-form-field>
+            <mat-form-field class="col-12">
+              <input formControlName="fileAs" matInput placeholder="FileAs">
+            </mat-form-field>
 
-          <mat-form-field class="col-12">
-            <input formControlName="gender" matInput placeholder="Gender">
-          </mat-form-field>
+            <mat-form-field class="col-12">
+              <input matInput [matDatepicker]="picker" placeholder="Birthday" formControlName="birthday">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
 
-          <mat-form-field class="col-12">
-            <input formControlName="tZ" matInput placeholder="T.Z">
-          </mat-form-field>
-
-          <mat-form-field class="col-12">
-            <input formControlName="spouseName" matInput placeholder="Spouse name">
-          </mat-form-field>
-
-          <mat-form-field class="col-12">
-            <input formControlName="fileAs" matInput placeholder="FileAs">
-          </mat-form-field>
-
-          <mat-form-field class="col-12">
-            <input matInput [matDatepicker]="picker" placeholder="Birthday" formControlName="birthday">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-
-          <!-- <mat-form-field class="col-12">
+            <!-- <mat-form-field class="col-12">
             <input formControlName="birthday" type="date" matInput placeholder="Birthday">
           </mat-form-field> -->
 
-          <mat-checkbox formControlName="afterSunset" class="col-12">After sunset</mat-checkbox>
+            <mat-checkbox formControlName="afterSunset" class="col-12">After sunset</mat-checkbox>
+          </div>
+
         </div>
+        <!-- <button type="button" mat-button color="primary" (click)="showMoreInfo=!showMoreInfo">{{!showMoreInfo? 'Show' : 'Hide' }} customer info</button> -->
 
+
+        <mat-form-field class="col-12">
+          <input matInput placeholder="Mobile phone">
+        </mat-form-field>
+
+        <div *ngIf="morePhone">
+          <mat-form-field class="col-12">
+            <input matInput placeholder="Home Phone">
+          </mat-form-field>
+
+          <mat-form-field class="col-12">
+            <input matInput placeholder="Work Phone">
+          </mat-form-field>
+        </div>
+        <button type="button" mat-button color="primary" (click)="morePhone=!morePhone">Add more phone</button>
+
+        <mat-form-field class="col-12">
+          <input matInput placeholder="Email">
+        </mat-form-field>
+
+        <div *ngIf="moreEmail">
+          <mat-form-field class="col-12">
+            <input matInput placeholder="Email 2">
+          </mat-form-field>
+
+          <mat-form-field class="col-12">
+            <input matInput placeholder="Email 3">
+          </mat-form-field>
+        </div>
+        <button type="button" mat-button color="primary" (click)="moreEmail=!moreEmail">Add more email</button>
+
+        <mat-form-field class="col-12">
+          <input matInput placeholder="City">
+        </mat-form-field>
+
+
+        <div *ngIf="moreAddress">
+          <mat-form-field class="col-12">
+            <input matInput placeholder="Street">
+          </mat-form-field>
+
+          <mat-form-field class="col-12">
+            <input matInput placeholder="Zip">
+          </mat-form-field>
+        </div>
+        <button type="button" mat-button color="primary" (click)="moreAddress=!moreAddress">Address</button>
+
+        <mat-selection-list #shoes formControlName="groups">
+          <h3 matSubheader>Groups</h3>
+          <mat-list-option *ngFor="let group of customerInfo?.QuickGeneralGroupList" [value]="group.GroupId">
+            {{group.GroupName}}
+          </mat-list-option>
+        </mat-selection-list>
       </div>
-      <!-- <button type="button" mat-button color="primary" (click)="showMoreInfo=!showMoreInfo">{{!showMoreInfo? 'Show' : 'Hide' }} customer info</button> -->
-
-
-      <mat-form-field class="col-12">
-        <input matInput placeholder="Mobile phone">
-      </mat-form-field>
-
-      <div *ngIf="morePhone">
-        <mat-form-field class="col-12">
-          <input matInput placeholder="Home Phone">
-        </mat-form-field>
-
-        <mat-form-field class="col-12">
-          <input matInput placeholder="Work Phone">
-        </mat-form-field>
-      </div>
-      <button type="button" mat-button color="primary" (click)="morePhone=!morePhone">Add more phone</button>
-
-      <mat-form-field class="col-12">
-        <input matInput placeholder="Email">
-      </mat-form-field>
-
-      <div *ngIf="moreEmail">
-        <mat-form-field class="col-12">
-          <input matInput placeholder="Email 2">
-        </mat-form-field>
-
-        <mat-form-field class="col-12">
-          <input matInput placeholder="Email 3">
-        </mat-form-field>
-      </div>
-      <button type="button" mat-button color="primary" (click)="moreEmail=!moreEmail">Add more email</button>
-
-      <mat-form-field class="col-12">
-        <input matInput placeholder="City">
-      </mat-form-field>
-
-
-      <div *ngIf="moreAddress">
-        <mat-form-field class="col-12">
-          <input matInput placeholder="Street">
-        </mat-form-field>
-
-        <mat-form-field class="col-12">
-          <input matInput placeholder="Zip">
-        </mat-form-field>
-      </div>
-      <button type="button" mat-button color="primary" (click)="moreAddress=!moreAddress">Address</button>
-
-      <mat-selection-list #shoes formControlName="groups">
-        <h3 matSubheader>Groups</h3>
-        <mat-list-option *ngFor="let group of customerInfo?.QuickGeneralGroupList" [value]="group.GroupId">
-          {{group.GroupName}}
-        </mat-list-option>
-      </mat-selection-list>
-    </div>
-    <button type="button" mat-flat-button color="primary"
-      (click)="customerFound=!customerFound">{{customerFound? 'Show': 'Hide'}} customer info</button>
-    <button type="submit">submit</button>
-    <mat-action-row>
-      <button type="button" mat-button color="primary" (click)="receiptService.nextStep()">
-        Next
-      </button>
-    </mat-action-row>
-  </form>
-</mat-expansion-panel>
+      <button type="button" mat-flat-button color="primary"
+        (click)="customerFound=!customerFound">{{customerFound? 'Hide' : 'Show'}} customer info</button>
+      <mat-action-row>
+        <button class="mr-1" type="button" mat-raised-button color="accent" (click)="receiptService.setStep(2)"
+          [disabled]="userInfoGroup.invalid">
+          Store
+        </button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="userInfoGroup.invalid">
+          Next
+        </button>
+      </mat-action-row>
+    </form>
+  </mat-expansion-panel>
+</div>

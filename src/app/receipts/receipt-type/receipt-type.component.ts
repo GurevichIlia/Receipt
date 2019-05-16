@@ -17,6 +17,9 @@ export class ReceiptTypeComponent implements OnInit {
   selected_receiptIsForDonation = true;
   selected_receiptCreditOrDebit = false;
   selectedOrg = 1;
+  selectedReceiptType = null;
+  selectOptForReceiptType = {};
+  receiptCurrencyId: string;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv
@@ -31,10 +34,10 @@ export class ReceiptTypeComponent implements OnInit {
       this.generalService.fullReceiptData.next(data);
       this.receiptTypes = data.ReceiptTypes;
       this.organisations = data.Orgs;
-      this.selectRecType();
+      this.filterRecType();
     });
   }
-  selectRecType() {
+  filterRecType() {
     try {
       this.newReceiptTypes = Object.assign(
         [],
@@ -43,19 +46,34 @@ export class ReceiptTypeComponent implements OnInit {
       this.newReceiptTypes = this.newReceiptTypes.filter(
         e =>
           e.DonationReceipt === this.selected_receiptIsForDonation &&
-            e.UseAsCreditReceipt === this.selected_receiptCreditOrDebit &&
-            e.orgid === this.selectedOrg
+          e.UseAsCreditReceipt === this.selected_receiptCreditOrDebit &&
+          e.orgid === this.selectedOrg
       );
       // this.receiptType = this.receiptTypes[0].RecieptTypeId;
+      this.selectedReceiptType = null;
       console.log('selectRecType', this.newReceiptTypes)
     } catch (e) {
       console.log(e);
     }
   }
   radButChanged() {
-    this.selectRecType();
+    this.filterRecType();
   }
-  showRecieptTypeId(RecieptTypeId) {
-    console.log(RecieptTypeId)
+  showRecieptTypeId() {
+    this.receiptService.selectedReceiptType = this.selectedReceiptType;
+    console.log(this.selectedReceiptType);
+  }
+  addPaymentTypeToReceipt() {
+    this.selectOptForReceiptType = {
+      orgName: this.selectedOrg,
+      receiptForDonat: this.selected_receiptIsForDonation,
+      receiptCredit: this.selected_receiptCreditOrDebit,
+      receiptTypeId: this.selectedReceiptType.RecieptTypeId,
+      receiptCurrencyId: this.selectedReceiptType.CurrencyId
+    }
+    this.receiptService.selReceiptCurrencyId.next(this.selectedReceiptType.CurrencyId);
+    this.receiptService.newReceipt.receiptType = this.selectOptForReceiptType;
+    this.receiptService.checkSelectedRecType.next();
+    console.log(this.receiptService.newReceipt);
   }
 }

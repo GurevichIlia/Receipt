@@ -22,13 +22,17 @@ export class StoreComponent implements OnInit {
   productCategories: object[];
   productsName: object[];
   displayedColumns = ['name', 'amount', 'price', 'total', 'delete'];
-  addedProdToORder: Product[] = [];
+  addedProdToOrder: Product[] = [];
   totalPriceForOrder: number;
   totalPriceForProduct: number;
   orderedProducts: Product[] = [];
   productAmount: number;
+  store: {} = {
+    addedProdToORder: [],
+    totalPrice: null
+  }
   constructor(
-    private receitService: ReceiptsService,
+    private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
     private dialog: MatDialog
   ) {
@@ -44,7 +48,7 @@ export class StoreComponent implements OnInit {
 
   ngOnInit() {
     this.getProductData();
-    this.receitService.payTypeCreditCard.subscribe(data => {
+    this.receiptService.payTypeCreditCard.subscribe(data => {
       this.payByCreditCard = data;
       console.log(data)
     })
@@ -71,21 +75,21 @@ export class StoreComponent implements OnInit {
     } else {
       this.totalPriceForProd();
       console.log('this.product', prod.value);
-      if (this.addedProdToORder.length != 0) {
-        if (this.checkSameProdInList(prod, this.addedProdToORder) === 1) {
+      if (this.addedProdToOrder.length != 0) {
+        if (this.checkSameProdInList(prod, this.addedProdToOrder) === 1) {
           this.showTotalPriceForOrder();
-          console.log('this.addedProdToORder', this.addedProdToORder);
+          console.log('this.addedProdToORder', this.addedProdToOrder);
           this.form.reset();
         } else {
-          this.addedProdToORder.push(prod.value);
+          this.addedProdToOrder.push(prod.value);
           this.showTotalPriceForOrder();
-          console.log('this.addedProdToORder', this.addedProdToORder);
+          console.log('this.addedProdToORder', this.addedProdToOrder);
           this.form.reset();
         }
       } else {
-        this.addedProdToORder.push(prod.value);
+        this.addedProdToOrder.push(prod.value);
         this.showTotalPriceForOrder();
-        console.log('this.addedProdToORder', this.addedProdToORder);
+        console.log('this.addedProdToORder', this.addedProdToOrder);
         this.form.reset();
       }
     }
@@ -107,7 +111,7 @@ export class StoreComponent implements OnInit {
   }
   showTotalPriceForOrder() {
     let totalPrice = 0;
-    for (const price of this.addedProdToORder) {
+    for (const price of this.addedProdToOrder) {
       totalPrice += price.totalPrice;
     }
     this.totalPriceForOrder = totalPrice;
@@ -124,17 +128,25 @@ export class StoreComponent implements OnInit {
   }
   deleteProduct(productId: number) {
     if (confirm('Are you sure to delete?')) {
-      this.addedProdToORder = this.addedProdToORder.filter(data => data.prodId != productId);
+      this.addedProdToOrder = this.addedProdToOrder.filter(data => data.prodId != productId);
       this.showTotalPriceForOrder();
     }
   }
   backToPayment() {
     if (this.payByCreditCard) {
       this.dialog.open(CreditCardComponent, { width: '350px' });
-      this.receitService.setStep(2);
+      this.receiptService.setStep(2);
     } else {
-      this.receitService.setStep(2);
-      this.receitService.prevStep();
+      this.receiptService.setStep(2);
+      this.receiptService.prevStep();
     }
+  }
+  // Add products to the receipt in receipt service;
+  addProductsToReceipt() {
+    this.store = {
+      addedProdToOrder: this.addedProdToOrder,
+      totalPrice: this.totalPriceForOrder
+    }
+    this.receiptService.newReceipt.store = this.store;
   }
 }

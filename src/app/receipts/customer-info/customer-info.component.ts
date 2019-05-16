@@ -4,6 +4,9 @@ import { FormArray, NgForm, Validators, FormBuilder, FormGroup } from '@angular/
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { CreditCardComponent } from '../credit-card/credit-card.component';
 import { MatDialog } from '@angular/material';
+import * as moment from 'moment';
+import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-customer-info',
@@ -12,7 +15,6 @@ import { MatDialog } from '@angular/material';
 })
 export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() customerInfo: object;
-  @Input() clickToBtnCreateNew: boolean;
   @ViewChild('PaymentMethod') paymentMethodId: any;
   userInfoGroup: FormGroup;
   groups: any[] = [];
@@ -20,7 +22,12 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
   // customerInfo: object;
   customerInfoTitle: string;
   customerFound = false;
+  requiredField = true;
+  disabledPayMethod = false;
+  clickToBtnCreateNew = false;
+  // tslint:disable-next-line: max-line-length
   pattern = '^(((0[1-9]|[12][0-9]|30)[-/]?(0[13-9]|1[012])|31[-/]?(0[13578]|1[02])|(0[1-9]|1[0-9]|2[0-8])[-/]?02)[-/]?[0-9]{4}|29[-/]?02[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$';
+  subs;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
@@ -34,12 +41,13 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     // tslint:disable-next-line: max-line-length
     this.userInfoGroup = this.fb.group({
       name: this.fb.group({
-        customerId: [''],
-        firstName: ['', [Validators.required]],
-        lastName: ['', [Validators.required]],
+        customerId: [null],
+        firstName: [this.checkLocalStorage('firstName')],
+        lastName: [''],
         company: [''],
       }),
-      payMath: ['', [Validators.required]],
+      // tslint:disable-next-line: max-line-length
+      payMath: [{ value: localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : '', disabled: this.disabledPayMethod }, [Validators.required]],
       moreInfo: this.fb.group({
         customerType: [''],
         title: [''],
@@ -66,26 +74,53 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     // this.groups = this.customerInfo['QuickGeneralGroupList'];
   }
   ngOnChanges() {
-    console.log('OnChanges', this.customerInfo);
-    if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
-      this.changeValue(this.customerInfo);
-      this.customerFound = true;
-    }
-    if (this.clickToBtnCreateNew) {
-      this.customerInfoTitle = '';
-      this.userInfoGroup.reset();
-      this.customerFound = false;
-    }
-    console.log('OnChanges', this.clickToBtnCreateNew);
+    this.changeValue(this.customerInfo);
 
+    console.log('OnChanges');
   }
   ngOnInit() {
-    this.getCustomerInfo();
+    console.log('ngOnInit');
     this.generalService.receiptData.subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
     });
+    this.receiptService.blockPayMethod.subscribe((data: boolean) => {
+      this.disabledPayMethod = data;
+      console.log(this.disabledPayMethod)
+    });
+    this.checkRequiredNameFields();
+    this.receiptService.createNewEvent.subscribe(() => {
+      this.customerInfoTitle = '';
+      this.userInfoGroup.reset();
+      this.refreshRequiredFormFields();
+      this.customerFound = true;
+    });
+    console.log(this.userInfoGroup.value)
   }
+  updateCustomerInfo() {
+    if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
+      this.changeValue(this.customerInfo);
+      this.customerFound = false;
+    }
+  }
+  checkRequiredNameFields() {
+    let name;
+    name = this.userInfoGroup.get('name');
+    name.valueChanges.subscribe(data => {
+      console.log(data)
+      if (data.firstName !== '' || data.lastName !== '' || data.company !== '') {
+        this.requiredField = false;
+      } else {
+        this.requiredField = true;
+      }
+      localStorage.setItem('firstName', data.firstName);
+      localStorage.setItem('lastName', data.lastName);
+      localStorage.setItem('company', data.company);
+    }
+    );
 
+    console.log(name)
+    console.log('this.requiredField ', this.requiredField);
+  }
   getCustomerInfo() {
     // this.receitService.customerInfoValue.subscribe(customer => {
     //   this.customerInfo = customer;
@@ -99,36 +134,41 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     // );
   }
   changeValue(customer) {
-    this.customerInfoTitle = customer.CustomerInfoForReceiept[0].FileAs;
-    console.log(this.customerInfoTitle);
-    this.userInfoGroup.patchValue({
-      name: {
-        customerId: customer.CustomerInfoForReceiept[0].CustomerId,
-        firstName: customer.CustomerInfoForReceiept[0].fname,
-        lastName: customer.CustomerInfoForReceiept[0].lname,
-        company: customer.CustomerInfoForReceiept[0].Company,
-      },
-      moreInfo: {
-        customerType: customer.CustomerInfoForReceiept[0].CustomerType,
-        title: customer.CustomerInfoForReceiept[0].Title,
-        gender: customer.CustomerInfoForReceiept[0].Gender,
-        t2: customer.CustomerInfoForReceiept[0].CustomerCode,
-        spouseName: customer.CustomerInfoForReceiept[0].SpouseName,
-        fileAs: customer.CustomerInfoForReceiept[0].FileAs,
-        birthday: customer.CustomerInfoForReceiept[0].BirthDate,
-        afterSunset: customer.CustomerInfoForReceiept[0].AfterSunset1,
-      },
-    });
+    if (customer !== undefined) {
+      this.receiptService.setStep(1);
+      this.customerInfoTitle = customer.CustomerInfoForReceiept[0].FileAs;
+      console.log(this.customerInfoTitle);
+      this.userInfoGroup.patchValue({
+        name: {
+          customerId: customer.CustomerInfoForReceiept[0].CustomerId,
+          firstName: customer.CustomerInfoForReceiept[0].fname,
+          lastName: customer.CustomerInfoForReceiept[0].lname,
+          company: customer.CustomerInfoForReceiept[0].Company,
+        },
+        moreInfo: {
+          customerType: customer.CustomerInfoForReceiept[0].CustomerType,
+          title: customer.CustomerInfoForReceiept[0].Title,
+          gender: customer.CustomerInfoForReceiept[0].Gender,
+          t2: customer.CustomerInfoForReceiept[0].CustomerCode,
+          spouseName: customer.CustomerInfoForReceiept[0].SpouseName,
+          fileAs: customer.CustomerInfoForReceiept[0].FileAs,
+          birthday: moment(customer.CustomerInfoForReceiept[0].BirthDate).format('YYYY-MM-DD'),
+          afterSunset: customer.CustomerInfoForReceiept[0].AfterSunset1,
+        },
+      });
+      this.receiptService.changeCustomerName(`${customer.CustomerInfoForReceiept[0].fname} ${customer.CustomerInfoForReceiept[0].lname}`);
+    }
     console.log('work');
   }
-  submit(form: NgForm) {
-    this.receiptService.newReceipt.customerInfo = form.value;
-    console.log('form.value', form.value );
-    console.log('this.receiptService.newReceipt', this.receiptService.newReceipt)
-  }
-  open() {
-    this.dialog.open(CreditCardComponent, { width: '350px' });
-
+  refreshRequiredFormFields() {
+    this.userInfoGroup.patchValue({
+      name: {
+        customerId: null,
+        firstName: '',
+        lastName: '',
+        company: ''
+      }
+    });
   }
   creditCardModalOpen() {
     if (this.paymentMethodId.value === 3) {
@@ -144,9 +184,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.receiptService.payByCreditCard.next(false);
     }
-    console.log(this.receiptService.payByCreditCard)
+    console.log(this.receiptService.payByCreditCard);
   }
-
   // ДИНАМИЧЕСКОЕ ДОБАВЛЕНИЕ ПОЛЕЙ ВВОДА
 
   // phone: this.fb.array([
@@ -167,7 +206,27 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
   //   }
 
   // }
+  submit() {
+    this.userInfoGroup.value.birthday = moment(this.userInfoGroup.value.birthday).format('YYYY-MM-DD')
+    this.receiptService.changeCustomerName(`${this.userInfoGroup.value.name.firstName} ${this.userInfoGroup.value.name.lastName}`);
+    this.receiptService.newReceipt.customerInfo = this.userInfoGroup.value;
+    const paymentMethodId = this.userInfoGroup.get('payMath');
+    this.receiptService.paymentMethod.next(paymentMethodId.value);
+    localStorage.setItem('paymenthMethod', paymentMethodId.value);
+    console.log('form.value', this.userInfoGroup.value);
+    console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
+    this.receiptService.setStep(3);
+  }
+  checkLocalStorage(key) {
+    if (localStorage.getItem(key)) {
+      return localStorage.getItem(key);
+
+    }
+
+  }
+
   ngOnDestroy() {
-    console.log('ngOnDestroy', 'customer info')
+    // this.subs.unsubscribe();
+    console.log("ngOnDestroy")
   }
 }

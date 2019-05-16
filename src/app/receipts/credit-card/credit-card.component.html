@@ -13,7 +13,7 @@
     <mat-card-title>
       <h3>Credit card</h3>
     </mat-card-title>
-    <mat-card-subtitle>subtitle</mat-card-subtitle>
+    <mat-card-subtitle></mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <form [formGroup]="creditCardForm" (ngSubmit)="submitCreditCard(creditCardForm)" novalidate>
@@ -25,7 +25,7 @@
         </mat-form-field>
         <mat-form-field class="col-6">
           <mat-icon matPrefix>date_range</mat-icon>
-          <input matInput placeholder="Expiration" id="cc-exp-date" formControlName="expirationDate" type="tel"
+          <input matInput placeholder="Expiration mm/yyyy" id="cc-exp-date" formControlName="expirationDate" type="tel"
             autocomplete="cc-exp" ccExp>
         </mat-form-field>
         <mat-form-field class="col-4">
@@ -38,7 +38,8 @@
         </mat-form-field>
         <mat-form-field class="col-6">
           <mat-icon matPrefix>money</mat-icon>
-          <input matInput placeholder="Amount" type="tel" formControlName="amount" autocomplete="off" (change)="calculateAmountPay()">
+          <input matInput placeholder="Amount" type="tel" formControlName="amount" autocomplete="off"
+            (change)="calculateAmountPay()">
         </mat-form-field>
         <mat-form-field class="col-6">
           <mat-icon matPrefix>email</mat-icon>
@@ -61,16 +62,22 @@
         </mat-form-field>
 
         <mat-form-field class="col-12">
-          <mat-select #Account placeholder="Account" >
-            <mat-option [value]="account" *ngFor="let account of accounts; let i = index" (click)="pickAccount(Account)">
+          <mat-select #Account placeholder="Account">
+            <mat-option [value]="account" *ngFor="let account of accounts; let i = index"
+              (click)="pickAccount(Account)">
               {{account.AccountNameEng}}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <p class="col-12">Terminal No: {{termNo}}</p>
         <p class="col-12">Terminal name: {{termName}} </p>
+      
+          <button class="col-4 mr-1" type="button" mat-raised-button color="accent">Cancel</button>
+          <button class="col-4" type="submit" mat-raised-button color="primary" [disabled]="creditCardForm.invalid"
+            (click)="showMessege=!showMessege">Submit</button>
+      
+
       </div>
-      <button type="submit" mat-raised-button color="accent"  (click)="submitCreditCard(); showMessege=!showMessege">Submit</button>
     </form>
   </mat-card-content>
   <mat-card-actions>

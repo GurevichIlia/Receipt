@@ -1,4 +1,5 @@
-import { Component, OnInit, Injectable, Output, EventEmitter } from '@angular/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { Component, OnInit, Injectable, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Router } from '@angular/router';
 import { GeneralSrv } from '../../services/GeneralSrv.service';
@@ -27,6 +28,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, empty } from 'rxjs';
 import { ReceiptsService } from '../../services/receipts.service';
+import { ReceiptTypeComponent } from '../receipt-type/receipt-type.component';
 
 ///////////////////////// START CLASS
 
@@ -64,8 +66,9 @@ export class NewReceiptComponent implements OnInit {
   firstName: object;
   lastName: string;
   AllsysTables: any;
-
   clickToBtnCreateNew = false;
+  receiptCurrencyId: string;
+
   constructor(
     private generalSrv: GeneralSrv,
     private authen: AuthenticationService,
@@ -145,12 +148,12 @@ export class NewReceiptComponent implements OnInit {
   // this.ReceiptTypes =
 
   ngOnInit() {
-    // this.TestTables();
+    // this.LoadSystemTables();
     this.GetCustomerSearchData1();
     this.filterOption();
   }
   test(event) {
-console.log(event)
+    console.log(event)
   }
 
   filterOption() {
@@ -182,7 +185,7 @@ console.log(event)
   getCustomerInfoById(customerId: number) {
     this.generalSrv.getCustomerInfoById(customerId).subscribe(customer => {
       this.customerInfo = customer;
-      this.clickToBtnCreateNew = false;
+      // this.clickToBtnCreateNew = false;
       // this.receiptService.subject.next(customer);
       // this.receiptService.setCustomerInfo(customer);
     },
@@ -226,7 +229,7 @@ console.log(event)
     );
   }
   createNew() {
-    this.clickToBtnCreateNew = true;
+    this.receiptService.createNewEvent.next();
     this.receiptService.setStep(1);
     this.myControl.patchValue('');
   }
@@ -234,7 +237,7 @@ console.log(event)
     this.generalSrv.GetSystemTables('amaxamax')
       .subscribe(
         response => {
-          console.log(response);
+          console.log('LoadSystemTables', response);
           // response = JSON.parse(response);
           debugger;
           if (response.IsError == true) {
@@ -244,9 +247,9 @@ console.log(event)
           } else {
             // this.generalSrv.presentAlert("", "", "בוצע בהצלחה!");
 
-            console.log(response.Data);
-            console.log(JSON.parse(response.Data));
-            this.AllsysTables = JSON.parse(response.Data);
+            // console.log(response.Data);
+            // console.log(JSON.parse(response.Data));
+            // this.AllsysTables = JSON.parse(response.Data);
             // this.SelectRecType(1);
             debugger;
           }

@@ -1,7 +1,7 @@
 import { NewReceipt } from './../models/newReceipt.model';
 
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,6 @@ import { BehaviorSubject } from 'rxjs';
 export class ReceiptsService {
   step = 0;
   customerInfo;
-  fullName: string;
   newReceipt: NewReceipt = {
     customerInfo: {},
     store: {},
@@ -17,22 +16,53 @@ export class ReceiptsService {
     payment: {},
     proccessReceip: {},
   };
+  selectedReceiptType: object;
   totalAmount: number;
+  checkSelectedRecType = new Subject<void>();
+  createNewEvent = new Subject<void>();
+  amount = new BehaviorSubject(this.totalAmount);
+  currentlyAmount = this.amount.asObservable();
+  // Check if array "payments" is not empty disabled payment method in customer info component
+  paymentsNotEmpty = false;
+  blockPaymentMethod = new BehaviorSubject(this.paymentsNotEmpty);
+  blockPayMethod = this.blockPaymentMethod.asObservable();
+  /**
+   * Show selected currency from receipt type in step(receipt type)
+   */
+  selReceiptCurrencyId = new BehaviorSubject('');
+  selCurrencyId = this.selReceiptCurrencyId.asObservable();
+  //  Shows for components if store is open
+  //  storeIsOpen = false;
+  //  storeIs = new BehaviorSubject(this.storeIsOpen);
+  //  statusOfStore = this.storeIs.asObservable();
   //  Shows for components if payment method is Credit Card
   creditCard = false;
   payByCreditCard = new BehaviorSubject(this.creditCard);
   payTypeCreditCard = this.payByCreditCard.asObservable();
 
-  // Shows which payment method id selected
+  /**
+   * Shows which payment method id selected
+   */
   paymentId: number = null;
   paymentMethod = new BehaviorSubject(this.paymentId);
   selectedPaymentMethod = this.paymentMethod.asObservable();
-  // subject = new BehaviorSubject(this.customerInfo);
-  // customerInfoValue = this.subject.asObservable();
+  /**
+   * Show currently name of customer name for step(proccess-receipt)
+   */
+  fullName: string;
+  private customerName = new BehaviorSubject(this.fullName);
+  currentlyName = this.customerName.asObservable();
   constructor() {
-    this.customerInfo = {
-      customerInfo: {}
-    }
+    this.newReceipt = {
+      customerInfo: {
+        firstName: '',
+        lastName: ''
+      },
+      store: {},
+      receiptType: {},
+      payment: {},
+      proccessReceip: {},
+    };
   }
 
   setCustomerInfo(customerInfo) {
@@ -44,16 +74,27 @@ export class ReceiptsService {
   }
   setStep(index: number) {
     this.step = index;
-    console.log('setStep', this.step)
   }
 
   nextStep() {
     this.step++;
-    console.log('nextStep', this.step)
   }
 
   prevStep() {
     this.step--;
-    console.log('prevStep', this.step)
+  }
+
+  sendReceiptToServer() {
+    console.log(this.newReceipt);
+  }
+  changeCustomerName(name: string) {
+    this.customerName.next(name);
+    this.currentlyName.subscribe(data => console.log(data))
+  }
+  changeTotalAmount(amount: number) {
+    this.amount.next(amount);
+  }
+  get receiptType() {
+    return this.selectedReceiptType;
   }
 }

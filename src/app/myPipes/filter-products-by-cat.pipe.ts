@@ -8,7 +8,7 @@ export class FilterProductsByCatPipe implements PipeTransform {
   transform(value: any, args?: number): any {
     if (args) {
       value = value.filter(data =>
-        data.ProdCatId || data.ProjectCategoryId || data.groupId === args
+        data.ProdCatId === args || data.ProjectCategoryId === args || data.groupId === args
       );
       console.log(value);
       return value;
