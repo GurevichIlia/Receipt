@@ -10,9 +10,6 @@
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-
-
-
   <div *ngIf="!changeOptions">
 
     <div class="row">
@@ -64,7 +61,7 @@
       </div>
       <div class="col-4">
         <mat-form-field *ngIf="selected_receiptCreditOrDebit === true">
-          <input matInput placeholder="Credit password" type="tel" autocomplete="off">
+          <input matInput placeholder="Credit password" type="tel" autocomplete="off" required>
         </mat-form-field>
       </div>
     </div>

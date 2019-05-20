@@ -34,7 +34,7 @@ export class StoreComponent implements OnInit {
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     this.product = {
       prodId: null,
@@ -45,13 +45,13 @@ export class StoreComponent implements OnInit {
       totalPrice: null,
     };
   }
-
+ 
   ngOnInit() {
     this.getProductData();
     this.receiptService.payTypeCreditCard.subscribe(data => {
       this.payByCreditCard = data;
       console.log(data)
-    })
+    });
   }
 
   getProductData() {

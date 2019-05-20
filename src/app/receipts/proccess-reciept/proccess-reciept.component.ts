@@ -20,7 +20,10 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
   thanksLetters: any[];
   requirdEmailOrPhone = true;
   totalAmount: number;
+  selectedReceipt: object;
   selectedReceiptName: string;
+  receiptsType: any[];
+  currentlyLetters: any[];
   constructor(
     private receiptService: ReceiptsService,
     private dialog: MatDialog,
@@ -51,6 +54,10 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
       sendToPhone: [''],
       showOnScreen: [true]
     });
+    this.GeneralSerice.receiptData.subscribe(data => {
+      this.receiptsType = data['ReceiptTypes'];
+
+    });
     this.receiptService.currentlyName.subscribe(name => {
       this.customerName = name;
     });
@@ -59,9 +66,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     });
     this.receiptService.checkSelectedRecType.subscribe(() => {
       this.getSelectedReceiptType();
-    })
+    });
     this.getReceiptForList();
-    this.getReceiptThanksLetters();
     this.checkValueChangesSendTo();
     this.checkValueChangesCustomerName();
   }
@@ -71,11 +77,25 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
       console.log(this.receiptForList);
     })
   }
-  getReceiptThanksLetters() {
+  getReceiptThanksLetters(receiptId) {
+    const id = this.changeThankLetterForCredirType(receiptId);
     this.GeneralSerice.receiptData.subscribe(data => {
       this.thanksLetters = data['ReceiptThanksLetter'];
-      console.log(data['ReceiptThanksLetter']);
+      this.currentlyLetters = this.thanksLetters.filter(receipt => receipt.ReceiptId === id);
+
     });
+  }
+  changeThankLetterForCredirType(receiptId) {
+    let id;
+    for (const receipt of this.receiptsType) {
+      if (receipt.ReceiptCancelID === receiptId) {
+        receiptId = receipt.RecieptTypeId;
+        console.log(receiptId);
+        break;
+      }
+    }
+    id = receiptId;
+    return id;
   }
   /**
    * Check some changes in form control 'sendTo'
@@ -112,7 +132,9 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     // console.log(this.sendReceiptTo)
   }
   getSelectedReceiptType() {
-    this.selectedReceiptName = this.receiptService.receiptType['RecieptName'];
+    this.selectedReceipt = this.receiptService.selReceiptType;
+    this.selectedReceiptName = this.selectedReceipt['RecieptName'];
+    this.getReceiptThanksLetters(this.selectedReceipt['RecieptTypeId']);
     console.log('this.selectedReceipt', this.selectedReceiptName);
   }
 }

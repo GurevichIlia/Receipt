@@ -153,7 +153,17 @@ export class PaymentComponent implements OnInit, OnChanges {
     this.receiptService.changeTotalAmount(this.totalAmount);
   }
   addPaymentToReceipt() {
-    this.receiptService.newReceipt.payment = this.payments;
+    this.payment = {
+      payTypeMethod: this.paymentMethodId,
+      amount: this.totalAmount,
+      currency: this.currency,
+      dueDate: moment(this.dueDate).format('YYYY-MM-DD'),
+      paymentFor: this.paymentFor,
+      account: this.accountId,
+      project: this.project,
+      creditCard: this.receiptService.verifiedCredCard
+    };
+    this.receiptService.newReceipt.payment = this.payment;
 
     console.log('addPaymentToReceipt', this.receiptService.newReceipt);
 

@@ -3,6 +3,7 @@ import { Component, OnInit, Injectable, Output, EventEmitter, ViewChild, AfterVi
 import { AuthenticationService } from '../../services/authentication.service';
 import { Router } from '@angular/router';
 import { GeneralSrv } from '../../services/GeneralSrv.service';
+import { TranslateService } from '@ngx-translate/core';
 
 import {
   FormBuilder,
@@ -74,7 +75,8 @@ export class NewReceiptComponent implements OnInit {
     private authen: AuthenticationService,
     private router: Router,
     private httpClient: HttpClient,
-    private receiptService: ReceiptsService
+    private receiptService: ReceiptsService,
+    private translate: TranslateService
   ) {
     // debugger;
     // this.filteredOptions = this.myControl.valueChanges.pipe(
@@ -86,6 +88,17 @@ export class NewReceiptComponent implements OnInit {
     //   })
     // );
     // debugger;
+    translate.setDefaultLang('en');
+  }
+
+  switchLanguage(language: string) {
+    this.translate.use(language);
+    this.generalSrv.language.next(language);
+    if (language === 'he') {
+      document.body.setAttribute('dir', 'rtl');
+    } else {
+      document.body.setAttribute('dir', 'ltr');
+    }
   }
 
   // filter(val: string): Observable<any[]> {

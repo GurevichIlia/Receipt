@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
 import { ReceiptsService } from '../../services/receipts.service';
 import { FormArray, NgForm, Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
@@ -8,14 +8,16 @@ import * as moment from 'moment';
 import { Observable } from 'rxjs';
 
 
+
 @Component({
   selector: 'app-customer-info',
   templateUrl: './customer-info.component.html',
   styleUrls: ['./customer-info.component.css']
 })
-export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
+export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input() customerInfo: object;
-  @ViewChild('PaymentMethod') paymentMethodId: any;
+  // @ViewChild('PaymentMethod') payMethodId: any;
+  paymentMethodId = null;
   userInfoGroup: FormGroup;
   groups: any[] = [];
   paymentMethods: object[] = [];
@@ -28,13 +30,14 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
   // tslint:disable-next-line: max-line-length
   pattern = '^(((0[1-9]|[12][0-9]|30)[-/]?(0[13-9]|1[012])|31[-/]?(0[13578]|1[02])|(0[1-9]|1[0-9]|2[0-8])[-/]?02)[-/]?[0-9]{4}|29[-/]?02[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$';
   subs;
+  selectedPayMethod: number;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
     private dialog: MatDialog,
-    private fb: FormBuilder
-
+    private fb: FormBuilder,
   ) {
+
     // this.firstName = '';
     // this.lastName = '';
     // this.customerId = null
@@ -73,12 +76,19 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     });
     // this.groups = this.customerInfo['QuickGeneralGroupList'];
   }
+  ngAfterViewInit() {
+    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+    //Add 'implements AfterViewInit' to the class.
+  }
   ngOnChanges() {
     this.changeValue(this.customerInfo);
 
     console.log('OnChanges');
   }
   ngOnInit() {
+    // this.generalService.currentlyLang.subscribe(lang => {
+    //   this.switchLanguage(lang);
+    // });
     console.log('ngOnInit');
     this.generalService.receiptData.subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
@@ -95,6 +105,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       this.customerFound = true;
     });
     console.log(this.userInfoGroup.value)
+
   }
   updateCustomerInfo() {
     if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
@@ -170,8 +181,12 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
   }
-  creditCardModalOpen() {
-    if (this.paymentMethodId.value === 3) {
+  creditCardModalOpen(paymentMethodId) {
+    this.selectedPayMethod = paymentMethodId;
+    if (paymentMethodId === undefined) {
+      paymentMethodId = Number(localStorage.getItem('paymenthMethod'));
+    }
+    if (paymentMethodId === 3) {
       this.dialog.open(CreditCardComponent, { width: '350px' });
     } else {
       return;

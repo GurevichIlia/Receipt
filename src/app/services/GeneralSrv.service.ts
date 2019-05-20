@@ -1,3 +1,4 @@
+import { CreditCardVerify } from './../models/credirCardVerify.model';
 import { Injectable } from '@angular/core';
 import { serviceConfig } from '../Myappconfig';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -15,6 +16,8 @@ export class GeneralSrv {
   fullReceiptDataFromServer: any[] = [];
   fullReceiptData = new BehaviorSubject(this.fullReceiptDataFromServer);
   receiptData = this.fullReceiptData.asObservable();
+  language = new BehaviorSubject('en');
+  currentlyLang = this.language.asObservable();
   constructor(private http: HttpClient, public authen: AuthenticationService) {
     // debugger;
     this.baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
@@ -35,9 +38,9 @@ export class GeneralSrv {
   // }
 
 
-/**
-   *  Get all customers
-   */
+  /**
+     *  Get all customers
+     */
   public getUsers(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerSearchData?urlAddr=amaxamax`)
       .pipe(map(response => response.Data));
@@ -63,7 +66,10 @@ export class GeneralSrv {
     return this.http.get<any>(`${this.baseUrl}Receipt/GetProductsData?urlAddr=amaxamax`)
       .pipe(map(response => response.Data),
         catchError(this.handleError)
-      )
+      );
+  }
+  creditCardVerify(creditCard: CreditCardVerify) {
+    return this.http.post(`${this.baseUrl}Receipt/ChargeAshraiVerify?urlAddr=jaffanet1 `, creditCard);
   }
 
   public validateLogin(

@@ -2,7 +2,7 @@
   [expanded]="receiptService.step === 5" (opened)="receiptService.setStep(5)" hideToggle>
   <mat-expansion-panel-header>
     <mat-panel-title>
-      Proccess receipt
+      <h5>Proccess receipt</h5>
     </mat-panel-title>
     <mat-panel-description>
       Proccess receipt
@@ -48,8 +48,7 @@
 
         <mat-form-field class="col-12">
           <mat-select placeholder="Receipt print template" formControlName="receiptTemplate" required>
-            <mat-option *ngFor="let letter of thanksLetters" [value]="letter.ThanksLetterId"
-              (click)="getSelectedReceiptType()">
+            <mat-option *ngFor="let letter of currentlyLetters " [value]="letter.ThanksLetterId">
               {{letter.ThanksLetterName}}
             </mat-option>
           </mat-select>

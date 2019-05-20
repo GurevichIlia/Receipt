@@ -1,0 +1,38 @@
+{     "Create a new Receipt": "יצירת קבלה חדשה",
+      "Create new": "יצירת חדשה",
+      "Search customer": "חיפוש לקוח",
+
+      "New receipt": "קבלה חדשה",
+      "Customer Info": "פרטי לקוח",
+      "Customer Name": " שם הלקוח",
+      "First name": "שם פרטי",
+      "Last name": "שם משפחה",
+      "Company": "חברה",
+      "Payment Method": "אופן תשלום",
+      "Customer type": "סוג לקוח",
+      "Title": "תואר",
+      "Gender": "מין",
+      "T.Z": "תעודת זהות",
+      "Spouse name": "שם בן/בת זוג",
+      "FileAs": "תייק בתור",
+      "Birthday": "תאריך לידה",
+      "After sunset": "לאחר השקיעה",
+      "Mobile phone": "טלפון נייד",
+      "Email": "דואל",
+      "City": "ישוב",
+      "Street": "Street",
+      "Zip": "Zip",
+      "Groups": "קבוצות",
+      "Store": "חנות",
+      "Next": "הבא",
+      "Previous": "קודם",
+
+      "Product category": "קטגוריית פרוייקט",
+      "Product name": "שם מוצר",
+      "Price": "מחיר",
+      "Amount": "סכום",
+      "Total price": "מחיר סופי",
+      "Add to list": "הוסף לרשימה"
+
+      
+  }

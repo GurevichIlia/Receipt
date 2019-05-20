@@ -3,7 +3,7 @@
     <div>
 
     </div>
-    <h2 class="mb-3 col-9">Create a new Receipt</h2>
+    <h2 class="mb-3 col-12" translate>Create a new Receipt</h2>
     <!-- <div class="ml-2 col-2">
         <button mat-raised-button color="accent"  (click)="LogOut()">יציאה</button>
 
@@ -38,7 +38,7 @@
     <div *ngIf="receiptService.step === 1 || receiptService.step === 0 ">
       <form class="example-form" >
         <mat-form-field class="example-full-width">
-          <input type="text" placeholder="Search customer" aria-label="Number" matInput [formControl]="myControl"
+          <input  type="text" placeholder="{{ 'Search customer' | translate}}" aria-label="Number" matInput [formControl]="myControl"
             [matAutocomplete]="auto">
           <mat-autocomplete #auto="matAutocomplete">
             <mat-option (click)="getCustomerInfoById(user.CustomerId)"
@@ -49,12 +49,15 @@
         </mat-form-field>
       </form>
       <!-- </div> -->
-      <button mat-raised-button color="primary" class="mb-2" (click)="createNew($event)">Create new</button>
+      <button mat-raised-button color="primary" class="mb-2" (click)="createNew($event)" >{{'Create new' | translate}}</button>
     </div>
 
+    <button (click)="switchLanguage('en')">en</button>
+
+    <button (click)="switchLanguage('he')">he</button>
     <mat-card-content>
       <h4 class="mb-2">{{user?.FileAs1}}</h4>
-      <mat-accordion class="example-headers-align ">
+      <mat-accordion class="example-headers-align">
         <!--CUSTOMER INFO-->
         <app-customer-info [customerInfo]="customerInfo" >
         </app-customer-info>

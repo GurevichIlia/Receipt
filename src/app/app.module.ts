@@ -1,5 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,7 +23,7 @@ import { GeneralSrv } from './services/GeneralSrv.service';
 import { NewReceiptComponent } from './receipts/new-receipt/new-receipt.component';
 import * as moment from 'moment';
 import { TestCComponent } from './test-c/test-c.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { CustomerInfoComponent } from './receipts/customer-info/customer-info.component';
 import { ReceiptTypeComponent } from './receipts/receipt-type/receipt-type.component';
 import { StoreComponent } from './receipts/store/store.component';
@@ -30,7 +33,11 @@ import { ProccessRecieptComponent } from './receipts/proccess-reciept/proccess-r
 import { FilterProductsByCatPipe } from './myPipes/filter-products-by-cat.pipe';
 import { MAT_DATE_LOCALE } from '@angular/material';
 import { KeysPipe } from './myPipes/keysPipe.pipe';
+import { ToastrModule } from 'ngx-toastr';
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -52,11 +59,19 @@ import { KeysPipe } from './myPipes/keysPipe.pipe';
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
     MaterialModule,
     HttpClientModule,
     MomentModule,
-    CreditCardDirectivesModule
+    CreditCardDirectivesModule,
+    BrowserAnimationsModule, // required animations module
+    ToastrModule.forRoot(), // ToastrModule added
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
     // MatInputModule,
     // MatFormFieldModule,
     // MatCardModule

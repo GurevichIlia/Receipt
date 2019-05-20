@@ -2,16 +2,16 @@
   [expanded]="receiptService.step === 2" (opened)="receiptService.setStep(2)" hideToggle>
   <mat-expansion-panel-header>
     <mat-panel-title>
-      Store
+      {{'Store' | translate}}
     </mat-panel-title>
     <mat-panel-description>
-      Store {{ProdCatId}}
+    {{'Store' | translate}} {{ProdCatId}}
       <mat-icon>map</mat-icon>
     </mat-panel-description>
   </mat-expansion-panel-header>
   <form #myForm="ngForm" (ngSubmit)="addProdToList(myForm)">
     <mat-form-field class="col-12">
-      <mat-select #ProdCatName="ngModel" name="prodCatName" placeholder="Product category"
+      <mat-select #ProdCatName="ngModel" name="prodCatName" placeholder="{{'Product category' | translate}}"
         [(ngModel)]="product.prodCatName">
         <mat-option *ngFor="let cat of productCategories" [value]="cat.ProdCatId">
           {{cat.CategoryNameEng}}
@@ -20,7 +20,7 @@
     </mat-form-field>
 
     <mat-form-field class="col-12">
-      <mat-select #ProdName="ngModel" name="prodName" placeholder="Product name" [(ngModel)]="product.prodName">
+      <mat-select #ProdName="ngModel" name="prodName" placeholder="{{'Product name' | translate}}" [(ngModel)]="product.prodName">
         <mat-option (click)="getSelectedProd(prod)"
           *ngFor="let prod of productsName | filterProductsByCat: ProdCatName.value" [value]='prod.ProdNameEng'>
           {{prod.ProdNameEng}}
@@ -28,15 +28,15 @@
       </mat-select>
     </mat-form-field>
 
-    <p><strong>Price: {{product.prodPrice}}</strong> </p>
+    <p><strong>{{'Price' | translate}}: {{product.prodPrice}}</strong> </p>
     <mat-form-field hidden class="col-12">
       <input #ProductPrice="ngModel" [min]="product.prodPrice" [max]="product.prodPrice" name="prodPrice" type="number"
-        matInput placeholder="Price" [(ngModel)]="product.prodPrice" />
+        matInput placeholder="{{'Price' | translate}}" [(ngModel)]="product.prodPrice" />
     </mat-form-field>
 
     <mat-form-field class="col-12">
       <input #ProductAmount="ngModel" (keyup)="totalPriceForProd(ProductAmount.value)" (change)="totalPriceForProd()"
-        min="1" type="number" name="prodAmount" matInput placeholder="Amount" [(ngModel)]="product.prodAmount" />
+        min="1" type="number" name="prodAmount" matInput placeholder="{{'Amount' | translate}}" [(ngModel)]="product.prodAmount" />
     </mat-form-field>
     <!-- <p>
       <strong>Amount:
@@ -54,55 +54,57 @@
       <input #TotalPrice="ngModel" name="totalPrice" type="number" matInput placeholder="totalPrice" value="500"
         [(ngModel)]="product.totalPrice" />
     </mat-form-field>
-    <button type="submit" [disabled]="product.prodAmount === null" mat-flat-button color="primary" class="mb-2">Add to
-      list</button>
+    <button type="submit" [disabled]="product.prodAmount === null" mat-flat-button color="primary" class="mb-2">{{'Add to list' | translate}}</button>
   </form>
   <!--  -->
 
   <!--  -->
   <div *ngIf="addedProdToOrder.length > 0">
-    <table class="table-striped" >
-      <thead>
-        <tr>
-          <th scope="col-3">№</th>
-          <th scope="col-3">Name</th>
-          <th scope="col-2">Amount</th>
-          <th scope="col-2">Price</th>
-          <th scope="col-2">Total</th>
-          <th scope="col-1"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let product of addedProdToOrder; let i = index">
-          <td>{{i+1}}.</td>
-          <th>{{product.prodName}}</th>
-          <td>
-            <mat-select #Amount [value]="product.prodAmount"
-              (selectionChange)="changeAmountInList(product, Amount.value)">
-              <mat-option [value]="i + 1" *ngFor="let number of arrayOfNumbers; let i = index">{{number + 1}}
-              </mat-option>
-            </mat-select>
-          </td>
-          <!-- <input #Amount type="number" (keyup)="changeAmountInList(product, Amount.value)" (change)="changeAmountInList(product, Amount.value)"  matInput [value]="product.prodAmount">-->
+    <div class="table-responsive mb-2" >
+      <table class="table-striped">
+        <thead>
+          <tr>
+            <th scope="col-3">№</th>
+            <th scope="col-3">{{'Product name' | translate}}</th>
+            <th scope="col-2">{{'Amount' | translate}}</th>
+            <th scope="col-2">{{'Price' | translate}}</th>
+            <th scope="col-2">{{'Total price' | translate}}</th>
+            <th scope="col-1"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of addedProdToOrder; let i = index">
+            <td>{{i+1}}.</td>
+            <th>{{product.prodName}}</th>
+            <td>
+              <mat-select #Amount [value]="product.prodAmount"
+                (selectionChange)="changeAmountInList(product, Amount.value)">
+                <mat-option [value]="i + 1" *ngFor="let number of arrayOfNumbers; let i = index">{{number + 1}}
+                </mat-option>
+              </mat-select>
+            </td>
+            <!-- <input #Amount type="number" (keyup)="changeAmountInList(product, Amount.value)" (change)="changeAmountInList(product, Amount.value)"  matInput [value]="product.prodAmount">-->
 
-          <td>{{product.prodPrice | currency : ' NIS ' : number : '1.2-2'}}
-          </td>
-          <td>{{product.totalPrice | currency : ' NIS ' : number : '1.2-2'}}</td>
-          <td><button mat-button color="warn" (click)="deleteProduct(product.prodId)">
-              <mat-icon>delete</mat-icon>
-            </button></td>
+            <td>{{product.prodPrice | currency : ' NIS ' : number : '1.2-2'}}
+            </td>
+            <td>{{product.totalPrice | currency : ' NIS ' : number : '1.2-2'}}</td>
+            <td><button mat-button color="warn" (click)="deleteProduct(product.prodId)">
+                <mat-icon>delete</mat-icon>
+              </button></td>
 
-        </tr>
-      </tbody>
-    </table>
-    <h3>Total: {{totalPriceForOrder | currency : ' NIS ' : number : '1.2-2'}} </h3>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h5>{{'Total price' | translate}}: {{totalPriceForOrder | currency : ' NIS ' : number : '1.2-2'}} </h5>
   </div>
   <mat-action-row>
     <button mat-raised-button color="accent" (click)="receiptService.prevStep()" class="mr-1">
-      Previous
+      {{'Previous' | translate}}
     </button>
     <button mat-raised-button color="primary" (click)="receiptService.nextStep(); addProductsToReceipt()">
-      Next
+      {{'Next' | translate}}
     </button>
   </mat-action-row>
 </mat-expansion-panel>

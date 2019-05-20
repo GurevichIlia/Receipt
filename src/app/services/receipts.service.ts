@@ -1,3 +1,4 @@
+import { CreditCardVerify } from './../models/credirCardVerify.model';
 import { NewReceipt } from './../models/newReceipt.model';
 
 import { Injectable } from '@angular/core';
@@ -52,6 +53,7 @@ export class ReceiptsService {
   fullName: string;
   private customerName = new BehaviorSubject(this.fullName);
   currentlyName = this.customerName.asObservable();
+  verifiedCreditCard: CreditCardVerify;
   constructor() {
     this.newReceipt = {
       customerInfo: {
@@ -94,7 +96,11 @@ export class ReceiptsService {
   changeTotalAmount(amount: number) {
     this.amount.next(amount);
   }
-  get receiptType() {
+  get selReceiptType() {
     return this.selectedReceiptType;
   }
+  get verifiedCredCard() {
+    return this.verifiedCreditCard;
+  }
+
 }
