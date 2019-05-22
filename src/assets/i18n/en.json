@@ -1,4 +1,4 @@
-{     "Create a new Receipt": "Create a new Receipt",
+{     "Create a new Receipt": "Create a new receipt",
       "Create new": "Create new",
       "Search customer": "Search customer",
 
@@ -8,7 +8,7 @@
       "First name": "First name",
       "Last name": "Last name ",
       "Company": "Company",
-      "Payment Method": "Payment Method",
+      "Payment method": "Payment method",
       "Customer type": "Customer type",
       "Title": "Title",
       "Gender": "Gender",
@@ -26,13 +26,76 @@
       "Store": "Store",
       "Next": "Next",
       "Previous": "Previous",
+      "Add more phone": "Add more phone",
+      "Add more email": "Add more email",
+      "Show customer info": "Show customer info",
+      "Hide customer info": "Hide customer info",
 
       "Product category": "Product category",
       "Product name": "Product name",
       "Price": "Price",
       "Amount": "Amount",
       "Total price": "Total",
-      "Add to list": "Add to list"
+      "Add to list": "Add to list",
+
+      "Receipt type": "Receipt type",
+      "Organisation": "Select organisation",
+      "Type": "Type",
+      "Donation": "Donation",
+      "Sales": "Sales",
+      "Card type": "Card type",
+      "Debit": "Debit",
+      "Credit": "Credit",
+      "Credit password": "Credit password",
+
+      "Credit card verification": "Credit card verification",
+      "Card number": "Card number",
+      "Expiration": "Expiration",
+      "CVV": "CVV",
+      "Full name": "Full name",
+      "Manual approval number": "Manual approval number",
+      "Account": "Account",
+      "Terminal No": "Terminal No",
+      "Terminal name": "Terminal name",
+      "Cancel": "Cancel",
+      "Submit": "Submit",
+
+      "Payment": "Payment",
+      "Payment amount": "Payment amount",
+      "Currency": "Currency",
+      "Total payments": "Total payments",
+      "Amount of first payment": "Amount of first payment",
+      "Amount of each payment": "Amount of each payment",
+      "Date": "Due date",
+      "Payment for": "Payment for",
+      "Projects categories": "Projects categories",
+      "Projects": "Projects",
+      "Bank": "Bank",
+      "Branch": "Branch №",
+      "Cheque": "Cheque №",
+      "Delete": "Delete",
+      "Total amount": "Total amount",
+
+      "Proccess receipt": "Proccess receipt",
+      "Name of the receipt": "Name of the receipt",
+      "Name suggestion": "Name suggestion",
+      "For": "For",
+      "Address": "Address",
+      "Receipt print template": "Receipt print template",
+      "Textarea": "Textarea",
+      "Send to email": "Send to email",
+      "Send to WhatsApp": "Send to WhatsApp",
+      "Do not send": "Don't send",
+      "Phone number": "Phone number",
+      "Show receip on screen": "Show receip on screen",
+      "Do not show": "Don't show",
+      "Finish": "Finish"
+     
+
+     
+
+  
+
 
 
     

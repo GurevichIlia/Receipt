@@ -16,6 +16,7 @@ import { Observable } from 'rxjs';
 })
 export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input() customerInfo: object;
+  @Input() currentlyLang: string;
   // @ViewChild('PaymentMethod') payMethodId: any;
   paymentMethodId = null;
   userInfoGroup: FormGroup;
@@ -31,6 +32,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   pattern = '^(((0[1-9]|[12][0-9]|30)[-/]?(0[13-9]|1[012])|31[-/]?(0[13578]|1[02])|(0[1-9]|1[0-9]|2[0-8])[-/]?02)[-/]?[0-9]{4}|29[-/]?02[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$';
   subs;
   selectedPayMethod: number;
+  // currentlyLang: string;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
@@ -83,13 +85,15 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   ngOnChanges() {
     this.changeValue(this.customerInfo);
 
-    console.log('OnChanges');
+    console.log('OnChanges', '11111');
   }
   ngOnInit() {
     // this.generalService.currentlyLang.subscribe(lang => {
     //   this.switchLanguage(lang);
     // });
-    console.log('ngOnInit');
+    // this.generalService.currentlyLang.subscribe(lang => {
+    //   this.currentlyLang = lang;
+    // });
     this.generalService.receiptData.subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
     });

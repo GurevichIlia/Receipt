@@ -1,5 +1,5 @@
 import { CreditCardVerify } from './../models/credirCardVerify.model';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { serviceConfig } from '../Myappconfig';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
@@ -16,10 +16,27 @@ export class GeneralSrv {
   fullReceiptDataFromServer: any[] = [];
   fullReceiptData = new BehaviorSubject(this.fullReceiptDataFromServer);
   receiptData = this.fullReceiptData.asObservable();
+  position;
   language = new BehaviorSubject('en');
   currentlyLang = this.language.asObservable();
-  constructor(private http: HttpClient, public authen: AuthenticationService) {
+  constructor(private http: HttpClient, public authen: AuthenticationService, private zone: NgZone) {
     // debugger;
+    this.currentlyLang.subscribe(lang => {
+      this.zone.runOutsideAngular(() => {
+        // setInterval(() => {
+        if (lang === 'he') {
+          this.position = {
+            'text-right': true,
+          };
+        } else {
+          this.position = {
+            'text-left': true,
+          };
+        }
+        // }, 1);
+      });
+    });
+
     this.baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
   }
 
@@ -197,5 +214,8 @@ export class GeneralSrv {
       errMessage = err.message ? err.message : err.toString();
     }
     return Observable.throw(errMessage);
+  }
+  changePositionElement() {
+   return this.position;
   }
 }

@@ -1,12 +1,13 @@
 <div *ngIf="receiptService.step === 1 || receiptService.step === 0" class="mb-1 example-headers-align">
-  <mat-card-title translate>New receipt </mat-card-title>
+  <mat-card-title>{{'New receipt' | translate}} </mat-card-title>
   <mat-expansion-panel [expanded]="receiptService.step === 1 || receiptService.step === 0"
     (opened)="receiptService.setStep(1)" hideToggle>
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <h5 translate>Customer Info</h5>
+        {{'Customer Info' | translate}}
       </mat-panel-title>
       <mat-panel-description>
+
         <span>{{customerInfoTitle || 'Customer Name' | translate}} </span>
         <mat-icon class="text-right">account_circle</mat-icon>
       </mat-panel-description>
@@ -16,26 +17,30 @@
     <form [formGroup]="userInfoGroup" (ngSubmit)="submit()">
       <div formGroupName="name">
         <mat-form-field hidden class="col-12">
-          <input formControlName="customerId" matInput  />
+          <input formControlName="customerId" matInput />
         </mat-form-field>
 
         <mat-form-field class="col-12">
-          <input #firstName formControlName="firstName" matInput placeholder="{{'First name' | translate}}" [required]="requiredField" />
+          <input #firstName formControlName="firstName" matInput placeholder="{{'First name' | translate}}"
+            [required]="requiredField" />
         </mat-form-field>
 
         <mat-form-field class="col-12">
-          <input #lastName formControlName="lastName" matInput placeholder="{{'Last name' | translate}}" [required]="requiredField" />
+          <input #lastName formControlName="lastName" matInput placeholder="{{'Last name' | translate}}"
+            [required]="requiredField" />
         </mat-form-field>
 
         <mat-form-field class="col-12">
-          <input #company formControlName="company" matInput placeholder="{{'Company' | translate}}" [required]="requiredField" />
+          <input #company formControlName="company" matInput placeholder="{{'Company' | translate}}"
+            [required]="requiredField" />
         </mat-form-field>
       </div>
 
-      <mat-form-field *ngIf="!disabledPayMethod">
-        <mat-select #PaymentMethod placeholder="{{'Payment Method' | translate}}" formControlName='payMath' required>
-          <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods" (click)="checkPayType(PaymentMethod.value); creditCardModalOpen(PaymentMethod.value)">
-            {{payment.PaymentTypeEng}}
+      <mat-form-field *ngIf="!disabledPayMethod" class="ml-2">
+        <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" formControlName='payMath' required>
+          <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
+            (click)="checkPayType(PaymentMethod.value); creditCardModalOpen(PaymentMethod.value)">
+            {{currentlyLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -68,7 +73,8 @@
             </mat-form-field>
 
             <mat-form-field class="col-12">
-              <input matInput [matDatepicker]="picker" placeholder="{{'Birthday' | translate}}" formControlName="birthday">
+              <input matInput [matDatepicker]="picker" placeholder="{{'Birthday' | translate}}"
+                formControlName="birthday">
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
@@ -77,7 +83,7 @@
             <input formControlName="birthday" type="date" matInput placeholder="Birthday">
           </mat-form-field> -->
 
-            <mat-checkbox formControlName="afterSunset" class="col-12" >{{'After sunset' | translate}}</mat-checkbox>
+            <mat-checkbox formControlName="afterSunset" class="col-12">{{'After sunset' | translate}}</mat-checkbox>
           </div>
 
         </div>
@@ -97,7 +103,8 @@
             <input matInput placeholder="Work Phone">
           </mat-form-field>
         </div>
-        <button type="button" mat-button color="primary" (click)="morePhone=!morePhone">Add more phone</button>
+        <button type="button" mat-button color="primary"
+          (click)="morePhone=!morePhone">{{'Add more phone' | translate}}</button>
 
         <mat-form-field class="col-12">
           <input matInput placeholder="{{'Email' | translate}}">
@@ -112,7 +119,8 @@
             <input matInput placeholder="Email 3">
           </mat-form-field>
         </div>
-        <button type="button" mat-button color="primary" (click)="moreEmail=!moreEmail">Add more email</button>
+        <button type="button" mat-button color="primary"
+          (click)="moreEmail=!moreEmail">{{'Add more email' | translate}}</button>
 
         <mat-form-field class="col-12">
           <input matInput placeholder="{{'City' | translate}}">
@@ -128,17 +136,19 @@
             <input matInput placeholder="{{'Zip' | translate}}">
           </mat-form-field>
         </div>
-        <button type="button" mat-button color="primary" (click)="moreAddress=!moreAddress">Address</button>
+        <button type="button" mat-button color="primary"
+          (click)="moreAddress=!moreAddress">{{'Address' | translate}}</button>
 
         <mat-selection-list #shoes formControlName="groups">
-          <h3 matSubheader >{{'Groups' | translate}}</h3>
+          <h3 matSubheader>{{'Groups' | translate}}</h3>
           <mat-list-option *ngFor="let group of customerInfo?.QuickGeneralGroupList" [value]="group.GroupId">
             {{group.GroupName}}
           </mat-list-option>
         </mat-selection-list>
       </div>
-      <button type="button" mat-flat-button color="primary"
-        (click)="customerFound=!customerFound">{{customerFound? 'Hide' : 'Show'}} customer info</button>
+      <button type="button" mat-flat-button color="primary" (click)="customerFound=!customerFound">
+        {{customerFound? 'Hide customer info' : 'Show customer info' | translate}}
+      </button>
       <mat-action-row>
         <button class="mr-1 ml-2" type="button" mat-raised-button color="accent" (click)="receiptService.setStep(2)"
           [disabled]="userInfoGroup.invalid">

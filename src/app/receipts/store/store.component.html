@@ -64,7 +64,7 @@
       <table class="table-striped">
         <thead>
           <tr>
-            <th scope="col-3">№</th>
+            <th scope="col-3">#</th>
             <th scope="col-3">{{'Product name' | translate}}</th>
             <th scope="col-2">{{'Amount' | translate}}</th>
             <th scope="col-2">{{'Price' | translate}}</th>
@@ -100,7 +100,7 @@
     <h5>{{'Total price' | translate}}: {{totalPriceForOrder | currency : ' NIS ' : number : '1.2-2'}} </h5>
   </div>
   <mat-action-row>
-    <button mat-raised-button color="accent" (click)="receiptService.prevStep()" class="mr-1">
+    <button mat-raised-button color="accent" (click)="receiptService.prevStep()" class="mr-1 ml-1">
       {{'Previous' | translate}}
     </button>
     <button mat-raised-button color="primary" (click)="receiptService.nextStep(); addProductsToReceipt()">

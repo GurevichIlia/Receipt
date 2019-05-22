@@ -70,6 +70,7 @@ export class NewReceiptComponent implements OnInit {
   clickToBtnCreateNew = false;
   receiptCurrencyId: string;
 
+  currentlyLang: string;
   constructor(
     private generalSrv: GeneralSrv,
     private authen: AuthenticationService,
@@ -93,6 +94,7 @@ export class NewReceiptComponent implements OnInit {
 
   switchLanguage(language: string) {
     this.translate.use(language);
+    this.currentlyLang = language;
     this.generalSrv.language.next(language);
     if (language === 'he') {
       document.body.setAttribute('dir', 'rtl');
@@ -164,6 +166,7 @@ export class NewReceiptComponent implements OnInit {
     // this.LoadSystemTables();
     this.GetCustomerSearchData1();
     this.filterOption();
+    this.generalSrv.currentlyLang.subscribe(lang => this.currentlyLang = lang);
   }
   test(event) {
     console.log(event)

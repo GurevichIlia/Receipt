@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input } from '@angular/core';
 import { ReceiptsService } from 'src/app/services/receipts.service';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import * as moment from 'moment';
@@ -16,7 +16,8 @@ import { CreditCardComponent } from '../credit-card/credit-card.component';
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
 })
-export class PaymentComponent implements OnInit, OnChanges {
+export class PaymentComponent implements OnInit {
+  @Input() currentlyLang: string;
   paymentMethodId = null;
   myControl = new FormControl();
   filteredOptions: Observable<any[]>;
@@ -64,8 +65,6 @@ export class PaymentComponent implements OnInit, OnChanges {
       branch: '',
       checkNum: null
     }
-  }
-  ngOnChanges() {
   }
   ngOnInit() {
     this.generalService.receiptData.subscribe(data => {
@@ -167,5 +166,8 @@ export class PaymentComponent implements OnInit, OnChanges {
 
     console.log('addPaymentToReceipt', this.receiptService.newReceipt);
 
+  }
+  changePosition() {
+    return this.generalService.changePositionElement()
   }
 }

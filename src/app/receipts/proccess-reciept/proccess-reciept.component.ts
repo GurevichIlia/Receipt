@@ -1,5 +1,5 @@
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
-import { Component, OnInit, Input, OnChanges, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ElementRef, ViewChild, NgZone } from '@angular/core';
 import { ReceiptsService } from 'src/app/services/receipts.service';
 import { MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
@@ -11,6 +11,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 })
 export class ProccessRecieptComponent implements OnInit, OnChanges {
   @Input() customerInfo: object;
+  @Input() currentlyLang: string;
   customerNamesForReceipt: {};
   payByCreditCard: boolean;
   receiptForList: object[] = [];
@@ -24,11 +25,13 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
   selectedReceiptName: string;
   receiptsType: any[];
   currentlyLetters: any[];
+  position;
   constructor(
     private receiptService: ReceiptsService,
     private dialog: MatDialog,
-    private GeneralSerice: GeneralSrv,
-    private fb: FormBuilder
+    private generalService: GeneralSrv,
+    private fb: FormBuilder,
+    private zone: NgZone
   ) {
     this.customerName = this.receiptService.newReceipt.customerInfo['firstName'] + this.receiptService.newReceipt.customerInfo['lastName'];
 
@@ -40,6 +43,19 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
       console.log('proccess', this.customerNamesForReceipt);
       this.customerName = this.proccessReceipt.controls.customerName.value;
     }
+    // this.zone.runOutsideAngular(() => {
+    //   // setInterval(() => {
+    //     if (this.currentlyLang === 'he') {
+    //        this.position = {
+    //        'text-right': true,
+    //       };
+    //     } else {
+    //       this.position = {
+    //         'text-left': true,
+    //       };
+    //     }
+    //   // }, 1);
+    // });
   }
   ngOnInit() {
     this.proccessReceipt = this.fb.group({
@@ -54,7 +70,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
       sendToPhone: [''],
       showOnScreen: [true]
     });
-    this.GeneralSerice.receiptData.subscribe(data => {
+    this.generalService.receiptData.subscribe(data => {
       this.receiptsType = data['ReceiptTypes'];
 
     });
@@ -72,14 +88,14 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     this.checkValueChangesCustomerName();
   }
   getReceiptForList() {
-    this.GeneralSerice.receiptData.subscribe(data => {
+    this.generalService.receiptData.subscribe(data => {
       this.receiptForList = data['Receipt_For_List'];
       console.log(this.receiptForList);
     })
   }
   getReceiptThanksLetters(receiptId) {
     const id = this.changeThankLetterForCredirType(receiptId);
-    this.GeneralSerice.receiptData.subscribe(data => {
+    this.generalService.receiptData.subscribe(data => {
       this.thanksLetters = data['ReceiptThanksLetter'];
       this.currentlyLetters = this.thanksLetters.filter(receipt => receipt.ReceiptId === id);
 
@@ -125,7 +141,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     this.receiptService.newReceipt.proccessReceip = form.value;
   }
   createNewReceipt() {
-
+this.receiptService.setStep(1)
   }
   test(test) {
     console.log(test)
@@ -137,4 +153,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     this.getReceiptThanksLetters(this.selectedReceipt['RecieptTypeId']);
     console.log('this.selectedReceipt', this.selectedReceiptName);
   }
+  changePosition() {
+    return this.generalService.changePositionElement();
+  }
 }
+
