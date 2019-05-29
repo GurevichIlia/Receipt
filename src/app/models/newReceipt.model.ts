@@ -1,7 +1,12 @@
+
+import { Creditcard } from './creditCard.model';
+import { Customerinfo } from './customerInfo.model';
+import { Receipt } from './receipt.model';
+
+
 export class NewReceipt {
-      customerInfo: object;
-      store: object;
-      receiptType: object;
-      payment: object;
-      proccessReceip: object;
+      customerInfo: Customerinfo;
+      Receipt: Receipt;
+      PaymentType: number;
+      creditCard: Creditcard;
 }

@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { NgxPageScrollCoreModule } from 'ngx-page-scroll-core';
+import { NgxPageScrollModule } from 'ngx-page-scroll';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -34,6 +36,9 @@ import { FilterProductsByCatPipe } from './myPipes/filter-products-by-cat.pipe';
 import { MAT_DATE_LOCALE } from '@angular/material';
 import { KeysPipe } from './myPipes/keysPipe.pipe';
 import { ToastrModule } from 'ngx-toastr';
+import { NgxMaskModule, IConfig} from 'ngx-mask';
+
+export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -63,6 +68,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     MomentModule,
     CreditCardDirectivesModule,
+    NgxPageScrollCoreModule,
+    NgxPageScrollModule,
+    NgxMaskModule.forRoot({showMaskTyped : true}),
     BrowserAnimationsModule, // required animations module
     ToastrModule.forRoot(), // ToastrModule added
     TranslateModule.forRoot({
@@ -72,6 +80,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     })
+    
     // MatInputModule,
     // MatFormFieldModule,
     // MatCardModule

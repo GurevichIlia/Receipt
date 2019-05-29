@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, Output, EventEmitter, Input } from '@angular/core';
 import { ReceiptsService } from '../../services/receipts.service';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
-import { Product } from 'src/app/models/product.model';
+import { Product } from 'src/app/models/products.model';
 import { NgForm } from '@angular/forms';
 import { MatTable, MatSelectChange, MatDialog } from '@angular/material';
 import { CreditCardComponent } from '../credit-card/credit-card.component';
@@ -15,6 +15,7 @@ export class StoreComponent implements OnInit {
   @Output() selectionChange: EventEmitter<MatSelectChange>;
   @ViewChild('table') table: MatTable<Product>;
   @ViewChild('myForm') form: NgForm;
+  step: number;
   payByCreditCard: boolean;
   arrayOfNumbers = Array.from(Array(100).keys());
   product: Product;
@@ -25,32 +26,33 @@ export class StoreComponent implements OnInit {
   addedProdToOrder: Product[] = [];
   totalPriceForOrder: number;
   totalPriceForProduct: number;
-  orderedProducts: Product[] = [];
+  orderedProducts: [] = [];
   productAmount: number;
   store: {} = {
     addedProdToORder: [],
-    totalPrice: null
   }
+  prodCatName;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
     private dialog: MatDialog,
   ) {
     this.product = {
-      prodId: null,
-      prodCatName: null,
-      prodName: '',
-      prodPrice: null,
-      prodAmount: null,
-      totalPrice: null,
+      discount: null,
+      productid: null,
+      productName: '',
+      pricebyunit: null,
+      amount: null,
+      totalrow: null,
+      totalall: null,
     };
   }
- 
   ngOnInit() {
+    this.receiptService.currentlyStep.subscribe(step => this.step = step);
     this.getProductData();
     this.receiptService.payTypeCreditCard.subscribe(data => {
       this.payByCreditCard = data;
-      console.log(data)
+      console.log(data);
     });
   }
 
@@ -63,14 +65,14 @@ export class StoreComponent implements OnInit {
     }, err => console.log(err));
   }
   getSelectedProd(prod) {
-    this.product.prodPrice = prod.Price;
-    this.product.prodAmount = 1;
-    this.product.prodId = prod.ProductId;
+    this.product.pricebyunit = prod.Price;
+    this.product.amount = 1;
+    this.product.productid = prod.ProductId;
     this.totalPriceForProd();
     console.log(prod);
   }
   addProdToList(prod: NgForm) {
-    if (prod.value.prodName === null && prod.value.prodAmount === null) {
+    if (prod.value.productName === null && prod.value.amount === null) {
       alert('Select product');
     } else {
       this.totalPriceForProd();
@@ -93,16 +95,13 @@ export class StoreComponent implements OnInit {
         this.form.reset();
       }
     }
-
-
-
   }
   checkSameProdInList(newProd: NgForm, list: Product[]) {
     let newProduct: number;
     for (const prod of list) {
-      if (prod.prodId === newProd.value.prodId) {
-        prod.prodAmount = prod.prodAmount + newProd.value.prodAmount;
-        prod.totalPrice = prod.prodPrice * prod.prodAmount;
+      if (prod.productid === newProd.value.productid) {
+        prod.amount = prod.amount + newProd.value.amount;
+        prod.totalrow = prod.totalrow + newProd.value.totalrow;
         newProduct = 1;
       } else {
       }
@@ -112,23 +111,24 @@ export class StoreComponent implements OnInit {
   showTotalPriceForOrder() {
     let totalPrice = 0;
     for (const price of this.addedProdToOrder) {
-      totalPrice += price.totalPrice;
+      totalPrice += price.totalrow;
     }
     this.totalPriceForOrder = totalPrice;
   }
   totalPriceForProd() {
-    this.totalPriceForProduct = this.product.prodPrice * this.product.prodAmount;
-    this.product.totalPrice = this.totalPriceForProduct;
-    console.log(this.product.totalPrice);
+    this.totalPriceForProduct = this.product.pricebyunit * this.product.amount;
+    this.product.totalrow = this.totalPriceForProduct;
+    console.log(this.product.totalrow);
   }
   changeAmountInList(product, amount) {
-    product.totalPrice = product.prodPrice * +amount;
+    product.totalrow = product.pricebyunit * +amount;
+    product.amount = amount;
     this.showTotalPriceForOrder();
-    console.log(product, amount, product.totalPrice);
+    console.log(product, amount, product.totalrow);
   }
   deleteProduct(productId: number) {
     if (confirm('Are you sure to delete?')) {
-      this.addedProdToOrder = this.addedProdToOrder.filter(data => data.prodId != productId);
+      this.addedProdToOrder = this.addedProdToOrder.filter(data => data.productid != productId);
       this.showTotalPriceForOrder();
     }
   }
@@ -141,12 +141,18 @@ export class StoreComponent implements OnInit {
       this.receiptService.prevStep();
     }
   }
+  addTotalPriceForEachProduct() {
+    for (let prod of this.addedProdToOrder) {
+      prod['totalall'] = this.totalPriceForOrder;
+      prod['discount'] = 0;
+    }
+  }
   // Add products to the receipt in receipt service;
   addProductsToReceipt() {
-    this.store = {
-      addedProdToOrder: this.addedProdToOrder,
-      totalPrice: this.totalPriceForOrder
-    }
-    this.receiptService.newReceipt.store = this.store;
+    this.addTotalPriceForEachProduct();
+    this.receiptService.newReceipt.Receipt.products = this.addedProdToOrder;
+
+    console.log(this.receiptService.newReceipt);
+    // this.receiptService.newReceipt.store = this.store;
   }
 }

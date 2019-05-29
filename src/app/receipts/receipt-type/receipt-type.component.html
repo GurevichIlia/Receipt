@@ -1,5 +1,5 @@
-<mat-expansion-panel *ngIf="receiptService.step === 3" class="example-headers-align mb-1"
-  [expanded]="receiptService.step === 3" (opened)="receiptService.setStep(3)" hideToggle>
+<mat-expansion-panel *ngIf="step === 3" class="example-headers-align mb-1"
+  [expanded]="step === 3" (opened)="receiptService.setStep(3)" hideToggle>
   <mat-expansion-panel-header class="mb-2">
     <mat-panel-title>
       <h5>{{'Receipt type' | translate}}</h5>

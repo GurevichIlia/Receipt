@@ -1,5 +1,5 @@
-<mat-expansion-panel *ngIf="receiptService.step === 5" class="example-headers-align mb-1"
-  [expanded]="receiptService.step === 5" (opened)="receiptService.setStep(5)" hideToggle>
+<mat-expansion-panel *ngIf="step === 5" class="example-headers-align mb-1" [expanded]="step === 5"
+  (opened)="receiptService.setStep(5)" hideToggle>
   <mat-expansion-panel-header>
     <mat-panel-title>
       {{'Proccess receipt' | translate}}
@@ -34,15 +34,27 @@
           </mat-form-field>
         </div>
 
-        <div class="col-12" [ngClass]="changePosition()">
+        <!-- <div class="col-12" [ngClass]="changePosition()">
           <mat-form-field>
-            <mat-select placeholder="{{'For' | translate}}" formControlName="receipFor" required>
+            <mat-select placeholder="{{'For' | translate}}" formControlName="receiptFor" required>
               <mat-option [value]="receipt.id" *ngFor="let receipt of receiptForList">
                 {{receipt.note}}
               </mat-option>
             </mat-select>
           </mat-form-field>
+        </div> -->
+        <div class="col-12" [ngClass]="changePosition()">
+          <mat-form-field class="example-full-width col-12">
+            <input type="text" placeholder="{{'For' | translate}}" aria-label="Number" matInput
+              formControlName="receiptFor" [matAutocomplete]="auto" required>
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option *ngFor="let receipt of filteredOptions | async; let i = index" [value]="receipt.note">
+                {{receipt.note}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
         </div>
+
 
         <div class="col-12">
           <mat-form-field class="col-12" required>
@@ -101,14 +113,14 @@
       {{'Previous' | translate}}
     </button>
     <button type="button" mat-raised-button color="primary" [disabled]="proccessReceipt.invalid"
-      (click)="receiptService.nextStep(); receiptService.sendReceiptToServer(); addProccessReceiptToReceipt(proccessReceipt)">
+      (click)="receiptService.sendReceiptToServer(); addProccessReceiptToReceipt(proccessReceipt)">
       {{'Finish' | translate}}
     </button>
 
   </mat-action-row>
 </mat-expansion-panel>
 
-<div *ngIf="receiptService.step === 6 || receiptService.step === 6 ">
+<div *ngIf="step === 6 || step === 6 ">
   <h2>Receipt success</h2>
   <button mat-raised-button color="primary"
     (click)="createNewReceipt()">{{'Create the new Receipt' | translate}}</button>

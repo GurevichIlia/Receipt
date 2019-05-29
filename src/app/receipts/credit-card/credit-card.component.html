@@ -26,8 +26,8 @@
         </mat-form-field>
         <mat-form-field class="col-6">
           <mat-icon matPrefix>date_range</mat-icon>
-          <input matInput placeholder="{{'Expiration' | translate}}" id="cc-exp-date" formControlName="expirationDate"
-            type="tel" autocomplete="cc-exp" ccExp required>
+          <input matInput placeholder="{{'Expiration' | translate}} XX/XXXX" id="cc-exp-date"
+            formControlName="expirationDate" type="tel" autocomplete="cc-exp" ccExp required>
         </mat-form-field>
         <mat-form-field class="col-4">
           <mat-icon matPrefix>vpn_key</mat-icon>
@@ -66,13 +66,12 @@
         <mat-form-field class="col-12">
           <mat-icon matPrefix>email</mat-icon>
           <input matInput placeholder="{{'Manual approval number' | translate}}" type="tel"
-            formControlName="manualApprNum" autocomplete="off" required>
+            formControlName="manualApprNum" autocomplete="off">
         </mat-form-field>
 
         <mat-form-field class="col-12">
-          <mat-select #Account placeholder="{{'Account' | translate}}" required>
-            <mat-option [value]="account" *ngFor="let account of accounts; let i = index"
-              (click)="pickAccount(Account)">
+          <mat-select #Account placeholder="{{'Account' | translate}}" required formControlName="accountId" >
+            <mat-option [value]="account.AccountId" *ngFor="let account of accounts; let i = index" >
               {{account.AccountNameEng}}
             </mat-option>
           </mat-select>
@@ -80,24 +79,20 @@
         <div class="col-12">
           <p>{{'Terminal No' | translate}} : {{termNo}}</p>
           <p>{{'Terminal name' | translate}} : {{termName}} </p>
+         
+   
         </div>
         <div class="col-12">
           <div class="row justify-content-center">
-        
-              <button class="col-5 mr-1 ml-1" type="button" mat-raised-button color="accent">
-                {{'Cancel' | translate}}
-              </button>
-            
-            
-              <button class="col-5" type="submit" mat-raised-button color="primary" [disabled]="creditCardForm.invalid">
-                {{'Submit' | translate}}
-              </button>
-           
+
+            <button class="col-5 mr-1 ml-1" type="button" (click)="closeModal()" mat-raised-button color="accent">
+              {{'Cancel' | translate}}
+            </button>
+            <button class="col-5" type="submit" mat-raised-button color="primary" [disabled]="creditCardForm.invalid">
+              {{'Submit' | translate}}
+            </button>
           </div>
         </div>
-
-
-
       </div>
     </form>
   </mat-card-content>

@@ -1,50 +1,54 @@
-<mat-expansion-panel *ngIf="receiptService.step === 4" class="example-headers-align row mb-1"
-  [expanded]="receiptService.step === 4" (opened)="receiptService.setStep(4)" hideToggle>
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      {{'Payment' | translate}}
-    </mat-panel-title>
-    <mat-panel-description>
-      {{'Payment method' | translate}}
-      <mat-icon>date_range</mat-icon>
-    </mat-panel-description>
-  </mat-expansion-panel-header>
+<div class="container">
+  <mat-expansion-panel *ngIf="step === 4" class="example-headers-align row mb-1" [expanded]="step === 4"
+    (opened)="receiptService.setStep(4)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{'Payment' | translate}}
+      </mat-panel-title>
+      <mat-panel-description>
+        {{'Payment method' | translate}}
+        <mat-icon>date_range</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
 
-  <div *ngIf="paymentMethodId !== null">
-    <div class="row">
-      <div [ngClass]="changePosition()"  class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-        <mat-form-field *ngIf="paymentMethodId !== 2 && paymentMethodId !== 7"
-          class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
-          <input matInput type="number" min="1" placeholder="{{'Payment amount' | translate}}" [(ngModel)]="totalAmount"
-            required>
-        </mat-form-field>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-        <div [ngClass]="changePosition()" class="row">
-          <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 ml-1">
-            <mat-select placeholder="{{'Currency' | translate}}" [value]="receiptService.selReceiptCurrencyId"
-              [(ngModel)]="currency" required>
-              <mat-option [value]="currency.CurrencyId" *ngFor="let currency of currencyTypes; let i = index">
-                {{currency.CurrencyId}}
-              </mat-option>
-            </mat-select>
+    <div *ngIf="paymentMethodId !== null">
+      <div class="row">
+        <div [ngClass]="changePosition()" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+          <mat-form-field *ngIf="paymentMethodId !== 2 && paymentMethodId !== 7"
+            class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+            <input [(ngModel)]="totalAmount" #TotalAmount matInput placeholder="{{'Payment amount' | translate}}"
+              required>
           </mat-form-field>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+            <div [ngClass]="changePosition()" class="row">
+              <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 ml-1">
+                <mat-select placeholder="{{'Currency' | translate}}" #Currency="ngModel" name="currency"
+                  [value]="receiptService.selReceiptCurrencyId" [(ngModel)]="currency" required>
+                  <mat-option [value]="currency.CurrencyId" *ngFor="let currency of currencyTypes; let i = index">
+                    {{currency.CurrencyId}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
             <div *ngIf="paymentMethodId === 3" class="row">
-
-              <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                <mat-icon matPrefix>email</mat-icon>
-                <input matInput placeholder="{{'Total payments' | translate}}" type="number" autocomplete="off">
-              </mat-form-field>
-              <mat-form-field class="col-xs-6 col-sm-6 col-md-12 col-lg-6 col-xl-6">
-                <mat-icon matPrefix>money</mat-icon>
-                <input matInput placeholder="{{'Amount of first payment' | translate}}" type="numbr" autocomplete="off">
-              </mat-form-field>
-              <mat-form-field class="col-xs-6 col-sm-6 col-md-12 col-lg-6 col-xl-6">
-                <mat-icon matPrefix>money</mat-icon>
-                <input matInput placeholder="{{'Amount of each payment' | translate}}" type="number" autocomplete="off">
-              </mat-form-field>
-
+              <form [formGroup]="payByCreditCard">
+                <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                  <mat-icon matPrefix>email</mat-icon>
+                  <input matInput formControlName="totalPayments" placeholder="{{'Total payments' | translate}}"
+                    type="number" autocomplete="off">
+                </mat-form-field>
+                <mat-form-field class="col-xs-6 col-sm-6 col-md-12 col-lg-6 col-xl-6">
+                  <mat-icon matPrefix>money</mat-icon>
+                  <input matInput formControlName="firstPayment" placeholder="{{'Amount of first payment' | translate}}"
+                    type="number" autocomplete="off">
+                </mat-form-field>
+                <mat-form-field class="col-xs-6 col-sm-6 col-md-12 col-lg-6 col-xl-6">
+                  <mat-icon matPrefix>money</mat-icon>
+                  <input matInput formControlName="eachPayment" placeholder="{{'Amount of each payment' | translate}}"
+                    type="number" autocomplete="off">
+                </mat-form-field>
+              </form>
             </div>
           </div>
 
@@ -71,7 +75,7 @@
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
             <div class="mb-2 row">
 
-              <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" *ngIf="paymentMethodId !== 3">
+              <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <mat-select placeholder="{{'Account' | translate}}" [(ngModel)]="accountId" required>
                   <mat-option [value]="account.AccountId" *ngFor="let account of accounts; let i = index">
                     {{account.AccountNameEng}}
@@ -107,7 +111,6 @@
               </mat-form-field>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -118,7 +121,7 @@
     <div *ngIf="paymentMethodId === 2 || paymentMethodId === 7">
       <h5>Payment info</h5>
       <hr>
-      <form #myForm="ngForm" (ngSubmit)="addPayment(myForm)">
+      <form #myForm="ngForm" (ngSubmit)="addPaymentToList(myForm)">
         <div class="row">
           <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-2 col-xl-2">
             <input matInput type="text" min="1" placeholder="{{'Account' | translate}}" #Account="ngModel"
@@ -163,24 +166,23 @@
             <input matInput type="number" min="1" placeholder="{{'Cheque' | translate}}" #CheckNum="ngModel"
               name="checkNum" [(ngModel)]="newCheckOrWire.checkNum" required>
           </mat-form-field>
-          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-2 col-xl-2">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-2 col-xl-2 mb-2">
             <button [disabled]="myForm.invalid" class="ml-1" mat-raised-button color="primary"
               type="submit">Add</button>
           </div>
         </div>
       </form>
-
-      <div class="table-responsive" *ngIf="payments.length > 0">
+      <div class="table-responsive-sm" *ngIf="payments.length > 0">
         <table class="table table-striped mb-2">
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">{{'Account' | translate}}</th>
-              <th scope="col">{{'Date' | translate}}</th>
-              <th scope="col">{{'Bank' | translate}}</th>
-              <th scope="col">{{'Amount' | translate}}</th>
-              <th scope="col">{{'Branch' | translate}}</th>
-              <th *ngIf="paymentMethodId === 2" scope="col">{{'Cheque' | translate}}</th>
+              <th>#</th>
+              <th>{{'Account' | translate}}</th>
+              <th style="width: 100px">{{'Date' | translate}}</th>
+              <th>{{'Bank' | translate}}</th>
+              <th>{{'Amount' | translate}}</th>
+              <th>{{'Branch' | translate}}</th>
+              <th *ngIf="paymentMethodId === 2">{{'Cheque' | translate}}</th>
               <th></th>
             </tr>
           </thead>
@@ -188,26 +190,29 @@
             <tr *ngFor="let check of payments; let i = index">
               <td>{{i + 1}}.</td>
               <th>{{check.payAccount}}</th>
-              <td>{{check.dueDate}} </td>
+              <td style="width: 100px">{{check.dueDate}} </td>
               <td>{{check.bank}}</td>
-              <td>{{check.amount | currency : ' NIS ' : number : '1.2-2'}}</td>
+              <td>{{check.amount | currency : ' NIS ' : number : '1.2'}}</td>
               <td>{{check.branch}}</td>
               <td *ngIf="paymentMethodId === 2">{{check.checkNum}}</td>
-              <td><button mat-button color="warn" (click)="deletePayment(check)">{{'Delete' | translate}}</button></td>
+              <td><button mat-button color="warn" (click)="deletePayment(check)">{{'Delete' | translate}}</button>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <h5 *ngIf="payments.length > 0">{{'Total amount' | translate}}: {{totalAmount | currency : ' NIS ' : number : '1.2-2'}}</h5>
+      <h5 *ngIf="payments.length > 0">{{'Total amount' | translate}}:
+        {{totalAmount | currency : ' NIS ' : number : '1.2'}}</h5>
     </div>
-  </div>
+</div>
 
-  <mat-action-row>
-    <button mat-raised-button color="accent" class="mr-1 ml-1" (click)="receiptService.prevStep()">
-      {{'Previous' | translate}}
-    </button>
-    <button type="button" mat-raised-button color="primary" (click)="receiptService.nextStep(); addPaymentToReceipt()">
-      {{'Next' | translate}}
-    </button>
-  </mat-action-row>
+<mat-action-row>
+  <button mat-raised-button color="accent" class="mr-1 ml-1" (click)="receiptService.prevStep()">
+    {{'Previous' | translate}}
+  </button>
+  <button type="button" mat-raised-button color="primary" (click)="addPaymentToReceipt()">
+    {{'Next' | translate}}
+  </button>
+</mat-action-row>
 </mat-expansion-panel>
+</div>

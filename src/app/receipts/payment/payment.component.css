@@ -16,3 +16,6 @@ mat-form-field {
   display: table;
 }
 
+td{
+  word-break:break-all;
+}

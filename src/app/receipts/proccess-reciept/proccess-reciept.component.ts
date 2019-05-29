@@ -3,6 +3,8 @@ import { Component, OnInit, Input, OnChanges, ElementRef, ViewChild, NgZone } fr
 import { ReceiptsService } from 'src/app/services/receipts.service';
 import { MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-proccess-reciept',
@@ -12,9 +14,11 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 export class ProccessRecieptComponent implements OnInit, OnChanges {
   @Input() customerInfo: object;
   @Input() currentlyLang: string;
+  step: number;
+  filteredOptions: Observable<any[]>;
   customerNamesForReceipt: {};
   payByCreditCard: boolean;
-  receiptForList: object[] = [];
+  receiptForList: any[] = [];
   customerName: string;
   proccessReceipt: FormGroup;
   sendReceiptTo = 'email';
@@ -33,7 +37,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private zone: NgZone
   ) {
-    this.customerName = this.receiptService.newReceipt.customerInfo['firstName'] + this.receiptService.newReceipt.customerInfo['lastName'];
+    // this.customerName = this.receiptService.newReceipt.customerInfo['firstName'] + this.receiptService.newReceipt.customerInfo['lastName'];
 
   }
   ngOnChanges() {
@@ -58,10 +62,12 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     // });
   }
   ngOnInit() {
+    this.receiptService.currentlyStep.subscribe(step => this.step = step);
+
     this.proccessReceipt = this.fb.group({
       totalPayAmount: [''],
       customerName: [''],
-      receipFor: [''],
+      receiptFor: [''],
       addressOnTheReceipt: [''],
       receiptTemplate: [''],
       textarea: [''],
@@ -86,6 +92,18 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     this.getReceiptForList();
     this.checkValueChangesSendTo();
     this.checkValueChangesCustomerName();
+    this.filterOptionReceiptFor();
+  }
+  filterOptionReceiptFor() {
+    this.filteredOptions = this.proccessReceipt.controls.receiptFor.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
+  }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.receiptForList.filter(receipt => receipt['note'].toLowerCase().includes(filterValue));
   }
   getReceiptForList() {
     this.generalService.receiptData.subscribe(data => {
@@ -137,11 +155,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
       this.customerName = data;
     });
   }
-  addProccessReceiptToReceipt(form: FormGroup) {
-    this.receiptService.newReceipt.proccessReceip = form.value;
-  }
   createNewReceipt() {
-this.receiptService.setStep(1)
+    this.receiptService.setStep(1);
   }
   test(test) {
     console.log(test)
@@ -155,6 +170,25 @@ this.receiptService.setStep(1)
   }
   changePosition() {
     return this.generalService.changePositionElement();
+  }
+  addReceiptHeader() {
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.fname = this.receiptService.newReceipt.customerInfo.customermaininfo.firstName;
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.lname = this.receiptService.newReceipt.customerInfo.customermaininfo.lastName;
+    // this.receiptService.newReceipt.Receipt.ReceiptHeader.CityName;
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.Company = this.receiptService.newReceipt.customerInfo.customermaininfo.company;
+    // this.receiptService.newReceipt.Receipt.ReceiptHeader.CountryCode = this.receiptService.newReceipt.customerInfo.customermaininfo.
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.FileAs = this.receiptService.newReceipt.customerInfo.customermaininfo.firstName;
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.Total = Number(this.totalAmount);
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.CustomerCode = this.receiptService.newReceipt.customerInfo.customermaininfo.tZ;
+  }
+  addProccessReceiptToReceipt(form: FormGroup) {
+    console.log(form.value)
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.SendByEmailTo = form.get('sendToEmail').value;
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.ThanksLetterId = form.get('receiptTemplate').value;
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.WhatFor = form.get('receiptFor').value;
+    this.addReceiptHeader();
+    // receiptService.nextStep()
+    console.log(this.receiptService.newReceipt);
   }
 }
 

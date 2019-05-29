@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { ReceiptsService } from '../../services/receipts.service';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { MatRadioChange } from '@angular/material';
@@ -10,6 +10,7 @@ import { MatRadioChange } from '@angular/material';
 })
 export class ReceiptTypeComponent implements OnInit {
   @Output() changeValue: EventEmitter<MatRadioChange>;
+  step: number;
   receiptTypes: any[] = [{ RecieptTypeId: 0, RecieptName: '' }];
   newReceiptTypes: any[];
   organisations: any[] = [];
@@ -26,7 +27,12 @@ export class ReceiptTypeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getReceiptsData()
+    this.getReceiptsData();
+    // this.receiptService.currentlyStep.subscribe(step => {
+    //   this.step = step;
+    //   console.log('STEP receipt type', this.step);
+    // });
+    this.receiptService.currentlyStep.subscribe(step => this.step = step);
   }
   getReceiptsData() {
     this.generalService.getReceiptshData().subscribe(data => {
@@ -64,6 +70,8 @@ export class ReceiptTypeComponent implements OnInit {
     console.log(this.selectedReceiptType);
   }
   addPaymentTypeToReceipt() {
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.RecieptType = this.selectedReceiptType.RecieptTypeId;
+    this.receiptService.newReceipt.Receipt.ReceiptHeader.CurrencyId = this.selectedReceiptType.CurrencyId;
     this.selectOptForReceiptType = {
       orgName: this.selectedOrg,
       receiptForDonat: this.selected_receiptIsForDonation,
@@ -72,7 +80,7 @@ export class ReceiptTypeComponent implements OnInit {
       receiptCurrencyId: this.selectedReceiptType.CurrencyId
     }
     this.receiptService.selReceiptCurrencyId.next(this.selectedReceiptType.CurrencyId);
-    this.receiptService.newReceipt.receiptType = this.selectOptForReceiptType;
+    // this.receiptService.newReceipt.receiptType = this.selectOptForReceiptType;
     this.receiptService.checkSelectedRecType.next();
     console.log(this.receiptService.newReceipt);
   }

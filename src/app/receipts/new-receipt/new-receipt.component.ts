@@ -71,6 +71,8 @@ export class NewReceiptComponent implements OnInit {
   receiptCurrencyId: string;
 
   currentlyLang: string;
+  step: number;
+  cities: any [] = [];
   constructor(
     private generalSrv: GeneralSrv,
     private authen: AuthenticationService,
@@ -79,6 +81,7 @@ export class NewReceiptComponent implements OnInit {
     private receiptService: ReceiptsService,
     private translate: TranslateService
   ) {
+  
     // debugger;
     // this.filteredOptions = this.myControl.valueChanges.pipe(
     //   startWith(null),
@@ -163,10 +166,14 @@ export class NewReceiptComponent implements OnInit {
   // this.ReceiptTypes =
 
   ngOnInit() {
-    // this.LoadSystemTables();
+    this.LoadSystemTables();
     this.GetCustomerSearchData1();
     this.filterOption();
     this.generalSrv.currentlyLang.subscribe(lang => this.currentlyLang = lang);
+    this.receiptService.currentlyStep.subscribe(step => {
+      this.step = step;
+      console.log('STEP receipt type', this.step);
+    });
   }
   test(event) {
     console.log(event)
@@ -215,14 +222,12 @@ export class NewReceiptComponent implements OnInit {
     this.generalSrv.GetCustomerSearchData('jaffanet1').subscribe(
       response => {
         // response = JSON.parse(response);
-        debugger;
         if (response.IsError == true) {
           // this.disableAfterclick = false;
           // this.presentAlert(response.ErrMsg);
           alert('err');
         } else {
           // this.generalSrv.presentAlert("", "", "בוצע בהצלחה!");
-          debugger;
           console.log(response.Data);
           console.log(JSON.parse(response.Data));
           this.AllCustomerTables = JSON.parse(response.Data);
@@ -254,20 +259,19 @@ export class NewReceiptComponent implements OnInit {
       .subscribe(
         response => {
           console.log('LoadSystemTables', response);
-          // response = JSON.parse(response);
-          debugger;
+          // response = JSON.parse(response)
           if (response.IsError == true) {
             // this.disableAfterclick = false;
             // this.presentAlert(response.ErrMsg);
             alert('err');
           } else {
             // this.generalSrv.presentAlert("", "", "בוצע בהצלחה!");
-
             // console.log(response.Data);
             // console.log(JSON.parse(response.Data));
             // this.AllsysTables = JSON.parse(response.Data);
             // this.SelectRecType(1);
-            debugger;
+            this.cities = response.Cities;
+            console.log('this.cities', this.cities)
           }
         },
         error => {

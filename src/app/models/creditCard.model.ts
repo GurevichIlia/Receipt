@@ -1,4 +1,4 @@
-export class CreditCardVerify {
+export class Creditcard {
       accountid: number;
       osumtobill: number;
       ocardvaliditymonth: string;
@@ -10,5 +10,6 @@ export class CreditCardVerify {
       ouserpassword?: string;
       oapprovalnumber?: string;
       thecurrency: string;
-      
+      oNumOfPayments: string;
+      ofirstpaymentsum: string;
 }

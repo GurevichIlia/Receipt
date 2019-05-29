@@ -1,22 +1,21 @@
+import { ReceiptHeader } from './../models/receiptHeader.model';
+import { Customermaininfo } from './../models/customermaininfo.model';
 import { CreditCardVerify } from './../models/credirCardVerify.model';
 import { NewReceipt } from './../models/newReceipt.model';
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { Customerinfo } from '../models/customerInfo.model';
+import { Creditcard } from '../models/creditCard.model';
+import { Receipt } from '../models/receipt.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReceiptsService {
-  step = 0;
+  step = 1;
   customerInfo;
-  newReceipt: NewReceipt = {
-    customerInfo: {},
-    store: {},
-    receiptType: {},
-    payment: {},
-    proccessReceip: {},
-  };
+  newReceipt: NewReceipt;
   selectedReceiptType: object;
   totalAmount: number;
   checkSelectedRecType = new Subject<void>();
@@ -53,17 +52,43 @@ export class ReceiptsService {
   fullName: string;
   private customerName = new BehaviorSubject(this.fullName);
   currentlyName = this.customerName.asObservable();
-  verifiedCreditCard: CreditCardVerify;
+  // verifiedCreditCardDetails: CreditCardVerify;
+  currStep = new BehaviorSubject(this.step)
+  currentlyStep = this.currStep.asObservable();
   constructor() {
     this.newReceipt = {
-      customerInfo: {
-        firstName: '',
-        lastName: ''
+      customerInfo: <Customerinfo>{},
+      Receipt: <Receipt>{
+        ReceiptHeader: <ReceiptHeader>{
+          RecieptType: null, //
+          FileAs: '',
+          WhatFor: '', // приходит 
+          CurrencyId: '',
+          Total: null,
+          associationId: null,
+          EmployeeId: '', // Приходит после того как залогинился пользователь
+          ThanksLetterId: null,
+          Credit4Digit: '',
+          CityName: '',
+          CountryCode: '',
+          Street: '',
+          Street2: '',
+          Zip: '',
+          fname: '',
+          lname: '',
+          Titel: '',
+          MiddleName: '',
+          Company: '',
+          Safix: '',
+          WhatForInThanksLet: '',
+          TotalInLeadCurrent: 0,
+          CustomizeLine: '',
+          CustomerCode: '',
+          SendByEmailTo: '',
+        }
       },
-      store: {},
-      receiptType: {},
-      payment: {},
-      proccessReceip: {},
+      PaymentType: null,
+      creditCard: <Creditcard>{}
     };
   }
 
@@ -76,18 +101,21 @@ export class ReceiptsService {
   }
   setStep(index: number) {
     this.step = index;
+    this.currStep.next(this.step)
   }
 
   nextStep() {
     this.step++;
+    this.currStep.next(this.step)
   }
 
   prevStep() {
     this.step--;
+    this.currStep.next(this.step)
   }
 
   sendReceiptToServer() {
-    console.log(this.newReceipt);
+    // console.log(this.newReceipt);
   }
   changeCustomerName(name: string) {
     this.customerName.next(name);
@@ -99,8 +127,15 @@ export class ReceiptsService {
   get selReceiptType() {
     return this.selectedReceiptType;
   }
-  get verifiedCredCard() {
-    return this.verifiedCreditCard;
+  // get verifiedCredCard() {
+  //   return this.verifiedCreditCardDetails;
+  // }
+  set customerMainInfoForCustomerInfo(customerMainInfo: Customermaininfo) {
+    this.newReceipt.customerInfo.customermaininfo = customerMainInfo;
   }
+  // get customerMainInfoForCustomerInfo() {
+  //   return this.newReceipt.;
+  // }
+
 
 }
