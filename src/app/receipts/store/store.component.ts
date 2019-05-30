@@ -55,7 +55,6 @@ export class StoreComponent implements OnInit {
       console.log(data);
     });
   }
-
   getProductData() {
     this.generalService.getProductsData().subscribe(data => {
       this.productsData = data;
@@ -82,17 +81,20 @@ export class StoreComponent implements OnInit {
           this.showTotalPriceForOrder();
           console.log('this.addedProdToORder', this.addedProdToOrder);
           this.form.reset();
+          console.log(this.form)
         } else {
           this.addedProdToOrder.push(prod.value);
           this.showTotalPriceForOrder();
           console.log('this.addedProdToORder', this.addedProdToOrder);
           this.form.reset();
+          console.log(this.form)
         }
       } else {
         this.addedProdToOrder.push(prod.value);
         this.showTotalPriceForOrder();
         console.log('this.addedProdToORder', this.addedProdToOrder);
         this.form.reset();
+        console.log(this.form)
       }
     }
   }
@@ -151,7 +153,6 @@ export class StoreComponent implements OnInit {
   addProductsToReceipt() {
     this.addTotalPriceForEachProduct();
     this.receiptService.newReceipt.Receipt.products = this.addedProdToOrder;
-
     console.log(this.receiptService.newReceipt);
     // this.receiptService.newReceipt.store = this.store;
   }

@@ -8,7 +8,7 @@ import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { CreditCardComponent } from '../credit-card/credit-card.component';
 import { MatDialog } from '@angular/material';
 import * as moment from 'moment';
-import { startWith, map } from 'rxjs/operators';
+import { startWith, map, debounceTime, filter } from 'rxjs/operators';
 import { Customerinfo } from 'src/app/models/customerInfo.model';
 
 
@@ -32,7 +32,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   paymentMethods: object[] = [];
   // customerInfo: object;
   customerInfoTitle: string;
-  customerFound = false;
+  showMoreInfo = false;
   requiredField = true;
   disabledPayMethod = false;
   clickToBtnCreateNew = false;
@@ -62,9 +62,9 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.userInfoGroup = this.fb.group({
       customerMainInfo: this.fb.group({
         customerId: [null],
-        firstName: [this.getItemsFromSessionStorage('firstName')],
-        lastName: [this.getItemsFromSessionStorage('lastName')],
-        company: [this.getItemsFromSessionStorage('company')],
+        firstName: [this.getItemsFromSessionStorage('firstName'), Validators.maxLength(20)],
+        lastName: [this.getItemsFromSessionStorage('lastName'), Validators.maxLength(20)],
+        company: [this.getItemsFromSessionStorage('company'), Validators.maxLength(20)],
         // tslint:disable-next-line: max-line-length
         customerType: [''],
         title: [''],
@@ -73,7 +73,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
         spouseName: [''],
         fileAs: [''],
         birthday: [''],
-        afterSunset: [false],
+        afterSunset: [this.getItemsFromSessionStorage('afterSunset')],
       }),
       phones: this.fb.array([
         this.fb.group({
@@ -83,7 +83,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       ]),
       emails: this.fb.array([
         this.fb.group({
-          emailname: [emailName],
+          emailname: [''],
           email: [''],
         })
       ]),
@@ -94,7 +94,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       }),
       groups: [],
     });
-
     console.log(this.userInfoGroup)
     // this.groups = this.customerInfo['QuickGeneralGroupList'];
   }
@@ -127,7 +126,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     //     console.log('this.userInfoGroup.invalid', this.userInfoGroup.invalid)
     //   }
     // });
-    this.userInfoGroup.controls.emails.valueChanges.subscribe(data => console.log('Form', data));
     this.getPaymentTypes();
     this.getPayMethFromLocalStorage();
     // if (localStorage.getItem('paymenthMethod')) {
@@ -158,17 +156,20 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       this.customerInfoTitle = '';
       this.userInfoGroup.reset();
       this.refreshRequiredFormFields();
-      this.customerFound = true;
+      this.showMoreInfo = true;
     });
     console.log(this.userInfoGroup.value)
-    this.filterOptionForCustomerSearch();
+    // this.filterOptionForCustomerSearch();
     console.log('this.paymentMethodId', this.paymentMethodId);
+    setTimeout(() => {
+      this.cityNameAutocompl();
+    }, 2000);
   }
 
   /**
    * Autocomplete for customer search
    */
-  filterOptionForCustomerSearch() {
+  cityNameAutocompl() {
     console.log(this.userInfoGroup)
 
     this.filteredOptions = this.userInfoGroup.controls.addresses.get('city').valueChanges
@@ -184,18 +185,27 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   updateCustomerInfo() {
     if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
       this.changeValue(this.customerInfo);
-      this.customerFound = false;
+      this.showMoreInfo = false;
     }
   }
   disabledNextStep() {
     this.checkRequiredNameFields();
-    this.userInfoGroup.controls.customerMainInfo.valueChanges.subscribe(data => {
-      this.checkRequiredNameFields();
-      sessionStorage.setItem('firstName', data.firstName);
-      sessionStorage.setItem('lastName', data.lastName);
-      sessionStorage.setItem('company', data.company);
-
-    });
+    this.userInfoGroup.controls.customerMainInfo.valueChanges.pipe(
+      debounceTime(1000))
+      .subscribe(data => {
+        this.checkRequiredNameFields();
+        this.setItemToSessionStorage('firstName', data.firstName);
+        this.setItemToSessionStorage('lastName', data.lastName);
+        this.setItemToSessionStorage('company', data.company);
+        this.setItemToSessionStorage('customerType', data.customerType);
+        this.setItemToSessionStorage('title', data.title);
+        this.setItemToSessionStorage('gender', data.gender);
+        this.setItemToSessionStorage('tZ', data.tZ);
+        this.setItemToSessionStorage('spouseName', data.spouseName);
+        this.setItemToSessionStorage('fileAs', data.fileAs);
+        this.setItemToSessionStorage('birthday', moment(data.birthday).format('YYYY-MM-DD'));
+        this.setItemToSessionStorage('afterSunset', data.afterSunset);
+      });
   }
   checkRequiredNameFields() {
     const firstNameControl = this.userInfoGroup.controls.customerMainInfo.get('firstName');
@@ -362,6 +372,14 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       return localStorage.getItem(item);
     } else {
       return '';
+    }
+
+  }
+  setItemToSessionStorage(key: string, value: string) {
+    if (value != '' && value != null) {
+      sessionStorage.setItem(key, value);
+    } else {
+      return;
     }
 
   }

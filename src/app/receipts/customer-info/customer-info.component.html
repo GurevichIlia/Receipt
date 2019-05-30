@@ -55,9 +55,9 @@
       <button type="button" class="mb-1" (click)="creditCardModalOpen(3)"
         *ngIf="paymentMethodId === 3 && isVerified === false" mat-raised-button color="warn">Verify Credit
         card</button>
-
+      <hr *ngIf="showMoreInfo">
       <div formGroupName="customerMainInfo">
-        <div *ngIf="customerFound">
+        <div *ngIf="showMoreInfo">
 
 
           <mat-form-field class="col-12">
@@ -107,42 +107,44 @@
       </div>
       <hr>
       <!-- <button type="button" mat-button color="primary" (click)="showMoreInfo=!showMoreInfo">{{!showMoreInfo? 'Show' : 'Hide' }} customer info</button> -->
-      <div *ngIf="customerFound">
-        <h6>Phone number</h6>
+      <div *ngIf="showMoreInfo">
+        <h6 class="mb-2">Phone number</h6>
         <div formArrayName="phones">
           <div *ngFor="let phone of phones.controls; let i=index">
             <div [formGroupName]="i">
-              <mat-form-field class="col-2" style="width: 130px">
+              <mat-form-field class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" style="width: 130px">
                 <mat-select formControlName="PhoneTypeId" placeholder="{{'Phone type' | translate}}">
                   <mat-option [value]="2">Cell phone</mat-option>
                   <mat-option [value]="4">Work phone</mat-option>
                   <mat-option [value]="1">Home phone</mat-option>
                 </mat-select>
               </mat-form-field>
-              <mat-form-field class="col-9" style="margin-left: -25px; width: 793px">
+              <mat-form-field class="col-xs-4 col-sm-4 col-md-8 col-lg-8 col-xl-9">
                 <input matInput placeholder="{{'Mobile phone' | translate}}" type="text" formControlName="phone">
               </mat-form-field>
-              <button class="col-1" (click)="deletePhone(i)" *ngIf="i !== 0" type="button" mat-stroked-button
-                color="warn">delete</button>
+              <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 col-1" (click)="deletePhone(i)"
+                *ngIf="i !== 0" type="button" mat-stroked-button color="warn">delete</button>
+              <hr>
             </div>
           </div>
         </div>
         <button type="button" mat-stroked-button color="primary"
           (click)="addPhone()">{{'Add more phone' | translate}}</button>
         <hr>
-        <h6>Email</h6>
+        <h6 class="mb-2">Email</h6>
         <div formArrayName="emails">
           <div *ngFor="let email of emails.controls; let i=index">
             <div [formGroupName]="i">
-              <mat-form-field class="col-2"  style="width: 130px">
+              <mat-form-field class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 " style="width: 130px">
                 <input matInput placeholder="Email name" type="text" formControlName="emailname">
               </mat-form-field>
-            
-              <mat-form-field class="col-9" style="margin-left: -25px; width: 793px">
+
+              <mat-form-field class="col-xs-4 col-sm-4 col-md-8 col-lg-8 col-xl-9">
                 <input matInput placeholder="{{'Email' | translate}} {{i + 1}}" type="text" formControlName="email">
               </mat-form-field>
-              <button class="col-1" (click)="deleteEmail(i)" *ngIf="i !== 0" type="button" mat-stroked-button
-                color="warn">delete</button>
+              <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 col-1" (click)="deleteEmail(i)"
+                *ngIf="i !== 0" type="button" mat-stroked-button color="warn">delete</button>
+              <hr>
             </div>
 
 
@@ -159,9 +161,9 @@
         <hr>
         <!-- <button type="button" mat-button color="primary"
           (click)="moreEmail=!moreEmail">{{'Add more email' | translate}}</button> -->
-        <h6>Address</h6>
+        <h6 class="mb-2">Address</h6>
         <div formArrayName="addresses">
-          <mat-form-field class="col-2"  style="width: 130px">
+          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2" style="width: 130px">
             <input type="text" placeholder="{{'City' | translate}}" aria-label="Number" matInput formControlName="city"
               [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
@@ -172,11 +174,11 @@
           </mat-form-field>
 
           <!-- <div *ngIf="moreAddress"> -->
-          <mat-form-field  class="col-9" style="margin-left: -25px; width: 793px">
+          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
             <input matInput placeholder="{{'Street' | translate}}">
           </mat-form-field>
 
-          <mat-form-field class="col-3">
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
             <input matInput placeholder="{{'Zip' | translate}}">
           </mat-form-field>
         </div>
@@ -196,12 +198,12 @@
 
       <p>
         <button class="mb-2" id="goDown" type="button" mat-flat-button color="primary"
-          (click)="customerFound=!customerFound" pageScroll href="#goDown">
-          {{customerFound? 'Hide customer info' : 'Show customer info' | translate}}
+          (click)="showMoreInfo=!showMoreInfo;" pageScroll href="#goDown">
+          {{showMoreInfo? 'Hide customer info' : 'Show customer info' | translate}}
         </button>
       </p>
 
-      <mat-action-row>
+      <mat-action-row >
         <button class="mr-1 ml-2" type="button" mat-raised-button color="accent" (click)="receiptService.setStep(2)"
           [disabled]="nextStepDisabled === true">
           {{'Store' | translate}}

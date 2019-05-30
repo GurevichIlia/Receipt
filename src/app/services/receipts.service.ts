@@ -130,9 +130,9 @@ export class ReceiptsService {
   // get verifiedCredCard() {
   //   return this.verifiedCreditCardDetails;
   // }
-  set customerMainInfoForCustomerInfo(customerMainInfo: Customermaininfo) {
-    this.newReceipt.customerInfo.customermaininfo = customerMainInfo;
-  }
+  // set customerMainInfoForCustomerInfo(customerMainInfo: Customermaininfo) {
+  //   this.newReceipt.customerInfo.customermaininfo = customerMainInfo;
+  // }
   // get customerMainInfoForCustomerInfo() {
   //   return this.newReceipt.;
   // }

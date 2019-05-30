@@ -2,7 +2,7 @@
   [expanded]="step === 2" (opened)="receiptService.setStep(2)" hideToggle>
   <mat-expansion-panel-header>
     <mat-panel-title>
-      {{'Store' | translate}}
+      <h6>{{'Store' | translate}}</h6>
     </mat-panel-title>
     <mat-panel-description>
       {{'Store' | translate}} {{ProdCatId}}
@@ -12,7 +12,7 @@
   <form #myForm="ngForm" (ngSubmit)="addProdToList(myForm)">
     <mat-form-field class="col-12">
       <mat-select #ProdCatName="ngModel" name="prodCatName" placeholder="{{'Product category' | translate}}"
-        [(ngModel)]="prodCatName">
+        [(ngModel)]="prodCatName" required>
         <mat-option *ngFor="let cat of productCategories" [value]="cat.ProdCatId">
           {{cat.CategoryNameEng}}
         </mat-option>
@@ -21,7 +21,7 @@
 
     <mat-form-field class="col-12">
       <mat-select #ProdName="ngModel" name="productName" placeholder="{{'Product name' | translate}}"
-        [(ngModel)]="product.productName">
+        [(ngModel)]="product.productName" required>
         <mat-option (click)="getSelectedProd(prod)"
           *ngFor="let prod of productsName | filterProductsByCat: prodCatName" [value]='prod.ProdNameEng'>
           {{prod.ProdNameEng}}
@@ -31,14 +31,14 @@
 
     <p><strong>{{'Price' | translate}}: {{product.pricebyunit}}</strong> </p>
     <mat-form-field hidden class="col-12">
-      <input #ProductPrice="ngModel" [min]="product.prodPrice" [max]="product.pricebyunit" name="pricebyunit" type="number"
+      <input #ProductPrice="ngModel" name="pricebyunit" type="number"
         matInput placeholder="{{'Price' | translate}}" [(ngModel)]="product.pricebyunit" />
     </mat-form-field>
 
     <mat-form-field class="col-12">
       <input #ProductAmount="ngModel" (keyup)="totalPriceForProd()" (change)="totalPriceForProd()"
         min="1" type="number" name="amount" matInput placeholder="{{'Amount' | translate}}"
-        [(ngModel)]="product.amount" />
+        [(ngModel)]="product.amount" required/>
     </mat-form-field>
     <!-- <p>
       <strong>Amount:
@@ -56,7 +56,7 @@
       <input #TotalPrice="ngModel" name="totalrow" type="number" matInput placeholder="totalPrice" value="500"
         [(ngModel)]="product.totalrow" />
     </mat-form-field>
-    <button type="submit" [disabled]="product.amount === null" mat-flat-button color="primary"
+    <button type="submit" [disabled]="myForm.invalid" mat-flat-button color="primary"
       class="mb-2">{{'Add to list' | translate}}</button>
   </form>
   <!--  -->

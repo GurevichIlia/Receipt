@@ -88,7 +88,7 @@ export class PaymentComponent implements OnInit, AfterViewInit {
     })
     this.receiptService.currentlyStep.subscribe(step => this.step = step);
     this.payByCreditCard = this.fb.group({
-      totalPayments: [null],
+      numberOfPayments: [null],
       firstPayment: [null],
       eachPayment: [null]
     });
@@ -162,9 +162,8 @@ export class PaymentComponent implements OnInit, AfterViewInit {
     console.log('EACHPAY', eachPayment);
     if (eachPayment >= 0) {
       this.payByCreditCard.controls.eachPayment.patchValue(Number(eachPayment).toFixed(2));
-
     } else {
-      alert('Add correct data')
+      alert('Add correct data');
     }
 
   }
