@@ -1,5 +1,6 @@
+import { ServerErrorInterceptor } from './../../services/server-error-interceptor.service';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { Component, OnInit, Injectable, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Injectable, Output, EventEmitter, ViewChild, AfterViewInit, DoCheck } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Router } from '@angular/router';
 import { GeneralSrv } from '../../services/GeneralSrv.service';
@@ -23,7 +24,9 @@ import {
   debounceTime,
   distinctUntilChanged,
   takeWhile,
-  first
+  first,
+  windowWhen,
+  filter
 } from 'rxjs/operators';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
@@ -54,7 +57,7 @@ import { ReceiptTypeComponent } from '../receipt-type/receipt-type.component';
   templateUrl: './new-receipt.component.html',
   styleUrls: ['./new-receipt.component.css']
 })
-export class NewReceiptComponent implements OnInit {
+export class NewReceiptComponent implements OnInit, DoCheck {
   customerInfo: object;
   myControl = new FormControl();
   filteredOptions: Observable<any[]>;
@@ -72,16 +75,18 @@ export class NewReceiptComponent implements OnInit {
 
   currentlyLang: string;
   step: number;
-  cities: any [] = [];
+  cities: any[] = [];
+  nameFilter: any[];
+  list
   constructor(
     private generalSrv: GeneralSrv,
     private authen: AuthenticationService,
     private router: Router,
     private httpClient: HttpClient,
     private receiptService: ReceiptsService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private interceptor: ServerErrorInterceptor
   ) {
-  
     // debugger;
     // this.filteredOptions = this.myControl.valueChanges.pipe(
     //   startWith(null),
@@ -92,7 +97,7 @@ export class NewReceiptComponent implements OnInit {
     //   })
     // );
     // debugger;
-    translate.setDefaultLang('en');
+    translate.setDefaultLang('he');
   }
 
   switchLanguage(language: string) {
@@ -165,7 +170,15 @@ export class NewReceiptComponent implements OnInit {
 
   // this.ReceiptTypes =
 
+
   ngOnInit() {
+    // const arrayOfLi = document.getElementById('list').children;
+    // let newArrayWithLi = [];
+    // for (const li of arrayOfLi) {
+    //   newArrayWithLi.push(li.innerText)
+    // }
+    // console.log(newArrayWithLi)
+    this.switchLanguage('he');
     this.LoadSystemTables();
     this.GetCustomerSearchData1();
     this.filterOption();
@@ -175,6 +188,8 @@ export class NewReceiptComponent implements OnInit {
       console.log('STEP receipt type', this.step);
     });
   }
+  ngDoCheck() {
+  }
   test(event) {
     console.log(event)
   }
@@ -182,26 +197,25 @@ export class NewReceiptComponent implements OnInit {
   filterOption() {
     this.filteredOptions = this.myControl.valueChanges
       .pipe(
-        startWith(''),
-        map(value => this._filter(value))
+        map(value => this._filter(value)),
       );
   }
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.AllCustomerTables.filter(user => user['FileAs1'].toLowerCase().includes(filterValue));
-  }
 
+  }
   GetCustomerSearchData1() {
     this.generalSrv
       .getUsers()
       .pipe(
-        map(response => response)
+        map(response => response),
       ).subscribe(
         data => {
           this.AllCustomerTables = data;
-          console.log(this.AllCustomerTables);
+          this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
+          console.log('this.AllCustomerTables', this.AllCustomerTables);
         },
-        error => console.log(error)
       );
 
   }
@@ -255,7 +269,7 @@ export class NewReceiptComponent implements OnInit {
     this.myControl.patchValue('');
   }
   LoadSystemTables() {
-    this.generalSrv.GetSystemTables('amaxamax')
+    this.generalSrv.GetSystemTables('jaffanet1')
       .subscribe(
         response => {
           console.log('LoadSystemTables', response);
@@ -285,7 +299,10 @@ export class NewReceiptComponent implements OnInit {
       );
   }
 
-  LogOut() {
+  logOut() {
+    console.log('Is logOut')
     this.authen.logout();
+    this.router.navigate(['login']);
   }
+
 }

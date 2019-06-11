@@ -1,10 +1,12 @@
-import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { ModalFinalScreenComponent } from './../modals/modal-final-screen/modal-final-screen.component';
 import { Component, OnInit, Input, OnChanges, ElementRef, ViewChild, NgZone } from '@angular/core';
 import { ReceiptsService } from 'src/app/services/receipts.service';
 import { MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
+import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { ReceiptHeader } from 'src/app/models/receiptHeader.model';
 
 @Component({
   selector: 'app-proccess-reciept',
@@ -14,9 +16,11 @@ import { startWith, map } from 'rxjs/operators';
 export class ProccessRecieptComponent implements OnInit, OnChanges {
   @Input() customerInfo: object;
   @Input() currentlyLang: string;
+  @Input() nameFilter: any[];
   step: number;
   filteredOptions: Observable<any[]>;
-  customerNamesForReceipt: {};
+  filteredlistOfCustomersName: Observable<any[]>;
+  customerNamesForReceipt: any[] = [];
   payByCreditCard: boolean;
   receiptForList: any[] = [];
   customerName: string;
@@ -28,8 +32,12 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
   selectedReceipt: object;
   selectedReceiptName: string;
   receiptsType: any[];
-  currentlyLetters: any[];
+  currentlyLetters: any[] = [];
   position;
+  listOfCustomersName: any[] = [];
+  newCustomer: boolean;
+  currentlyStoreAmount = 0;
+  amountError = false;
   constructor(
     private receiptService: ReceiptsService,
     private dialog: MatDialog,
@@ -37,16 +45,20 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private zone: NgZone
   ) {
-    // this.customerName = this.receiptService.newReceipt.customerInfo['firstName'] + this.receiptService.newReceipt.customerInfo['lastName'];
-
   }
   ngOnChanges() {
     if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
-      this.customerNamesForReceipt = Object.assign({}, this.customerInfo['CustomerNames4Receipt']);
-      console.log('Customer', this.customerInfo)
+      this.customerNamesForReceipt = this.customerInfo['CustomerNames4Receipt'] as [];
+      for (const customer of this.customerNamesForReceipt) {
+        console.log(Object.values(customer));
+        this.listOfCustomersName = Object.values(customer).filter(data => String(data).length > 0);
+        console.log(this.listOfCustomersName);
+      }
+      console.log('Customer', this.customerInfo);
       console.log('proccess', this.customerNamesForReceipt);
       this.customerName = this.proccessReceipt.controls.customerName.value;
     }
+
     // this.zone.runOutsideAngular(() => {
     //   // setInterval(() => {
     //     if (this.currentlyLang === 'he') {
@@ -60,10 +72,20 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     //     }
     //   // }, 1);
     // });
+    // console.log('FILTER', this.nameFilter)
+    // console.log('FILTER', this.nameFilter)
+  }
+  getCustomerNameList() {
+
   }
   ngOnInit() {
     this.receiptService.currentlyStep.subscribe(step => this.step = step);
-
+    this.receiptService.currentlyNewCustomer.subscribe((customerStatus: boolean) => {
+      this.newCustomer = customerStatus;
+      if (this.newCustomer === false) {
+        this.proccessReceipt.get('customerName').patchValue(this.listOfCustomersName[0]);
+      }
+    });
     this.proccessReceipt = this.fb.group({
       totalPayAmount: [''],
       customerName: [''],
@@ -82,18 +104,43 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     });
     this.receiptService.currentlyName.subscribe(name => {
       this.customerName = name;
+      if (this.newCustomer === true) {
+        this.proccessReceipt.get('customerName').patchValue(this.customerName);
+
+      }
     });
     this.receiptService.currentlyAmount.subscribe(amount => {
       this.totalAmount = amount;
+      this.proccessReceipt.get('totalPayAmount').patchValue(amount);
+      if (this.currentlyStoreAmount > this.totalAmount) {
+        this.amountError = true;
+      } else {
+        this.amountError = false;
+      }
     });
     this.receiptService.checkSelectedRecType.subscribe(() => {
       this.getSelectedReceiptType();
     });
+    this.getStoreCurrentlyAmount();
     this.getReceiptForList();
     this.checkValueChangesSendTo();
     this.checkValueChangesCustomerName();
     this.filterOptionReceiptFor();
+    this.filterOptionNameForReceipt();
   }
+  filterOptionNameForReceipt() {
+    this.filteredlistOfCustomersName = this.proccessReceipt.controls.customerName.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this.namefilter(value))
+      );
+  }
+  private namefilter(value: string): string[] {
+    debugger;
+    const filterValue = value.toLowerCase();
+    return this.listOfCustomersName.filter(name => name.toLowerCase().includes(filterValue));
+  }
+
   filterOptionReceiptFor() {
     this.filteredOptions = this.proccessReceipt.controls.receiptFor.valueChanges
       .pipe(
@@ -115,8 +162,9 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
     const id = this.changeThankLetterForCredirType(receiptId);
     this.generalService.receiptData.subscribe(data => {
       this.thanksLetters = data['ReceiptThanksLetter'];
-      this.currentlyLetters = this.thanksLetters.filter(receipt => receipt.ReceiptId === id);
 
+      this.currentlyLetters = this.thanksLetters.filter(receipt => receipt.ReceiptId === id);
+      console.log('this.currentlyLetters', this.currentlyLetters)
     });
   }
   changeThankLetterForCredirType(receiptId) {
@@ -171,24 +219,49 @@ export class ProccessRecieptComponent implements OnInit, OnChanges {
   changePosition() {
     return this.generalService.changePositionElement();
   }
-  addReceiptHeader() {
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.fname = this.receiptService.newReceipt.customerInfo.customermaininfo.firstName;
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.lname = this.receiptService.newReceipt.customerInfo.customermaininfo.lastName;
-    // this.receiptService.newReceipt.Receipt.ReceiptHeader.CityName;
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.Company = this.receiptService.newReceipt.customerInfo.customermaininfo.company;
-    // this.receiptService.newReceipt.Receipt.ReceiptHeader.CountryCode = this.receiptService.newReceipt.customerInfo.customermaininfo.
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.FileAs = this.receiptService.newReceipt.customerInfo.customermaininfo.firstName;
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.Total = Number(this.totalAmount);
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.CustomerCode = this.receiptService.newReceipt.customerInfo.customermaininfo.tZ;
-  }
+
   addProccessReceiptToReceipt(form: FormGroup) {
-    console.log(form.value)
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.SendByEmailTo = form.get('sendToEmail').value;
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.ThanksLetterId = form.get('receiptTemplate').value;
-    this.receiptService.newReceipt.Receipt.ReceiptHeader.WhatFor = form.get('receiptFor').value;
-    this.addReceiptHeader();
-    // receiptService.nextStep()
+    const newReceiptHeader: ReceiptHeader = this.receiptService.newReceipt.Receipt.ReceiptHeader;
+    newReceiptHeader.SendByEmailTo = form.get('sendToEmail').value;
+    newReceiptHeader.ThanksLetterId = form.get('receiptTemplate').value;
+    newReceiptHeader.WhatFor = form.get('receiptFor').value;
+    this.receiptService.setReceiptHeaderItems('FileAs', 'fileAs');
+    this.receiptService.setReceiptHeaderItems('fname', 'firstName');
+    this.receiptService.setReceiptHeaderItems('lname', 'lastName');
+    this.receiptService.setReceiptHeaderItems('Company', 'company');
+    this.receiptService.setReceiptHeaderItems('Titel', 'title');
+    this.receiptService.setReceiptHeaderItems('CustomerCode', 'tZ');
+    this.receiptService.setReceiptHeaderItems('Zip', 'zip');
+    this.receiptService.setReceiptHeaderItems('CityName', 'city');
+    this.receiptService.setReceiptHeaderItems('Street', 'street');
+    this.receiptService.setTotalAmount(+this.totalAmount);
     console.log(this.receiptService.newReceipt);
+    console.log(JSON.stringify(this.receiptService.newReceipt));
+    console.log(this.receiptService.getFullNewReceipt());
+    this.generalService.sendFullReceiptToServer(this.receiptService.getFullNewReceipt()).subscribe(res => {
+      if (res['Data'] === 'ok') {
+        // this.receiptService.refreshNewReceipt();
+        this.dialog.open(ModalFinalScreenComponent, {
+          data: { resolve: res['Data'].res, res_description: res['Data'].res_description }
+        });
+        console.log(this.receiptService.newReceipt, res);
+      } else {
+        this.dialog.open(ModalFinalScreenComponent, {
+          data: { resolve: res['Data'].res, res_description: res['Data'].res_description }
+        });;
+        // this.receiptService.refreshNewReceipt();
+        console.log('ERROR', res);
+      }
+    });
+  }
+  pickSuggestedName(name: string) {
+    this.proccessReceipt.get('customerName').patchValue(name);
+  }
+  getStoreCurrentlyAmount() {
+    this.receiptService.currentlyStoreAmount.subscribe(data => {
+      this.currentlyStoreAmount = data;
+      console.log(this.currentlyStoreAmount);
+    });
   }
 }
 

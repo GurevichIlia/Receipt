@@ -36,6 +36,7 @@
       "Product name": "Product name",
       "Price": "Price",
       "Amount": "Amount",
+      "Quantity": "Quantity",
       "Total price": "Total",
       "Add to list": "Add to list",
 
@@ -76,6 +77,8 @@
       "Cheque": "Cheque №",
       "Delete": "Delete",
       "Total amount": "Total amount",
+      "Payment info": "Payment info",
+
 
       "Proccess receipt": "Proccess receipt",
       "Name of the receipt": "Name of the receipt",

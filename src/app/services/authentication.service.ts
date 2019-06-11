@@ -1,22 +1,30 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
-import { MomentModule } from "ngx-moment";
-import * as moment from "moment";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { MomentModule } from 'ngx-moment';
+import * as moment from 'moment';
+import { ReceiptsService } from './receipts.service';
+import { CreditCardService } from '../receipts/credit-card/credit-card.service';
 
-const TOKEN_KEY = "auth-token";
+const TOKEN_KEY = 'auth-token';
 
-let TokenConfig = {
+const TokenConfig = {
   tokenKey: TOKEN_KEY
 };
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class AuthenticationService {
   authenticationstate = new BehaviorSubject(false);
-  public tokenNo = "";
+  currentlyAuthStatus = this.authenticationstate.asObservable();
+  public tokenNo = localStorage.getItem('id_token');
 
-  constructor() {}
+  constructor(
+    private receiptService: ReceiptsService,
+    private creditCardService: CreditCardService
+    ) {
+    console.log(this.tokenNo);
+  }
 
   login(tokenVal) {
     this.tokenNo = tokenVal;
@@ -25,7 +33,7 @@ export class AuthenticationService {
   }
 
   isAuthenticated() {
-    //check memory
+    // check memory
     this.authenticationstate.next(this.isLoggedIn());
     return this.authenticationstate.value;
   }
@@ -38,21 +46,22 @@ export class AuthenticationService {
   // getToken() {}
 
   private setSession(authResult) {
-    const expiresAt = moment().add(authResult.expiresIn, "second");
+    const expiresAt = moment().add(authResult, 'second');
 
     //  alert(3);
 
-    localStorage.setItem("id_token", authResult.idToken);
-    localStorage.setItem("expires_at", JSON.stringify(expiresAt.valueOf()));
+    localStorage.setItem('id_token', authResult);
+    localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
   }
-
   logout() {
     //  alert(2);
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("expires_at");
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('expires_at');
+    sessionStorage.clear();
+    this.receiptService.setStep(1);
     this.authenticationstate.next(false);
+    this.creditCardService.credCardIsVerified.next(false);
   }
-
   public isLoggedIn() {
     //  alert(1);
     return moment().isBefore(this.getExpiration());
@@ -65,7 +74,7 @@ export class AuthenticationService {
 
   getExpiration() {
     //  alert(5);
-    const expiration = localStorage.getItem("expires_at");
+    const expiration = localStorage.getItem('expires_at');
     const expiresAt = JSON.parse(expiration);
     return moment(expiresAt);
   }

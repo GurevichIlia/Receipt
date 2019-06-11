@@ -10,7 +10,7 @@ export class FilterProductsByCatPipe implements PipeTransform {
       value = value.filter(data =>
         data.ProdCatId === args || data.ProjectCategoryId === args || data.groupId === args
       );
-      console.log(value);
+      console.log('PROJECT' , value);
       return value;
     } else {
       return null;

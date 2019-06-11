@@ -14,7 +14,8 @@
       <mat-select #ProdCatName="ngModel" name="prodCatName" placeholder="{{'Product category' | translate}}"
         [(ngModel)]="prodCatName" required>
         <mat-option *ngFor="let cat of productCategories" [value]="cat.ProdCatId">
-          {{cat.CategoryNameEng}}
+          {{currentlyLang === 'he'? cat.CategoryName : cat.CategoryNameEng}}
+
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -23,8 +24,8 @@
       <mat-select #ProdName="ngModel" name="productName" placeholder="{{'Product name' | translate}}"
         [(ngModel)]="product.productName" required>
         <mat-option (click)="getSelectedProd(prod)"
-          *ngFor="let prod of productsName | filterProductsByCat: prodCatName" [value]='prod.ProdNameEng'>
-          {{prod.ProdNameEng}}
+          *ngFor="let prod of productsName | filterProductsByCat: prodCatName" [value]='prod.ProdName'>
+          {{currentlyLang === 'he'? prod.ProdName : prod.ProdNameEng}}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -37,7 +38,7 @@
 
     <mat-form-field class="col-12">
       <input #ProductAmount="ngModel" (keyup)="totalPriceForProd()" (change)="totalPriceForProd()"
-        min="1" type="number" name="amount" matInput placeholder="{{'Amount' | translate}}"
+        min="1" type="number" name="amount" matInput placeholder="{{'Quantity' | translate}}"
         [(ngModel)]="product.amount" required/>
     </mat-form-field>
     <!-- <p>
@@ -68,7 +69,7 @@
         <tr>
           <th>#</th>
           <th scope="col-2">{{'Product name' | translate}}</th>
-          <th>{{'Amount' | translate}}</th>
+          <th>{{'Quantity' | translate}}</th>
           <th>{{'Price' | translate}}</th>
           <th>{{'Total price' | translate}}</th>
           <th></th>

@@ -8,6 +8,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { Customerinfo } from '../models/customerInfo.model';
 import { Creditcard } from '../models/creditCard.model';
 import { Receipt } from '../models/receipt.model';
+import { ReceiptType } from '../models/receiptType.interface';
+import { Receiptlines } from '../models/receiptlines.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +18,7 @@ export class ReceiptsService {
   step = 1;
   customerInfo;
   newReceipt: NewReceipt;
-  selectedReceiptType: object;
+  selectedReceiptType: ReceiptType;
   totalAmount: number;
   checkSelectedRecType = new Subject<void>();
   createNewEvent = new Subject<void>();
@@ -55,7 +57,20 @@ export class ReceiptsService {
   // verifiedCreditCardDetails: CreditCardVerify;
   currStep = new BehaviorSubject(this.step)
   currentlyStep = this.currStep.asObservable();
+
+  totalAmountStore = null;
+  storeAmount = new BehaviorSubject(this.totalAmountStore);
+  currentlyStoreAmount = this.storeAmount.asObservable();
+
+  newCustomer = true;
+  customer = new BehaviorSubject(this.newCustomer);
+  currentlyNewCustomer = this.customer.asObservable();
+
+  receiptIsSubmited = false;
+  receiptIsSub = new BehaviorSubject(this.receiptIsSubmited);
+  currentlyreceiptIsSubmited = this.customer.asObservable();
   constructor() {
+    this.paymentMethod.next(localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null);
     this.newReceipt = {
       customerInfo: <Customerinfo>{},
       Receipt: <Receipt>{
@@ -85,7 +100,9 @@ export class ReceiptsService {
           CustomizeLine: '',
           CustomerCode: '',
           SendByEmailTo: '',
-        }
+        },
+        recieptlines: [],
+        products: []
       },
       PaymentType: null,
       creditCard: <Creditcard>{}
@@ -101,7 +118,7 @@ export class ReceiptsService {
   }
   setStep(index: number) {
     this.step = index;
-    this.currStep.next(this.step)
+    this.currStep.next(this.step);
   }
 
   nextStep() {
@@ -127,6 +144,28 @@ export class ReceiptsService {
   get selReceiptType() {
     return this.selectedReceiptType;
   }
+  setSelectedReceiptType(selectedReceiptType: ReceiptType) {
+    this.selectedReceiptType = selectedReceiptType;
+  }
+  getFullNewReceipt() {
+    const receiptHeader = this.newReceipt.Receipt.ReceiptHeader;
+    const adress = this.newReceipt.customerInfo.addresses;
+    const newReceiptHeader: ReceiptHeader = this.newReceipt.Receipt.ReceiptHeader;
+    const newReceiptCustomerMainInfo: Customermaininfo = this.newReceipt.customerInfo.customermaininfo;
+    newReceiptHeader.fname = newReceiptCustomerMainInfo.firstName;
+    newReceiptHeader.lname = newReceiptCustomerMainInfo.lastName;
+    newReceiptHeader.Company = newReceiptCustomerMainInfo.company;
+    newReceiptHeader.FileAs = newReceiptCustomerMainInfo.firstName;
+    newReceiptHeader.CustomerCode = this.newReceipt.customerInfo.customermaininfo.tZ;
+    receiptHeader.Zip = adress.zip;
+    receiptHeader.Street = adress.street;
+    receiptHeader.CityName = adress.city;
+    console.log(this.newReceipt);
+    return this.newReceipt;
+  }
+  clearNewReceipt() {
+    this.newReceipt = <NewReceipt>{};
+  }
   // get verifiedCredCard() {
   //   return this.verifiedCreditCardDetails;
   // }
@@ -137,5 +176,79 @@ export class ReceiptsService {
   //   return this.newReceipt.;
   // }
 
+  addToReceiptLines(receiptLine: Receiptlines) {
+    this.newReceipt.Receipt.recieptlines.push(receiptLine);
+  }
+  deleteFromReceiptLines(receiptLine: Receiptlines) {
+    this.newReceipt.Receipt.recieptlines = this.newReceipt.Receipt.recieptlines.filter(data => data !== receiptLine);
+    console.log('this.newReceipt.Receipt.recieptline', this.newReceipt.Receipt.recieptlines);
+  }
+  calculateTotalAmountForReceiptLines() {
+    let totalPrice = 0;
+    for (const amount of this.newReceipt.Receipt.recieptlines) {
+      totalPrice += amount.Amount;
+    }
+    this.amount.next(totalPrice);
+    return totalPrice;
+  }
+  addAmountInLeadCurrentToReceiptLine(totalAmount: number) {
+    for (const recieptline of this.newReceipt.Receipt.recieptlines) {
+      recieptline.AmountInLeadCurrent = totalAmount;
+    }
+  }
+  addCreditCardToNewReceipt(creditCard: Creditcard) {
+    this.newReceipt.creditCard = creditCard;
+  }
+  setAssociationId(associationId: number) {
+    this.newReceipt.Receipt.ReceiptHeader.associationId = associationId;
+  }
+  setTotalAmount(totalAmount: number) {
+    this.newReceipt.Receipt.ReceiptHeader.Total = totalAmount;
+  }
+  setReceiptHeaderItems(item , value) {
+    const receiptHeader = this.newReceipt.Receipt.ReceiptHeader;
+    const customerInfo = this.newReceipt.customerInfo;
+    receiptHeader[item] = customerInfo.customermaininfo[value];
+    receiptHeader[item] = customerInfo.addresses[value];
 
+  }
+  refreshNewReceipt() {
+    this.newReceipt = this.newReceipt = {
+      customerInfo: <Customerinfo>{},
+      Receipt: <Receipt>{
+        ReceiptHeader: <ReceiptHeader>{
+          RecieptType: null, //
+          FileAs: '',
+          WhatFor: '', // приходит 
+          CurrencyId: '',
+          Total: null,
+          associationId: null,
+          EmployeeId: '', // Приходит после того как залогинился пользователь
+          ThanksLetterId: null,
+          Credit4Digit: '',
+          CityName: '',
+          CountryCode: '',
+          Street: '',
+          Street2: '',
+          Zip: '',
+          fname: '',
+          lname: '',
+          Titel: '',
+          MiddleName: '',
+          Company: '',
+          Safix: '',
+          WhatForInThanksLet: '',
+          TotalInLeadCurrent: 0,
+          CustomizeLine: '',
+          CustomerCode: '',
+          SendByEmailTo: '',
+        },
+        recieptlines: [],
+        products: []
+      },
+      PaymentType: null,
+      creditCard: <Creditcard>{}
+    };
+    console.log('this.newReceipt', this.newReceipt)
+  }
 }

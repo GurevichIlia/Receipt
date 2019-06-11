@@ -6,8 +6,7 @@
         <h6>{{'Customer Info' | translate}}</h6>
       </mat-panel-title>
       <mat-panel-description>
-
-        <span>{{customerInfoTitle || 'Customer Name' | translate}} </span>
+        <span>{{customerInfoTitle || 'Customer Name' | translate}}{{customerId}} </span>
         <mat-icon class="text-right">account_circle</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
@@ -39,34 +38,53 @@
 
         </mat-form-field>
       </div>
-      <mat-error class="mb-1" *ngIf="isVerified === false && paymentMethodId === 3">Please verify your credit card
-      </mat-error>
+      <!-- <mat-error class="mb-1" *ngIf="isVerified === false && paymentMethodId === 3">Please verify your credit card
+      </mat-error> -->
 
-      <mat-form-field *ngIf="!disabledPayMethod" class="ml-2">
+      <!-- <mat-form-field *ngIf="!disabledPayMethod" class="ml-2">
         <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" [formControl]='payMath' required>
           <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
-            (click)="checkPayType(PaymentMethod.value); creditCardModalOpen(PaymentMethod.value)">
+            (click)="checkPayType(PaymentMethod.value)">
             {{currentlyLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
           </mat-option>
-        </mat-select>
-        <mat-error *ngIf="isVerified === false">Please verify your credit card.</mat-error>
-      </mat-form-field>
+        </mat-select> -->
+      <!-- <mat-error *ngIf="isVerified === false">Please verify your credit card.</mat-error> -->
+      <!-- </mat-form-field> -->
 
-      <button type="button" class="mb-1" (click)="creditCardModalOpen(3)"
+      <!-- <button type="button" class="mb-1" (click)="creditCardModalOpen(3)"
         *ngIf="paymentMethodId === 3 && isVerified === false" mat-raised-button color="warn">Verify Credit
         card</button>
+        <mat-error *ngIf="isVerified === false">Please verify your credit card.</mat-error> -->
+
       <hr *ngIf="showMoreInfo">
       <div formGroupName="customerMainInfo">
         <div *ngIf="showMoreInfo">
 
-
-          <mat-form-field class="col-12">
+            <mat-form-field class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" >
+                <mat-select formControlName="customerType" placeholder="{{'Customer type' | translate}}">
+                  <mat-option [value]="customerType.TypeId" *ngFor="let customerType of customerTypes">{{currentlyLang === 'he'? customerType.TypeNameHeb : customerType.TypeNameEng}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+          <!-- <mat-form-field class="col-12">
             <input formControlName="customerType" matInput placeholder="{{'Customer type' | translate}}">
-          </mat-form-field>
+          </mat-form-field> -->
 
-          <mat-form-field class="col-12">
+            <mat-form-field class="example-full-width col-12" >
+              <input type="text" placeholder="{{'Title' | translate}}" aria-label="Number" matInput
+                formControlName="title" [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option 
+                  *ngFor="let title of filtCustTitle | async; let i = index" [value]="currentlyLang === 'he'? title.TitleHeb : title.TitleEng">
+                  {{currentlyLang === 'he'? title.TitleHeb : title.TitleEng}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+         
+
+
+          <!-- <mat-form-field class="col-12">
             <input formControlName="title" matInput placeholder="{{'Title' | translate}}">
-          </mat-form-field>
+          </mat-form-field> -->
 
           <mat-form-field class="col-12">
             <mat-select formControlName="groups" formControlName="gender" placeholder="{{'Gender' | translate}}">
@@ -128,7 +146,7 @@
             </div>
           </div>
         </div>
-        <button type="button" mat-stroked-button color="primary"
+        <button *ngIf="phones.controls.length !== 10" type="button" mat-stroked-button color="primary"
           (click)="addPhone()">{{'Add more phone' | translate}}</button>
         <hr>
         <h6 class="mb-2">Email</h6>
@@ -155,7 +173,7 @@
               color="warn">delete</button> -->
           </div>
         </div>
-        <button type="button" mat-stroked-button color="primary"
+        <button *ngIf="emails.controls.length !== 10" type="button" mat-stroked-button color="primary"
           (click)="addMail()">{{'Add more email' | translate}}</button>
 
         <hr>
@@ -167,7 +185,7 @@
             <input type="text" placeholder="{{'City' | translate}}" aria-label="Number" matInput formControlName="city"
               [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
-              <mat-option *ngFor="let city of filteredOptions | async; let i = index" [value]="city.CityName">
+              <mat-option *ngFor="let city of filteredOptions | async | slice:0:10; let i = index" [value]="city.CityName">
                 {{city.CityName}}
               </mat-option>
             </mat-autocomplete>
@@ -175,11 +193,11 @@
 
           <!-- <div *ngIf="moreAddress"> -->
           <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
-            <input matInput placeholder="{{'Street' | translate}}">
+            <input matInput placeholder="{{'Street' | translate}}" formControlName='street'>
           </mat-form-field>
 
-          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
-            <input matInput placeholder="{{'Zip' | translate}}">
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3" >
+            <input matInput placeholder="{{'Zip' | translate}}" formControlName='zip'>
           </mat-form-field>
         </div>
         <!-- </div> -->
@@ -188,7 +206,7 @@
           (click)="moreAddress=!moreAddress">{{'Address' | translate}}</button> -->
         <hr>
         <h6 *ngIf="customerInfo?.QuickGeneralGroupList.length > 0">{{'Groups' | translate}}</h6>
-        <mat-selection-list #shoes formControlName="groups">
+        <mat-selection-list #shoes >
           <mat-list-option *ngFor="let group of customerInfo?.QuickGeneralGroupList" [value]="group.GroupId">
             {{group.GroupName}}
           </mat-list-option>
@@ -203,12 +221,12 @@
         </button>
       </p>
 
-      <mat-action-row >
-        <button class="mr-1 ml-2" type="button" mat-raised-button color="accent" (click)="receiptService.setStep(2)"
-          [disabled]="nextStepDisabled === true">
+      <mat-action-row>
+        <button class="mr-1 ml-2" type="button" mat-raised-button color="accent" (click)="openStore()"
+          [disabled]="requiredField === true">
           {{'Store' | translate}}
         </button>
-        <button type="submit" mat-raised-button color="primary" [disabled]="nextStepDisabled === true">
+        <button type="submit" mat-raised-button color="primary" [disabled]="requiredField === true">
           {{'Next' | translate}}
         </button>
       </mat-action-row>

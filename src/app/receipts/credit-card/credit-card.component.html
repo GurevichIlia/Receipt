@@ -26,9 +26,9 @@
         </mat-form-field>
         <mat-form-field class="col-6 mb-1">
           <mat-icon matPrefix>date_range</mat-icon>
-          <input matInput placeholder="{{'Expiration' | translate}} " id="cc-exp-date"
-            formControlName="expirationDate" type="tel" autocomplete="cc-exp" ccExp required>
-            <mat-hint>mm/yyyy</mat-hint>
+          <input matInput placeholder="{{'Expiration' | translate}} " id="cc-exp-date" formControlName="expirationDate"
+            type="tel" autocomplete="cc-exp" ccExp required>
+          <mat-hint>mm / yyyy</mat-hint>
         </mat-form-field>
         <mat-form-field class="col-4">
           <mat-icon matPrefix>vpn_key</mat-icon>
@@ -40,30 +40,32 @@
           <input matInput placeholder="{{'Full name' | translate}}" id="name" formControlName="customerName" type="text"
             required>
         </mat-form-field>
-        <mat-form-field class="col-6">
+        <mat-form-field class="col-12">
           <mat-icon matPrefix>person</mat-icon>
           <input matInput placeholder="{{'T.Z' | translate}}" type="tel" formControlName="tz" autocomplete="off"
             required>
         </mat-form-field>
+        <mat-form-field class="col-6 ">
+          <mat-icon matPrefix>money</mat-icon>
+          <input matInput placeholder="Amount" type="number" formControlName="amount" autocomplete="off" (change)="calculateAmountPay()" required>
+          <mat-error *ngIf="amountError">Minimum amount:{{currentlyStoreAmount}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-6">
+          <mat-icon matPrefix>money</mat-icon>
+          <input matInput placeholder="Number of payments" type="number" formControlName="numberOfPayments"
+            autocomplete="off" required>
+        </mat-form-field>
         <!-- <mat-form-field class="col-6">
           <mat-icon matPrefix>money</mat-icon>
-          <input matInput placeholder="Amount" type="tel" formControlName="amount" autocomplete="off"
-            (change)="calculateAmountPay()" required>
+          <input matInput placeholder="First payment" type="tel" formControlName="firstPayment"
+            autocomplete="off">
         </mat-form-field> -->
-        <!-- <mat-form-field class="col-6">
-          <mat-icon matPrefix>email</mat-icon>
-          <input matInput placeholder="Total payments" type="tel" formControlName="totalPayments" autocomplete="off">
-        </mat-form-field> -->
-        <!-- <mat-form-field class="col-6">
+        <mat-form-field class="col-6">
           <mat-icon matPrefix>money</mat-icon>
-          <input matInput placeholder="Amount of first payment" type="tel" formControlName="amountOfFirstPay"
+          <input class="eachPayment" matInput placeholder="Each payment" type="number" formControlName="eachPayment"
             autocomplete="off">
         </mat-form-field>
-        <mat-form-field class="col-12">
-          <mat-icon matPrefix>money</mat-icon>
-          <input matInput placeholder="Amount of each payment" type="tel" formControlName="amountOfEachPay"
-            autocomplete="off">
-        </mat-form-field> -->
         <mat-form-field class="col-12">
           <mat-icon matPrefix>email</mat-icon>
           <input matInput placeholder="{{'Manual approval number' | translate}}" type="tel"
@@ -71,17 +73,16 @@
         </mat-form-field>
 
         <mat-form-field class="col-12">
-          <mat-select #Account placeholder="{{'Account' | translate}}" required formControlName="accountId" >
-            <mat-option [value]="account.AccountId" *ngFor="let account of accounts; let i = index" >
+          <mat-select #Account placeholder="{{'Account' | translate}}" required formControlName="accountId">
+            <mat-option [value]="account.AccountId" *ngFor="let account of accounts; let i = index" required>
               {{account.AccountNameEng}}
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <div class="col-12">
+        <div class="col-12" [ngClass]="{'account': heLang}">
           <p>{{'Terminal No' | translate}} : {{termNo}}</p>
           <p>{{'Terminal name' | translate}} : {{termName}} </p>
-         
-   
+
         </div>
         <div class="col-12">
           <div class="row justify-content-center">

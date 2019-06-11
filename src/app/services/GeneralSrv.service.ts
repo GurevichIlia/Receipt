@@ -8,19 +8,27 @@ import { catchError, retry } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 // import { Storage } from "@ionic/storage";
 import { AuthenticationService } from '../services/authentication.service';
+import { Receipt } from '../models/receipt.model';
+import { NewReceipt } from '../models/newReceipt.model';
 // import { AlertController } from "@ionic/angular";
+import { Guid } from 'guid-typescript';
+
 
 @Injectable()
 export class GeneralSrv {
+  id: Guid;
+  userGuid: string;
   baseUrl: string;
   fullReceiptDataFromServer: any[] = [];
   fullReceiptData = new BehaviorSubject(this.fullReceiptDataFromServer);
   receiptData = this.fullReceiptData.asObservable();
   position;
-  language = new BehaviorSubject('en');
+  language = new BehaviorSubject('he');
   currentlyLang = this.language.asObservable();
+  orgName: string;
+  httpOptions
   constructor(private http: HttpClient, public authen: AuthenticationService, private zone: NgZone) {
-    // debugger;
+    this.orgName = sessionStorage.getItem('OrgName');
     this.currentlyLang.subscribe(lang => {
       this.zone.runOutsideAngular(() => {
         // setInterval(() => {
@@ -38,6 +46,12 @@ export class GeneralSrv {
     });
 
     this.baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
+    this.httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authen.tokenNo
+      })
+    };
   }
 
   // private getHeader(): Headers {
@@ -59,34 +73,65 @@ export class GeneralSrv {
      *  Get all customers
      */
   public getUsers(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerSearchData?urlAddr=amaxamax`)
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authen.tokenNo
+      })
+    };
+    return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerSearchData?urlAddr=${this.orgName}`,
+     httpOptions)
       .pipe(map(response => response.Data));
   }
   /**
    *  Get customer bt customerId
    */
   getCustomerInfoById(customerId: number) {
-    return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerDataByCustomerID?urlAddr=amaxamax&customerid=${customerId}`)
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authen.tokenNo
+      })
+    };
+    return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerDataByCustomerID?urlAddr=${this.orgName}&customerid=${customerId}`, httpOptions)
       .pipe(map(response => response.Data));
   }
   /**
    *  Get receipts data
    */
   getReceiptshData() {
-    return this.http.get<any>(`${this.baseUrl}Receipt/GetReceiptshData?urlAddr=jaffanet1`)
-      .pipe(map(response => response.Data));
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authen.tokenNo
+      })
+    };
+    return this.http.get<any>(`${this.baseUrl}Receipt/GetReceiptshData?urlAddr=${this.orgName}`, httpOptions)
+      .pipe(map(response => response.Data),
+      );
   }
   /**
    *  Get all products
    */
   getProductsData() {
-    return this.http.get<any>(`${this.baseUrl}Receipt/GetProductsData?urlAddr=amaxamax`)
-      .pipe(map(response => response.Data),
-        catchError(this.handleError)
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authen.tokenNo
+      })
+    };
+    return this.http.get<any>(`${this.baseUrl}Receipt/GetProductsData?urlAddr=${this.orgName}`, httpOptions)
+      .pipe(map(response => response.Data)
       );
   }
   creditCardVerify(creditCard: CreditCardVerify) {
-    return this.http.post(`${this.baseUrl}Receipt/ChargeAshraiVerify?urlAddr=jaffanet1 `, creditCard);
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authen.tokenNo
+      })
+    };
+    return this.http.post(`${this.baseUrl}Receipt/ChargeAshraiVerify?urlAddr=${this.orgName}`, creditCard, httpOptions);
   }
 
   public validateLogin(
@@ -105,7 +150,6 @@ export class GeneralSrv {
         Authorization: 'my-auth-token'
       })
     };
-
     // headers.append("Accept", "application/json");
 
     let userInfo = {
@@ -121,7 +165,7 @@ export class GeneralSrv {
   }
 
   public CallTestAfterLOgin(url: string): Observable<any> {
-    let apiUrl = this.baseUrl + 'LandingPage/AfterLoginToSystem?urlAddr=' + url;
+    let apiUrl = `${this.baseUrl}'LandingPage/AfterLoginToSystem?urlAddr='${this.orgName}`;
 
     // const headers = new HttpHeaders();
     // console.log(this.authen.getToken());
@@ -146,7 +190,7 @@ export class GeneralSrv {
   }
 
   public GetSystemTables(url: string): Observable<any> {
-    let apiUrl = this.baseUrl + 'LandingPage/GetSytemTablesData?urlAddr=' + url;
+    let apiUrl = `${this.baseUrl}LandingPage/GetSytemTablesData?urlAddr=${url}`;
 
     // const headers = new HttpHeaders();
     // console.log(this.authen.getToken());
@@ -167,17 +211,16 @@ export class GeneralSrv {
     const obs = this.http.get(apiUrl, httpOptions)
       .pipe(map(response => response['Data']));
 
-    obs.subscribe(response => {
-      const cities = response.Cities;
-      console.log(cities)
+    // obs.subscribe(response => {
+    //   const cities = response.Cities;
+    //   console.log(cities)
 
-    })
+    // })
     return obs;
   }
 
   public GetCustomerSearchData(url: string): Observable<any> {
-    debugger;
-    let apiUrl = this.baseUrl + 'Receipt/GetCustomerSearchData?urlAddr=' + url;
+    let apiUrl = `${this.baseUrl }'Receipt/GetCustomerSearchData?urlAddr='${this.orgName}`;
 
     // const headers = new HttpHeaders();
     // console.log(this.authen.getToken());
@@ -216,6 +259,33 @@ export class GeneralSrv {
     return Observable.throw(errMessage);
   }
   changePositionElement() {
-   return this.position;
+    return this.position;
+  }
+  sendFullReceiptToServer(receipt: NewReceipt) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authen.tokenNo
+      })
+    };
+    return this.http.post(`${this.baseUrl}Receipt/SaveReceiptInfo?urlAddr=${this.orgName}`, receipt, httpOptions);
+  }
+  setOrgName(orgName: string) {
+    this.orgName = orgName;
+    sessionStorage.setItem('OrgName', this.orgName);
+    this.createGuidForLocalStorage(orgName);
+  }
+  createGuidForLocalStorage(orgName: string) {
+    this.id = Guid.create();
+    this.userGuid = `${this.id}_${orgName}`;
+    console.log(this.userGuid);
+  }
+  getItemsFromLocalStorage(item) {
+    if (localStorage.getItem(item)) {
+      return localStorage.getItem(item);
+    } else {
+      return '';
+    }
+
   }
 }

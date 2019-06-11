@@ -32,6 +32,7 @@ export class StoreComponent implements OnInit {
     addedProdToORder: [],
   }
   prodCatName;
+  currentlyLang: string;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
@@ -48,6 +49,9 @@ export class StoreComponent implements OnInit {
     };
   }
   ngOnInit() {
+    this.generalService.currentlyLang.subscribe((lang: string) => {
+      this.currentlyLang = lang;
+    })
     this.receiptService.currentlyStep.subscribe(step => this.step = step);
     this.getProductData();
     this.receiptService.payTypeCreditCard.subscribe(data => {
@@ -74,27 +78,31 @@ export class StoreComponent implements OnInit {
     if (prod.value.productName === null && prod.value.amount === null) {
       alert('Select product');
     } else {
-      this.totalPriceForProd();
-      console.log('this.product', prod.value);
-      if (this.addedProdToOrder.length != 0) {
-        if (this.checkSameProdInList(prod, this.addedProdToOrder) === 1) {
-          this.showTotalPriceForOrder();
-          console.log('this.addedProdToORder', this.addedProdToOrder);
-          this.form.reset();
-          console.log(this.form)
+      if (prod.value.amount < 1) {
+        alert('Incorrect quantity');
+      } else {
+        this.totalPriceForProd();
+        console.log('this.product', prod.value);
+        if (this.addedProdToOrder.length != 0) {
+          if (this.checkSameProdInList(prod, this.addedProdToOrder) === 1) {
+            this.showTotalPriceForOrder();
+            console.log('this.addedProdToORder', this.addedProdToOrder);
+            this.refreshForm();
+            console.log(this.form)
+          } else {
+            this.addedProdToOrder.push(prod.value);
+            this.showTotalPriceForOrder();
+            console.log('this.addedProdToORder', this.addedProdToOrder);
+            this.refreshForm();
+            console.log(this.form)
+          }
         } else {
           this.addedProdToOrder.push(prod.value);
           this.showTotalPriceForOrder();
           console.log('this.addedProdToORder', this.addedProdToOrder);
-          this.form.reset();
-          console.log(this.form)
+          this.refreshForm();
+                    console.log(this.form)
         }
-      } else {
-        this.addedProdToOrder.push(prod.value);
-        this.showTotalPriceForOrder();
-        console.log('this.addedProdToORder', this.addedProdToOrder);
-        this.form.reset();
-        console.log(this.form)
       }
     }
   }
@@ -153,7 +161,13 @@ export class StoreComponent implements OnInit {
   addProductsToReceipt() {
     this.addTotalPriceForEachProduct();
     this.receiptService.newReceipt.Receipt.products = this.addedProdToOrder;
+    this.receiptService.storeAmount.next(this.totalPriceForOrder);
+    // this.receiptService.amount.next(this.totalPriceForOrder);
     console.log(this.receiptService.newReceipt);
-    // this.receiptService.newReceipt.store = this.store;
+  }
+  refreshForm() {
+    this.form.controls.amount.reset();
+    this.form.controls.productName.reset();
+    console.log(this.form);
   }
 }

@@ -1,5 +1,5 @@
-<mat-expansion-panel *ngIf="step === 3" class="example-headers-align mb-1"
-  [expanded]="step === 3" (opened)="receiptService.setStep(3)" hideToggle>
+<mat-expansion-panel *ngIf="step === 3" class="example-headers-align mb-1" [expanded]="step === 3"
+  (opened)="receiptService.setStep(3)" hideToggle>
   <mat-expansion-panel-header class="mb-2">
     <mat-panel-title>
       <h5>{{'Receipt type' | translate}}</h5>
@@ -10,61 +10,97 @@
     </mat-panel-description>
   </mat-expansion-panel-header>
 
+  <!-- paymentMethodId: [''],
+  receiptTypeId: [Number(localStorage.getItem('receipt-type'))],
+  selected_receiptIsForDonation: [true],
+  selected_receiptCreditOrDebit: [false],
+  creditCardPassword: [''],
+  selectedOrg: [''] -->
   <div *ngIf="!changeOptions">
-
-    <div class="row">
-      <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
-        <mat-form-field style="width: 100%" *ngIf="organisations.length !== 0" >
-          <mat-select placeholder="{{'Organisation' | translate}}" [(ngModel)]="selectedOrg">
-            <mat-option *ngFor="let org of organisations" [value]="org.orgid" (click)="radButChanged()">{{org.orgname}}
+    <form [formGroup]="receiptTypeGroup">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
+          <mat-form-field style="width: 100%" *ngIf="organisations.length !== 0">
+            <mat-select placeholder="{{'Organisation' | translate}}" formControlName="selectedOrg">
+              <mat-option *ngFor="let org of organisations" [value]="org.orgid" (click)="radButChanged()">
+                {{org.orgname}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <hr>
+          <mat-form-field style="width: 100%" *ngIf="!disabledPayMethod">
+            <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" formControlName='paymentMethodId' required>
+              <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
+                (click)="creditCardModalOpen(payment.PayTypeId)">
+                {{currentlyLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!-- <mat-error *ngIf="isVerified === false">Please verify your credit card.</mat-error>
+        <mat-form-field *ngIf="!disabledPayMethod" class="ml-2">
+          <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" [formControl]='payMath' required>
+            <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
+              (click)="checkPayType(PaymentMethod.value); creditCardModalOpen(PaymentMethod.value)">
+              {{currentlyLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
             </mat-option>
           </mat-select>
-        </mat-form-field>
-      </div>
+        </mat-form-field> -->
+        </div>
 
-      <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
-        <mat-form-field style="width: 100%">
-          <mat-select placeholder="{{'Type' | translate}}" [(ngModel)]="selectedReceiptType" required>
-            <mat-option *ngFor="let type of newReceiptTypes" [value]="type"
-              (click)="showRecieptTypeId(type.RecieptTypeId)">{{type.RecieptName}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
+          <mat-form-field style="width: 100%">
+            <mat-select placeholder="{{'Type' | translate}}" formControlName="receiptTypeId" required>
+              <mat-option *ngFor="let type of newReceiptTypes" [value]="type.RecieptTypeId"
+                (click)="setSelectedReceiptType(type)">{{type.RecieptName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <hr>
+          <button *ngIf="paymentMethodId === 3 && isVerified === false" type="button" class="mb-1"
+            (click)="creditCardModalOpen(3)" mat-raised-button color="warn">Verify Credit
+            card</button>
+        </div>
 
-      <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
-        <label id="example-radio-group-label"><strong>{{'Receipt type' | translate}}</strong></label>
-        <mat-radio-group aria-labelledby="example-radio-group-label" (change)="radButChanged()"
-          [(ngModel)]="selected_receiptIsForDonation" class="example-radio-group">
-          <mat-radio-button class="example-radio-button" [value]="true">
-            {{'Donation' | translate}}
-          </mat-radio-button>
-          <mat-radio-button class="example-radio-button" [value]="false">
-            {{'Sales' | translate}}
-          </mat-radio-button>
-        </mat-radio-group>
-      </div>
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+          <label id="example-radio-group-label"><strong>{{'Receipt type' | translate}}</strong></label>
+          <mat-radio-group aria-labelledby="example-radio-group-label" (change)="radButChanged()"
+          formControlName="selected_receiptIsForDonation" class="example-radio-group">
+            <mat-radio-button class="example-radio-button" [value]="true">
+              {{'Donation' | translate}}
+            </mat-radio-button>
+            <mat-radio-button class="example-radio-button" [value]="false">
+              {{'Sales' | translate}}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
 
-      <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
-        <label id="example-radio-group-label"><strong>{{'Card type' | translate}}</strong></label>
-        <mat-radio-group #creditCard aria-labelledby="example-radio-group-label" (change)="radButChanged()"
-          [(ngModel)]="selected_receiptCreditOrDebit" class="example-radio-group">
-          <mat-radio-button class="example-radio-button" [value]="false">
-            {{'Debit' | translate}}
-          </mat-radio-button>
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+          <label id="example-radio-group-label"><strong>{{'Card type' | translate}}</strong></label>
+          <mat-radio-group #creditCard aria-labelledby="example-radio-group-label" (change)="radButChanged()"
+          formControlName="selected_receiptCreditOrDebit" class="example-radio-group">
+            <mat-radio-button class="example-radio-button" [value]="false">
+              {{'Debit' | translate}}
+            </mat-radio-button>
 
-          <mat-radio-button class="example-radio-button" [value]="true">
-            {{'Credit' | translate}}
-          </mat-radio-button>
-        </mat-radio-group>
+            <mat-radio-button class="example-radio-button" [value]="true">
+              {{'Credit' | translate}}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div *ngIf="selected_receiptCreditOrDebit === true && paymentMethodId === 3"
+          class="col-xs-12 col-sm-12 col-md-4 col-lg-2 col-xl-2">
+          <p><strong>will be text</strong></p>
+          <mat-form-field style="width: 100%">
+            <input matInput placeholder="{{'Credit password' | translate}}" formControlName='creditCardPassword'
+              type="text" autocomplete="off" [required]="selected_receiptCreditOrDebit === true">
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
+        <mat-error *ngIf="isVerified === false">Please verify your credit card.</mat-error>
+        
+      </div> -->
       </div>
-      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-2 col-xl-2">
-          <p *ngIf="selected_receiptCreditOrDebit === true"><strong>will be text</strong></p>
-        <mat-form-field style="width: 100%" *ngIf="selected_receiptCreditOrDebit === true">
-          <input matInput placeholder="{{'Credit password' | translate}}" type="number" autocomplete="off" [required]="selected_receiptCreditOrDebit === true">
-        </mat-form-field>
-      </div>
-    </div>
+    </form>
   </div>
   <!-- <button type="button" mat-flat-button color="primary"
     (click)="changeOptions=!changeOptions">{{changeOptions? 'Hide':'Change options'}}</button> -->
@@ -73,8 +109,8 @@
     <button mat-raised-button color="accent" class="mr-1 ml-2" (click)="receiptService.setStep(1)">
       {{'Previous' | translate}}
     </button>
-    <button type="button" mat-raised-button color="primary" [disabled]="selectedReceiptType == null"
-      (click)="receiptService.nextStep();addPaymentTypeToReceipt()">
+    <button type="button" mat-raised-button color="primary" [disabled]="nextStepDisabled"
+      (click)="addPaymentTypeToReceipt()">
       {{'Next' | translate}}
     </button>
   </mat-action-row>

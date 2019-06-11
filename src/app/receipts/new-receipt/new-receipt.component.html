@@ -33,11 +33,17 @@
     </div> -->
   </div>
 
-  <button class="text-right" *ngIf="currentlyLang === 'he'" (click)="switchLanguage('en')">en</button>
-  <button class="text-right" *ngIf="currentlyLang === 'en'" (click)="switchLanguage('he')">he</button>
+
   <mat-card>
+    <div class="text-right">
+      <button mat-button  *ngIf="currentlyLang === 'he'"
+        (click)="switchLanguage('en')">en</button>
+      <button mat-button  *ngIf="currentlyLang === 'en'"
+        (click)="switchLanguage('he')">he</button>
+      <button mat-button color="primary" (click)="logOut()">LogOut</button>
+    </div>
     <mat-card *ngIf="step !== 6">
-      <div class="row justify-content-center" >
+      <div class="row justify-content-center">
         <div class="col-12">
           <h2 class="text-center" translate>Create a new Receipt</h2>
         </div>
@@ -46,12 +52,12 @@
       align-items-center">
         <div class="col-xs-4 col-sm-4 col-md-6 col-lg-6 col-xl-6">
           <form class="example-form">
-            <mat-form-field class="example-full-width" style="width: 95%" >
+            <mat-form-field class="example-full-width" style="width: 95%">
               <input type="text" placeholder="{{ 'Search customer' | translate}}" aria-label="Number" matInput
                 [formControl]="myControl" [matAutocomplete]="auto">
               <mat-autocomplete #auto="matAutocomplete">
                 <mat-option (click)="getCustomerInfoById(user.CustomerId)"
-                  *ngFor="let user of filteredOptions | async; let i = index" [value]="user.FileAs1">
+                  *ngFor="let user of filteredOptions | async | slice:0:50; let i = index" [value]="user.FileAs1">
                   {{user.FileAs1}}
                 </mat-option>
               </mat-autocomplete>
@@ -71,23 +77,25 @@
       <h4 class="mb-2"></h4>
       <mat-accordion class="example-headers-align">
         <!--CUSTOMER INFO-->
-        <app-customer-info  [cities]="cities" [currentlyLang]="currentlyLang" [customerInfo]="customerInfo"></app-customer-info>
+        <app-customer-info [cities]="cities" [customerInfo]="customerInfo">
+        </app-customer-info>
 
         <!-- CREDIT CARD -->
         <!-- <app-credit-card></app-credit-card>  POP UP MODAL-->
 
         <!--STORE-->
-        <app-store ></app-store>
+        <app-store></app-store>
 
         <!--RECEIPT TYPE-->
-        <app-receipt-type ></app-receipt-type>
+        <app-receipt-type></app-receipt-type>
 
         <!-- PAYMENT -->
-        <app-payment  [currentlyLang]="currentlyLang"></app-payment>
+        <app-payment></app-payment>
 
 
         <!-- PROCCESS RECEIPT -->
-        <app-proccess-reciept [currentlyLang]="currentlyLang" [customerInfo]="customerInfo"></app-proccess-reciept>
+        <app-proccess-reciept [nameFilter]="nameFilter" [customerInfo]="customerInfo">
+        </app-proccess-reciept>
 
       </mat-accordion>
     </mat-card-content>

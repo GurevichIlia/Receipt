@@ -4,7 +4,7 @@
     <form [formGroup]="form" (ngSubmit)="submit()">
       <p>
         <mat-form-field>
-          <input type="text" matInput maxlength="25" placeholder="קוד ארגון" />
+          <input type="text" matInput maxlength="25" placeholder="קוד ארגון" formControlName="orgid" />
         </mat-form-field>
       </p>
       <p>

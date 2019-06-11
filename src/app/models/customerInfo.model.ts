@@ -7,6 +7,6 @@ export class Customerinfo {
       customermaininfo: Customermaininfo;
       phones: Phones [];
       emails: Emails [];
-      addresses: Addresses [];
+      addresses: Addresses;
       groups: number [];
 }

@@ -25,7 +25,7 @@ import { GeneralSrv } from './services/GeneralSrv.service';
 import { NewReceiptComponent } from './receipts/new-receipt/new-receipt.component';
 import * as moment from 'moment';
 import { TestCComponent } from './test-c/test-c.component';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CustomerInfoComponent } from './receipts/customer-info/customer-info.component';
 import { ReceiptTypeComponent } from './receipts/receipt-type/receipt-type.component';
 import { StoreComponent } from './receipts/store/store.component';
@@ -36,7 +36,10 @@ import { FilterProductsByCatPipe } from './myPipes/filter-products-by-cat.pipe';
 import { MAT_DATE_LOCALE } from '@angular/material';
 import { KeysPipe } from './myPipes/keysPipe.pipe';
 import { ToastrModule } from 'ngx-toastr';
-import { NgxMaskModule, IConfig} from 'ngx-mask';
+import { NgxMaskModule, IConfig } from 'ngx-mask';
+import { ServerErrorInterceptor } from './services/server-error-interceptor.service';
+import { ModalSessionexpiredComponent } from './receipts/modals/modal-sessionexpired/modal-sessionexpired.component';
+import { ModalFinalScreenComponent } from './receipts/modals/modal-final-screen/modal-final-screen.component';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -57,7 +60,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     CreditCardComponent,
     ProccessRecieptComponent,
     FilterProductsByCatPipe,
-    KeysPipe
+    KeysPipe,
+    ModalSessionexpiredComponent,
+    ModalFinalScreenComponent
   ],
   imports: [
     BrowserModule,
@@ -70,7 +75,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     CreditCardDirectivesModule,
     NgxPageScrollCoreModule,
     NgxPageScrollModule,
-    NgxMaskModule.forRoot({showMaskTyped : true}),
+    NgxMaskModule.forRoot({ showMaskTyped: true }),
     BrowserAnimationsModule, // required animations module
     ToastrModule.forRoot(), // ToastrModule added
     TranslateModule.forRoot({
@@ -80,16 +85,17 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     })
-    
+
     // MatInputModule,
     // MatFormFieldModule,
     // MatCardModule
     // MatButtonModule,
     // MatCheckboxModule
   ],
-  providers: [{provide: MAT_DATE_LOCALE, useValue: 'en-GB'} ,GeneralSrv],
+  // tslint:disable-next-line: max-line-length
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, GeneralSrv, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
   bootstrap: [AppComponent],
-  entryComponents: [CreditCardComponent]
-  
+  entryComponents: [CreditCardComponent, ModalFinalScreenComponent, ModalSessionexpiredComponent]
+
 })
 export class AppModule { }
