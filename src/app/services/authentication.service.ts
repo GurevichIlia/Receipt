@@ -4,6 +4,8 @@ import { MomentModule } from 'ngx-moment';
 import * as moment from 'moment';
 import { ReceiptsService } from './receipts.service';
 import { CreditCardService } from '../receipts/credit-card/credit-card.service';
+import * as jwt_decode from 'jwt-decode';
+
 
 const TOKEN_KEY = 'auth-token';
 
@@ -22,13 +24,13 @@ export class AuthenticationService {
   constructor(
     private receiptService: ReceiptsService,
     private creditCardService: CreditCardService
-    ) {
+  ) {
     console.log(this.tokenNo);
   }
 
-  login(tokenVal) {
-    this.tokenNo = tokenVal;
-    this.setSession(tokenVal);
+  login(responseData) {
+    this.tokenNo = responseData.token;
+    this.setSession(responseData.token);
     this.authenticationstate.next(true);
   }
 
@@ -46,17 +48,20 @@ export class AuthenticationService {
   // getToken() {}
 
   private setSession(authResult) {
-    const expiresAt = moment().add(authResult, 'second');
+    // const expiresAt = moment().add(authResult, 'second');
+    const expiresAt = jwt_decode(authResult);
 
+    console.log("EXPIRE AS", expiresAt)
     //  alert(3);
 
     localStorage.setItem('id_token', authResult);
-    localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
+    localStorage.setItem('expires_at', JSON.stringify(expiresAt.exp.valueOf()));
   }
   logout() {
     //  alert(2);
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+    sessionStorage.removeItem('OrgName');
     sessionStorage.clear();
     this.receiptService.setStep(1);
     this.authenticationstate.next(false);
@@ -75,8 +80,9 @@ export class AuthenticationService {
   getExpiration() {
     //  alert(5);
     const expiration = localStorage.getItem('expires_at');
-    const expiresAt = JSON.parse(expiration);
-    return moment(expiresAt);
+    const expiresAt = expiration;
+    console.log('GetExpiration', expiresAt);
+    return expiresAt;
   }
 }
 

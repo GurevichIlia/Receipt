@@ -9,7 +9,7 @@
       <mat-icon>date_range</mat-icon>
     </mat-panel-description>
   </mat-expansion-panel-header>
-  <form [formGroup]="proccessReceipt" (ngSubmit)="addProccessReceiptToReceipt(proccessReceipt)">
+  <form [formGroup]="proccessReceipt" (ngSubmit)="addProccessReceiptToReceipt(proccessReceipt)" [style.fontSize]="'20px'">
     <div [ngClass]="changePosition()">
       <div class="row">
         <!-- <h5 class="col-12">{{'Customer Name' | translate}}: {{customerName}}</h5> -->
@@ -28,9 +28,9 @@
             <input matInput placeholder="{{'Customer Name' | translate}}" formControlName="customerName">
           </mat-form-field>
         </div> -->
-        <div class="col-12" >
+        <div class="col-12">
           <mat-form-field class="examplecol-12">
-            <input type="text" placeholder="{{'Name of the receipt' | translate}}" aria-label="Number" matInput
+            <input type="text" placeholder="{{'Name of the receipt' | translate}}" aria-label="Number" [value]="customerName" matInput
               formControlName="customerName" [matAutocomplete]="Auto" required>
             <mat-autocomplete #Auto="matAutocomplete">
               <mat-option *ngFor="let name of filteredlistOfCustomersName | async; let i = index" [value]="name">
@@ -81,13 +81,14 @@
           </mat-form-field>
 
 
-          <mat-form-field class="col-12" *ngIf="currentlyLetters.length != 0">
+          <mat-form-field class="col-12">
             <mat-select placeholder="{{'Receipt print template' | translate}}" formControlName="receiptTemplate">
               <mat-option *ngFor="let letter of currentlyLetters " [value]="letter.ThanksLetterId">
                 {{letter.ThanksLetterName}}
               </mat-option>
             </mat-select>
           </mat-form-field>
+          <mat-error *ngIf="currentlyLetters.length === 0">No thanks letters! Please choose a different receipt type or contact customer support.</mat-error>
 
           <mat-form-field class="col-12">
             <textarea matInput placeholder="{{'Textarea' | translate}}" formControlName="textarea"></textarea>
@@ -131,7 +132,7 @@
       {{'Previous' | translate}}
     </button>
     <button type="button" mat-raised-button color="primary" [disabled]="proccessReceipt.invalid"
-      (click)="receiptService.sendReceiptToServer(); addProccessReceiptToReceipt(proccessReceipt)">
+      (click)="addProccessReceiptToReceipt(proccessReceipt)">
       {{'Finish' | translate}}
     </button>
 
@@ -139,7 +140,11 @@
 </mat-expansion-panel>
 
 <div *ngIf="step === 6 || step === 6 ">
-  <h2>Receipt success</h2>
-  <button mat-raised-button color="primary"
-    (click)="createNewReceipt()">{{'Create the new Receipt' | translate}}</button>
+  <mat-card class="text-center">
+    <h2>Customer id: {{finalResolve?.cusomerid}}</h2>
+    <h3 class="mb-4">Receipt number: {{finalResolve?.recno}}</h3>
+    <button type="button" mat-raised-button color="accent" class="mr-2 ml-2" (click)="showReceiptTemplate()">Show receipt Info</button>
+    <button type="button" mat-raised-button color="primary"
+      (click)="createNewReceipt()">{{'Create the new Receipt' | translate}}</button>
+  </mat-card>
 </div>

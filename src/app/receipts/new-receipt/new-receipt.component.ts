@@ -1,6 +1,6 @@
-import { ServerErrorInterceptor } from './../../services/server-error-interceptor.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { Component, OnInit, Injectable, Output, EventEmitter, ViewChild, AfterViewInit, DoCheck } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { Component, OnInit, Injectable, Output, EventEmitter, ViewChild, AfterViewInit, DoCheck, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Router } from '@angular/router';
 import { GeneralSrv } from '../../services/GeneralSrv.service';
@@ -33,6 +33,8 @@ import { HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, empty } from 'rxjs';
 import { ReceiptsService } from '../../services/receipts.service';
 import { ReceiptTypeComponent } from '../receipt-type/receipt-type.component';
+import { ModalSessionexpiredComponent } from '../modals/modal-sessionexpired/modal-sessionexpired.component';
+import * as jwt_decode from 'jwt-decode';
 
 ///////////////////////// START CLASS
 
@@ -57,7 +59,7 @@ import { ReceiptTypeComponent } from '../receipt-type/receipt-type.component';
   templateUrl: './new-receipt.component.html',
   styleUrls: ['./new-receipt.component.css']
 })
-export class NewReceiptComponent implements OnInit, DoCheck {
+export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
   customerInfo: object;
   myControl = new FormControl();
   filteredOptions: Observable<any[]>;
@@ -77,7 +79,8 @@ export class NewReceiptComponent implements OnInit, DoCheck {
   step: number;
   cities: any[] = [];
   nameFilter: any[];
-  list
+
+  private subscriptions: Subscription = new Subscription();
   constructor(
     private generalSrv: GeneralSrv,
     private authen: AuthenticationService,
@@ -85,18 +88,10 @@ export class NewReceiptComponent implements OnInit, DoCheck {
     private httpClient: HttpClient,
     private receiptService: ReceiptsService,
     private translate: TranslateService,
-    private interceptor: ServerErrorInterceptor
+    private authService: AuthenticationService,
+    private modal: MatDialog
+
   ) {
-    // debugger;
-    // this.filteredOptions = this.myControl.valueChanges.pipe(
-    //   startWith(null),
-    //   debounceTime(200),
-    //   distinctUntilChanged(),
-    //   switchMap(val => {
-    //     return this.filter(val || "");
-    //   })
-    // );
-    // debugger;
     translate.setDefaultLang('he');
   }
 
@@ -111,84 +106,36 @@ export class NewReceiptComponent implements OnInit, DoCheck {
     }
   }
 
-  // filter(val: string): Observable<any[]> {
-  //   debugger;
-  //   console.log(this.filteredOptions);
-  //   return this.generalSrv.getUsers().pipe(
-  //     map(response =>
-  //       response.filter(option => {
-  //         return option.name.toLowerCase().indexOf(val.toLowerCase()) === 0;
-  //       })
-  //     )
-  //   );
-  // }
-
-  // filter(val: string): Observable<any[]> {
-  //   // debugger;
-  //   // return this.CustomerSearchData.pipe(
-  //   //   map(response =>
-  //   //     response.filter(option => {
-  //   //       return option.FilAs1.toLowerCase().indexOf(val.toLowerCase()) === 0;
-  //   //     })
-  //   //   )
-  //   // );
-  //   if (val == "") {
-  //     return empty();
-  //   }
-  //   this.CustomerSearchData = Object.assign(
-  //     [],
-  //     this.AllCustomerTables["CustomerTables"].FastSearchData
-  //   );
-
-  //   // this.CustomerSearchData = Object.assign(
-  //   //   [],
-  //   //   this.AllCustomerTables["CustomerTables"].FastSearchData.filter(
-  //   //     e => e.FilAs1.indexOf(val) === 0
-  //   //     // e => e.FilAs1.toLowerCase().indexOf(val.toLowerCase()) === 0
-  //   //   )
-  //   // );
-  //   return this.CustomerSearchData;
-  // }
-
-  // filter(val: string): Observable<any[]> {
-  //   this.filteredOptions = this.generalSrv.getUsers();
-
-  //   debugger;
-  //   // this.cCustomerSearchData = this.CustomerSearchData.filter(
-  //   //   e => e.FileAs1.toLowerCase().indexOf(val.toLowerCase()) === 0
-  //   //   // e => e.FileAs1 == "מצליח שלמה"
-  //   // );
-
-  //   // this.ReceiptTypes = this.ReceiptTypes.filter(
-  //   //   e =>
-  //   //     e.DonationReceipt == this.Selected_receiptIsForDonation &&
-  //   //     e.UseAsCreditReceipt == this.Selected_receiptCreditOrDebit
-  //   // );
-
-  //   return this.cCustomerSearchData;
-  // }
-
-  // this.ReceiptTypes =
-
-
   ngOnInit() {
-    // const arrayOfLi = document.getElementById('list').children;
-    // let newArrayWithLi = [];
-    // for (const li of arrayOfLi) {
-    //   newArrayWithLi.push(li.innerText)
-    // }
-    // console.log(newArrayWithLi)
     this.switchLanguage('he');
     this.LoadSystemTables();
     this.GetCustomerSearchData1();
     this.filterOption();
-    this.generalSrv.currentlyLang.subscribe(lang => this.currentlyLang = lang);
-    this.receiptService.currentlyStep.subscribe(step => {
+    this.subscriptions.add(this.generalSrv.currentlyLang$.subscribe(lang => this.currentlyLang = lang));
+    // this.generalSrv.addSubscription(currentlyLang$);
+    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => {
       this.step = step;
-      console.log('STEP receipt type', this.step);
-    });
+    }));
+    // this.generalSrv.addSubscription(currentlyStep$);
+    this.checkExpToken();
+    console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
+    this.receiptService.createNewEvent.subscribe(data => this.myControl.patchValue(''));
   }
   ngDoCheck() {
+    // this.checkExpToken();
+  }
+  checkExpToken() {
+    // const expTime = this.authService.getExpiration();
+    // const date = new Date(0);
+    // const tokenExpDate = date.setUTCSeconds(+expTime);
+    // console.log('TOKE', tokenExpDate.valueOf())
+    // console.log('DATE', new Date().valueOf())
+    // if (tokenExpDate.valueOf() <= new Date().valueOf()) {
+    //   console.log('TOKEN EXPIRED');
+    // } else {
+    //   console.log('TOKEN not EXPIRED');
+
+    // }
   }
   test(event) {
     console.log(event)
@@ -206,9 +153,17 @@ export class NewReceiptComponent implements OnInit, DoCheck {
 
   }
   GetCustomerSearchData1() {
-    this.generalSrv
+    this.subscriptions.add(this.generalSrv
       .getUsers()
       .pipe(
+        map(response => {
+          if (response.length === 0) {
+            // this.authService.logout();
+            return response;
+          } else {
+            return response;
+          }
+        }),
         map(response => response),
       ).subscribe(
         data => {
@@ -216,24 +171,24 @@ export class NewReceiptComponent implements OnInit, DoCheck {
           this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
           console.log('this.AllCustomerTables', this.AllCustomerTables);
         },
-      );
+      ));
 
   }
   getCustomerInfoById(customerId: number) {
-    this.generalSrv.getCustomerInfoById(customerId).subscribe(customer => {
+    this.subscriptions.add(this.generalSrv.getCustomerInfoById(customerId).subscribe(customer => {
       this.customerInfo = customer;
       // this.clickToBtnCreateNew = false;
       // this.receiptService.subject.next(customer);
       // this.receiptService.setCustomerInfo(customer);
     },
       error => console.log(error),
-    );
+    ));
   }
   submit(form: NgForm) {
     console.log(form.value);
   }
   GetCustomerSearchData() {
-    this.generalSrv.GetCustomerSearchData('jaffanet1').subscribe(
+    this.subscriptions.add(this.generalSrv.GetCustomerSearchData('jaffanet1').subscribe(
       response => {
         // response = JSON.parse(response);
         if (response.IsError == true) {
@@ -261,7 +216,7 @@ export class NewReceiptComponent implements OnInit, DoCheck {
       () => {
         console.log('CallCompleted');
       }
-    );
+    ));
   }
   createNew() {
     this.receiptService.createNewEvent.next();
@@ -269,7 +224,7 @@ export class NewReceiptComponent implements OnInit, DoCheck {
     this.myControl.patchValue('');
   }
   LoadSystemTables() {
-    this.generalSrv.GetSystemTables('jaffanet1')
+    this.subscriptions.add(this.generalSrv.GetSystemTables('jaffanet1')
       .subscribe(
         response => {
           console.log('LoadSystemTables', response);
@@ -296,7 +251,7 @@ export class NewReceiptComponent implements OnInit, DoCheck {
         () => {
           console.log('CallCompleted');
         }
-      );
+      ));
   }
 
   logOut() {
@@ -304,5 +259,10 @@ export class NewReceiptComponent implements OnInit, DoCheck {
     this.authen.logout();
     this.router.navigate(['login']);
   }
+  ngOnDestroy() {
+    console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
+    this.subscriptions.unsubscribe();
+    console.log('NEW RECEIPT SUBSCRIBE On Destroy', this.subscriptions);
 
+  }
 }

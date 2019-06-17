@@ -10,25 +10,19 @@
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-  <!-- paymentMethodId: [''],
-  receiptTypeId: [Number(localStorage.getItem('receipt-type'))],
-  selected_receiptIsForDonation: [true],
-  selected_receiptCreditOrDebit: [false],
-  creditCardPassword: [''],
-  selectedOrg: [''] -->
-  <div *ngIf="!changeOptions">
+  <div *ngIf="!changeOptions" [style.fontSize]="'20px'">
     <form [formGroup]="receiptTypeGroup">
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
           <mat-form-field style="width: 100%" *ngIf="organisations.length !== 0">
-            <mat-select placeholder="{{'Organisation' | translate}}" formControlName="selectedOrg">
+            <mat-select placeholder="{{'Organisation' | translate}}" formControlName="selectedOrg" (selectionChange)="clearValueOfReceiptType()">
               <mat-option *ngFor="let org of organisations" [value]="org.orgid" (click)="radButChanged()">
                 {{org.orgname}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <hr>
-          <mat-form-field style="width: 100%" *ngIf="!disabledPayMethod">
+          <mat-form-field style="width: 100%">
             <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" formControlName='paymentMethodId' required>
               <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
                 (click)="creditCardModalOpen(payment.PayTypeId)">
@@ -63,7 +57,7 @@
 
         <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
           <label id="example-radio-group-label"><strong>{{'Receipt type' | translate}}</strong></label>
-          <mat-radio-group aria-labelledby="example-radio-group-label" (change)="radButChanged()"
+          <mat-radio-group aria-labelledby="example-radio-group-label" (change)="radButChanged(); clearValueOfReceiptType()"
           formControlName="selected_receiptIsForDonation" class="example-radio-group">
             <mat-radio-button class="example-radio-button" [value]="true">
               {{'Donation' | translate}}
@@ -76,7 +70,7 @@
 
         <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
           <label id="example-radio-group-label"><strong>{{'Card type' | translate}}</strong></label>
-          <mat-radio-group #creditCard aria-labelledby="example-radio-group-label" (change)="radButChanged()"
+          <mat-radio-group #creditCard aria-labelledby="example-radio-group-label" (change)="radButChanged();clearValueOfReceiptType()"
           formControlName="selected_receiptCreditOrDebit" class="example-radio-group">
             <mat-radio-button class="example-radio-button" [value]="false">
               {{'Debit' | translate}}
@@ -87,12 +81,12 @@
             </mat-radio-button>
           </mat-radio-group>
         </div>
-        <div *ngIf="selected_receiptCreditOrDebit === true && paymentMethodId === 3"
+        <div *ngIf="receiptCreditOrDebit === true && paymentMethodId === 3"
           class="col-xs-12 col-sm-12 col-md-4 col-lg-2 col-xl-2">
           <p><strong>will be text</strong></p>
           <mat-form-field style="width: 100%">
             <input matInput placeholder="{{'Credit password' | translate}}" formControlName='creditCardPassword'
-              type="text" autocomplete="off" [required]="selected_receiptCreditOrDebit === true">
+              type="text" autocomplete="off">
           </mat-form-field>
         </div>
         <!-- <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">

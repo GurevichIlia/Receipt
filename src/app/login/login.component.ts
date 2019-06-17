@@ -1,26 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material';
 import { GeneralSrv } from '../services/GeneralSrv.service';
 import { AuthenticationService } from '../services/authentication.service';
-import { Guid } from 'guid-typescript';
+import { TranslateService } from '@ngx-translate/core';
+
 
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
-
+export class LoginComponent implements OnInit, OnDestroy {
+  currentLang: string;
+  subscription: Subscription = new Subscription();
   constructor(
     private generalSrv: GeneralSrv,
     private authen: AuthenticationService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService,
+    private translate: TranslateService,
   ) {
-
+    translate.setDefaultLang('he');
+    this.generalSrv.language.next('he');
   }
 
   username: string;
@@ -50,7 +57,9 @@ export class LoginComponent implements OnInit {
   // @Output() submitEM = new EventEmitter();
 
   ngOnInit() {
+
     // this.platform.setDir("ltr", true); ionio 4 nit support
+    this.subscription.add(this.generalSrv.currentlyLang$.subscribe(lang => this.currentLang = lang));
     document.body.setAttribute('dir', 'rtl');
   }
 
@@ -65,16 +74,20 @@ export class LoginComponent implements OnInit {
       )
       .subscribe(
         response => {
-
+          console.log('RESPONSE', response)
           // response = JSON.parse(response);
           if (response.IsError == true) {
-            // this.disableAfterclick = false;
-            // this.generalSrv.presentAlert(
-            //   "Error",
-            //   "an error acured",
-            //   response.ErrMsg
-            // );
+            let errMes;
+            if (this.currentLang === 'he') {
+              errMes = 'לא מצליח להתחבר! לבדוק את שם המשתמש או הסיסמה שלך';
+            } else {
+              errMes = response.ErrMsg;
+            }
+            this.toastr.error(errMes, '', { positionClass: 'toast-top-center' });
+
           } else {
+            this.toastr.success('', 'בהצלחה', { positionClass: 'toast-top-center' });
+
             this.authen.login(response.Data);
             this.generalSrv.setOrgName(this.form.controls['orgid'].value);
             // this.router.navigate(["newreceipt"]);
@@ -83,6 +96,8 @@ export class LoginComponent implements OnInit {
           }
         },
         error => {
+          this.toastr.error(error, 'Something went wrong', { positionClass: 'toast-top-center' });
+
           console.log(error);
           // this.disableAfterclick = false;
         },
@@ -90,5 +105,8 @@ export class LoginComponent implements OnInit {
           console.log('CallCompleted');
         }
       );
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

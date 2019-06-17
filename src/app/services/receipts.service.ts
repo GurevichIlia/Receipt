@@ -1,3 +1,4 @@
+import { Product } from './../models/products.model';
 import { ReceiptHeader } from './../models/receiptHeader.model';
 import { Customermaininfo } from './../models/customermaininfo.model';
 import { CreditCardVerify } from './../models/credirCardVerify.model';
@@ -157,6 +158,7 @@ export class ReceiptsService {
     newReceiptHeader.Company = newReceiptCustomerMainInfo.company;
     newReceiptHeader.FileAs = newReceiptCustomerMainInfo.firstName;
     newReceiptHeader.CustomerCode = this.newReceipt.customerInfo.customermaininfo.tZ;
+    newReceiptHeader.Titel = this.newReceipt.customerInfo.customermaininfo.title;
     receiptHeader.Zip = adress.zip;
     receiptHeader.Street = adress.street;
     receiptHeader.CityName = adress.city;
@@ -203,14 +205,43 @@ export class ReceiptsService {
     this.newReceipt.Receipt.ReceiptHeader.associationId = associationId;
   }
   setTotalAmount(totalAmount: number) {
+    if (totalAmount !== this.newReceipt.creditCard.osumtobill) {
+      this.newReceipt.creditCard.osumtobill = totalAmount;
+    }
     this.newReceipt.Receipt.ReceiptHeader.Total = totalAmount;
   }
-  setReceiptHeaderItems(item , value) {
-    const receiptHeader = this.newReceipt.Receipt.ReceiptHeader;
-    const customerInfo = this.newReceipt.customerInfo;
-    receiptHeader[item] = customerInfo.customermaininfo[value];
-    receiptHeader[item] = customerInfo.addresses[value];
-
+  // setReceiptHeaderItems(item, value) {
+  //   const receiptHeader = this.newReceipt.Receipt.ReceiptHeader;
+  //   const customerInfo = this.newReceipt.customerInfo;
+  //   receiptHeader[item] = customerInfo.customermaininfo[value];
+  //   receiptHeader[item] = customerInfo.addresses[value];
+  // }
+  refreshCredirCard() {
+    this.newReceipt.creditCard = <Creditcard>{};
+  }
+  getReceiptLines() {
+    return this.newReceipt.Receipt.recieptlines;
+  }
+  refreshReceiptLines(value: Receiptlines[]) {
+    this.newReceipt.Receipt.recieptlines = value;
+  }
+  getFirstLastName() {
+    const custInfo = this.newReceipt.customerInfo.customermaininfo;
+    const fullName = `${custInfo.firstName} ${custInfo.lastName}`;
+    console.log('FULL NAME', fullName);
+    return fullName;
+  }
+  getTz() {
+    return this.newReceipt.customerInfo.customermaininfo.tZ;
+  }
+  getProducts() {
+    return this.newReceipt.Receipt.products;
+  }
+  setProducts(products: Product[]) {
+    this.newReceipt.Receipt.products = products;
+  }
+  getReceiptHeader() {
+    return this.newReceipt.Receipt.ReceiptHeader;
   }
   refreshNewReceipt() {
     this.newReceipt = this.newReceipt = {

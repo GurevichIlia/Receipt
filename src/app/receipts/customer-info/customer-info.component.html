@@ -1,6 +1,6 @@
 <div *ngIf="step === 1 || step === 0" class="mb-1 example-headers-align">
   <mat-card-title>{{'New receipt' | translate}} </mat-card-title>
-  <mat-expansion-panel [expanded]="step === 1 || step === 0" (opened)="receiptService.setStep(1)" hideToggle>
+  <mat-expansion-panel [expanded]="step === 1 || step === 0" (opened)="receiptService.setStep(1)" hideToggle >
     <mat-expansion-panel-header>
       <mat-panel-title>
         <h6>{{'Customer Info' | translate}}</h6>
@@ -12,7 +12,7 @@
     </mat-expansion-panel-header>
 
 
-    <form [formGroup]="userInfoGroup" (ngSubmit)="submit()">
+    <form [formGroup]="userInfoGroup" (ngSubmit)="submit()" [style.fontSize]="'20px'">
 
       <div formGroupName="customerMainInfo">
         <mat-form-field hidden class="col-12">
@@ -79,15 +79,13 @@
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
-         
-
-
+      
           <!-- <mat-form-field class="col-12">
             <input formControlName="title" matInput placeholder="{{'Title' | translate}}">
           </mat-form-field> -->
 
           <mat-form-field class="col-12">
-            <mat-select formControlName="groups" formControlName="gender" placeholder="{{'Gender' | translate}}">
+            <mat-select formControlName="gender" placeholder="{{'Gender' | translate}}">
               <mat-option [value]="1">Male</mat-option>
               <mat-option [value]="2">Female</mat-option>
               <mat-option [value]="0">Undefined</mat-option>
@@ -129,15 +127,15 @@
         <h6 class="mb-2">Phone number</h6>
         <div formArrayName="phones">
           <div *ngFor="let phone of phones.controls; let i=index">
-            <div [formGroupName]="i">
-              <mat-form-field class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" style="width: 130px">
-                <mat-select formControlName="PhoneTypeId" placeholder="{{'Phone type' | translate}}">
+            <div [formGroupName]="i" style="text-align: -webkit-auto">
+              <mat-form-field class="col-xs-1 col-sm-1 col-md-3 col-lg-3 col-xl-3" style="width: 130px" [style.fontSize]="'16px'">
+                <mat-select formControlName="PhoneTypeId" placeholder="{{'Phone type' | translate}}" >
                   <mat-option [value]="2">Cell phone</mat-option>
                   <mat-option [value]="4">Work phone</mat-option>
                   <mat-option [value]="1">Home phone</mat-option>
                 </mat-select>
               </mat-form-field>
-              <mat-form-field class="col-xs-4 col-sm-4 col-md-8 col-lg-8 col-xl-9">
+              <mat-form-field class="col-xs-3 col-sm-3 col-md-8 col-lg-8 col-xl-8">
                 <input matInput placeholder="{{'Mobile phone' | translate}}" type="text" formControlName="phone">
               </mat-form-field>
               <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 col-1" (click)="deletePhone(i)"
@@ -152,7 +150,7 @@
         <h6 class="mb-2">Email</h6>
         <div formArrayName="emails">
           <div *ngFor="let email of emails.controls; let i=index">
-            <div [formGroupName]="i">
+            <div [formGroupName]="i" style="text-align: -webkit-auto">
               <mat-form-field class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 " style="width: 130px">
                 <input matInput placeholder="Email name" type="text" formControlName="emailname">
               </mat-form-field>
@@ -180,8 +178,15 @@
         <!-- <button type="button" mat-button color="primary"
           (click)="moreEmail=!moreEmail">{{'Add more email' | translate}}</button> -->
         <h6 class="mb-2">Address</h6>
-        <div formArrayName="addresses">
-          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2" style="width: 130px">
+        <div formArrayName="addresses" style="text-align: -webkit-auto">
+            <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2">
+                <mat-select formControlName="addresstypeid"  placeholder="{{'Address type' | translate}}">
+                  <mat-option [value]="3">Home</mat-option>
+                  <mat-option [value]="1">Work</mat-option>
+                  <mat-option [value]="2">Other</mat-option>
+                </mat-select>
+              </mat-form-field>
+          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2" >
             <input type="text" placeholder="{{'City' | translate}}" aria-label="Number" matInput formControlName="city"
               [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">

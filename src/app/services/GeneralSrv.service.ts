@@ -3,7 +3,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { serviceConfig } from '../Myappconfig';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, Subscription } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 // import { Storage } from "@ionic/storage";
@@ -24,12 +24,13 @@ export class GeneralSrv {
   receiptData = this.fullReceiptData.asObservable();
   position;
   language = new BehaviorSubject('he');
-  currentlyLang = this.language.asObservable();
-  orgName: string;
+  currentlyLang$ = this.language.asObservable();
+  orgName = sessionStorage.getItem('OrgName');
   httpOptions
+  private subscribtions: Subscription = new Subscription();
   constructor(private http: HttpClient, public authen: AuthenticationService, private zone: NgZone) {
     this.orgName = sessionStorage.getItem('OrgName');
-    this.currentlyLang.subscribe(lang => {
+    this.currentlyLang$.subscribe(lang => {
       this.zone.runOutsideAngular(() => {
         // setInterval(() => {
         if (lang === 'he') {
@@ -80,7 +81,7 @@ export class GeneralSrv {
       })
     };
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerSearchData?urlAddr=${this.orgName}`,
-     httpOptions)
+      httpOptions)
       .pipe(map(response => response.Data));
   }
   /**
@@ -93,6 +94,7 @@ export class GeneralSrv {
         Authorization: 'Bearer ' + this.authen.tokenNo
       })
     };
+// tslint:disable-next-line: max-line-length
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerDataByCustomerID?urlAddr=${this.orgName}&customerid=${customerId}`, httpOptions)
       .pipe(map(response => response.Data));
   }
@@ -220,7 +222,7 @@ export class GeneralSrv {
   }
 
   public GetCustomerSearchData(url: string): Observable<any> {
-    let apiUrl = `${this.baseUrl }'Receipt/GetCustomerSearchData?urlAddr='${this.orgName}`;
+    let apiUrl = `${this.baseUrl}'Receipt/GetCustomerSearchData?urlAddr='${this.orgName}`;
 
     // const headers = new HttpHeaders();
     // console.log(this.authen.getToken());
@@ -282,10 +284,18 @@ export class GeneralSrv {
   }
   getItemsFromLocalStorage(item) {
     if (localStorage.getItem(item)) {
-      return localStorage.getItem(item);
+      return +localStorage.getItem(item);
     } else {
       return '';
     }
-
+  }
+  addSubscription(subscription$) {
+    debugger
+    this.subscribtions.add(subscription$);
+    console.log('SUBSCRIPTION', this.subscribtions);
+  }
+  unsubscribeAll() {
+    this.subscribtions.unsubscribe();;
+    console.log('UNSUBSCRIPTION', this.subscribtions);
   }
 }

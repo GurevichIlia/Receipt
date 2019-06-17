@@ -27,7 +27,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   myControl = new FormControl();
   filteredOptions: Observable<any[]>;
   filtCustTitle: Observable<any[]>;
-  // @ViewChild('PaymentMethod') payMethodId: any;
   paymentMethodId = null;
   userInfoGroup: FormGroup;
   groups: any[] = [];
@@ -50,6 +49,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   foundCustomerEmails: object[] = [];
   foundCustomerPhones: object[] = [];
   customerTypes: any[] = [];
+  private subscriptions: Subscription = new Subscription();
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
@@ -97,6 +97,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
         city: [''],
         street: [''],
         zip: [''],
+        addresstypeid: ['']
       }),
       // this.groups = this.customerInfo['QuickGeneralGroupList'];
     });
@@ -120,7 +121,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     console.log('nextStepDisabled', this.nextStepDisabled);
     console.log(this.foundCustomerEmails, this.foundCustomerPhones)
 
-    console.log('OnChanges', '11111');
     // this.creditCardService.currentlyCreditCardVarified.subscribe((isVerified: boolean) => {
     //   this.isVerified = isVerified;
     //   console.log('this.isVerified', this.isVerified);
@@ -130,37 +130,17 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
 
   ngOnInit() {
     // console.log('this.payMath', this.payMath)
-    this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
       this.customerTitle = data['CustomerTitle'];
-    })
-    this.generalService.receiptData.subscribe(data => {
+    }));
+    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
       this.customerTypes = data['GetCustomerTypes'];
       console.log(this.customerTypes);
-    });
-    this.receiptService.currentlyStep.subscribe(step => this.step = step);
-    // this.userInfoGroup.valueChanges.subscribe(data => {
-    //   if (data.firstName !== '' || data.lastName !== '' || data.company !== '') {
-    //     this.requiredField = false;
-    //     console.log('this.userInfoGroup.invalid', this.userInfoGroup.invalid)
-    //   } else {
-    //     this.requiredField = true;
-    //     console.log('this.userInfoGroup.invalid', this.userInfoGroup.invalid)
-    //   }
-    // });
+    }));
+    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
+
     this.getPaymentTypes();
     this.getPayMethFromLocalStorage();
-    // if (localStorage.getItem('paymenthMethod')) {
-    //   if (localStorage.getItem('paymenthMethod') === '3') {
-    //     this.paymentMethodId = Number(localStorage.getItem('paymenthMethod'));
-    //   } else {
-    //     this.paymentMethodId = Number(localStorage.getItem('paymenthMethod'));
-    //   }
-    //   this.creditCardService.currentlyCreditCardVarified.subscribe((isVerified: boolean) => {
-    //     this.isVerified = isVerified;
-    //   });
-    // } else {
-    //   this.paymentMethodId = null;
-    // }
 
     this.disabledNextStep();
     this.customerTitleAutoCompl();
@@ -171,7 +151,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     // this.generalService.currentlyLang.subscribe(lang => {
     //   this.currentlyLang = lang;
     // });
-    const userInfo: Subscription = this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
+    this.subscriptions.add(this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
       .subscribe(data => {
         this.setItemToSessionStorage('firstName', data.customerMainInfo.firstName);
         this.setItemToSessionStorage('lastName', data.customerMainInfo.lastName);
@@ -183,19 +163,21 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
         this.setItemToSessionStorage('spouseName', data.customerMainInfo.spouseName);
         this.setItemToSessionStorage('fileAs', data.customerMainInfo.fileAs);
         this.setItemToSessionStorage('afterSunset', data.customerMainInfo.afterSunset);
-      });
+      }));
     // this.receiptService.blockPayMethod.subscribe((data: boolean) => {
     //   this.disabledPayMethod = data;
     //   console.log(this.disabledPayMethod)
     // });
-    this.receiptService.createNewEvent.subscribe(() => {
+    this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
       this.customerInfoTitle = '';
       this.userInfoGroup.reset('');
       sessionStorage.clear();
+      this.resetEmails();
+      this.resetPhones();
       this.refreshRequiredFormFields();
       this.disabledNextStep();
       this.showMoreInfo = true;
-    });
+    }));
     console.log(this.userInfoGroup.value)
     // this.filterOptionForCustomerSearch();
     console.log('this.paymentMethodId', this.paymentMethodId);
@@ -230,13 +212,12 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   }
   disabledNextStep() {
     this.checkRequiredNameFields();
-    const subscribation: Subscription = this.userInfoGroup.controls.customerMainInfo.valueChanges
+    this.subscriptions.add(this.userInfoGroup.controls.customerMainInfo.valueChanges
       .subscribe(data => {
         this.checkRequiredNameFields();
-      });
+      }));
   }
   checkRequiredNameFields() {
-
     const firstNameControl = this.userInfoGroup.controls.customerMainInfo.get('firstName');
     const lastNameControl = this.userInfoGroup.controls.customerMainInfo.get('lastName');
     const companyControl = this.userInfoGroup.controls.customerMainInfo.get('company');
@@ -273,6 +254,9 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       );
   }
   private filter(value: string): string[] {
+    if (value == null) {
+      value = '';
+    }
     const filterValue = value.toLowerCase();
     return this.customerTitle.filter(title => title['TitleHeb'].toLowerCase().includes(filterValue));
 
@@ -282,23 +266,25 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   }
   changeCustomerInfoAfterUserIsFound(customer) {
     if (customer !== undefined) {
+      const custInfo = customer.CustomerInfoForReceiept[0];
       this.receiptService.customer.next(false);
       this.receiptService.setStep(1);
-      this.customerInfoTitle = `${customer.CustomerInfoForReceiept[0].FileAs} ${customer.CustomerInfoForReceiept[0].CustomerId}`;
+      this.customerInfoTitle = `${custInfo.FileAs} ${custInfo.CustomerId}`;
       console.log(this.customerInfoTitle);
+
       this.userInfoGroup.controls.customerMainInfo.patchValue({
-        customerId: customer.CustomerInfoForReceiept[0].CustomerId,
-        firstName: customer.CustomerInfoForReceiept[0].fname,
-        lastName: customer.CustomerInfoForReceiept[0].lname,
-        company: customer.CustomerInfoForReceiept[0].Company,
-        customerType: customer.CustomerInfoForReceiept[0].CustomerType,
-        title: customer.CustomerInfoForReceiept[0].Title,
-        gender: customer.CustomerInfoForReceiept[0].Gender,
-        tZ: customer.CustomerInfoForReceiept[0].CustomerCode,
-        spouseName: customer.CustomerInfoForReceiept[0].SpouseName,
-        fileAs: customer.CustomerInfoForReceiept[0].FileAs,
-        birthday: moment(customer.CustomerInfoForReceiept[0].BirthDate).format('YYYY-MM-DD'),
-        afterSunset: customer.CustomerInfoForReceiept[0].AfterSunset1,
+        customerId: custInfo.CustomerId,
+        firstName: custInfo.fname,
+        lastName: custInfo.lname,
+        company: custInfo.Company,
+        customerType: custInfo.CustomerType,
+        title: custInfo.Title,
+        gender: custInfo.Gender,
+        tZ: custInfo.CustomerCode,
+        spouseName: custInfo.SpouseName,
+        fileAs: custInfo.FileAs,
+        birthday: moment(customer.CustomerInfoForReceiept[0].BirthDate).format('DD/MM/YYYY'),
+        afterSunset: custInfo.AfterSunset1,
       });
       if (customer.CustomerAddresses.length > 0) {
 
@@ -306,12 +292,15 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
           city: customer.CustomerAddresses[0].CityName,
           street: customer.CustomerAddresses[0].Street,
           zip: customer.CustomerAddresses[0].Zip,
+          addresstypeid: customer.CustomerAddresses[0].AddressTypeId
+
         });
       } else {
         this.userInfoGroup.controls.addresses.patchValue({
           city: '',
           street: '',
           zip: '',
+          addresstypeid: ''
         });
       }
       if (this.foundCustomerPhones.length > 0) {
@@ -334,7 +323,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
         this.foundCustomerEmails = [];
       } else {
         this.emails.controls[0].patchValue({
-          emailname: customer.CustomerInfoForReceiept[0].fname,
+          emailname: custInfo.fname,
           email: ''
         });
       }
@@ -422,9 +411,9 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       this.emails.removeAt(i);
     }
   }
-  submit() {
+  addCUstomerInfoToReceipt() {
     // tslint:disable-next-line: max-line-length
-    let birthday = moment(this.userInfoGroup.controls.customerMainInfo.get('birthday').value).format('YYYY/MM/DD');
+    let birthday = moment(this.userInfoGroup.controls.customerMainInfo.get('birthday').value).format('DD/MM/YYYY');
     // birthday.patchValue(moment(birthday).format('YYYY-MM-DD'));
     if (birthday === 'Invalid date') {
       birthday = '';
@@ -434,9 +423,10 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.receiptService.changeCustomerName(`${this.userInfoGroup.controls.customerMainInfo.get('firstName').value} ${this.userInfoGroup.controls.customerMainInfo.get('lastName').value}`);
     this.receiptService.newReceipt.customerInfo.customermaininfo = this.userInfoGroup.get('customerMainInfo').value;
     this.receiptService.newReceipt.customerInfo.customermaininfo.birthday = birthday;
-    this.receiptService.newReceipt.customerInfo.phones = this.userInfoGroup.get('phones').value;
-    this.receiptService.newReceipt.customerInfo.emails = this.userInfoGroup.get('emails').value;
+    this.receiptService.newReceipt.customerInfo.phones = this.checkEmptyPhone();
+    this.receiptService.newReceipt.customerInfo.emails = this.checkEmptyEmail();
     this.receiptService.newReceipt.customerInfo.addresses = this.userInfoGroup.get('addresses').value;
+
     // this.receiptService.newReceipt.customerInfo.groups = this.userInfoGroup.get('groups').value;
     // this.receiptService.newReceipt.PaymentType = this.payMath.value;
 
@@ -448,32 +438,14 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     // localStorage.setItem('paymenthMethod', paymentMethodId.value);
     console.log('form.value', this.userInfoGroup.value);
     console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
+
+  }
+  submit() {
+    this.addCUstomerInfoToReceipt()
     this.receiptService.setStep(3);
   }
   openStore() {
-     // tslint:disable-next-line: max-line-length
-     let birthday = moment(this.userInfoGroup.controls.customerMainInfo.get('birthday').value).format('YYYY/MM/DD');
-     // birthday.patchValue(moment(birthday).format('YYYY-MM-DD'));
-     if (birthday === 'Invalid date') {
-       birthday = '';
-     }
-     this.setItemToSessionStorage('birthday', birthday);
-    // tslint:disable-next-line: max-line-length
-    this.receiptService.changeCustomerName(`${this.userInfoGroup.controls.customerMainInfo.get('firstName').value} ${this.userInfoGroup.controls.customerMainInfo.get('lastName').value}`);
-    this.receiptService.newReceipt.customerInfo.customermaininfo = this.userInfoGroup.get('customerMainInfo').value;
-    this.receiptService.newReceipt.customerInfo.customermaininfo.birthday = birthday;
-    this.receiptService.newReceipt.customerInfo.phones = this.userInfoGroup.get('phones').value;
-    this.receiptService.newReceipt.customerInfo.emails = this.userInfoGroup.get('emails').value;
-    this.receiptService.newReceipt.customerInfo.addresses = this.userInfoGroup.get('addresses').value;
-    // this.receiptService.newReceipt.customerInfo.groups = this.userInfoGroup.get('groups').value;
-    // this.receiptService.newReceipt.PaymentType = this.payMath.value;
-
-
-    // const customermaininfo = this.userInfoGroup.get('customerMainInfo').value;
-    // this.receiptService.customerMainInfoForCustomerInfo(customermaininfo)
-    // const paymentMethodId = this.payMath;
-    // this.receiptService.paymentMethod.next(paymentMethodId.value);
-    // localStorage.setItem('paymenthMethod', paymentMethodId.value);
+    this.addCUstomerInfoToReceipt()
     this.receiptService.setStep(2);
   }
   getItemsFromSessionStorage(key) {
@@ -511,31 +483,34 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
   }
   getPaymentTypes() {
-    this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
-    });
+    }));
   }
-  // nextStepIsAvl(payMeth: number) {
-  //   if (payMeth === 3) {
-  //     if (this.userInfoGroup.invalid === true && this.isVerified === false ||
-  //       this.userInfoGroup.invalid === true && this.isVerified === true ||
-  //       this.userInfoGroup.invalid === false && this.isVerified === false) {
-  //       return this.nextStepDisabled = true;
-  //     } else {
-  //       return this.nextStepDisabled = false;
-  //     }
-  //   } else {
-  //     if (this.userInfoGroup.invalid) {
-  //       return this.nextStepDisabled = true;
-  //     } else {
-  //       return this.nextStepDisabled = false;
-  //     }
-  //   }
 
-  // }
+  checkEmptyPhone() {
+    const phones = this.phones.value.filter(phone => phone.phone !== '');
+    return phones;
+  }
+  checkEmptyEmail() {
+    const emails = this.emails.value.filter(email => email.email !== '');
+    return emails;
+  }
+  resetPhones() {
+    for (let i = this.phones.value.length; i > 0; i--) {
+      this.deletePhone(i);
+    }
+  }
+  resetEmails() {
+    for (let i = this.emails.value.length; i > 0; i--) {
+      this.deleteEmail(i);
+    }
+  }
   ngOnDestroy() {
     // this.subs.unsubscribe();
-    console.log("ngOnDestroy")
+    console.log('CUSTOMER INFO SUBSCRIBE', this.subscriptions);
+    this.subscriptions.unsubscribe();
+    console.log('CUSTOMER INFO SUBSCRIBE On Destroy', this.subscriptions);
   }
   pickCustomerTypeId(typeId: number) {
     for (const customerType of this.customerTypes) {

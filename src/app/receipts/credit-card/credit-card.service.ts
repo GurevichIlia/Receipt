@@ -14,4 +14,9 @@ export class CreditCardService {
   get verifiedCredCard() {
     return this.verifiedCreditCardDetails;
   }
+
+  setCredCardIsVerified(value: boolean) {
+    this.credCardIsVerified.next(value);
+  }
+  
 }

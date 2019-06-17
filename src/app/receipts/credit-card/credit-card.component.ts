@@ -9,6 +9,7 @@ import { CreditCardValidator } from 'angular-cc-library';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
 import { Creditcard } from 'src/app/models/creditCard.model';
+import { Subscription } from 'rxjs';
 
 
 
@@ -30,6 +31,7 @@ export class CreditCardComponent implements OnInit {
   enLang: boolean;
   currentlyStoreAmount: 0;
   amountError = false;
+  subscription = new Subscription();
   constructor(
     private toastr: ToastrService,
     private receiptService: ReceiptsService,
@@ -56,7 +58,9 @@ export class CreditCardComponent implements OnInit {
     console.log('AccountID', this.creditCardForm.get('accountId'));
   }
   ngOnInit() {
-    this.generalService.currentlyLang.subscribe(lang => {
+    this.setFullName(this.receiptService.getFirstLastName());
+    this.setTz(this.receiptService.getTz());
+    this.subscription.add(this.generalService.currentlyLang$.subscribe(lang => {
       if (lang === 'he') {
         this.heLang = true;
         this.enLang = false;
@@ -64,16 +68,16 @@ export class CreditCardComponent implements OnInit {
         this.enLang = true;
         this.heLang = false;
       }
-    })
+    }));
     console.log('accountCred', this.creditCardForm.get('accountId'));
-    this.generalService.receiptData.subscribe(data => {
+    this.subscription.add(this.generalService.receiptData.subscribe(data => {
       this.accounts = data['Accounts'];
-    });
-    this.creditCardForm.controls.accountId.valueChanges.subscribe(accountCredId => {
+    }));
+    this.subscription.add(this.creditCardForm.controls.accountId.valueChanges.subscribe(accountCredId => {
       this.accountId = accountCredId;
       this.pickAccount();
       console.log(accountCredId);
-    });
+    }));
     this.pickAccount();
     // this.checkFieldsValue();
     this.getCurrentlyAmountFromStore();
@@ -88,49 +92,61 @@ export class CreditCardComponent implements OnInit {
     this.MatdialogRef.close();
   }
   submitCreditCard(form) {
-    console.log(form)
-    const expirationDate = form.value.expirationDate.substring(0, 9);
-    const cvv = form.value.cvv.substring(0, 4);
-    const creditCardNumber = form.value.creditCard.replace(/\s+/g, '');
-    this.verifyCreditCard = {
-      accountid: form.value.accountId,
-      osumtobill: Number(this.creditCardForm.controls.amount.value),
-      ocardvaliditymonth: expirationDate.substring(0, 2),
-      oCardValidityYear: expirationDate.substring(5, 9),
-      ocardnumber: creditCardNumber,
-      ocardownerid: form.value.tz,
-      cvv: cvv,
-      customername: form.value.customerName,
-      ouserpassword: '',
-      oapprovalnumber: form.value.manualApprNum,
-      thecurrency: 'NIS',
-      oNumOfPayments: this.creditCardForm.controls.numberOfPayments.value,
-      ofirstpaymentsum: ''
-    };
+    if (this.creditCardForm.controls.numberOfPayments.value >= 0) {
+      if (this.creditCardForm.controls.amount.value >= 0) {
+        const expirationDate = form.value.expirationDate.substring(0, 9);
+        const cvv = form.value.cvv.substring(0, 4);
+        const creditCardNumber = form.value.creditCard.replace(/\s+/g, '');
+        this.verifyCreditCard = {
+          accountid: form.value.accountId,
+          osumtobill: +this.creditCardForm.controls.amount.value,
+          ocardvaliditymonth: expirationDate.substring(0, 2),
+          oCardValidityYear: expirationDate.substring(5, 9),
+          ocardnumber: creditCardNumber,
+          ocardownerid: form.value.tz,
+          cvv: cvv,
+          customername: form.value.customerName,
+          ouserpassword: '',
+          oapprovalnumber: form.value.manualApprNum,
+          thecurrency: 'NIS',
+          oNumOfPayments: this.creditCardForm.controls.numberOfPayments.value,
+          ofirstpaymentsum: ''
+        };
 
-    console.log(this.verifyCreditCard);
-    this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {
-      console.log(res);
-      if (res['IsError'] === true) {
-        this.toastr.error('Credit card not verified', res['ErrMsg'], {
-          positionClass: 'toast-top-center'
-        });
+        console.log(this.verifyCreditCard);
+        this.subscription.add(this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {
+          console.log(res);
+          if (res['IsError'] === true) {
+            this.toastr.error('Credit card not verified', res['ErrMsg'], {
+              positionClass: 'toast-top-center'
+            });
+          } else {
+            this.credirCardService.verifiedCreditCardDetails = this.verifyCreditCard;
+            this.credirCardService.credCardIsVerified.next(true);
+            const data = res['Data'];
+            console.log('Credit card verified', data)
+            this.toastr.success('Credit card verified', '', {
+              positionClass: 'toast-top-center'
+            });
+            localStorage.setItem('creditCardAccId', this.verifyCreditCard.accountid.toString());
+            this.closeModal();
+          }
+        }));
+        console.log(form.value.cvv);
+        this.receiptService.amount.next(this.totalPaymentAmount);
       } else {
-        this.credirCardService.verifiedCreditCardDetails = this.verifyCreditCard;
-        this.credirCardService.credCardIsVerified.next(true);
-        const data = res['Data'];
-        console.log('Credit card verified', data)
-        this.toastr.success('Credit card verified', '', {
+        this.toastr.warning('Amount is invalid', '', {
           positionClass: 'toast-top-center'
         });
-        localStorage.setItem('creditCardAccId', this.verifyCreditCard.accountid.toString());
-        this.closeModal();
       }
-    });
-    debugger;
-    console.log(form.value.cvv);
-    this.receiptService.amount.next(this.totalPaymentAmount);
+    } else {
+      this.toastr.warning('Number of payments is invalid', '', {
+        positionClass: 'toast-top-center'
+      });
+    }
   }
+
+
   pickAccount() {
     for (const acc of this.accounts) {
       if (acc['AccountId'] === this.accountId) {
@@ -198,7 +214,7 @@ export class CreditCardComponent implements OnInit {
 
 
   getCurrentlyAmountFromStore() {
-    this.receiptService.currentlyStoreAmount.subscribe(data => {
+    this.subscription.add(this.receiptService.currentlyStoreAmount.subscribe(data => {
       this.currentlyStoreAmount = data;
       if (data !== undefined) {
         this.totalPaymentAmount = data; // Setter total amount in creditCardForm
@@ -206,23 +222,22 @@ export class CreditCardComponent implements OnInit {
         this.totalPaymentAmount = null;
       }
       this.calculatePaymentsForCredCard();
-    });
+    }));
   }
   detectChangeAmount() {
-    this.creditCardForm.get('amount').valueChanges.pipe(debounceTime(500))
+    this.subscription.add(this.creditCardForm.get('amount').valueChanges.pipe(debounceTime(500))
       .subscribe(data => {
-        debugger
         if (data < this.currentlyStoreAmount || data === 0) {
           this.amountError = true;
         } else {
           this.amountError = false;
         }
         this.calculatePaymentsForCredCard();
-      });
-    this.creditCardForm.get('numberOfPayments').valueChanges.pipe(debounceTime(500))
+      }));
+    this.subscription.add(this.creditCardForm.get('numberOfPayments').valueChanges.pipe(debounceTime(500))
       .subscribe(() => {
         this.calculatePaymentsForCredCard();
-      });
+      }));
   }
   calculatePaymentsForCredCard() {
     const totalAmount: number = this.creditCardForm.get('amount').value;
@@ -235,7 +250,9 @@ export class CreditCardComponent implements OnInit {
       if (eachPayment >= 0) {
         this.creditCardForm.controls.eachPayment.patchValue(Number(eachPayment).toFixed(2));
       } else {
-        alert('Add correct data');
+        this.toastr.warning('Data is invalid', '', {
+          positionClass: 'toast-top-center'
+        });
       }
     } else {
       this.creditCardForm.controls.eachPayment.patchValue(null);
@@ -247,5 +264,21 @@ export class CreditCardComponent implements OnInit {
   }
   set totalPaymentAmount(value: number) {
     this.creditCardForm.get('amount').patchValue(value);
+  }
+  refreshCreditCardForm() {
+    this.creditCardForm.reset();
+  }
+  setFullName(value) {
+    this.creditCardForm.get('customerName').patchValue(value);
+  }
+  setTz(value) {
+    this.creditCardForm.get('tz').patchValue(value);
+  }
+  ngOnDestroy(): void {
+    // Called once, before the instance is destroyed.
+    // Add 'implements OnDestroy' to the class.
+    console.log('CREDIT CARD SUBSCRIBE', this.subscription);
+    this.subscription.unsubscribe();
+    console.log('CREDIT CARD DESTROED', this.subscription);
   }
 }

@@ -9,7 +9,7 @@
       <mat-icon>map</mat-icon>
     </mat-panel-description>
   </mat-expansion-panel-header>
-  <form #myForm="ngForm" (ngSubmit)="addProdToList(myForm)">
+  <form #myForm="ngForm" (ngSubmit)="addProdToList(myForm)" [style.fontSize]="'20px'">
     <mat-form-field class="col-12">
       <mat-select #ProdCatName="ngModel" name="prodCatName" placeholder="{{'Product category' | translate}}"
         [(ngModel)]="prodCatName" required>
@@ -63,7 +63,7 @@
   <!--  -->
 
   <!--  -->
-  <div class="table-responsive" *ngIf="addedProdToOrder.length > 0">
+  <div class="table-responsive" *ngIf="receiptService.newReceipt.Receipt.products.length > 0">
     <table class="table table-striped">
       <thead>
         <tr>
@@ -76,7 +76,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of addedProdToOrder; let i = index">
+        <tr *ngFor="let product of receiptService.newReceipt.Receipt.products; let i = index">
           <td>
             {{i+1}}.
           </td>

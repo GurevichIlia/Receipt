@@ -34,7 +34,7 @@
   </div>
 
 
-  <mat-card>
+  <mat-card [style.fontSize]="'20px'">
     <div class="text-right">
       <button mat-button  *ngIf="currentlyLang === 'he'"
         (click)="switchLanguage('en')">en</button>

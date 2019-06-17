@@ -1,17 +1,16 @@
 import { CreditCardService } from './../credit-card/credit-card.service';
-import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, ChangeDetectorRef, AfterViewInit, DoCheck } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, ChangeDetectorRef, AfterViewInit, DoCheck, OnDestroy } from '@angular/core';
 import { ReceiptsService } from 'src/app/services/receipts.service';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import * as moment from 'moment';
 import { NgForm, FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { startWith, map, delay, debounceTime } from 'rxjs/operators';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { CreditCardComponent } from '../credit-card/credit-card.component';
 import { Receiptlines } from 'src/app/models/receiptlines.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
-
-
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -19,12 +18,12 @@ import { Creditcard } from 'src/app/models/creditCard.model';
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
 })
-export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
+export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestroy {
   @Input() currentlyLang: string;
   step: number;
-  // @ViewChild('TotalAmount') totAmount: ElementRef;
+  @ViewChild('myForm') paymentForm: NgForm;
   paymentMethodId = null;
-  myControl = new FormControl();
+  bankInput = new FormControl();
   filteredOptions: Observable<any[]>;
   dueDate: string;
   paymentMethods: object[] = [];
@@ -53,12 +52,14 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
   totalAmount: number;
   creditCard: Creditcard;
   paymentOptionsGroup: FormGroup;
+  private subscriptions: Subscription = new Subscription();
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
     private dialog: MatDialog,
     private credirCardService: CreditCardService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toster: ToastrService
   ) {
     this.dueDate = moment().format('YYYY-MM-DD');
     // this.payment = {
@@ -85,14 +86,21 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
   }
   ngOnInit() {
     this.createPaymentOptionsGroupForm();
-    
-    this.paymentOptionsGroup.controls.projectCategory.valueChanges.pipe(debounceTime(300)).subscribe((catId: number) => {
-      // this.paymentOptionsGroup.get('project').patchValue('');
-      this.projectFilterByCatId(catId);
-    });
-    this.receiptService.currentlyStep.subscribe(step => this.step = step);
+    console.log('USER FORM', this.paymentOptionsGroup);
+    // tslint:disable-next-line: max-line-length
+    this.paymentOptionsGroup.valueChanges.subscribe(data => this.nextStep());
 
-    this.generalService.receiptData.subscribe(data => {
+    this.paymentOptionsGroup.controls.projectCategory.valueChanges.pipe(debounceTime(300)).subscribe((catId: number) => {
+      this.paymentOptionsGroup.get('project').patchValue('');
+      this.projectFilterByCatId(catId);
+      this.nextStep();
+    });
+
+    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
+    this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
+      this.refreshForm();
+    }));
+    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
       this.currencyTypes = data['GetCurrencyTypes'];
       this.donationTypes = data['DonationTypes'];
@@ -101,24 +109,23 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
       this.projects = data['Projects4Receipts'];
       this.banks = data['Banks'];
       this.associations = data['Associations'],
-      this.projectFilterByCatId();
-    });
-    this.receiptService.selectedPaymentMethod.subscribe(data => {
+        this.projectFilterByCatId();
+    }));
+    this.subscriptions.add(this.receiptService.selectedPaymentMethod.subscribe(data => {
       this.paymentMethodId = data;
-    });
-    this.receiptService.selCurrencyId.subscribe(currencyId => {
+    }));
+    this.subscriptions.add(this.receiptService.selCurrencyId.subscribe(currencyId => {
       this.paymentOptionsGroup.get('currency').patchValue(currencyId);
-    });
+    }));
     this.filterOption();
     // this.checkFieldsValue();
-    this.receiptService.currentlyAmount.subscribe(data => {
+    this.subscriptions.add(this.receiptService.currentlyAmount.subscribe(data => {
 
       this.totalPaymentAmount = data; // Setter
-    });
+    }));
 
   }
   ngDoCheck() {
-    this.nextStep();
   }
   ngAfterViewInit() {
 
@@ -130,25 +137,30 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
     this.paymentOptionsGroup.get('paymentAmount').patchValue(value);
   }
   createPaymentOptionsGroupForm() {
+    const test = this.generalService.getItemsFromLocalStorage('paymentFor');
+    console.log('TEST', test);
     return this.paymentOptionsGroup = this.fb.group({
       paymentAmount: [0],
-      currency: [this.receiptService.selReceiptCurrencyId],
-      paymentFor: [+this.generalService.getItemsFromLocalStorage('paymentFor')],
-      projectCategory: [+this.generalService.getItemsFromLocalStorage('projectCategory')],
-      accountId: [+this.generalService.getItemsFromLocalStorage('accountId')],
-      dueDate: [moment().format('YYYY-MM-DD')],
-      project: [+this.generalService.getItemsFromLocalStorage('project')],
-      associationId: [+this.generalService.getItemsFromLocalStorage('associationId')]
+      currency: [this.receiptService.selReceiptCurrencyId, [Validators.required]],
+      paymentFor: [this.generalService.getItemsFromLocalStorage('paymentFor'), [Validators.required]],
+      projectCategory: [this.generalService.getItemsFromLocalStorage('projectCategory'), [Validators.required]],
+      accountId: [this.generalService.getItemsFromLocalStorage('accountId'), [Validators.required]],
+      dueDate: [moment().format('YYYY-MM-DD'), [Validators.required]],
+      project: [this.generalService.getItemsFromLocalStorage('project'), [Validators.required]],
+      associationId: [this.generalService.getItemsFromLocalStorage('associationId'), [Validators.required]]
     });
   }
   filterOption() {
-    this.filteredOptions = this.myControl.valueChanges
+    this.filteredOptions = this.bankInput.valueChanges
       .pipe(
         startWith(''),
         map(value => this._filter(value))
       );
   }
   private _filter(value: string): string[] {
+    if (value == null) {
+      value = '';
+    }
     const filterValue = value.toLowerCase();
     return this.banks.filter(bank => bank['BankNameEng'].toLowerCase().includes(filterValue));
   }
@@ -162,18 +174,20 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
   }
   addPaymentToList(payment: NgForm) {
     console.log('payment', payment.value)
-    payment.value['dueDate'] = moment(payment.value['dueDate']).format('YYYY/MM/DD');
-    // this.checksOrWires.push(payment.value);
-    this.newCheckOrWire['dueDate'] = moment(payment.value['dueDate']).add(1, 'month').format('YYYY-MM-DD');
+
+    const paymentDate = moment(payment.value['dueDate']).format('DD/MM/YYYY');
+    const paymentCheckNo =
+      // this.checksOrWires.push(payment.value);
+      this.newCheckOrWire['dueDate'] = moment(payment.value['dueDate']).add(1, 'month').format('YYYY-MM-DD');
     this.newCheckOrWire['checkNum'] = this.newCheckOrWire['checkNum'] + 1;
     const paymentOptionsGroup = this.paymentOptionsGroup.controls;
     this.receiptLine = {
       ProjectId: paymentOptionsGroup.project.value,
       PayTypeId: this.paymentMethodId,
       Amount: payment.value.amount,
-      ValueDate: payment.value.dueDate,
+      ValueDate: paymentDate,
       CheckNo: payment.value.checkNum,
-      Bank: this.myControl.value,
+      Bank: this.bankInput.value,
       BranchNo: payment.value.branch,
       AccountNo: payment.value.payAccount,
       details: '',
@@ -186,6 +200,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
     this.receiptService.addToReceiptLines(this.receiptLine);
     this.showTotalAmount();
     this.checkPaymentsLength();
+    this.nextStep();
     console.log(this.payments);
     console.log(this.receiptLines)
   }
@@ -220,24 +235,32 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
   addPaymentToReceipt() {
     this.showTotalAmount();
     const associationId: number = this.paymentOptionsGroup.get('associationId').value;
+    const paymentAmount: number = this.paymentOptionsGroup.get('paymentAmount').value;
     this.receiptService.setAssociationId(associationId);
-    if (this.paymentMethodId === 3) {
-      this.addCreditCardPayToReceipt();
-      this.setItemsToLocalStorage();
-      this.receiptLines = [];
-    } else if (this.paymentMethodId === 2 || this.paymentMethodId === 7) {
-      // tslint:disable-next-line: max-line-length
-      this.receiptService.addAmountInLeadCurrentToReceiptLine(this.totalPaymentAmount); // use Getter for this.paymentOptionsGroup.controls.paymentAmount.value
-      this.receiptService.amount.next(this.totalPaymentAmount); // use Getter for this.paymentOptionsGroup.controls.paymentAmount.value
-      this.setItemsToLocalStorage();
-      this.receiptService.nextStep();
-      console.log('addPaymentToReceipt', this.receiptService.newReceipt);
+    if (paymentAmount >= 0) {
+      if (this.paymentMethodId === 3) {
+        this.addCreditCardPayToReceipt();
+        this.setItemsToLocalStorage();
+        this.receiptLines = [];
+      } else if (this.paymentMethodId === 2 || this.paymentMethodId === 7) {
+        // tslint:disable-next-line: max-line-length
+        this.receiptService.addAmountInLeadCurrentToReceiptLine(this.totalPaymentAmount); // use Getter for this.paymentOptionsGroup.controls.paymentAmount.value
+        this.receiptService.amount.next(this.totalPaymentAmount); // use Getter for this.paymentOptionsGroup.controls.paymentAmount.value
+        this.setItemsToLocalStorage();
+        this.receiptService.nextStep();
+        console.log('addPaymentToReceipt', this.receiptService.newReceipt);
+      } else {
+        this.addReceiptLine();
+        this.receiptService.amount.next(this.totalPaymentAmount);
+        this.setItemsToLocalStorage();
+        this.receiptService.nextStep();
+      }
     } else {
-      this.addReceiptLine();
-      this.receiptService.amount.next(this.totalPaymentAmount);
-      this.setItemsToLocalStorage();
-      this.receiptService.nextStep();
+      this.toster.warning('Payment amount is invalid', '', {
+        positionClass: 'toast-top-center'
+      });
     }
+
   }
   addCreditCardPayToReceipt() {
     if (this.credirCardService.verifiedCredCard) {
@@ -260,7 +283,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
       ProjectId: paymentOptionsGroup.project.value,
       PayTypeId: this.paymentMethodId,
       Amount: null,
-      ValueDate: moment(this.dueDate).format('YYYY/MM/DD'),
+      ValueDate: moment(paymentOptionsGroup.dueDate.value).format('DD/MM/YYYY'),
       CheckNo: null,
       Bank: null,
       BranchNo: '',
@@ -285,16 +308,37 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck {
     localStorage.setItem('project', paymentOptionsGroup.project.value);
     localStorage.setItem('associationId', paymentOptionsGroup.associationId.value);
   }
+
   nextStep() {
-    if (this.paymentOptionsGroup.invalid) {
-      this.nextStepDisabled = true;
-      if (1 > this.receiptService.newReceipt.Receipt.recieptlines.length) {
+    if (this.paymentMethodId === 2 || this.paymentMethodId === 7) {
+      if (this.receiptService.newReceipt.Receipt.recieptlines.length === 0) {
         this.nextStepDisabled = true;
       } else {
         this.nextStepDisabled = false;
       }
     } else {
-      this.nextStepDisabled = false;
+      if (this.paymentOptionsGroup.valid) {
+        this.nextStepDisabled = false;
+      } else {
+        this.nextStepDisabled = true;
+      }
     }
+  }
+  refreshForm() {
+    this.bankInput.reset();
+    this.newCheckOrWire = {
+      payAccount: '',
+      dueDate: this.dueDate,
+      bank: '',
+      amount: '',
+      branch: '',
+      checkNum: null
+    };
+    console.log(this.paymentForm);
+  }
+  ngOnDestroy() {
+    console.log('CUSTOMER INFO SUBSCRIBE', this.subscriptions);
+    this.subscriptions.unsubscribe();
+    console.log('CUSTOMER INFO SUBSCRIBE On Destroy', this.subscriptions);
   }
 }

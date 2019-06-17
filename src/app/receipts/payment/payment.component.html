@@ -10,14 +10,13 @@
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-  <div *ngIf="paymentMethodId !== null">
+  <div *ngIf="paymentMethodId !== null" [style.fontSize]="'20px'">
     <div class="row">
       <form [formGroup]="paymentOptionsGroup">
         <div [ngClass]="changePosition()" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-
           <mat-form-field *ngIf="paymentMethodId !== 2 && paymentMethodId !== 7"
             class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
-            <input formControlName="paymentAmount" #TotalAmount matInput placeholder="{{'Payment amount' | translate}}" required>
+            <input formControlName="paymentAmount" type="number" #TotalAmount matInput placeholder="{{'Payment amount' | translate}}" required>
           </mat-form-field>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -115,8 +114,6 @@
         </div>
       </form>
     </div>
-
-
     <!-- FIELD FOR PAYMENTS AS CHECK AND WIRE -->
     <div *ngIf="paymentMethodId === 2 || paymentMethodId === 7">
       <h5>{{'Payment info' | translate}}</h5>
@@ -142,7 +139,7 @@
       </mat-select> -->
 
           <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-2 col-xl-2">
-            <input name="bank" type="text" placeholder="{{'Bank' | translate}}" [formControl]="myControl"
+            <input name="bank" type="text" placeholder="{{'Bank' | translate}}" [formControl]="bankInput"
               [matAutocomplete]="auto" matInput required>
             <mat-autocomplete #auto="matAutocomplete">
               <mat-option *ngFor="let bank of filteredOptions | async; let i = index" [value]="bank.BankNameEng">
@@ -172,7 +169,7 @@
           </div>
         </div>
       </form>
-      <div class="table-responsive-sm" *ngIf="this.receiptService.newReceipt.Receipt.recieptlines.length > 0">
+      <div class="table-responsive-sm" *ngIf="this.receiptService.newReceipt.Receipt.recieptlines.length > 0" [style.fontSize]="'14px'">
         <table class="table table-striped mb-2">
           <thead>
             <tr>
@@ -187,7 +184,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let check of this.receiptService.newReceipt.Receipt.recieptlines; let i = index">
+            <tr *ngFor="let check of receiptService.newReceipt.Receipt.recieptlines; let i = index">
               <td>{{i + 1}}.</td>
               <th>{{check.AccountNo}}</th>
               <td style="width: 100px">{{check.ValueDate}} </td>
@@ -210,7 +207,7 @@
     <button mat-raised-button color="accent" class="mr-1 ml-1" (click)="receiptService.prevStep()">
       {{'Previous' | translate}}
     </button>
-    <button type="button" mat-raised-button color="primary" (click)="addPaymentToReceipt()" [disabled]="nextStepDisabled">
+    <button type="button" mat-raised-button color="primary" [disabled]="nextStepDisabled" (click)="addPaymentToReceipt()" >
       {{'Next' | translate}}
     </button>
   </mat-action-row>

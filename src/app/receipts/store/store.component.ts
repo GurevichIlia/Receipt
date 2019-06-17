@@ -1,17 +1,18 @@
-import { Component, OnInit, ChangeDetectorRef, ViewChild, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { ReceiptsService } from '../../services/receipts.service';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { Product } from 'src/app/models/products.model';
 import { NgForm } from '@angular/forms';
 import { MatTable, MatSelectChange, MatDialog } from '@angular/material';
 import { CreditCardComponent } from '../credit-card/credit-card.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-store',
   templateUrl: './store.component.html',
   styleUrls: ['./store.component.css']
 })
-export class StoreComponent implements OnInit {
+export class StoreComponent implements OnInit, OnDestroy {
   @Output() selectionChange: EventEmitter<MatSelectChange>;
   @ViewChild('table') table: MatTable<Product>;
   @ViewChild('myForm') form: NgForm;
@@ -33,6 +34,7 @@ export class StoreComponent implements OnInit {
   }
   prodCatName;
   currentlyLang: string;
+  private subscriptions: Subscription = new Subscription();
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
@@ -49,23 +51,23 @@ export class StoreComponent implements OnInit {
     };
   }
   ngOnInit() {
-    this.generalService.currentlyLang.subscribe((lang: string) => {
+    this.subscriptions.add(this.generalService.currentlyLang$.subscribe((lang: string) => {
       this.currentlyLang = lang;
-    })
-    this.receiptService.currentlyStep.subscribe(step => this.step = step);
+    }));
+    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
     this.getProductData();
-    this.receiptService.payTypeCreditCard.subscribe(data => {
+    this.subscriptions.add(this.receiptService.payTypeCreditCard.subscribe(data => {
       this.payByCreditCard = data;
       console.log(data);
-    });
+    }));
   }
   getProductData() {
-    this.generalService.getProductsData().subscribe(data => {
+    this.subscriptions.add(this.generalService.getProductsData().subscribe(data => {
       this.productsData = data;
       this.productCategories = data.ProductCategories;
       this.productsName = data.Products;
       console.log(this.productsData);
-    }, err => console.log(err));
+    }, err => console.log(err)));
   }
   getSelectedProd(prod) {
     this.product.pricebyunit = prod.Price;
@@ -83,25 +85,25 @@ export class StoreComponent implements OnInit {
       } else {
         this.totalPriceForProd();
         console.log('this.product', prod.value);
-        if (this.addedProdToOrder.length != 0) {
-          if (this.checkSameProdInList(prod, this.addedProdToOrder) === 1) {
+        if (this.receiptService.getProducts().length != 0) {
+          if (this.checkSameProdInList(prod, this.receiptService.getProducts()) === 1) {
             this.showTotalPriceForOrder();
-            console.log('this.addedProdToORder', this.addedProdToOrder);
+            console.log('this.receiptService.getProducts()', this.receiptService.getProducts());
             this.refreshForm();
             console.log(this.form)
           } else {
-            this.addedProdToOrder.push(prod.value);
+            this.receiptService.getProducts().push(prod.value);
             this.showTotalPriceForOrder();
-            console.log('this.addedProdToORder', this.addedProdToOrder);
+            console.log('this.receiptService.getProducts()', this.receiptService.getProducts());
             this.refreshForm();
             console.log(this.form)
           }
         } else {
-          this.addedProdToOrder.push(prod.value);
+          this.receiptService.getProducts().push(prod.value);
           this.showTotalPriceForOrder();
-          console.log('this.addedProdToORder', this.addedProdToOrder);
+          console.log('this.receiptService.getProducts()', this.receiptService.getProducts());
           this.refreshForm();
-                    console.log(this.form)
+          console.log(this.form)
         }
       }
     }
@@ -120,7 +122,7 @@ export class StoreComponent implements OnInit {
   }
   showTotalPriceForOrder() {
     let totalPrice = 0;
-    for (const price of this.addedProdToOrder) {
+    for (const price of this.receiptService.getProducts()) {
       totalPrice += price.totalrow;
     }
     this.totalPriceForOrder = totalPrice;
@@ -138,7 +140,7 @@ export class StoreComponent implements OnInit {
   }
   deleteProduct(productId: number) {
     if (confirm('Are you sure to delete?')) {
-      this.addedProdToOrder = this.addedProdToOrder.filter(data => data.productid != productId);
+      this.receiptService.setProducts(this.receiptService.getProducts().filter(data => data.productid != productId));
       this.showTotalPriceForOrder();
     }
   }
@@ -152,7 +154,7 @@ export class StoreComponent implements OnInit {
     }
   }
   addTotalPriceForEachProduct() {
-    for (let prod of this.addedProdToOrder) {
+    for (let prod of this.receiptService.getProducts()) {
       prod['totalall'] = this.totalPriceForOrder;
       prod['discount'] = 0;
     }
@@ -160,7 +162,7 @@ export class StoreComponent implements OnInit {
   // Add products to the receipt in receipt service;
   addProductsToReceipt() {
     this.addTotalPriceForEachProduct();
-    this.receiptService.newReceipt.Receipt.products = this.addedProdToOrder;
+    this.receiptService.newReceipt.Receipt.products = this.receiptService.getProducts();
     this.receiptService.storeAmount.next(this.totalPriceForOrder);
     // this.receiptService.amount.next(this.totalPriceForOrder);
     console.log(this.receiptService.newReceipt);
@@ -169,5 +171,10 @@ export class StoreComponent implements OnInit {
     this.form.controls.amount.reset();
     this.form.controls.productName.reset();
     console.log(this.form);
+  }
+  ngOnDestroy() {
+    console.log('STORE SUBSCRIBE', this.subscriptions);
+    this.subscriptions.unsubscribe();
+    console.log('STORE SUBSCRIBE On Destroy', this.subscriptions);
   }
 }
