@@ -1,5 +1,5 @@
-<mat-expansion-panel *ngIf="step === 2" class="example-headers-align mb-1 row"
-  [expanded]="step === 2" (opened)="receiptService.setStep(2)" hideToggle>
+<mat-expansion-panel *ngIf="step === 2" class="example-headers-align mb-1 row" [expanded]="step === 2"
+  (opened)="receiptService.setStep(2)" hideToggle>
   <mat-expansion-panel-header>
     <mat-panel-title>
       <h6>{{'Store' | translate}}</h6>
@@ -23,8 +23,8 @@
     <mat-form-field class="col-12">
       <mat-select #ProdName="ngModel" name="productName" placeholder="{{'Product name' | translate}}"
         [(ngModel)]="product.productName" required>
-        <mat-option (click)="getSelectedProd(prod)"
-          *ngFor="let prod of productsName | filterProductsByCat: prodCatName" [value]='prod.ProdName'>
+        <mat-option (click)="getSelectedProd(prod)" *ngFor="let prod of productsName | filterProductsByCat: prodCatName"
+          [value]='prod.ProdName'>
           {{currentlyLang === 'he'? prod.ProdName : prod.ProdNameEng}}
         </mat-option>
       </mat-select>
@@ -32,14 +32,13 @@
 
     <p><strong>{{'Price' | translate}}: {{product.pricebyunit}}</strong> </p>
     <mat-form-field hidden class="col-12">
-      <input #ProductPrice="ngModel" name="pricebyunit" type="number"
-        matInput placeholder="{{'Price' | translate}}" [(ngModel)]="product.pricebyunit" />
+      <input #ProductPrice="ngModel" name="pricebyunit" type="number" matInput placeholder="{{'Price' | translate}}"
+        [(ngModel)]="product.pricebyunit" />
     </mat-form-field>
 
     <mat-form-field class="col-12">
-      <input #ProductAmount="ngModel" (keyup)="totalPriceForProd()" (change)="totalPriceForProd()"
-        min="1" type="number" name="amount" matInput placeholder="{{'Quantity' | translate}}"
-        [(ngModel)]="product.amount" required/>
+      <input #ProductAmount="ngModel" (keyup)="totalPriceForProd()" (change)="totalPriceForProd()" min="1" type="number"
+        name="amount" matInput placeholder="{{'Quantity' | translate}}" [(ngModel)]="product.amount" required />
     </mat-form-field>
     <!-- <p>
       <strong>Amount:
@@ -51,14 +50,16 @@
     </p> -->
 
     <mat-form-field hidden class="col-12">
-      <input #ProductId="ngModel" name="productid" type="number" matInput placeholder="Id" [(ngModel)]="product.productid" />
+      <input #ProductId="ngModel" name="productid" type="number" matInput placeholder="Id"
+        [(ngModel)]="product.productid" />
     </mat-form-field>
     <mat-form-field hidden class="col-12">
       <input #TotalPrice="ngModel" name="totalrow" type="number" matInput placeholder="totalPrice" value="500"
         [(ngModel)]="product.totalrow" />
     </mat-form-field>
-    <button type="submit" [disabled]="myForm.invalid" mat-flat-button color="primary"
-      class="mb-2">{{'Add to list' | translate}}</button>
+    <button type="submit" [disabled]="myForm.invalid"
+      [ngStyle]="{'background-color': myForm.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': myForm.invalid === false ? 'white' : ''}"
+      mat-raised-button color="primary" class="mb-2">{{'Add to list' | translate}}</button>
   </form>
   <!--  -->
 
@@ -84,8 +85,7 @@
             {{product.productName}}
           </th>
           <td>
-            <mat-select #Amount [value]="product.amount"
-              (selectionChange)="changeAmountInList(product, Amount.value)">
+            <mat-select #Amount [value]="product.amount" (selectionChange)="changeAmountInList(product, Amount.value)">
               <mat-option [value]="i + 1" *ngFor="let number of arrayOfNumbers; let i = index">{{number + 1}}
               </mat-option>
             </mat-select>
@@ -152,13 +152,13 @@
       </table>
     </div> -->
 
-  
+
   <!-- </div> -->
   <mat-action-row>
-    <button mat-raised-button color="accent" (click)="receiptService.prevStep()" class="mr-1 ml-1">
+    <button mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" (click)="receiptService.prevStep()" class="mr-1 ml-1">
       {{'Previous' | translate}}
     </button>
-    <button mat-raised-button color="primary" (click)="receiptService.nextStep(); addProductsToReceipt()">
+    <button mat-raised-button [ngStyle]="{'background-color': 'rgb(38, 87, 122)', 'color': 'white' }" (click)="receiptService.nextStep(); addProductsToReceipt()">
       {{'Next' | translate}}
     </button>
   </mat-action-row>

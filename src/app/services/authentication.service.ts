@@ -65,6 +65,9 @@ export class AuthenticationService {
     sessionStorage.clear();
     this.receiptService.setStep(1);
     this.authenticationstate.next(false);
+    this.receiptService.amount.next(null);
+    this.receiptService.createNewEvent.next();
+
     this.creditCardService.credCardIsVerified.next(false);
   }
   public isLoggedIn() {

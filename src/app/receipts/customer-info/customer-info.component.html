@@ -1,12 +1,12 @@
 <div *ngIf="step === 1 || step === 0" class="mb-1 example-headers-align">
   <mat-card-title>{{'New receipt' | translate}} </mat-card-title>
-  <mat-expansion-panel [expanded]="step === 1 || step === 0" (opened)="receiptService.setStep(1)" hideToggle >
+  <mat-expansion-panel [expanded]="step === 1 || step === 0" (opened)="receiptService.setStep(1)" hideToggle>
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <h6>{{'Customer Info' | translate}}</h6>
+        <h4>{{'Customer Info' | translate}}</h4>
       </mat-panel-title>
       <mat-panel-description>
-        <span>{{customerInfoTitle || 'Customer Name' | translate}}{{customerId}} </span>
+        <h4>{{customerInfoTitle || 'Customer Name' | translate}}{{customerId}} </h4>
         <mat-icon class="text-right">account_circle</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
@@ -22,19 +22,19 @@
         <mat-form-field class="col-12">
           <input #firstName formControlName="firstName" matInput placeholder="{{'First name' | translate}}"
             [required]="requiredField" />
-          <mat-error class="mb-1" *ngIf="requiredField">First name or Last name or Company is required</mat-error>
+          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}</mat-error>
         </mat-form-field>
 
         <mat-form-field class="col-12">
           <input #lastName formControlName="lastName" matInput placeholder="{{'Last name' | translate}}"
             [required]="requiredField" />
-          <mat-error class="mb-1" *ngIf="requiredField">First name or Last name or Company is required</mat-error>
+          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}</mat-error>
         </mat-form-field>
 
         <mat-form-field class="col-12">
           <input #company formControlName="company" matInput placeholder="{{'Company' | translate}}"
             [required]="requiredField" />
-          <mat-error class="mb-1" *ngIf="requiredField">First name or Last name or Company is required</mat-error>
+          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}</mat-error>
 
         </mat-form-field>
       </div>
@@ -60,26 +60,27 @@
       <div formGroupName="customerMainInfo">
         <div *ngIf="showMoreInfo">
 
-            <mat-form-field class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6" >
-                <mat-select formControlName="customerType" placeholder="{{'Customer type' | translate}}">
-                  <mat-option [value]="customerType.TypeId" *ngFor="let customerType of customerTypes">{{currentlyLang === 'he'? customerType.TypeNameHeb : customerType.TypeNameEng}}</mat-option>
-                </mat-select>
-              </mat-form-field>
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+            <mat-select formControlName="customerType" placeholder="{{'Customer type' | translate}}">
+              <mat-option [value]="customerType.TypeId" *ngFor="let customerType of customerTypes">
+                {{currentlyLang === 'he'? customerType.TypeNameHeb : customerType.TypeNameEng}}</mat-option>
+            </mat-select>
+          </mat-form-field>
           <!-- <mat-form-field class="col-12">
             <input formControlName="customerType" matInput placeholder="{{'Customer type' | translate}}">
           </mat-form-field> -->
 
-            <mat-form-field class="example-full-width col-12" >
-              <input type="text" placeholder="{{'Title' | translate}}" aria-label="Number" matInput
-                formControlName="title" [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete">
-                <mat-option 
-                  *ngFor="let title of filtCustTitle | async; let i = index" [value]="currentlyLang === 'he'? title.TitleHeb : title.TitleEng">
-                  {{currentlyLang === 'he'? title.TitleHeb : title.TitleEng}}
-                </mat-option>
-              </mat-autocomplete>
-            </mat-form-field>
-      
+          <mat-form-field class="example-full-width col-12">
+            <input type="text" placeholder="{{'Title' | translate}}" aria-label="Number" matInput
+              formControlName="title" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option *ngFor="let title of filterCustTitle$ | async; let i = index"
+                [value]="currentlyLang === 'he'? title.TitleHeb : title.TitleEng">
+                {{currentlyLang === 'he'? title.TitleHeb : title.TitleEng}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
           <!-- <mat-form-field class="col-12">
             <input formControlName="title" matInput placeholder="{{'Title' | translate}}">
           </mat-form-field> -->
@@ -124,46 +125,45 @@
       <hr>
       <!-- <button type="button" mat-button color="primary" (click)="showMoreInfo=!showMoreInfo">{{!showMoreInfo? 'Show' : 'Hide' }} customer info</button> -->
       <div *ngIf="showMoreInfo">
-        <h6 class="mb-2">Phone number</h6>
+        <h4 class="mb-2">{{'Phone' | translate}}</h4>
         <div formArrayName="phones">
           <div *ngFor="let phone of phones.controls; let i=index">
             <div [formGroupName]="i" style="text-align: -webkit-auto">
-              <mat-form-field class="col-xs-1 col-sm-1 col-md-3 col-lg-3 col-xl-3" style="width: 130px" [style.fontSize]="'16px'">
-                <mat-select formControlName="PhoneTypeId" placeholder="{{'Phone type' | translate}}" >
-                  <mat-option [value]="2">Cell phone</mat-option>
-                  <mat-option [value]="4">Work phone</mat-option>
-                  <mat-option [value]="1">Home phone</mat-option>
+              <mat-form-field class="col-xs-1 col-sm-1 col-md-2 col-lg-2 col-xl-2" [style.fontSize]="'16px'">
+                <mat-select formControlName="PhoneTypeId" placeholder="{{'Phone type' | translate}}">
+                  <mat-option [value]="2">{{'Cell phone' | translate}}</mat-option>
+                  <mat-option [value]="4">{{'Work phone' | translate}}</mat-option>
+                  <mat-option [value]="1">{{'Home phone' | translate}}</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field class="col-xs-3 col-sm-3 col-md-8 col-lg-8 col-xl-8">
                 <input matInput placeholder="{{'Mobile phone' | translate}}" type="text" formControlName="phone">
               </mat-form-field>
-              <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 col-1" (click)="deletePhone(i)"
-                *ngIf="i !== 0" type="button" mat-stroked-button color="warn">delete</button>
-              <hr>
+              <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 mb-3" (click)="deletePhone(i)"
+                *ngIf="i !== 0" type="button" mat-stroked-button color="warn">{{'Delete' | translate}}</button>
             </div>
+            <hr>
+
           </div>
         </div>
-        <button *ngIf="phones.controls.length !== 10" type="button" mat-stroked-button color="primary"
-          (click)="addPhone()">{{'Add more phone' | translate}}</button>
+        <button *ngIf="phones.controls.length !== 10" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" type="button"
+          mat-raised-button style="background-color:  rgb(38, 87, 122); color: white" (click)="addPhone()">{{'Add more phone' | translate}}</button>
         <hr>
-        <h6 class="mb-2">Email</h6>
+        <h4 class="mb-2">{{'Email' | translate}}</h4>
         <div formArrayName="emails">
           <div *ngFor="let email of emails.controls; let i=index">
             <div [formGroupName]="i" style="text-align: -webkit-auto">
-              <mat-form-field class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 " style="width: 130px">
-                <input matInput placeholder="Email name" type="text" formControlName="emailname">
+              <mat-form-field class="col-xs- col-sm- col-md- col-lg-2 col-xl-2" [style.fontSize]="'16px'">
+                <input matInput placeholder="{{'Email name' | translate}}" type="text" formControlName="emailname">
               </mat-form-field>
-
-              <mat-form-field class="col-xs-4 col-sm-4 col-md-8 col-lg-8 col-xl-9">
-                <input matInput placeholder="{{'Email' | translate}} {{i + 1}}" type="text" formControlName="email">
+              <mat-form-field class="col-xs-4 col-sm-4 col-md-8 col-lg-8 col-xl-8">
+                <input matInput placeholder="{{'Email' | translate}}" type="text" formControlName="email">
               </mat-form-field>
-              <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 col-1" (click)="deleteEmail(i)"
-                *ngIf="i !== 0" type="button" mat-stroked-button color="warn">delete</button>
-              <hr>
+              <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 mb-3" (click)="deleteEmail(i)"
+                *ngIf="i !== 0" type="button" mat-stroked-button color="warn">{{'Delete' | translate}}</button>
             </div>
 
-
+            <hr style="color: black">
             <!-- <mat-form-field class="col-11">
               <input matInput placeholder="{{'Email' | translate}} {{i + 1}}" type="text" [formGroupName]="i">
             </mat-form-field>
@@ -171,37 +171,38 @@
               color="warn">delete</button> -->
           </div>
         </div>
-        <button *ngIf="emails.controls.length !== 10" type="button" mat-stroked-button color="primary"
-          (click)="addMail()">{{'Add more email' | translate}}</button>
+        <button *ngIf="emails.controls.length !== 10" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" type="button"
+          mat-raised-button style="background-color:  rgb(38, 87, 122); color: white" (click)="addMail()">{{'Add more email' | translate}}</button>
 
         <hr>
         <!-- <button type="button" mat-button color="primary"
           (click)="moreEmail=!moreEmail">{{'Add more email' | translate}}</button> -->
-        <h6 class="mb-2">Address</h6>
+        <h4 class="mb-2">{{'Address' | translate}}</h4>
         <div formArrayName="addresses" style="text-align: -webkit-auto">
-            <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2">
-                <mat-select formControlName="addresstypeid"  placeholder="{{'Address type' | translate}}">
-                  <mat-option [value]="3">Home</mat-option>
-                  <mat-option [value]="1">Work</mat-option>
-                  <mat-option [value]="2">Other</mat-option>
-                </mat-select>
-              </mat-form-field>
-          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2" >
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2">
+            <mat-select formControlName="addresstypeid" placeholder="{{'Address type' | translate}}">
+              <mat-option [value]="3">{{'Home' | translate}}</mat-option>
+              <mat-option [value]="1">{{'Work' | translate}}</mat-option>
+              <mat-option [value]="2">{{'Other' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2">
             <input type="text" placeholder="{{'City' | translate}}" aria-label="Number" matInput formControlName="city"
               [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
-              <mat-option *ngFor="let city of filteredOptions | async | slice:0:10; let i = index" [value]="city.CityName">
+              <mat-option *ngFor="let city of filteredOptions$ | async | slice:0:10; let i = index"
+                [value]="city.CityName">
                 {{city.CityName}}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
 
           <!-- <div *ngIf="moreAddress"> -->
-          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
             <input matInput placeholder="{{'Street' | translate}}" formControlName='street'>
           </mat-form-field>
 
-          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3" >
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
             <input matInput placeholder="{{'Zip' | translate}}" formControlName='zip'>
           </mat-form-field>
         </div>
@@ -210,28 +211,38 @@
         <!-- <button type="button" mat-button color="primary"
           (click)="moreAddress=!moreAddress">{{'Address' | translate}}</button> -->
         <hr>
-        <h6 *ngIf="customerInfo?.QuickGeneralGroupList.length > 0">{{'Groups' | translate}}</h6>
-        <mat-selection-list #shoes >
-          <mat-list-option *ngFor="let group of customerInfo?.QuickGeneralGroupList" [value]="group.GroupId">
-            {{group.GroupName}}
-          </mat-list-option>
-        </mat-selection-list>
+        <div>
+          <h4 *ngIf="customerInfo?.QuickGeneralGroupList.length > 0">{{'Groups' | translate}}</h4>
+          <mat-selection-list formControlName="groups">
+            <mat-list-option *ngFor="let group of customerInfo.QuickGeneralGroupList | async" [value]="group.GroupId">
+              {{group.GroupName}}
+            </mat-list-option>
+          </mat-selection-list>
+        </div>
       </div>
 
 
-      <p>
-        <button class="mb-2" id="goDown" type="button" mat-flat-button color="primary"
-          (click)="showMoreInfo=!showMoreInfo;" pageScroll href="#goDown">
-          {{showMoreInfo? 'Hide customer info' : 'Show customer info' | translate}}
+      <p id="goDown" pageScroll href="#goDown">
+        <button id="goDown" pageScroll href="#goDown" style="background-color: rgb(38, 87, 122); color: white"
+          *ngIf="!showMoreInfo" class="mb-2" type="button" mat-raised-button color="primary"
+          (click)="showMoreInfo=!showMoreInfo;">
+          {{'Show customer info' | translate}}
+        </button>
+        <button *ngIf="showMoreInfo" class="mb-2" style="background-color:  rgb(38, 87, 122); color: white"
+          type="button" mat-raised-button color="primary" (click)="showMoreInfo=!showMoreInfo;">
+          {{'Hide customer info' | translate}}
         </button>
       </p>
 
       <mat-action-row>
-        <button class="mr-1 ml-2" type="button" mat-raised-button color="accent" (click)="openStore()"
+        <button class="mr-1 ml-2" type="button" mat-raised-button
+          [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}" (click)="openStore()"
           [disabled]="requiredField === true">
           {{'Store' | translate}}
         </button>
-        <button type="submit" mat-raised-button color="primary" [disabled]="requiredField === true">
+        <button type="submit" mat-raised-button color="primary"
+          [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
+          [disabled]="requiredField === true">
           {{'Next' | translate}}
         </button>
       </mat-action-row>

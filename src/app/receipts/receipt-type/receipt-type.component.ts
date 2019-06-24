@@ -1,3 +1,4 @@
+import { LastSelection } from './../../models/lastSelection.model';
 import { ToastrService } from 'ngx-toastr';
 import { ServerErrorInterceptor } from './../../services/server-error-interceptor.service';
 import { Component, OnInit, EventEmitter, Output, Input, OnDestroy, DoCheck } from '@angular/core';
@@ -11,7 +12,7 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { Router } from '@angular/router';
 import { ReceiptType } from 'src/app/models/receiptType.interface';
 import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-receipt-type',
@@ -58,21 +59,16 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     this._paymentMethodId = this.receiptTypeGroup.get('paymentMethodId').value;
     this.getReceiptsData();
     this.getPaymentTypes();
-    this.checkLastSelection();
     // tslint:disable-next-line: max-line-length
     this.subscriptions.add(this.generalService.currentlyLang$.subscribe(data => this.currentlyLang = data));
 
-
     this.receiptTypeGroup.valueChanges.subscribe(() => {
       console.log('FORM', this.receiptTypeGroup);
-
     });
     this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
 
 
-    console.log('this.paymentMethodId', this.paymentMethodId);
-
-    this.subscriptions.add(this.creditCardService.currentlyCreditCardVarified.subscribe((isVerified: boolean) => {
+    this.subscriptions.add(this.creditCardService.currentlyCreditCardVerified.subscribe((isVerified: boolean) => {
       this.isVerified = isVerified;
 
     }));
@@ -100,6 +96,22 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
   }
   get creditCardPassword() {
     return this.receiptTypeGroup.get('creditCardPassword');
+  }
+
+  setPaymentMethodId(paymentMethodId: number) {
+    this.receiptTypeGroup.get('paymentMethodId').patchValue(paymentMethodId);
+  }
+  setReceiptType(receiptType: number) {
+    this.receiptTypeGroup.get('receiptTypeId').patchValue(receiptType);
+  }
+  setSelectedOrg(selectedOrg: number) {
+    this.receiptTypeGroup.get('selectedOrg').patchValue(selectedOrg);
+  }
+  setSelected_receiptIsForDonation(selected_receiptIsForDonation: boolean) {
+    this.receiptTypeGroup.get('selected_receiptIsForDonation').patchValue(selected_receiptIsForDonation);
+  }
+  selected_receiptCreditOrDebit(selected_receiptCreditOrDebit: boolean) {
+    this.receiptTypeGroup.get('selected_receiptCreditOrDebit').patchValue(selected_receiptCreditOrDebit);
   }
   ngDoCheck() {
     this.setValidatorToCreditPassword();
@@ -147,11 +159,12 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     this.receiptTypeGroup = this.fb.group({
       paymentMethodId: [''],
       receiptTypeId: [''],
-      selected_receiptIsForDonation: [''],
+      selected_receiptIsForDonation: [true],
       selected_receiptCreditOrDebit: [false],
       creditCardPassword: [''],
       selectedOrg: [1]
     });
+    this.checkLastSelection();
   }
   /**
   * Filter for receipt-types, depends on the options selected.
@@ -167,11 +180,18 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
         this.receiptTypes
       );
       this.newReceiptTypes = this.newReceiptTypes.filter(
-        e =>
-          e.DonationReceipt === selected_receiptIsForDonation &&
-          e.UseAsCreditReceipt === selected_receiptCreditOrDebit &&
-          e.orgid === selectedOrg
-      );
+        e => {
+          if (this.organisations.length > 0) {
+            return e.DonationReceipt === selected_receiptIsForDonation &&
+              e.UseAsCreditReceipt === selected_receiptCreditOrDebit &&
+              e.orgid === selectedOrg;
+          } else {
+            return e.DonationReceipt === selected_receiptIsForDonation &&
+              e.UseAsCreditReceipt === selected_receiptCreditOrDebit;
+
+          }
+
+        });
       // this.receiptType = this.receiptTypes[0].RecieptTypeId;
       // receiptTypeId.patchValue('');
 
@@ -218,14 +238,21 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
       }
       this.receiptService.newReceipt.Receipt.ReceiptHeader.RecieptType = selectedReceiptTypeId;
       this.receiptService.newReceipt.Receipt.ReceiptHeader.CurrencyId = this.selectedReceiptType.CurrencyId;
-      if (selected_receiptCreditOrDebit === false) {
-        localStorage.setItem('receipt-type', selectedReceiptTypeId);
-        localStorage.setItem('selectedOrg', selectedOrg);
-        localStorage.setItem('selected_receiptIsForDonation', selected_receiptIsForDonation);
+      if (selected_receiptCreditOrDebit === true) {
+        // this.generalService.setItemToLastSelection('receiptTypeId', selectedReceiptTypeId);
+        this.generalService.setItemToLastSelection('selectedOrg', selectedOrg);
+        this.generalService.setItemToLastSelection('selected_receiptIsForDonation', selected_receiptIsForDonation);
+
+        // localStorage.setItem('receiptType', selectedReceiptTypeId);
+        // localStorage.setItem('selectedOrg', selectedOrg);
+        // localStorage.setItem('selected_receiptIsForDonation', selected_receiptIsForDonation);
       } else {
-        localStorage.removeItem('receipt-type');
-        localStorage.removeItem('selectedOrg');
-        localStorage.removeItem('selected_receiptIsForDonation');
+        this.generalService.setItemToLastSelection('receiptTypeId', selectedReceiptTypeId);
+        this.generalService.setItemToLastSelection('selectedOrg', selectedOrg);
+        this.generalService.setItemToLastSelection('selected_receiptIsForDonation', selected_receiptIsForDonation);
+        // localStorage.removeItem('receiptType');
+        // localStorage.removeItem('selectedOrg');
+        // localStorage.removeItem('selected_receiptIsForDonation');
       }
       this.receiptService.setSelectedReceiptType(this.selectedReceiptType);
       this.receiptService.selReceiptCurrencyId.next(this.selectedReceiptType.CurrencyId);
@@ -236,7 +263,9 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
         }
       }
       this.receiptService.paymentMethod.next(paymentMethodId);
-      localStorage.setItem('paymenthMethod', paymentMethodId);
+      this.generalService.setItemToLastSelection('paymenthMethodId', paymentMethodId);
+
+      // localStorage.setItem('paymenthMethod', paymentMethodId);
 
       // this.receiptService.newReceipt.receiptType = this.selectOptForReceiptType;
       this.receiptService.checkSelectedRecType.next();
@@ -252,9 +281,9 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     // console.log(this.selectedPayMethod);
     this.checkPayType(paymentMethodId);
     this._paymentMethodId = paymentMethodId;
-    if (paymentMethodId === undefined) {
-      this._paymentMethodId = +localStorage.getItem('paymenthMethod');
-    }
+    // if (paymentMethodId === undefined) {
+    //   this._paymentMethodId = +localStorage.getItem('paymenthMethod');
+    // }
     if (this._paymentMethodId === 3) {
       this.dialog.open(CreditCardComponent, { width: '350px' });
       console.log(this.paymentMethodId);
@@ -278,31 +307,42 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
       this.nextStepDisabled = true;
     }
   }
-  lastSelReceiptType() {
-    const receiptType = localStorage.getItem('receipt-type') ? +localStorage.getItem('receipt-type') : '';
-    return receiptType;
-  }
+  // lastSelReceiptType() {
+  //   const receiptType = localStorage.getItem('receipt-type') ? +localStorage.getItem('receipt-type') : '';
+  //   return receiptType;
+  // }
   checkLastSelection() {
-    let forDonation;
-    if (localStorage.getItem('selected_receiptIsForDonation')) {
-      forDonation = localStorage.getItem('selected_receiptIsForDonation') == 'true' ? true : false;
-    } else {
-      forDonation = true;
-    }
-    this.receiptTypeGroup.patchValue({
-      paymentMethodId: localStorage.getItem('paymenthMethod') ? +localStorage.getItem('paymenthMethod') : '',
-      receiptTypeId: localStorage.getItem('receipt-type') ? +localStorage.getItem('receipt-type') : '',
-      selected_receiptIsForDonation: forDonation,
-      selectedOrg: localStorage.getItem('selectedOrg') ? +localStorage.getItem('selectedOrg') : 1,
-    });
+    this.subscriptions.add(this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
+        this.setReceiptType(lastSelect.receiptTypeId);
+        this.setPaymentMethodId(lastSelect.paymenthMethodId);
+        this.setSelectedOrg(lastSelect.selectedOrg);
+        this.setSelected_receiptIsForDonation(lastSelect.selected_receiptIsForDonation);
+        // this.selected_receiptCreditOrDebit(lastSelect.selected_receiptCreditOrDebit);
+    },
+      err => console.log('ERROR', err),
+
+    ));
+    //   let forDonation;
+    //   if (localStorage.getItem('selected_receiptIsForDonation')) {
+    //     forDonation = localStorage.getItem('selected_receiptIsForDonation') == 'true' ? true : false;
+    //   } else {
+    //     forDonation = true;
+    //   }
+    //   this.receiptTypeGroup.patchValue({
+    //     paymentMethodId: localStorage.getItem('paymenthMethod') ? +localStorage.getItem('paymenthMethod') : '',
+    //     receiptTypeId: localStorage.getItem('receipt-type') ? +localStorage.getItem('receipt-type') : '',
+    //     selected_receiptIsForDonation: forDonation,
+    //     selectedOrg: localStorage.getItem('selectedOrg') ? +localStorage.getItem('selectedOrg') : 1,
+    //   });
   }
   clearValueOfReceiptType() {
-   this.receiptTypeGroup.get('receiptTypeId').patchValue('');
-   console.log('works');
+    this.receiptTypeGroup.get('receiptTypeId').patchValue('');
+    console.log('works');
   }
   ngOnDestroy() {
     console.log('RECEIPT TYPE SUBSCRIBE', this.subscriptions);
     this.subscriptions.unsubscribe();
     console.log('RECEIPT TYPE SUBSCRIBE On Destroy', this.subscriptions);
   }
+
 }

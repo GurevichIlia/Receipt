@@ -1,3 +1,4 @@
+import { LastSelection } from './../../models/lastSelection.model';
 import { CreditCardService } from './credit-card.service';
 import { CreditCardVerify } from './../../models/credirCardVerify.model';
 import { GeneralSrv } from './../../services/GeneralSrv.service';
@@ -25,7 +26,7 @@ export class CreditCardComponent implements OnInit {
   termNo: string;
   termName: string;
   verifyCreditCard: Creditcard;
-  accountId: number;
+  _accountId: number;
   acc: object;
   heLang: boolean;
   enLang: boolean;
@@ -41,7 +42,6 @@ export class CreditCardComponent implements OnInit {
     private credirCardService: CreditCardService,
     private creditCard: CreditCardService
   ) {
-    this.accountId = +localStorage.getItem('creditCardAccId');
     this.creditCardForm = this.fb.group({
       creditCard: ['', [<any>CreditCardValidator.validateCCNumber]],
       customerName: ['', Validators.required],
@@ -53,9 +53,15 @@ export class CreditCardComponent implements OnInit {
       // firstPayment: ['', Validators.required],
       eachPayment: [{ value: null, disabled: true }],
       manualApprNum: [''],
-      accountId: [this.accountId, Validators.required],
+      accountId: [this._accountId, Validators.required],
     });
-    console.log('AccountID', this.creditCardForm.get('accountId'));
+    console.log('_AccountID', this.accountId.value);
+    // this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
+    //   this.creditCardForm.get('accountId').patchValue(lastSelect.creditCardAccId);
+    // });
+  }
+  get accountId() {
+    return this.creditCardForm.get('accountId');
   }
   ngOnInit() {
     this.setFullName(this.receiptService.getFirstLastName());
@@ -69,12 +75,13 @@ export class CreditCardComponent implements OnInit {
         this.heLang = false;
       }
     }));
-    console.log('accountCred', this.creditCardForm.get('accountId'));
+    this.getLastSelection();
+    console.log('accountCred', this.accountId.value);
     this.subscription.add(this.generalService.receiptData.subscribe(data => {
       this.accounts = data['Accounts'];
     }));
-    this.subscription.add(this.creditCardForm.controls.accountId.valueChanges.subscribe(accountCredId => {
-      this.accountId = accountCredId;
+    this.subscription.add(this.accountId.valueChanges.subscribe(accountCredId => {
+      this._accountId = accountCredId;
       this.pickAccount();
       console.log(accountCredId);
     }));
@@ -92,64 +99,78 @@ export class CreditCardComponent implements OnInit {
     this.MatdialogRef.close();
   }
   submitCreditCard(form) {
-    if (this.creditCardForm.controls.numberOfPayments.value >= 0) {
-      if (this.creditCardForm.controls.amount.value >= 0) {
-        const expirationDate = form.value.expirationDate.substring(0, 9);
-        const cvv = form.value.cvv.substring(0, 4);
-        const creditCardNumber = form.value.creditCard.replace(/\s+/g, '');
-        this.verifyCreditCard = {
-          accountid: form.value.accountId,
-          osumtobill: +this.creditCardForm.controls.amount.value,
-          ocardvaliditymonth: expirationDate.substring(0, 2),
-          oCardValidityYear: expirationDate.substring(5, 9),
-          ocardnumber: creditCardNumber,
-          ocardownerid: form.value.tz,
-          cvv: cvv,
-          customername: form.value.customerName,
-          ouserpassword: '',
-          oapprovalnumber: form.value.manualApprNum,
-          thecurrency: 'NIS',
-          oNumOfPayments: this.creditCardForm.controls.numberOfPayments.value,
-          ofirstpaymentsum: ''
-        };
-
-        console.log(this.verifyCreditCard);
-        this.subscription.add(this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {
-          console.log(res);
-          if (res['IsError'] === true) {
-            this.toastr.error('Credit card not verified', res['ErrMsg'], {
-              positionClass: 'toast-top-center'
-            });
-          } else {
-            this.credirCardService.verifiedCreditCardDetails = this.verifyCreditCard;
-            this.credirCardService.credCardIsVerified.next(true);
-            const data = res['Data'];
-            console.log('Credit card verified', data)
-            this.toastr.success('Credit card verified', '', {
-              positionClass: 'toast-top-center'
-            });
-            localStorage.setItem('creditCardAccId', this.verifyCreditCard.accountid.toString());
-            this.closeModal();
-          }
-        }));
-        console.log(form.value.cvv);
-        this.receiptService.amount.next(this.totalPaymentAmount);
+    if (this.accountId.value === null || this.accountId.value === '' || this.accountId.value === undefined) {
+      this.toastr.warning('', 'Please select the account', {
+        positionClass: 'toast-top-center'
+      });
+    } else {
+      if (this.creditCardForm.controls.numberOfPayments.value >= 0) {
+        if (this.creditCardForm.controls.amount.value >= 0) {
+          const expirationDate = form.value.expirationDate.substring(0, 9);
+          const cvv = form.value.cvv.substring(0, 4);
+          const creditCardNumber = form.value.creditCard.replace(/\s+/g, '');
+          this.verifyCreditCard = {
+            accountid: form.value.accountId,
+            osumtobill: +this.creditCardForm.controls.amount.value,
+            ocardvaliditymonth: expirationDate.substring(0, 2),
+            oCardValidityYear: expirationDate.substring(5, 9),
+            ocardnumber: creditCardNumber,
+            ocardownerid: form.value.tz,
+            cvv: cvv,
+            customername: form.value.customerName,
+            ouserpassword: '',
+            oapprovalnumber: form.value.manualApprNum,
+            thecurrency: 'NIS',
+            oNumOfPayments: this.creditCardForm.controls.numberOfPayments.value,
+            ofirstpaymentsum: ''
+          };
+          console.log(this.verifyCreditCard);
+          this.subscription.add(this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {
+            console.log(res);
+            if (res['IsError'] === true) {
+              this.toastr.error('Credit card not verified', res['ErrMsg'], {
+                positionClass: 'toast-top-center'
+              });
+            } else {
+              this.credirCardService.verifiedCreditCardDetails = this.verifyCreditCard;
+              this.credirCardService.credCardIsVerified.next(true);
+              const data = res['Data'];
+              console.log('Credit card verified', data)
+              this.toastr.success('Credit card verified', '', {
+                positionClass: 'toast-top-center'
+              });
+              this.generalService.setItemToLastSelection('creditCardAccId', this.verifyCreditCard.accountid);
+              // localStorage.setItem('creditCardAccId', this.verifyCreditCard.accountid.toString());
+              this.closeModal();
+            }
+          }));
+          console.log(form.value.cvv);
+          this.receiptService.amount.next(this.totalPaymentAmount);
+        } else {
+          this.toastr.warning('Amount is invalid', '', {
+            positionClass: 'toast-top-center'
+          });
+        }
       } else {
-        this.toastr.warning('Amount is invalid', '', {
+        this.toastr.warning('Number of payments is invalid', '', {
           positionClass: 'toast-top-center'
         });
       }
-    } else {
-      this.toastr.warning('Number of payments is invalid', '', {
-        positionClass: 'toast-top-center'
-      });
     }
   }
-
-
+  getLastSelection() {
+    this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
+      if (lastSelect === null) {
+      } else {
+        this.accountId.patchValue(lastSelect.creditCardAccId);
+        this._accountId = lastSelect.creditCardAccId;
+        this.pickAccount();
+      }
+    });
+  }
   pickAccount() {
     for (const acc of this.accounts) {
-      if (acc['AccountId'] === this.accountId) {
+      if (acc['AccountId'] === this._accountId) {
         this.termNo = acc['ASHRAY'];
         this.termName = acc['Username'];
       }

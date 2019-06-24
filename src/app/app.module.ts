@@ -4,6 +4,8 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgxPageScrollCoreModule } from 'ngx-page-scroll-core';
 import { NgxPageScrollModule } from 'ngx-page-scroll';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -66,6 +68,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ModalFinalScreenComponent
   ],
   imports: [
+    ScrollingModule,
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,

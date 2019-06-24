@@ -1,3 +1,5 @@
+import { LastSelection } from './../../models/lastSelection.model';
+import { Emails } from './../../models/emails.model';
 import { FinalResolve } from 'src/app/models/finalResolve.model';
 import { ModalFinalScreenComponent } from './../modals/modal-final-screen/modal-final-screen.component';
 import { Component, OnInit, Input, OnChanges, ElementRef, ViewChild, NgZone, OnDestroy } from '@angular/core';
@@ -82,38 +84,37 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     // console.log('FILTER', this.nameFilter)
     // console.log('FILTER', this.nameFilter)
   }
-  getCustomerNameList() {
-
-  }
   ngOnInit() {
     this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
     this.subscriptions.add(this.receiptService.currentlyNewCustomer.subscribe((customerStatus: boolean) => {
       this.newCustomer = customerStatus;
-      if (this.newCustomer === false) {
-        this.proccessReceipt.get('customerName').patchValue(this.listOfCustomersName[0]);
-      }
     }));
+    this.generalService.currentlyLang$.subscribe((lang: string) => this.currentlyLang = lang);
     this.createProcessReceiptForm();
     this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
       this.receiptsType = data['ReceiptTypes'];
 
     }));
+
     this.subscriptions.add(this.receiptService.currentlyName.subscribe(name => {
       this.customerName = name;
-      if (this.newCustomer === true) {
-        this.proccessReceipt.get('customerName').patchValue(this.customerName);
+      this.receiptName.patchValue(this.customerName);
+    }));
 
-      }
-    }));
-    this.subscriptions.add(this.receiptService.currentlyAmount.subscribe(amount => {
-      this.totalAmount = amount;
-      this.proccessReceipt.get('totalPayAmount').patchValue(amount);
-      if (this.currentlyStoreAmount > this.totalAmount) {
-        this.amountError = true;
-      } else {
-        this.amountError = false;
-      }
-    }));
+    this.compareStoreAndTotalAmount();
+
+    this.subscriptions.add(this.receiptService.currentCustomerEmails
+      .subscribe((emails: Emails[]) => {
+        if (emails.length === 0) {
+        } else {
+          this.sendToEmail.patchValue(emails[0].email);
+        }
+      }));
+
+    this.subscriptions.add(this.receiptService.currentNameOfPaymentFor.subscribe(
+      (nameOfPaymentFor: string) => {
+        this.receiptFor.patchValue(nameOfPaymentFor);
+      }));
     this.subscriptions.add(this.receiptService.checkSelectedRecType.subscribe(() => {
       this.getSelectedReceiptType();
     }));
@@ -137,11 +138,28 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       sendToPhone: [''],
       showOnScreen: [true]
     });
+    this.getLastSelection();
+  }
+  getLastSelection() {
+    this.subscriptions.add(this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
+      if (this.currentlyLetters.length > 0) {
+        for (const letter of this.currentlyLetters) {
+          if (letter.ThanksLetterId === lastSelect.receiptTemplate) {
+            this.receiptTemplate.patchValue(lastSelect.receiptTemplate);
+            break;
+          } else {
+            this.receiptTemplate.patchValue('');
+          }
+        }
+      } else {
+        this.receiptTemplate.patchValue('');
+      }
+    }));
   }
   get totalPayAmount() {
     return this.proccessReceipt.get('totalPayAmount');
   }
-  get totalcustomerNamePayAmount() {
+  get receiptName() {
     return this.proccessReceipt.get('customerName');
   }
   get receiptFor() {
@@ -176,13 +194,24 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     const filterValue = value.toLowerCase();
     return this.listOfCustomersName.filter(name => name.toLowerCase().includes(filterValue));
   }
-
+  compareStoreAndTotalAmount() {
+    this.subscriptions.add(this.receiptService.currentlyAmount.subscribe(amount => {
+      this.totalAmount = amount;
+      this.proccessReceipt.get('totalPayAmount').patchValue(amount);
+      if (this.currentlyStoreAmount > this.totalAmount) {
+        this.amountError = true;
+      } else {
+        this.amountError = false;
+      }
+    }));
+  }
   filterOptionReceiptFor() {
     this.filteredOptions = this.proccessReceipt.controls.receiptFor.valueChanges
       .pipe(
         startWith(''),
         map(value => this._filter(value))
       );
+    console.log('this.filteredOptions', this.filteredOptions);
   }
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -200,6 +229,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       this.thanksLetters = data['ReceiptThanksLetter'];
 
       this.currentlyLetters = this.thanksLetters.filter(receipt => receipt.ReceiptId === id);
+      this.getLastSelection();
       console.log('this.currentlyLetters', this.currentlyLetters)
     }));
   }
@@ -243,31 +273,23 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedReceipt = this.receiptService.selReceiptType;
     this.selectedReceiptName = this.selectedReceipt['RecieptName'];
     this.getReceiptThanksLetters(this.selectedReceipt['RecieptTypeId']);
-    console.log('this.selectedReceipt', this.selectedReceiptName);
   }
   changePosition() {
     return this.generalService.changePositionElement();
   }
 
   addProccessReceiptToReceipt() {
+    debugger
     if (this.receiptTemplate.value === null || this.receiptTemplate.value === '') {
-      this.toaster.warning('', 'Please select a thanks letter', {
+      const message = this.currentlyLang === 'he' ? 'בחר מכתב תודה' : 'Please select a thanks letter';
+      this.toaster.warning('', message, {
         positionClass: 'toast-top-center'
       });
-    } else {
+    } else if (this.amountError === false) {
       const newReceiptHeader: ReceiptHeader = this.receiptService.getReceiptHeader();
       newReceiptHeader.SendByEmailTo = this.sendToEmail.value;
       newReceiptHeader.ThanksLetterId = this.receiptTemplate.value;
       newReceiptHeader.WhatFor = this.receiptFor.value;
-      // this.receiptService.setReceiptHeaderItems('FileAs', 'fileAs');
-      // this.receiptService.setReceiptHeaderItems('fname', 'firstName');
-      // this.receiptService.setReceiptHeaderItems('lname', 'lastName');
-      // this.receiptService.setReceiptHeaderItems('Company', 'company');
-      // this.receiptService.setReceiptHeaderItems('Titel', 'title');
-      // this.receiptService.setReceiptHeaderItems('CustomerCode', 'tZ');
-      // this.receiptService.setReceiptHeaderItems('Zip', 'zip');
-      // this.receiptService.setReceiptHeaderItems('CityName', 'city');
-      // this.receiptService.setReceiptHeaderItems('Street', 'street');
       this.receiptService.setTotalAmount(+this.totalAmount);
       console.log(this.receiptService.newReceipt);
       const newReceipt = this.receiptService.getFullNewReceipt();
@@ -279,20 +301,28 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
           this.toaster.error('Please contact customer support', `Something went wrong ${res.moreinfo}`, {
             positionClass: 'toast-top-center'
           });
-          console.log(this.receiptService.newReceipt, res);
+          console.log('ERROR', this.receiptService.newReceipt, res);
         } else {
           const message = this.currentlyLang === 'he' ? 'עסקה בוצעה בהצלחה' : 'Transaction successfully completed';
           this.receiptService.refreshNewReceipt();
           this.toaster.success('', message, {
             positionClass: 'toast-top-center'
           });
+          this.generalService.setItemToLastSelection('receiptFor', this.receiptFor.value);
+          this.generalService.setItemToLastSelection('receiptTemplate', this.receiptTemplate.value);
+          this.generalService.saveLastSelection();
+          this.receiptService.createNewEvent.next();
           this.receiptService.nextStep();
           this.finalResolve = res;
           // this.receiptService.refreshNewReceipt();
-          console.log('ERROR', res);
+          console.log('Success', res);
         }
       }));
-
+    } else {
+      const message = this.currentlyLang === 'he' ? 'אנא שנה את הסכום' : 'Please change the amount';
+      this.toaster.warning('', message, {
+        positionClass: 'toast-top-center'
+      });
     }
 
   }
@@ -306,15 +336,16 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     }));
   }
   createNewReceipt() {
+    this.proccessReceipt.reset();
+    this.sendToEmail.patchValue('email');
+    this.showOnScreen.patchValue(true);
     this.receiptService.refreshNewReceipt();
     this.receiptService.createNewEvent.next();
     this.receiptService.setStep(1);
   }
   showReceiptTemplate() {
-// tslint:disable-next-line: max-line-length
-    window.open('http://createpays.amax.co.il/CreatesessionReceipt.aspx?oid=5256e46f-2bd7-4c6a-9d5b-11f4263b27d9&orgid=153&orgname=jaffanet1&RecieptType=10&Currency=NIS&forprint=1', '_blank');
-    // this.router.navigateByUrl('http://createpays.amax.co.il/CreatesessionReceipt.aspx?oid=5256e46f-2bd7-4c6a-9d5b-11f4263b27d9&orgid=153&orgname=jaffanet1&RecieptType=10&Currency=NIS&forprint=1');
-    this.receiptService.createNewEvent.next();
+    window.open(this.finalResolve.link, '_blank');
+    this.createNewReceipt();
   }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

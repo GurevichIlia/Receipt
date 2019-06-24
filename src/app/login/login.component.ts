@@ -89,14 +89,15 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.toastr.success('', 'בהצלחה', { positionClass: 'toast-top-center' });
 
             this.authen.login(response.Data);
-            this.generalSrv.setOrgName(this.form.controls['orgid'].value);
+            this.generalSrv.setOrgName(this.form.controls['orgid'].value, response.Data.EmployeeId);
             // this.router.navigate(["newreceipt"]);
             // debugger;
             this.router.navigate(['newreceipt']);
           }
         },
         error => {
-          this.toastr.error(error, 'Something went wrong', { positionClass: 'toast-top-center' });
+          const err = error.ok === false ? 'Check the internet connection' : error;
+          this.toastr.error(err, 'Something went wrong', { positionClass: 'toast-top-center' });
 
           console.log(error);
           // this.disableAfterclick = false;

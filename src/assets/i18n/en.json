@@ -1,6 +1,8 @@
 {     "Create a new Receipt": "Create a new receipt",
       "Create new": "Create new",
       "Search customer": "Search customer",
+      "LogOut": "LogOut",
+
 
       "New receipt": "New receipt",
       "Customer Info": "Customer Info",
@@ -31,6 +33,16 @@
       "Add more email": "Add more email",
       "Show customer info": "Show customer info",
       "Hide customer info": "Hide customer info",
+      "Cell phone": "Cell phone",
+      "Home phone": "Home phone",
+      "Work phone": "Work phone",
+      "Email name": "Email name",
+      "Address type": "Address type",
+      "Work": "Work",
+      "Home": "Home",
+      "Other": "Other",
+      "Phone": "Phone",
+      "First name or Last name or Company is required": "First name or Last name or Company is required",
 
       "Product category": "Product category",
       "Product name": "Product name",
@@ -78,6 +90,8 @@
       "Delete": "Delete",
       "Total amount": "Total amount",
       "Payment info": "Payment info",
+      "Add": "Add",
+
 
 
       "Proccess receipt": "Proccess receipt",
@@ -93,10 +107,15 @@
       "Phone number": "Phone number",
       "Show receip on screen": "Show receip on screen",
       "Do not show": "Don't show",
-      "Finish": "Finish"
-     
+      "Finish": "Finish",
+      "Please select a thanks letter": "Please select a thanks letter",
+      "Amount less than the amount in the store": "Amount less than the amount in the store",
+      
 
-     
+     "Customer id": "Customer id",
+     "Receipt number": "Receipt number",
+     "Create the new receipt": "Create the new receipt",
+     "Show receipt info": "Show receipt info"
 
   
 

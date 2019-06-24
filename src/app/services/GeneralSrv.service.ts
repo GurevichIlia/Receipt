@@ -1,3 +1,4 @@
+import { LastSelection } from './../models/lastSelection.model';
 import { CreditCardVerify } from './../models/credirCardVerify.model';
 import { Injectable, NgZone } from '@angular/core';
 import { serviceConfig } from '../Myappconfig';
@@ -12,6 +13,7 @@ import { Receipt } from '../models/receipt.model';
 import { NewReceipt } from '../models/newReceipt.model';
 // import { AlertController } from "@ionic/angular";
 import { Guid } from 'guid-typescript';
+import { ReceiptsService } from './receipts.service';
 
 
 @Injectable()
@@ -25,11 +27,21 @@ export class GeneralSrv {
   position;
   language = new BehaviorSubject('he');
   currentlyLang$ = this.language.asObservable();
-  orgName = sessionStorage.getItem('OrgName');
+  orgName: string;
   httpOptions
+  _lastSelection: LastSelection = <LastSelection>{};
   private subscribtions: Subscription = new Subscription();
-  constructor(private http: HttpClient, public authen: AuthenticationService, private zone: NgZone) {
-    this.orgName = sessionStorage.getItem('OrgName');
+  lastSelect = new BehaviorSubject(this._lastSelection);
+  currentLastSelect = this.lastSelect.asObservable();
+
+  constructor(private http: HttpClient,
+    private authen: AuthenticationService,
+    private zone: NgZone,
+    private receiptService: ReceiptsService) {
+    this.orgName = localStorage.getItem('OrgName');
+    console.log('ORG NAME', this.orgName);
+    this.userGuid = localStorage.getItem('userGuid');
+    console.log('this.userGuid', this.userGuid)
     this.currentlyLang$.subscribe(lang => {
       this.zone.runOutsideAngular(() => {
         // setInterval(() => {
@@ -45,8 +57,7 @@ export class GeneralSrv {
         // }, 1);
       });
     });
-
-    this.baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
+    this.baseUrl = 'https://jaffawebapi.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
     this.httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -94,7 +105,7 @@ export class GeneralSrv {
         Authorization: 'Bearer ' + this.authen.tokenNo
       })
     };
-// tslint:disable-next-line: max-line-length
+    // tslint:disable-next-line: max-line-length
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerDataByCustomerID?urlAddr=${this.orgName}&customerid=${customerId}`, httpOptions)
       .pipe(map(response => response.Data));
   }
@@ -272,15 +283,17 @@ export class GeneralSrv {
     };
     return this.http.post(`${this.baseUrl}Receipt/SaveReceiptInfo?urlAddr=${this.orgName}`, receipt, httpOptions);
   }
-  setOrgName(orgName: string) {
+  setOrgName(orgName: string, employeeId: string) {
     this.orgName = orgName;
-    sessionStorage.setItem('OrgName', this.orgName);
-    this.createGuidForLocalStorage(orgName);
+    localStorage.setItem('OrgName', this.orgName);
+    this.createGuidForLocalStorage(orgName, employeeId);
   }
-  createGuidForLocalStorage(orgName: string) {
-    this.id = Guid.create();
-    this.userGuid = `${this.id}_${orgName}`;
-    console.log(this.userGuid);
+  createGuidForLocalStorage(orgName: string, employeeId: string) {
+    // this.id = Guid.create();
+    this.userGuid = `${orgName}_${employeeId}`.toString();
+    // console.log('ID', this.id.toString())
+    localStorage.setItem('userGuid', this.userGuid);
+    console.log('GUID', this.userGuid.toString());
   }
   getItemsFromLocalStorage(item) {
     if (localStorage.getItem(item)) {
@@ -289,13 +302,52 @@ export class GeneralSrv {
       return '';
     }
   }
-  addSubscription(subscription$) {
-    debugger
-    this.subscribtions.add(subscription$);
-    console.log('SUBSCRIPTION', this.subscribtions);
+  getUserGuid() {
+    return this.userGuid;
   }
-  unsubscribeAll() {
-    this.subscribtions.unsubscribe();;
-    console.log('UNSUBSCRIPTION', this.subscribtions);
+  get lastSelection() {
+    return this._lastSelection;
+  }
+  set lastSelection(value: any) {
+    this._lastSelection = value;
+  }
+  saveLastSelection() {
+    const lastSelection = this.lastSelection;
+    const key = this.getUserGuid();
+
+    localStorage.setItem(key, JSON.stringify(lastSelection));
+    this.lastSelection = <LastSelection>{};
+    console.log('LAS SELECT clear', this.lastSelection);
+  }
+  setItemToLastSelection(key: string, value: any) {
+    this.lastSelection[key] = value;
+    console.log(this.lastSelection);
+  }
+  getLastSelectionFromLocalStore() {
+    this.setItemToLastSelection('selected_receiptCreditOrDebit', false);
+    const userGuit = this.getUserGuid();
+    const lastSelection: LastSelection = JSON.parse(localStorage.getItem(userGuit));
+    if (lastSelection === null || lastSelection === undefined) {
+      this._lastSelection = {
+        accountId: null,
+        associationId: null,
+        creditCardAccId: null,
+        paymentFor: null,
+        paymenthMethodId: null,
+        project: null,
+        projectCategory: null,
+        receiptTypeId: null,
+        receiptFor: '',
+        receiptTemplate: null,
+        selectedOrg: 1,
+        selected_receiptCreditOrDebit: false,
+        selected_receiptIsForDonation: true
+      }
+      console.log('LAS SELECT clear', this.lastSelection);
+    } else {
+      this.lastSelection = lastSelection;
+    }
+    this.lastSelect.next(this.lastSelection);
+    console.log('LAS SELECT', this.lastSelection);
   }
 }

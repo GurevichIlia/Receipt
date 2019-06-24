@@ -12,3 +12,7 @@ mat-form-field {
   margin-right: 12px;
 }
 
+.header {
+  align-items: flex-end;
+  direction: initial;
+}

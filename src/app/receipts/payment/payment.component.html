@@ -13,17 +13,20 @@
   <div *ngIf="paymentMethodId !== null" [style.fontSize]="'20px'">
     <div class="row">
       <form [formGroup]="paymentOptionsGroup">
-        <div [ngClass]="changePosition()" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+        <div [ngClass]="changePosition()">
           <mat-form-field *ngIf="paymentMethodId !== 2 && paymentMethodId !== 7"
-            class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
-            <input formControlName="paymentAmount" type="number" #TotalAmount matInput placeholder="{{'Payment amount' | translate}}" required>
+            class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+            <!-- <mat-icon class="ml-2" matPrefix>money</mat-icon> -->
+            <input formControlName="paymentAmount" type="number" #TotalAmount matInput
+              placeholder="{{'Payment amount' | translate}}" required>
           </mat-form-field>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
           <div [ngClass]="changePosition()" class="row">
             <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 ml-1">
               <mat-select placeholder="{{'Currency' | translate}}" name="currency"
-                [value]="receiptService.selReceiptCurrencyId" formControlName="currency" required >
+                [value]="receiptService.selReceiptCurrencyId" formControlName="currency" required>
                 <mat-option [value]="currency.CurrencyId" *ngFor="let currency of currencyTypes; let i = index">
                   {{currency.CurrencyId}}
                 </mat-option>
@@ -54,8 +57,8 @@
 
             <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8"
               *ngIf="paymentMethodId !== 2 && paymentMethodId !== 7">
-              <input matInput [matDatepicker]="picker" placeholder="{{'Due date' | translate}}" formControlName="dueDate"
-              >
+              <input matInput [matDatepicker]="picker" placeholder="{{'Due date' | translate}}"
+                formControlName="dueDate">
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
@@ -84,8 +87,9 @@
 
 
                 <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                  <mat-select #ProjCatName placeholder="{{'Projects categories' | translate}}"  formControlName="projectCategory" required>
-                    <mat-option [value]="cat.ProjectCategoryId" *ngFor="let cat of projectsCategories; let i = index" >
+                  <mat-select #ProjCatName placeholder="{{'Projects categories' | translate}}"
+                    formControlName="projectCategory" required>
+                    <mat-option [value]="cat.ProjectCategoryId" *ngFor="let cat of projectsCategories; let i = index">
                       {{currentlyLang === 'he' ? cat.CategoryName : cat.CategoryNameEng}}
                     </mat-option>
                   </mat-select>
@@ -93,8 +97,7 @@
 
                 <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                   <mat-select placeholder="{{'Projects' | translate}}" formControlName="project" required>
-                    <mat-option [value]="project.ProjectId"
-                      *ngFor="let project of filteredProjects; let i = index">
+                    <mat-option [value]="project.ProjectId" *ngFor="let project of filteredProjects; let i = index">
                       {{project.ProjectName}}
                     </mat-option>
                   </mat-select>
@@ -164,12 +167,18 @@
               name="checkNum" [(ngModel)]="newCheckOrWire.checkNum" required>
           </mat-form-field>
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-2 col-xl-2 mb-2">
-            <button [disabled]="paymentOptionsGroup.invalid || myForm.invalid" class="ml-1" mat-raised-button color="primary"
-              type="submit">Add</button>
+            <button [disabled]="paymentOptionsGroup.invalid || myForm.invalid" class="ml-1" mat-raised-button
+              type="submit"
+              [ngStyle]="{'background-color': paymentOptionsGroup.invalid === false && myForm.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': paymentOptionsGroup.invalid === false && myForm.invalid === false ? 'white' : ''}"
+
+              >{{'Add' | translate }}</button>
           </div>
+          <!-- paymentOptionsGroup {{paymentOptionsGroup.invalid}}
+          myForm {{myForm.invalid}} -->
         </div>
       </form>
-      <div class="table-responsive-sm" *ngIf="this.receiptService.newReceipt.Receipt.recieptlines.length > 0" [style.fontSize]="'14px'">
+      <div class="table-responsive-sm" *ngIf="this.receiptService.newReceipt.Receipt.recieptlines.length > 0"
+        [style.fontSize]="'14px'">
         <table class="table table-striped mb-2">
           <thead>
             <tr>
@@ -204,10 +213,13 @@
   </div>
 
   <mat-action-row>
-    <button mat-raised-button color="accent" class="mr-1 ml-1" (click)="receiptService.prevStep()">
+    <button mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" class="mr-1 ml-1"
+      (click)="receiptService.prevStep()">
       {{'Previous' | translate}}
     </button>
-    <button type="button" mat-raised-button color="primary" [disabled]="nextStepDisabled" (click)="addPaymentToReceipt()" >
+    <button type="button" mat-raised-button
+      [ngStyle]="{'background-color': nextStepDisabled === false ? 'rgb(38, 87, 122)' : '' , 'color': nextStepDisabled === false ? 'white' : ''}"
+      [disabled]="nextStepDisabled" (click)="addPaymentToReceipt()">
       {{'Next' | translate}}
     </button>
   </mat-action-row>

@@ -1,3 +1,7 @@
+import { GeneralSrv } from './GeneralSrv.service';
+import { Addresses } from './../models/addresses.model';
+import { Emails } from './../models/emails.model';
+import { Phones } from './../models/phones.model';
 import { Product } from './../models/products.model';
 import { ReceiptHeader } from './../models/receiptHeader.model';
 import { Customermaininfo } from './../models/customermaininfo.model';
@@ -11,6 +15,8 @@ import { Creditcard } from '../models/creditCard.model';
 import { Receipt } from '../models/receipt.model';
 import { ReceiptType } from '../models/receiptType.interface';
 import { Receiptlines } from '../models/receiptlines.model';
+import { LastSelection } from '../models/lastSelection.model';
+import { Group } from '../receipts/customer-info/customer-info.component';
 
 @Injectable({
   providedIn: 'root'
@@ -34,11 +40,7 @@ export class ReceiptsService {
    */
   selReceiptCurrencyId = new BehaviorSubject('');
   selCurrencyId = this.selReceiptCurrencyId.asObservable();
-  //  Shows for components if store is open
-  //  storeIsOpen = false;
-  //  storeIs = new BehaviorSubject(this.storeIsOpen);
-  //  statusOfStore = this.storeIs.asObservable();
-  //  Shows for components if payment method is Credit Card
+
   creditCard = false;
   payByCreditCard = new BehaviorSubject(this.creditCard);
   payTypeCreditCard = this.payByCreditCard.asObservable();
@@ -70,6 +72,12 @@ export class ReceiptsService {
   receiptIsSubmited = false;
   receiptIsSub = new BehaviorSubject(this.receiptIsSubmited);
   currentlyreceiptIsSubmited = this.customer.asObservable();
+
+  nameOfPaymentFor = new BehaviorSubject('');
+  currentNameOfPaymentFor = this.nameOfPaymentFor.asObservable();
+
+  customerEmails = new Subject();
+  currentCustomerEmails = this.customerEmails.asObservable();
   constructor() {
     this.paymentMethod.next(localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null);
     this.newReceipt = {
@@ -108,6 +116,10 @@ export class ReceiptsService {
       PaymentType: null,
       creditCard: <Creditcard>{}
     };
+    this.selectedPaymentMethod.subscribe(payId => {
+      this.clearReceiptLines();
+      console.log('WORK PAY METH CHANGED');
+    });
   }
 
   setCustomerInfo(customerInfo) {
@@ -177,7 +189,6 @@ export class ReceiptsService {
   // get customerMainInfoForCustomerInfo() {
   //   return this.newReceipt.;
   // }
-
   addToReceiptLines(receiptLine: Receiptlines) {
     this.newReceipt.Receipt.recieptlines.push(receiptLine);
   }
@@ -210,20 +221,23 @@ export class ReceiptsService {
     }
     this.newReceipt.Receipt.ReceiptHeader.Total = totalAmount;
   }
-  // setReceiptHeaderItems(item, value) {
-  //   const receiptHeader = this.newReceipt.Receipt.ReceiptHeader;
-  //   const customerInfo = this.newReceipt.customerInfo;
-  //   receiptHeader[item] = customerInfo.customermaininfo[value];
-  //   receiptHeader[item] = customerInfo.addresses[value];
-  // }
-  refreshCredirCard() {
-    this.newReceipt.creditCard = <Creditcard>{};
+  setProducts(products: Product[]) {
+    this.newReceipt.Receipt.products = products;
+  }
+  setCustomerMainfInfo(customerMainInfo: Customermaininfo) {
+    this.newReceipt.customerInfo.customermaininfo = customerMainInfo;
+  }
+  setPhones(phones: Phones[]) {
+    this.newReceipt.customerInfo.phones = phones;
+  }
+  setEmails(emails: Emails[]) {
+    this.newReceipt.customerInfo.emails = emails;
+  }
+  setAdresses(addresses: Addresses) {
+    this.newReceipt.customerInfo.addresses = addresses;
   }
   getReceiptLines() {
     return this.newReceipt.Receipt.recieptlines;
-  }
-  refreshReceiptLines(value: Receiptlines[]) {
-    this.newReceipt.Receipt.recieptlines = value;
   }
   getFirstLastName() {
     const custInfo = this.newReceipt.customerInfo.customermaininfo;
@@ -237,11 +251,15 @@ export class ReceiptsService {
   getProducts() {
     return this.newReceipt.Receipt.products;
   }
-  setProducts(products: Product[]) {
-    this.newReceipt.Receipt.products = products;
-  }
   getReceiptHeader() {
     return this.newReceipt.Receipt.ReceiptHeader;
+  }
+
+  refreshCredirCard() {
+    this.newReceipt.creditCard = <Creditcard>{};
+  }
+  refreshReceiptLines(value: Receiptlines[]) {
+    this.newReceipt.Receipt.recieptlines = value;
   }
   refreshNewReceipt() {
     this.newReceipt = this.newReceipt = {
@@ -250,7 +268,7 @@ export class ReceiptsService {
         ReceiptHeader: <ReceiptHeader>{
           RecieptType: null, //
           FileAs: '',
-          WhatFor: '', // приходит 
+          WhatFor: '', // приходит
           CurrencyId: '',
           Total: null,
           associationId: null,
@@ -280,6 +298,15 @@ export class ReceiptsService {
       PaymentType: null,
       creditCard: <Creditcard>{}
     };
-    console.log('this.newReceipt', this.newReceipt)
+    console.log('this.newReceipt', this.newReceipt);
+  }
+  setEmployeeId(employeeId: string) {
+    this.newReceipt.Receipt.ReceiptHeader.EmployeeId = employeeId;
+  }
+  clearReceiptLines() {
+    this.newReceipt.Receipt.recieptlines = [];
+  }
+ addGroupsToReceipt(groups: Group[]) {
+    this.newReceipt.customerInfo.groups = groups;
   }
 }

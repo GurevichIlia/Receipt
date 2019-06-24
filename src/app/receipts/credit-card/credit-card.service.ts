@@ -1,4 +1,4 @@
-import { Creditcard } from './../../models/creditCard.model';
+import { Creditcard } from '../../models/creditCard.model';
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 })
 export class CreditCardService {
   credCardIsVerified = new BehaviorSubject(false);
-  currentlyCreditCardVarified = this.credCardIsVerified.asObservable();
+  currentlyCreditCardVerified = this.credCardIsVerified.asObservable();
   verifiedCreditCardDetails: Creditcard;
   constructor() { }
 
@@ -18,5 +18,4 @@ export class CreditCardService {
   setCredCardIsVerified(value: boolean) {
     this.credCardIsVerified.next(value);
   }
-  
 }

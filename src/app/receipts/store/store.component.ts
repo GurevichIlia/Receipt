@@ -139,10 +139,8 @@ export class StoreComponent implements OnInit, OnDestroy {
     console.log(product, amount, product.totalrow);
   }
   deleteProduct(productId: number) {
-    if (confirm('Are you sure to delete?')) {
       this.receiptService.setProducts(this.receiptService.getProducts().filter(data => data.productid != productId));
       this.showTotalPriceForOrder();
-    }
   }
   backToPayment() {
     if (this.payByCreditCard) {
@@ -154,7 +152,7 @@ export class StoreComponent implements OnInit, OnDestroy {
     }
   }
   addTotalPriceForEachProduct() {
-    for (let prod of this.receiptService.getProducts()) {
+    for (const prod of this.receiptService.getProducts()) {
       prod['totalall'] = this.totalPriceForOrder;
       prod['discount'] = 0;
     }
@@ -168,6 +166,7 @@ export class StoreComponent implements OnInit, OnDestroy {
     console.log(this.receiptService.newReceipt);
   }
   refreshForm() {
+    debugger
     this.form.controls.amount.reset();
     this.form.controls.productName.reset();
     console.log(this.form);

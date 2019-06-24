@@ -1,18 +1,16 @@
-import { Addresses } from './../../models/addresses.model';
-import { Customermaininfo } from './../../models/customermaininfo.model';
 import { Observable, Subscription } from 'rxjs';
-import { CreditCardService } from './../credit-card/credit-card.service';
-import { Component, OnInit, Input, OnChanges, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import { CreditCardService } from '../credit-card/credit-card.service';
+import { Component, OnInit, Input, OnChanges, OnDestroy, AfterViewInit } from '@angular/core';
 import { ReceiptsService } from '../../services/receipts.service';
-import { FormArray, NgForm, Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormArray, Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
-import { CreditCardComponent } from '../credit-card/credit-card.component';
 import { MatDialog } from '@angular/material';
 import * as moment from 'moment';
-import { startWith, map, debounceTime, filter } from 'rxjs/operators';
-import { Customerinfo } from 'src/app/models/customerInfo.model';
+import { startWith, map, debounceTime } from 'rxjs/operators';
 
-
+export interface Group {
+  GroupId: number;
+};
 
 @Component({
   selector: 'app-customer-info',
@@ -25,8 +23,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   @Input() cities: any[];
   step: number;
   myControl = new FormControl();
-  filteredOptions: Observable<any[]>;
-  filtCustTitle: Observable<any[]>;
+  filteredOptions$: Observable<any[]>;
+  filterCustTitle$: Observable<any[]>;
   paymentMethodId = null;
   userInfoGroup: FormGroup;
   groups: any[] = [];
@@ -49,6 +47,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   foundCustomerEmails: object[] = [];
   foundCustomerPhones: object[] = [];
   customerTypes: any[] = [];
+  selectedGroups: Group[] = [];
   private subscriptions: Subscription = new Subscription();
   constructor(
     private receiptService: ReceiptsService,
@@ -63,7 +62,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     // this.lastName = '';
     // this.customerId = null
     // tslint:disable-next-line: max-line-length
-    const emailName = `${this.getItemsFromSessionStorage('firstName')} ${this.getItemsFromSessionStorage('lastName')} ${this.getItemsFromSessionStorage('company')}`
+    const emailName = `${this.getItemsFromSessionStorage('firstName')} ${this.getItemsFromSessionStorage('lastName')} ${this.getItemsFromSessionStorage('company')}`;
     // this.paymentMethodId = localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null;
     this.userInfoGroup = this.fb.group({
       customerMainInfo: this.fb.group({
@@ -72,7 +71,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
         lastName: [this.getItemsFromSessionStorage('lastName'), Validators.maxLength(20)],
         company: [this.getItemsFromSessionStorage('company'), Validators.maxLength(20)],
         // tslint:disable-next-line: max-line-length
-        customerType: [+this.getItemsFromSessionStorage('customerType')],
+        customerType: [this.setCustomerType()],
         title: [this.getItemsFromSessionStorage('title')],
         gender: [this.getItemsFromSessionStorage('gender')],
         tZ: [this.getItemsFromSessionStorage('tZ')],
@@ -99,13 +98,61 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
         zip: [''],
         addresstypeid: ['']
       }),
-      // this.groups = this.customerInfo['QuickGeneralGroupList'];
+      groups: ['']
     });
-    console.log(this.userInfoGroup)
+
+  }
+  get customerInfoGroup() {
+    return this.userInfoGroup.get('customerMainInfo');
+  }
+  get firstName() {
+    return this.userInfoGroup.controls.customerMainInfo.get('firstName');
+  }
+  get lastName() {
+    return this.userInfoGroup.controls.customerMainInfo.get('lastName');
+  }
+  get company() {
+    return this.userInfoGroup.controls.customerMainInfo.get('company');
+  }
+  get customerType() {
+    return this.userInfoGroup.controls.customerMainInfo.get('customerType');
+  }
+  get title() {
+    return this.userInfoGroup.controls.customerMainInfo.get('title');
+  }
+  get tZ() {
+    return this.userInfoGroup.controls.customerMainInfo.get('tZ');
+  }
+  get gender() {
+    return this.userInfoGroup.controls.customerMainInfo.get('gender');
+  }
+  get spouseName() {
+    return this.userInfoGroup.controls.customerMainInfo.get('spouseName');
+  }
+  get fileAs() {
+    return this.userInfoGroup.controls.customerMainInfo.get('fileAs');
+  }
+  get birthday() {
+    return this.userInfoGroup.controls.customerMainInfo.get('birthday');
+  }
+  get afterSunset() {
+    return this.userInfoGroup.controls.customerMainInfo.get('afterSunset');
+  }
+  get group() {
+    return this.userInfoGroup.get('groups');
+  }
+  setCustomerType() {
+    let custType;
+    if (this.getItemsFromSessionStorage('customerType') === '') {
+      custType = '';
+    } else {
+      custType = +this.getItemsFromSessionStorage('customerType');
+    }
+    return custType;
   }
   ngAfterViewInit() {
-    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-    //Add 'implements AfterViewInit' to the class.
+    // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+    // Add 'implements AfterViewInit' to the class.
   }
   ngOnChanges() {
     if (this.customerInfo !== undefined) {
@@ -119,9 +166,9 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.changeCustomerInfoAfterUserIsFound(this.customerInfo);
     console.log('isVerified ;', this.isVerified);
     console.log('nextStepDisabled', this.nextStepDisabled);
-    console.log(this.foundCustomerEmails, this.foundCustomerPhones)
+    console.log(this.foundCustomerEmails, this.foundCustomerPhones);
 
-    // this.creditCardService.currentlyCreditCardVarified.subscribe((isVerified: boolean) => {
+    // this.creditCardService.currentlyCreditCardVerified.subscribe((isVerified: boolean) => {
     //   this.isVerified = isVerified;
     //   console.log('this.isVerified', this.isVerified);
     //   this.disabledNextStep();
@@ -170,17 +217,17 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     // });
     this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
       this.customerInfoTitle = '';
-      this.userInfoGroup.reset('');
+      this.userInfoGroup.reset();
       sessionStorage.clear();
+      this.showMoreInfo = false;
       this.resetEmails();
       this.resetPhones();
+      this.resetGroup();
       this.refreshRequiredFormFields();
       this.disabledNextStep();
-      this.showMoreInfo = true;
     }));
     console.log(this.userInfoGroup.value)
     // this.filterOptionForCustomerSearch();
-    console.log('this.paymentMethodId', this.paymentMethodId);
     setTimeout(() => {
       this.cityNameAutocompl();
     }, 2000);
@@ -189,9 +236,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
    * Autocomplete for city list in customer info.
    */
   cityNameAutocompl() {
-    console.log(this.userInfoGroup)
-
-    this.filteredOptions = this.userInfoGroup.controls.addresses.get('city').valueChanges
+    this.filteredOptions$ = this.userInfoGroup.controls.addresses.get('city').valueChanges
       .pipe(
         startWith(''),
         map(value => this._filter(value))
@@ -218,11 +263,11 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       }));
   }
   checkRequiredNameFields() {
-    const firstNameControl = this.userInfoGroup.controls.customerMainInfo.get('firstName');
-    const lastNameControl = this.userInfoGroup.controls.customerMainInfo.get('lastName');
-    const companyControl = this.userInfoGroup.controls.customerMainInfo.get('company');
-    if (firstNameControl.value !== '' || lastNameControl.value !== '' || companyControl.value !== '') {
-      if (firstNameControl.value !== null || lastNameControl.value !== null || companyControl.value !== null) {
+    const firstNameControl = this.firstName.value;
+    const lastNameControl = this.lastName.value;
+    const companyControl = this.company.value;
+    if (firstNameControl !== '' || lastNameControl !== '' || companyControl !== '') {
+      if (firstNameControl !== null || lastNameControl !== null || companyControl !== null) {
         this.requiredField = false;
       } else {
         this.requiredField = true;
@@ -233,20 +278,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       this.nextStepDisabled = true;
     }
   }
-  getCustomerInfo() {
-    // this.receitService.customerInfoValue.subscribe(customer => {
-    //   this.customerInfo = customer;
-    //   if (typeof (this.customerInfo) != 'undefined') {
-    //     console.log('Info', this.customerInfo);
-
-    //   }
-    // }, error => {
-    //   console.log(error)
-    // }
-    // );
-  }
   customerTitleAutoCompl() {
-    this.filtCustTitle = this.userInfoGroup.controls.customerMainInfo.get('title').valueChanges
+    this.filterCustTitle$ = this.userInfoGroup.controls.customerMainInfo.get('title').valueChanges
       .pipe(
         debounceTime(500),
         startWith(''),
@@ -327,7 +360,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
           email: ''
         });
       }
-      this.receiptService.changeCustomerName(`${customer.CustomerInfoForReceiept[0].fname} ${customer.CustomerInfoForReceiept[0].lname}`);
     }
     // this.disabledNextStep();
     console.log('work');
@@ -340,36 +372,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       company: ''
     });
   }
-  // creditCardModalOpen(paymentMethodId: number) {
-  //   // console.log(this.isVerified);
-  //   // console.log(this.selectedPayMethod);
-  //   this.paymentMethodId = paymentMethodId;
-  //   if (paymentMethodId === undefined) {
-  //     this.paymentMethodId = Number(localStorage.getItem('paymenthMethod'));
-  //   }
-  //   if (this.paymentMethodId === 3) {
-  //     this.dialog.open(CreditCardComponent, { width: '350px' });
-  //     console.log(this.paymentMethodId);
-  //   } else {
-  //     return;
-  //   }
-  // }
-  // checkPayType(payType: number) {
-  //   this.paymentMethodId = payType;
-  //   this.disabledNextStep();
-  //   this.receiptService.paymentMethod.next(payType);
-  //   if (payType === 3) {
-  //     console.log('nextStepDisabled', this.nextStepDisabled)
-
-  //     this.receiptService.payByCreditCard.next(true);
-  //   } else {
-  //     console.log('nextStepDisabled', this.nextStepDisabled)
-
-  //     this.receiptService.payByCreditCard.next(false);
-  //   }
-  //   console.log('nextStepDisabled', this.nextStepDisabled)
-
-  // }
   // ДИНАМИЧЕСКОЕ ДОБАВЛЕНИЕ ПОЛЕЙ ВВОДА
 
   // phone: this.fb.array([
@@ -389,9 +391,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }));
   }
   addMail() {
-    // const firstName = this.userInfoGroup.controls.customerMainInfo.get('firstName').value;
-    // const lastName = this.userInfoGroup.controls.customerMainInfo.get('lastName').value;
-    // const company = this.userInfoGroup.controls.customerMainInfo.get('company').value;
     this.emails.push(this.fb.group({
       emailname: [''],
       email: [''],
@@ -413,19 +412,27 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   }
   addCUstomerInfoToReceipt() {
     // tslint:disable-next-line: max-line-length
-    let birthday = moment(this.userInfoGroup.controls.customerMainInfo.get('birthday').value).format('DD/MM/YYYY');
+    let birthday = moment(this.birthday.value).format('DD/MM/YYYY');
     // birthday.patchValue(moment(birthday).format('YYYY-MM-DD'));
     if (birthday === 'Invalid date') {
       birthday = '';
     }
     this.setItemToSessionStorage('birthday', birthday);
     // tslint:disable-next-line: max-line-length
-    this.receiptService.changeCustomerName(`${this.userInfoGroup.controls.customerMainInfo.get('firstName').value} ${this.userInfoGroup.controls.customerMainInfo.get('lastName').value}`);
-    this.receiptService.newReceipt.customerInfo.customermaininfo = this.userInfoGroup.get('customerMainInfo').value;
+    if (this.firstName.value === null) {
+      this.firstName.patchValue('');
+    }
+    if (this.lastName.value === null) {
+      this.lastName.patchValue('');
+    }
+    this.receiptService.changeCustomerName(`${this.firstName.value} ${this.lastName.value}`);
+    this.receiptService.setCustomerMainfInfo(this.userInfoGroup.get('customerMainInfo').value);
     this.receiptService.newReceipt.customerInfo.customermaininfo.birthday = birthday;
-    this.receiptService.newReceipt.customerInfo.phones = this.checkEmptyPhone();
-    this.receiptService.newReceipt.customerInfo.emails = this.checkEmptyEmail();
-    this.receiptService.newReceipt.customerInfo.addresses = this.userInfoGroup.get('addresses').value;
+    this.receiptService.setPhones(this.checkEmptyPhone());
+    this.receiptService.setEmails(this.checkEmptyEmail());
+    this.receiptService.setAdresses(this.userInfoGroup.get('addresses').value);
+    this.receiptService.customerEmails.next(this.checkEmptyEmail());
+    this.receiptService.addGroupsToReceipt(this.addGroups());
 
     // this.receiptService.newReceipt.customerInfo.groups = this.userInfoGroup.get('groups').value;
     // this.receiptService.newReceipt.PaymentType = this.payMath.value;
@@ -455,14 +462,14 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       return '';
     }
   }
-  getItemsFromLocalStorage(item) {
-    if (localStorage.getItem(item)) {
-      return localStorage.getItem(item);
-    } else {
-      return '';
-    }
+  // getItemsFromLocalStorage(item) {
+  //   if (localStorage.getItem(item)) {
+  //     return localStorage.getItem(item);
+  //   } else {
+  //     return;
+  //   }
 
-  }
+  // }
   setItemToSessionStorage(key: string, value: string) {
     if (value != '' && value != null) {
       sessionStorage.setItem(key, value);
@@ -489,11 +496,13 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   }
 
   checkEmptyPhone() {
-    const phones = this.phones.value.filter(phone => phone.phone !== '');
+    let phones = this.phones.value.filter(phone => phone.phone !== '');
+    phones = phones.filter(phone => phone.phone !== null);
     return phones;
   }
   checkEmptyEmail() {
-    const emails = this.emails.value.filter(email => email.email !== '');
+    let emails = this.emails.value.filter(email => email.email !== '');
+    emails = emails.filter(email => email.email !== null);
     return emails;
   }
   resetPhones() {
@@ -506,8 +515,10 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       this.deleteEmail(i);
     }
   }
+  resetGroup() {
+    this.group.patchValue('');
+  }
   ngOnDestroy() {
-    // this.subs.unsubscribe();
     console.log('CUSTOMER INFO SUBSCRIBE', this.subscriptions);
     this.subscriptions.unsubscribe();
     console.log('CUSTOMER INFO SUBSCRIBE On Destroy', this.subscriptions);
@@ -515,8 +526,23 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   pickCustomerTypeId(typeId: number) {
     for (const customerType of this.customerTypes) {
       if (customerType['TypeId'] === typeId) {
-        this.userInfoGroup.controls.cutomerMainInfo.get('customerType').patchValue(customerType['TypeId']);
+        this.customerType.patchValue(customerType['TypeId']);
       }
     }
   }
+  addGroups() {
+    if (this.group.value.length > 0) {
+      for (const selGroup of this.group.value) {
+        const selectedGroup: Group = {
+          GroupId: selGroup
+        };
+        this.selectedGroups.push(selectedGroup);
+      }
+      return this.selectedGroups;
+    } else {
+      return [];
+    }
+
+  }
+
 }

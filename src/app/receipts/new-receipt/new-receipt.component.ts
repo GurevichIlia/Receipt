@@ -111,6 +111,7 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
     this.LoadSystemTables();
     this.GetCustomerSearchData1();
     this.filterOption();
+    this.generalSrv.getLastSelectionFromLocalStore();
     this.subscriptions.add(this.generalSrv.currentlyLang$.subscribe(lang => this.currentlyLang = lang));
     // this.generalSrv.addSubscription(currentlyLang$);
     this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => {
@@ -209,7 +210,6 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
       },
       error => {
         console.log(error);
-        debugger;
         // this.generalSrv.presentAlert("Error", "an error accured", error.status);
         // this.disableAfterclick = false;
       },

@@ -1,6 +1,8 @@
 {     "Create a new Receipt": "יצירת קבלה חדשה",
       "Create new": "יצירת חדשה",
       "Search customer": "חיפוש לקוח",
+      "LogOut": "להתנתק",
+
 
       "New receipt": "קבלה חדשה",
       "Customer Info": "פרטי לקוח",
@@ -18,8 +20,8 @@
       "Birthday": "תאריך לידה",
       "After sunset": "לאחר השקיעה",
       "Mobile phone": "טלפון נייד",
-      "Phone type": "Phone type",
-      "Email": "דואל",
+      "Phone type": "סוג טלפון",
+      "Email": "דוא``ל",
       "City": "ישוב",
       "Street": "רחוב ומספר",
       "Zip": "מיקוד",
@@ -28,9 +30,23 @@
       "Next": "הבא",
       "Previous": "קודם",
       "Add more phone": "הוסף טלפון",
-      "Add more email": "דוא&ל",
+      "Add more email": "דוא``ל ",
       "Show customer info": "הצג פרטי לקוח",
       "Hide customer info": "הסתר פרטי לקוח",
+      "Cell phone": "טלפון נייד",
+      "Home phone": "טלפון בבית",
+      "Work phone": "טלפון עבודה",
+      "Email name": "שם דוא``ל",
+      "Address type": "סוג כתובת",
+      "Work": "עבודה",
+      "Home": "בית",
+      "Other": "אחר",
+      "Phone": "טלפון",
+      "First name or Last name or Company is required": "נדרש שם פרטי או שם משפחה או חברה",
+
+
+
+
 
       "Product category": "קטגוריית פרוייקט",
       "Product name": "שם מוצר",
@@ -78,6 +94,7 @@
       "Delete": "למחוק",
       "Total amount": "סהכ סכום",
       "Payment info": "פרטי תשלום",
+      "Add": "הוסף",
 
       "Proccess receipt": "הפק קבלה",
       "Name of the receipt": "השם שיופיע על הקבלה",
@@ -91,9 +108,16 @@
       "Do not send": "ללא שליחה",
       "Show receip on screen": "הצג קבלה על המסך",
       "Do not show": "ללא הצגה",
-      "Finish": "הפק"
+      "Finish": "הפק",
+      "Please select a thanks letter": "בחר מכתב תודה",
+      "Amount less than the amount in the store": "סכום פחות מהסכום בחנות",
 
-    
+
+
+      "Customer id": "מספר לקוח",
+      "Receipt number": "מספר קבלה",
+      "Create the new receipt": "צור את הקבלה החדשה",
+      "Show receipt info": "הצג פרטי קבלה"
 
 
       
