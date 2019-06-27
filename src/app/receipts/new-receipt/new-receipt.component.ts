@@ -1,40 +1,23 @@
 import { MatDialog } from '@angular/material';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { Component, OnInit, Injectable, Output, EventEmitter, ViewChild, AfterViewInit, DoCheck, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Component, OnInit, DoCheck, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Router } from '@angular/router';
 import { GeneralSrv } from '../../services/GeneralSrv.service';
 import { TranslateService } from '@ngx-translate/core';
 
 import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ValidatorFn,
-  AbstractControl,
+
   FormControl,
   NgForm
 } from '@angular/forms';
 import {
-  catchError,
   map,
-  tap,
-  startWith,
-  switchMap,
-  debounceTime,
-  distinctUntilChanged,
-  takeWhile,
-  first,
-  windowWhen,
-  filter
 } from 'rxjs/operators';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
-import { Observable, throwError, empty } from 'rxjs';
+import {  HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { ReceiptsService } from '../../services/receipts.service';
-import { ReceiptTypeComponent } from '../receipt-type/receipt-type.component';
-import { ModalSessionexpiredComponent } from '../modals/modal-sessionexpired/modal-sessionexpired.component';
-import * as jwt_decode from 'jwt-decode';
+
 
 ///////////////////////// START CLASS
 
@@ -75,7 +58,7 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
   clickToBtnCreateNew = false;
   receiptCurrencyId: string;
 
-  currentlyLang: string;
+  currentLang: string;
   step: number;
   cities: any[] = [];
   nameFilter: any[];
@@ -97,7 +80,7 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
 
   switchLanguage(language: string) {
     this.translate.use(language);
-    this.currentlyLang = language;
+    this.currentLang = language;
     this.generalSrv.language.next(language);
     if (language === 'he') {
       document.body.setAttribute('dir', 'rtl');
@@ -112,9 +95,9 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
     this.GetCustomerSearchData1();
     this.filterOption();
     this.generalSrv.getLastSelectionFromLocalStore();
-    this.subscriptions.add(this.generalSrv.currentlyLang$.subscribe(lang => this.currentlyLang = lang));
-    // this.generalSrv.addSubscription(currentlyLang$);
-    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => {
+    this.subscriptions.add(this.generalSrv.currentLang$.subscribe(lang => this.currentLang = lang));
+    // this.generalSrv.addSubscription(currentLang$);
+    this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => {
       this.step = step;
     }));
     // this.generalSrv.addSubscription(currentlyStep$);

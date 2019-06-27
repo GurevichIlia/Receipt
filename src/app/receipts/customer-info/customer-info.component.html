@@ -45,7 +45,7 @@
         <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" [formControl]='payMath' required>
           <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
             (click)="checkPayType(PaymentMethod.value)">
-            {{currentlyLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
+            {{currentLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
           </mat-option>
         </mat-select> -->
       <!-- <mat-error *ngIf="isVerified === false">Please verify your credit card.</mat-error> -->
@@ -63,7 +63,7 @@
           <mat-form-field class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
             <mat-select formControlName="customerType" placeholder="{{'Customer type' | translate}}">
               <mat-option [value]="customerType.TypeId" *ngFor="let customerType of customerTypes">
-                {{currentlyLang === 'he'? customerType.TypeNameHeb : customerType.TypeNameEng}}</mat-option>
+                {{currentLang === 'he'? customerType.TypeNameHeb : customerType.TypeNameEng}}</mat-option>
             </mat-select>
           </mat-form-field>
           <!-- <mat-form-field class="col-12">
@@ -75,8 +75,8 @@
               formControlName="title" [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
               <mat-option *ngFor="let title of filterCustTitle$ | async; let i = index"
-                [value]="currentlyLang === 'he'? title.TitleHeb : title.TitleEng">
-                {{currentlyLang === 'he'? title.TitleHeb : title.TitleEng}}
+                [value]="currentLang === 'he'? title.TitleHeb : title.TitleEng">
+                {{currentLang === 'he'? title.TitleHeb : title.TitleEng}}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -214,7 +214,7 @@
         <div>
           <h4 *ngIf="customerInfo?.QuickGeneralGroupList.length > 0">{{'Groups' | translate}}</h4>
           <mat-selection-list formControlName="groups">
-            <mat-list-option *ngFor="let group of customerInfo.QuickGeneralGroupList | async" [value]="group.GroupId">
+            <mat-list-option *ngFor="let group of customerInfo?.QuickGeneralGroupList" [value]="group.GroupId">
               {{group.GroupName}}
             </mat-list-option>
           </mat-selection-list>

@@ -17,6 +17,8 @@ import { ReceiptType } from '../models/receiptType.interface';
 import { Receiptlines } from '../models/receiptlines.model';
 import { LastSelection } from '../models/lastSelection.model';
 import { Group } from '../receipts/customer-info/customer-info.component';
+import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/confirm-purchases.component';
+import { MatDialog } from '@angular/material';
 
 @Injectable({
   providedIn: 'root'
@@ -30,55 +32,61 @@ export class ReceiptsService {
   checkSelectedRecType = new Subject<void>();
   createNewEvent = new Subject<void>();
   amount = new BehaviorSubject(this.totalAmount);
-  currentlyAmount = this.amount.asObservable();
+  currentAmount$ = this.amount.asObservable();
   // Check if array "payments" is not empty disabled payment method in customer info component
   paymentsNotEmpty = false;
   blockPaymentMethod = new BehaviorSubject(this.paymentsNotEmpty);
-  blockPayMethod = this.blockPaymentMethod.asObservable();
+  blockPayMethod$ = this.blockPaymentMethod.asObservable();
   /**
    * Show selected currency from receipt type in step(receipt type)
    */
   selReceiptCurrencyId = new BehaviorSubject('');
-  selCurrencyId = this.selReceiptCurrencyId.asObservable();
-
+  selCurrencyId$ = this.selReceiptCurrencyId.asObservable();
+  /**
+   * Show if payment method is credit card
+   */
   creditCard = false;
   payByCreditCard = new BehaviorSubject(this.creditCard);
-  payTypeCreditCard = this.payByCreditCard.asObservable();
+  currenPayTypeCreditCard$ = this.payByCreditCard.asObservable();
 
   /**
-   * Shows which payment method id selected
+   * Show which payment method id selected
    */
   paymentId: number = null;
   paymentMethod = new BehaviorSubject(this.paymentId);
   selectedPaymentMethod = this.paymentMethod.asObservable();
   /**
-   * Show currently name of customer name for step(proccess-receipt)
+   * Show current name of customer name for step(proccess-receipt)
    */
   fullName: string;
   private customerName = new BehaviorSubject(this.fullName);
-  currentlyName = this.customerName.asObservable();
+  currentFullName$ = this.customerName.asObservable();
   // verifiedCreditCardDetails: CreditCardVerify;
   currStep = new BehaviorSubject(this.step)
-  currentlyStep = this.currStep.asObservable();
+  currentStep$ = this.currStep.asObservable();
 
   totalAmountStore = null;
   storeAmount = new BehaviorSubject(this.totalAmountStore);
-  currentlyStoreAmount = this.storeAmount.asObservable();
+  currentStoreAmount$ = this.storeAmount.asObservable();
 
   newCustomer = true;
   customer = new BehaviorSubject(this.newCustomer);
-  currentlyNewCustomer = this.customer.asObservable();
+  currentNewCustomer$ = this.customer.asObservable();
 
   receiptIsSubmited = false;
   receiptIsSub = new BehaviorSubject(this.receiptIsSubmited);
-  currentlyreceiptIsSubmited = this.customer.asObservable();
+  currentreceiptIsSubmited$ = this.customer.asObservable();
 
   nameOfPaymentFor = new BehaviorSubject('');
-  currentNameOfPaymentFor = this.nameOfPaymentFor.asObservable();
+  currentNameOfPaymentFor$ = this.nameOfPaymentFor.asObservable();
 
   customerEmails = new Subject();
-  currentCustomerEmails = this.customerEmails.asObservable();
-  constructor() {
+  currentCustomerEmails$ = this.customerEmails.asObservable();
+  // orderInStoreIsSaved = new BehaviorSubject(false);
+  // currentOrderInStoreIsSaved = this.orderInStoreIsSaved.asObservable();
+  constructor(
+    private dialog: MatDialog,
+  ) {
     this.paymentMethod.next(localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null);
     this.newReceipt = {
       customerInfo: <Customerinfo>{},
@@ -149,7 +157,7 @@ export class ReceiptsService {
   }
   changeCustomerName(name: string) {
     this.customerName.next(name);
-    this.currentlyName.subscribe(data => console.log(data))
+    this.currentFullName$.subscribe(data => console.log(data))
   }
   changeTotalAmount(amount: number) {
     this.amount.next(amount);
@@ -306,7 +314,11 @@ export class ReceiptsService {
   clearReceiptLines() {
     this.newReceipt.Receipt.recieptlines = [];
   }
- addGroupsToReceipt(groups: Group[]) {
+  addGroupsToReceipt(groups: Group[]) {
     this.newReceipt.customerInfo.groups = groups;
   }
+  deleteAllProductsFromStore() {
+    this.newReceipt.Receipt.products = [];
+  }
+
 }

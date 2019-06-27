@@ -1,0 +1,16 @@
+<div class="container">
+  <h1 mat-dialog-title>{{'Would you like to save an order' | translate }}?</h1>
+  <div mat-dialog-content>
+  </div>
+  <div class="row justify-content-center">
+
+    <button class="col-4 mr-3" mat-raised-button [ngStyle]="{'background-color': 'rgb(38, 87, 122)', 'color': 'white' }"
+      (click)="onConfirm()">{{'Save' | translate}}</button>
+
+
+    <button class="col-4" mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}"
+      (click)="onDismiss()">{{'Dont save' | translate}}</button>
+
+
+  </div>
+</div>

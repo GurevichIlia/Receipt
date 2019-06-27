@@ -55,6 +55,9 @@
       "Quantity": "כמות",
       "Total price": "מחיר סופי",
       "Add to list": "הוסף שורה",
+      "Would you like to save an order": "האם ברצונך לשמור הזמנה",
+      "Save": "לשמור",
+      "Dont save": "לא לשמור",
 
       "Receipt type": "סוג קבלה",
       "Organisation": "אירגון",
@@ -62,8 +65,8 @@
       "Donation": "תרומה",
       "Sales": "מכירה / שירות",
       "Card type": "סוג",
-      "Debit": "חובה - קבלת כסף",
-      "Credit": "זכות - החזרת כסף",
+      "Debit": "רגילה",
+      "Credit": "זיכוי",
       "Credit password": "סיסמת זיכוי",
 
       "Credit card verification": "בדיקת כרטיס אשראי",
@@ -74,9 +77,13 @@
       "Manual approval number": "מספר אישור ידני",
       "Account": "חשבון",
       "Terminal No": "מספר מסוף",
-      "Terminal name": "מספר מסו",
+      "Terminal name": "שמ משחמש",
       "Cancel": "ביטול",
       "Submit": "שמירה",
+      "Charge credit card": "חיוב כ.אשראי",
+      "Use a card reader": "השתמש/י בקורא כרטיסים",
+
+    
 
       "Payment": "תשלום",
       "Payment amount": "סכום לתשלום",

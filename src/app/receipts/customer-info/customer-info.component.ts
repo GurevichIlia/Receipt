@@ -19,7 +19,6 @@ export interface Group {
 })
 export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input() customerInfo: object;
-  @Input() currentlyLang: string;
   @Input() cities: any[];
   step: number;
   myControl = new FormControl();
@@ -37,13 +36,11 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   clickToBtnCreateNew = false;
   customerTitle: any[] = [];
   // tslint:disable-next-line: max-line-length
-  pattern = '^(((0[1-9]|[12][0-9]|30)[-/]?(0[13-9]|1[012])|31[-/]?(0[13578]|1[02])|(0[1-9]|1[0-9]|2[0-8])[-/]?02)[-/]?[0-9]{4}|29[-/]?02[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$';
   subs;
   // selectedPayMethod: number;
   isVerified = false;
   nextStepDisabled = true;
-  // currentlyLang: string;
-  // payMath: FormControl;
+  currentLang: string;
   foundCustomerEmails: object[] = [];
   foundCustomerPhones: object[] = [];
   customerTypes: any[] = [];
@@ -176,15 +173,16 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   }
 
   ngOnInit() {
+    this.getCurrentLanguage();
     // console.log('this.payMath', this.payMath)
-    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.customerTitle = data['CustomerTitle'];
     }));
-    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.customerTypes = data['GetCustomerTypes'];
       console.log(this.customerTypes);
     }));
-    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
+    this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
 
     this.getPaymentTypes();
     this.getPayMethFromLocalStorage();
@@ -192,12 +190,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.disabledNextStep();
     this.customerTitleAutoCompl();
 
-    // this.generalService.currentlyLang.subscribe(lang => {
-    //   this.switchLanguage(lang);
-    // });
-    // this.generalService.currentlyLang.subscribe(lang => {
-    //   this.currentlyLang = lang;
-    // });
     this.subscriptions.add(this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
       .subscribe(data => {
         this.setItemToSessionStorage('firstName', data.customerMainInfo.firstName);
@@ -231,6 +223,11 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     setTimeout(() => {
       this.cityNameAutocompl();
     }, 2000);
+  }
+  getCurrentLanguage() {
+    this.subscriptions.add(this.generalService.currentLang$.subscribe((lang: string) => {
+      this.currentLang = lang;
+    }));
   }
   /**
    * Autocomplete for city list in customer info.
@@ -362,7 +359,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       }
     }
     // this.disabledNextStep();
-    console.log('work');
+  //   console.log('work');
+  // console.log('GROUPS', this.customerInfo.QuickGeneralGroupList);
   }
   refreshRequiredFormFields() {
     this.userInfoGroup.patchValue({
@@ -490,7 +488,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
   }
   getPaymentTypes() {
-    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
     }));
   }

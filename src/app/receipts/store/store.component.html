@@ -14,7 +14,7 @@
       <mat-select #ProdCatName="ngModel" name="prodCatName" placeholder="{{'Product category' | translate}}"
         [(ngModel)]="prodCatName" required>
         <mat-option *ngFor="let cat of productCategories" [value]="cat.ProdCatId">
-          {{currentlyLang === 'he'? cat.CategoryName : cat.CategoryNameEng}}
+          {{currentLang === 'he'? cat.CategoryName : cat.CategoryNameEng}}
 
         </mat-option>
       </mat-select>
@@ -25,7 +25,7 @@
         [(ngModel)]="product.productName" required>
         <mat-option (click)="getSelectedProd(prod)" *ngFor="let prod of productsName | filterProductsByCat: prodCatName"
           [value]='prod.ProdName'>
-          {{currentlyLang === 'he'? prod.ProdName : prod.ProdNameEng}}
+          {{currentLang === 'he'? prod.ProdName : prod.ProdNameEng}}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -155,10 +155,10 @@
 
   <!-- </div> -->
   <mat-action-row>
-    <button mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" (click)="receiptService.prevStep()" class="mr-1 ml-1">
+    <button mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" (click)="prevStep()" class="mr-1 ml-1">
       {{'Previous' | translate}}
     </button>
-    <button mat-raised-button [ngStyle]="{'background-color': 'rgb(38, 87, 122)', 'color': 'white' }" (click)="receiptService.nextStep(); addProductsToReceipt()">
+    <button mat-raised-button [ngStyle]="{'background-color': 'rgb(38, 87, 122)', 'color': 'white' }" (click)="nextStep() ">
       {{'Next' | translate}}
     </button>
   </mat-action-row>

@@ -37,7 +37,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
   isVerified = false;
   disabledPayMethod = false;
   nextStepDisabled = true;
-  currentlyLang: string;
+  currentLang: string;
   receiptTypeGroup: FormGroup;
   private subscriptions: Subscription = new Subscription();
   constructor(
@@ -60,19 +60,19 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     this.getReceiptsData();
     this.getPaymentTypes();
     // tslint:disable-next-line: max-line-length
-    this.subscriptions.add(this.generalService.currentlyLang$.subscribe(data => this.currentlyLang = data));
+    this.subscriptions.add(this.generalService.currentLang$.subscribe(data => this.currentLang = data));
 
     this.receiptTypeGroup.valueChanges.subscribe(() => {
       console.log('FORM', this.receiptTypeGroup);
     });
-    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
+    this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
 
 
-    this.subscriptions.add(this.creditCardService.currentlyCreditCardVerified.subscribe((isVerified: boolean) => {
+    this.subscriptions.add(this.creditCardService.currentCreditCardIsVerified$.subscribe((isVerified: boolean) => {
       this.isVerified = isVerified;
 
     }));
-    this.subscriptions.add(this.receiptService.blockPayMethod.subscribe((data: boolean) => {
+    this.subscriptions.add(this.receiptService.blockPayMethod$.subscribe((data: boolean) => {
       this.disabledPayMethod = data;
       console.log(this.disabledPayMethod);
     }));
@@ -122,7 +122,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     console.log(this.selectedReceiptType);
   }
   getPaymentTypes() {
-    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
     }));
   }
@@ -228,7 +228,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
 
     if ((selectedReceiptTypeId === null || selectedReceiptTypeId === '' || selectedReceiptTypeId === undefined)) {
       this.toaster.warning('', 'Please select receipt type', { positionClass: 'toast-top-center' });
-    } else if (paymentMethodId === null || paymentMethodId === '' || paymentMethodId === undefined) {
+    } else if (paymentMethodId === null || paymentMethodId === '' || paymentMethodId === undefined ||  paymentMethodId === 0 ) {
       this.toaster.warning('', 'Please select payment method', { positionClass: 'toast-top-center' });
     } else {
       for (const receiptType of this.receiptTypes) {
@@ -285,7 +285,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     //   this._paymentMethodId = +localStorage.getItem('paymenthMethod');
     // }
     if (this._paymentMethodId === 3) {
-      this.dialog.open(CreditCardComponent, { width: '350px' });
+      this.dialog.open(CreditCardComponent, { width: '1150px', height: '500px'});
       console.log(this.paymentMethodId);
     } else {
       return;
@@ -312,7 +312,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
   //   return receiptType;
   // }
   checkLastSelection() {
-    this.subscriptions.add(this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
+    this.subscriptions.add(this.generalService.currentLastSelect$.subscribe((lastSelect: LastSelection) => {
         this.setReceiptType(lastSelect.receiptTypeId);
         this.setPaymentMethodId(lastSelect.paymenthMethodId);
         this.setSelectedOrg(lastSelect.selectedOrg);

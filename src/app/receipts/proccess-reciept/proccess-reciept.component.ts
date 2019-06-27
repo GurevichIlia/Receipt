@@ -1,3 +1,4 @@
+import { CreditCardService } from './../credit-card/credit-card.service';
 import { LastSelection } from './../../models/lastSelection.model';
 import { Emails } from './../../models/emails.model';
 import { FinalResolve } from 'src/app/models/finalResolve.model';
@@ -20,7 +21,7 @@ import { Router } from '@angular/router';
 })
 export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
   @Input() customerInfo: object;
-  @Input() currentlyLang: string;
+  @Input() currentLang: string;
   @Input() nameFilter: any[];
   step: number;
   filteredOptions: Observable<any[]>;
@@ -52,7 +53,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     private fb: FormBuilder,
     private zone: NgZone,
     private toaster: ToastrService,
-    private router: Router
+    private router: Router,
+    private creditCardService: CreditCardService
   ) {
   }
   ngOnChanges() {
@@ -70,7 +72,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
 
     // this.zone.runOutsideAngular(() => {
     //   // setInterval(() => {
-    //     if (this.currentlyLang === 'he') {
+    //     if (this.currentLang === 'he') {
     //        this.position = {
     //        'text-right': true,
     //       };
@@ -85,25 +87,25 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     // console.log('FILTER', this.nameFilter)
   }
   ngOnInit() {
-    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
-    this.subscriptions.add(this.receiptService.currentlyNewCustomer.subscribe((customerStatus: boolean) => {
+    this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
+    this.subscriptions.add(this.receiptService.currentNewCustomer$.subscribe((customerStatus: boolean) => {
       this.newCustomer = customerStatus;
     }));
-    this.generalService.currentlyLang$.subscribe((lang: string) => this.currentlyLang = lang);
+    this.generalService.currentLang$.subscribe((lang: string) => this.currentLang = lang);
     this.createProcessReceiptForm();
-    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.receiptsType = data['ReceiptTypes'];
 
     }));
 
-    this.subscriptions.add(this.receiptService.currentlyName.subscribe(name => {
+    this.subscriptions.add(this.receiptService.currentFullName$.subscribe(name => {
       this.customerName = name;
       this.receiptName.patchValue(this.customerName);
     }));
 
     this.compareStoreAndTotalAmount();
 
-    this.subscriptions.add(this.receiptService.currentCustomerEmails
+    this.subscriptions.add(this.receiptService.currentCustomerEmails$
       .subscribe((emails: Emails[]) => {
         if (emails.length === 0) {
         } else {
@@ -111,7 +113,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
         }
       }));
 
-    this.subscriptions.add(this.receiptService.currentNameOfPaymentFor.subscribe(
+    this.subscriptions.add(this.receiptService.currentNameOfPaymentFor$.subscribe(
       (nameOfPaymentFor: string) => {
         this.receiptFor.patchValue(nameOfPaymentFor);
       }));
@@ -141,7 +143,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.getLastSelection();
   }
   getLastSelection() {
-    this.subscriptions.add(this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
+    this.subscriptions.add(this.generalService.currentLastSelect$.subscribe((lastSelect: LastSelection) => {
       if (this.currentlyLetters.length > 0) {
         for (const letter of this.currentlyLetters) {
           if (letter.ThanksLetterId === lastSelect.receiptTemplate) {
@@ -195,7 +197,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     return this.listOfCustomersName.filter(name => name.toLowerCase().includes(filterValue));
   }
   compareStoreAndTotalAmount() {
-    this.subscriptions.add(this.receiptService.currentlyAmount.subscribe(amount => {
+    this.subscriptions.add(this.receiptService.currentAmount$.subscribe(amount => {
       this.totalAmount = amount;
       this.proccessReceipt.get('totalPayAmount').patchValue(amount);
       if (this.currentlyStoreAmount > this.totalAmount) {
@@ -218,14 +220,14 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     return this.receiptForList.filter(receipt => receipt['note'].toLowerCase().includes(filterValue));
   }
   getReceiptForList() {
-    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.receiptForList = data['Receipt_For_List'];
       console.log(this.receiptForList);
     }));
   }
   getReceiptThanksLetters(receiptId) {
     const id = this.changeThankLetterForCredirType(receiptId);
-    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.thanksLetters = data['ReceiptThanksLetter'];
 
       this.currentlyLetters = this.thanksLetters.filter(receipt => receipt.ReceiptId === id);
@@ -279,9 +281,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addProccessReceiptToReceipt() {
-    debugger
     if (this.receiptTemplate.value === null || this.receiptTemplate.value === '') {
-      const message = this.currentlyLang === 'he' ? 'בחר מכתב תודה' : 'Please select a thanks letter';
+      const message = this.currentLang === 'he' ? 'בחר מכתב תודה' : 'Please select a thanks letter';
       this.toaster.warning('', message, {
         positionClass: 'toast-top-center'
       });
@@ -303,7 +304,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
           });
           console.log('ERROR', this.receiptService.newReceipt, res);
         } else {
-          const message = this.currentlyLang === 'he' ? 'עסקה בוצעה בהצלחה' : 'Transaction successfully completed';
+          const message = this.currentLang === 'he' ? 'עסקה בוצעה בהצלחה' : 'Transaction successfully completed';
           this.receiptService.refreshNewReceipt();
           this.toaster.success('', message, {
             positionClass: 'toast-top-center'
@@ -312,6 +313,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
           this.generalService.setItemToLastSelection('receiptTemplate', this.receiptTemplate.value);
           this.generalService.saveLastSelection();
           this.receiptService.createNewEvent.next();
+          this.creditCardService.credCardIsVerified.next(false);
           this.receiptService.nextStep();
           this.finalResolve = res;
           // this.receiptService.refreshNewReceipt();
@@ -319,7 +321,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
         }
       }));
     } else {
-      const message = this.currentlyLang === 'he' ? 'אנא שנה את הסכום' : 'Please change the amount';
+      const message = this.currentLang === 'he' ? 'אנא שנה את הסכום' : 'Please change the amount';
       this.toaster.warning('', message, {
         positionClass: 'toast-top-center'
       });
@@ -330,7 +332,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.proccessReceipt.get('customerName').patchValue(name);
   }
   getStoreCurrentlyAmount() {
-    this.subscriptions.add(this.receiptService.currentlyStoreAmount.subscribe(data => {
+    this.subscriptions.add(this.receiptService.currentStoreAmount$.subscribe(data => {
       this.currentlyStoreAmount = data;
       console.log(this.currentlyStoreAmount);
     }));

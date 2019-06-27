@@ -36,9 +36,11 @@
             <img  src="assets/images/amax180-1.jpg" alt="Amax-logo" >
           </div>
           <div class="col-xs-3 col-sm-3 col-md-2 col-lg-2 col-xl-2" >
-            <button [style.fontSize]="'16px'" mat-button *ngIf="currentlyLang === 'he'" (click)="switchLanguage('en')">en</button>
-            <button [style.fontSize]="'16px'" mat-button *ngIf="currentlyLang === 'en'" (click)="switchLanguage('he')">he</button>
-            <button [style.fontSize]="'16px'" mat-button color="primary" (click)="logOut()">{{'LogOut' | translate}}</button>
+            <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'" (click)="switchLanguage('en')">en</button>
+            <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'" (click)="switchLanguage('he')">he</button>
+            <button [style.fontSize]="'16px'" mat-button color="primary" (click)="logOut()"><i class="material-icons">
+                exit_to_app
+                </i></button>
           </div>
         </div>
       </div>

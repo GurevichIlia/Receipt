@@ -1,9 +1,8 @@
 import { LastSelection } from './../../models/lastSelection.model';
 import { CreditCardService } from './credit-card.service';
-import { CreditCardVerify } from './../../models/credirCardVerify.model';
 import { GeneralSrv } from './../../services/GeneralSrv.service';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { ReceiptsService } from 'src/app/services/receipts.service';
 import { MatDialogRef } from '@angular/material';
 import { CreditCardValidator } from 'angular-cc-library';
@@ -19,20 +18,22 @@ import { Subscription } from 'rxjs';
   templateUrl: './credit-card.component.html',
   styleUrls: ['./credit-card.component.css']
 })
-export class CreditCardComponent implements OnInit {
-  // @ViewChild('Account') selAccount: object = {};
+export class CreditCardComponent implements OnInit, OnDestroy {
+  @ViewChild('creditCard') creditCardInput: ElementRef;
+  @ViewChild('expYear') expYearInput: ElementRef;
   creditCardForm: FormGroup;
   accounts: object[] = [];
   termNo: string;
   termName: string;
   verifyCreditCard: Creditcard;
-  _accountId: number;
+  _accountId = null;
   acc: object;
   heLang: boolean;
   enLang: boolean;
   currentlyStoreAmount: 0;
   amountError = false;
   subscription = new Subscription();
+  useCardReaderControl: FormControl;
   constructor(
     private toastr: ToastrService,
     private receiptService: ReceiptsService,
@@ -45,7 +46,9 @@ export class CreditCardComponent implements OnInit {
     this.creditCardForm = this.fb.group({
       creditCard: ['', [<any>CreditCardValidator.validateCCNumber]],
       customerName: ['', Validators.required],
-      expirationDate: ['', [CreditCardValidator.validateExpDate]],
+      // expirationDate: ['', [CreditCardValidator.validateExpDate]],
+      expMonth: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(2), Validators.min(1), Validators.max(12)]],
+      expYear: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(4), Validators.min(2019)]],
       cvv: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(4)]],
       tz: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]],
       amount: [null, [Validators.required]],
@@ -63,10 +66,35 @@ export class CreditCardComponent implements OnInit {
   get accountId() {
     return this.creditCardForm.get('accountId');
   }
+  get creditCardNumber() {
+    return this.creditCardForm.get('creditCard');
+  }
+  get expirationDate() {
+    return this.creditCardForm.get('expirationDate');
+  }
+  get expMonth() {
+    return this.creditCardForm.get('expMonth');
+  }
+  get expYear() {
+    return this.creditCardForm.get('expYear');
+  }
   ngOnInit() {
+    this.subscription.add(this.createToggleControl().valueChanges.subscribe((data: boolean) => {
+      if (data === true) {
+        this.creditCardNumber.patchValue('');
+        this.creditCardNumber.clearValidators();
+        this.creditCardNumber.updateValueAndValidity();
+        this.onFocusCrediCardNumber();
+      } else {
+        this.creditCardNumber.patchValue('');
+        this.creditCardNumber.setValidators(<any>CreditCardValidator.validateCCNumber);
+        this.creditCardNumber.updateValueAndValidity();
+        this.onFocusCrediCardNumber();
+      }
+    }));
     this.setFullName(this.receiptService.getFirstLastName());
     this.setTz(this.receiptService.getTz());
-    this.subscription.add(this.generalService.currentlyLang$.subscribe(lang => {
+    this.subscription.add(this.generalService.currentLang$.subscribe(lang => {
       if (lang === 'he') {
         this.heLang = true;
         this.enLang = false;
@@ -77,7 +105,7 @@ export class CreditCardComponent implements OnInit {
     }));
     this.getLastSelection();
     console.log('accountCred', this.accountId.value);
-    this.subscription.add(this.generalService.receiptData.subscribe(data => {
+    this.subscription.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.accounts = data['Accounts'];
     }));
     this.subscription.add(this.accountId.valueChanges.subscribe(accountCredId => {
@@ -89,11 +117,25 @@ export class CreditCardComponent implements OnInit {
     // this.checkFieldsValue();
     this.getCurrentlyAmountFromStore();
     this.detectChangeAmount();
+    this.onFocusExpYear();
   }
-
+  onFocusExpYear() {
+    this.subscription.add(this.expMonth.valueChanges.subscribe((value: string) => {
+      if (value.length === 2) {
+        this.expYearInput.nativeElement.focus();
+      }
+    }));
+    this.onBlurExpYear();
+  }
+  onBlurExpYear() {
+    this.subscription.add(this.expYear.valueChanges.subscribe((value: string) => {
+      if (value.length === 4) {
+        this.expYearInput.nativeElement.blur();
+      }
+    }));
+  }
   calculateAmountPay() {
     console.log(this.creditCardForm.controls.amount)
-
   }
   closeModal() {
     this.MatdialogRef.close();
@@ -106,14 +148,20 @@ export class CreditCardComponent implements OnInit {
     } else {
       if (this.creditCardForm.controls.numberOfPayments.value >= 0) {
         if (this.creditCardForm.controls.amount.value >= 0) {
-          const expirationDate = form.value.expirationDate.substring(0, 9);
+
+          // const expirationDate = `${this.expMonth.value}/${this.expYear.value}`;
           const cvv = form.value.cvv.substring(0, 4);
-          const creditCardNumber = form.value.creditCard.replace(/\s+/g, '');
+          let creditCardNumber;
+          if (form.value.creditCard.length > 25) {
+            creditCardNumber = form.value.creditCard;
+          } else {
+            creditCardNumber = form.value.creditCard.replace(/\s+/g, '');
+          }
           this.verifyCreditCard = {
             accountid: form.value.accountId,
             osumtobill: +this.creditCardForm.controls.amount.value,
-            ocardvaliditymonth: expirationDate.substring(0, 2),
-            oCardValidityYear: expirationDate.substring(5, 9),
+            ocardvaliditymonth: this.expMonth.value,
+            oCardValidityYear: this.expYear.value.substring(2, 4),
             ocardnumber: creditCardNumber,
             ocardownerid: form.value.tz,
             cvv: cvv,
@@ -124,7 +172,7 @@ export class CreditCardComponent implements OnInit {
             oNumOfPayments: this.creditCardForm.controls.numberOfPayments.value,
             ofirstpaymentsum: ''
           };
-          console.log(this.verifyCreditCard);
+          console.log(JSON.stringify(this.verifyCreditCard));
           this.subscription.add(this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {
             console.log(res);
             if (res['IsError'] === true) {
@@ -159,7 +207,7 @@ export class CreditCardComponent implements OnInit {
     }
   }
   getLastSelection() {
-    this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
+    this.generalService.currentLastSelect$.subscribe((lastSelect: LastSelection) => {
       if (lastSelect === null) {
       } else {
         this.accountId.patchValue(lastSelect.creditCardAccId);
@@ -235,7 +283,7 @@ export class CreditCardComponent implements OnInit {
 
 
   getCurrentlyAmountFromStore() {
-    this.subscription.add(this.receiptService.currentlyStoreAmount.subscribe(data => {
+    this.subscription.add(this.receiptService.currentStoreAmount$.subscribe(data => {
       this.currentlyStoreAmount = data;
       if (data !== undefined) {
         this.totalPaymentAmount = data; // Setter total amount in creditCardForm
@@ -295,6 +343,43 @@ export class CreditCardComponent implements OnInit {
   setTz(value) {
     this.creditCardForm.get('tz').patchValue(value);
   }
+  // tslint:disable-next-line: use-life-cycle-interface
+
+  createToggleControl() {
+    return this.useCardReaderControl = this.fb.control(false);
+  }
+  getAccountNameAndNumber() {
+
+  }
+  useCardReader() {
+    const cardCode = '4580090107623093=24012010000016411000';
+    if (this.useCardReaderControl.value === true) {
+      if (this.accountId.value === null) {
+        this.toastr.warning('', 'Please select the account', {
+          positionClass: 'toast-top-center'
+        });
+      } else if (cardCode.length > 17) {
+        // tslint:disable-next-line: max-line-length
+        this.credirCardService.getCreditCardInfoWithCardreader(this.termNo, cardCode, this.termName).subscribe(response => {
+          const token = response.substr(response.indexOf('Token') + 6, 36);
+          const expDate = response.substr(response.indexOf('Tokef_30') + 9, 4);
+          this.creditCardNumber.patchValue(token);
+          this.expMonth.patchValue(expDate.substr(0, 2));
+          this.expYear.patchValue(`20${expDate.substr(2, 3)}`);
+          // this.expirationDate.patchValue(expDate);
+          console.log(expDate);
+          console.log(response);
+        });
+      }
+    } else {
+      this.toastr.warning('', 'Card reader required', {
+        positionClass: 'toast-top-center'
+      });
+    }
+  }
+  onFocusCrediCardNumber() {
+    this.creditCardInput.nativeElement.focus();
+  }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.
     // Add 'implements OnDestroy' to the class.
@@ -303,3 +388,5 @@ export class CreditCardComponent implements OnInit {
     console.log('CREDIT CARD DESTROED', this.subscription);
   }
 }
+
+

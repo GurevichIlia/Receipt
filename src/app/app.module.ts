@@ -43,6 +43,7 @@ import { NgxMaskModule, IConfig } from 'ngx-mask';
 import { ServerErrorInterceptor } from './services/server-error-interceptor.service';
 import { ModalSessionexpiredComponent } from './receipts/modals/modal-sessionexpired/modal-sessionexpired.component';
 import { ModalFinalScreenComponent } from './receipts/modals/modal-final-screen/modal-final-screen.component';
+import { ConfirmPurchasesComponent } from './receipts/modals/confirm-purchases/confirm-purchases.component';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -65,7 +66,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     FilterProductsByCatPipe,
     KeysPipe,
     ModalSessionexpiredComponent,
-    ModalFinalScreenComponent
+    ModalFinalScreenComponent,
+    ConfirmPurchasesComponent
   ],
   imports: [
     ScrollingModule,
@@ -99,7 +101,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   // tslint:disable-next-line: max-line-length
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, GeneralSrv, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
   bootstrap: [AppComponent],
-  entryComponents: [CreditCardComponent, ModalFinalScreenComponent, ModalSessionexpiredComponent]
+  entryComponents: [CreditCardComponent, ModalFinalScreenComponent, ModalSessionexpiredComponent, ConfirmPurchasesComponent]
 
 })
 export class AppModule { }

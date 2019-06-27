@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     // this.platform.setDir("ltr", true); ionio 4 nit support
-    this.subscription.add(this.generalSrv.currentlyLang$.subscribe(lang => this.currentLang = lang));
+    this.subscription.add(this.generalSrv.currentLang$.subscribe(lang => this.currentLang = lang));
     document.body.setAttribute('dir', 'rtl');
   }
 

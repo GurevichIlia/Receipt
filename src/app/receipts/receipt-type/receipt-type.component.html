@@ -5,7 +5,8 @@
       <h4>{{'Receipt type' | translate}}</h4>
     </mat-panel-title>
     <mat-panel-description translate>
-      <h4>{{selected_receiptIsForDonation? 'Donation': 'Sales' }}</h4>
+      <h4 *ngIf="selected_receiptIsForDonation.value === true">{{'Donation' | translate}}</h4>
+      <h4 *ngIf="selected_receiptIsForDonation.value === false">{{'Sales' | translate}}</h4>
       <mat-icon>date_range</mat-icon>
     </mat-panel-description>
   </mat-expansion-panel-header>
@@ -31,7 +32,7 @@
               required>
               <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
                 (click)="creditCardModalOpen(payment.PayTypeId)">
-                {{currentlyLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
+                {{currentLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -40,7 +41,7 @@
           <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" [formControl]='payMath' required>
             <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
               (click)="checkPayType(PaymentMethod.value); creditCardModalOpen(PaymentMethod.value)">
-              {{currentlyLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
+              {{currentLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
             </mat-option>
           </mat-select>
         </mat-form-field> -->
@@ -56,8 +57,8 @@
           </mat-form-field>
           <hr *ngIf="organisations.length !== 0">
           <button *ngIf="paymentMethodId === 3 && isVerified === false" type="button" class="mb-1"
-            (click)="creditCardModalOpen(3)" mat-raised-button color="warn">Verify Credit
-            card</button>
+            (click)="creditCardModalOpen(3)" mat-raised-button color="warn">{{'Charge credit card' | translate}}
+          </button>
         </div>
 
         <div class="col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">

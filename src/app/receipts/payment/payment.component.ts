@@ -20,7 +20,6 @@ import { LastSelection } from 'src/app/models/lastSelection.model';
   styleUrls: ['./payment.component.css'],
 })
 export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestroy {
-  @Input() currentlyLang: string;
   step: number;
   @ViewChild('myForm') paymentForm: NgForm;
   paymentMethodId = null;
@@ -40,14 +39,9 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
   receiptLines: Receiptlines[] = [];
   receiptLine: Receiptlines;
   newCheckOrWire: object;
-  // checksOrWires: any[] = [];
-  // paymentFor: number;
-  // accountId: number;
-  // project: number;
-  // currency: any;
-  // payment: {};
+  currentLang: string;
   payments: any[] = [];
-  checkIfNextStepIsDisabledDisabled = true;
+  nextStepIsDisabled = true;
   payByCreditCard: FormGroup;
   creditCard: Creditcard;
   paymentOptionsGroup: FormGroup;
@@ -84,9 +78,12 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }
   }
   ngOnInit() {
-    this.getDataFromGeneralService();
 
-    // this.createPaymentOptionsGroupForm();
+    this.getDataFromGeneralService();
+    this.createPaymentOptionsGroupForm();
+    this.getLastSelection();
+    this.getCurrentLanguage();
+
     // tslint:disable-next-line: max-line-length
     this.clearProjectIfCatProjectIdChanged();
 
@@ -106,11 +103,16 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
   ngAfterViewInit() {
 
   }
+  getCurrentLanguage() {
+    this.subscriptions.add(this.generalService.currentLang$.subscribe((lang: string) => {
+      this.currentLang = lang;
+    }));
+  }
   checkChangesInForm() {
     this.paymentOptionsGroup.valueChanges.subscribe(data => this.checkIfNextStepIsDisabled());
   }
   getCurrentStep() {
-    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
+    this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
   }
   clearProjectIfCatProjectIdChanged() {
     this.paymentOptionsGroup.controls.projectCategory.valueChanges.subscribe((catId: number) => {
@@ -120,8 +122,8 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     });
   }
   getCurrentAmount() {
-    this.subscriptions.add(this.receiptService.currentlyAmount.subscribe(data => {
-      this.totalPaymentAmount = data; // Setter
+    this.subscriptions.add(this.receiptService.currentAmount$.subscribe(data => {
+      this.paymentAmount.patchValue(data); // Setter
     }));
   }
   getCurrentPaymentMethodId() {
@@ -130,7 +132,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }));
   }
   getCurrentCurrency() {
-    this.subscriptions.add(this.receiptService.selCurrencyId.subscribe(currencyId => {
+    this.subscriptions.add(this.receiptService.selCurrencyId$.subscribe(currencyId => {
       this.paymentOptionsGroup.get('currency').patchValue(currencyId);
     }));
   }
@@ -142,7 +144,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }));
   }
   getDataFromGeneralService() {
-    this.subscriptions.add(this.generalService.receiptData.subscribe(data => {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
       this.currencyTypes = data['GetCurrencyTypes'];
       this.donationTypes = data['DonationTypes'];
@@ -151,19 +153,15 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
       this.projects = data['Projects4Receipts'];
       this.banks = data['Banks'];
       this.associations = data['Associations'],
-        this.createPaymentOptionsGroupForm();
       this.filterProjectsByCategory();
     }));
   }
-  get totalPaymentAmount() {
-    return this.paymentOptionsGroup.controls.paymentAmount.value;
-  }
-  set totalPaymentAmount(value) {
+  set paymentAmount(value) {
     this.paymentOptionsGroup.get('paymentAmount').patchValue(value);
   }
   createPaymentOptionsGroupForm() {
     this.paymentOptionsGroup = this.fb.group({
-      paymentAmount: [0],
+      paymentAmount: [''],
       currency: [this.receiptService.selReceiptCurrencyId, [Validators.required]],
       paymentFor: ['', [Validators.required]],
       projectCategory: ['', [Validators.required]],
@@ -172,7 +170,8 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
       project: ['', [Validators.required]],
       associationId: ['', [Validators.required]]
     });
-    this.getLastSelection();
+
+
   }
   get projectCategory() {
     return this.paymentOptionsGroup.get('projectCategory');
@@ -193,7 +192,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     return this.paymentOptionsGroup.get('paymentAmount');
   }
   getLastSelection() {
-    this.subscriptions.add(this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
+    this.subscriptions.add(this.generalService.currentLastSelect$.subscribe((lastSelect: LastSelection) => {
       if (lastSelect === null) {
       } else {
         this.projectCategory.patchValue(lastSelect.projectCategory);
@@ -278,10 +277,10 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
   showTotalAmount() {
     let totalPrice = 0;
     if (this.paymentMethodId === 3) {
-      this.receiptService.changeTotalAmount(this.totalPaymentAmount);
+      this.receiptService.changeTotalAmount(this.paymentAmount.value);
     } else if (this.paymentMethodId === 2 || this.paymentMethodId === 7) {
-      // this.totalPaymentAmount = totalPrice;
-      this.totalPaymentAmount = this.receiptService.calculateTotalAmountForReceiptLines();
+      // this.paymentAmount = totalPrice;
+      this.paymentAmount.patchValue(this.receiptService.calculateTotalAmountForReceiptLines());
     } else {
 
     }
@@ -299,8 +298,8 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
         this.receiptLines = [];
       } else if (this.paymentMethodId === 2 || this.paymentMethodId === 7) {
         // tslint:disable-next-line: max-line-length
-        this.receiptService.addAmountInLeadCurrentToReceiptLine(this.totalPaymentAmount); // use Getter for this.paymentOptionsGroup.controls.paymentAmount.value
-        this.receiptService.amount.next(this.totalPaymentAmount); // use Getter for this.paymentOptionsGroup.controls.paymentAmount.value
+        this.receiptService.addAmountInLeadCurrentToReceiptLine(this.paymentAmount.value); // use Getter for this.paymentOptionsGroup.controls.paymentAmount.value
+        this.receiptService.amount.next(this.paymentAmount.value); // use Getter for this.paymentOptionsGroup.controls.paymentAmount.value
         this.setItemsToLocalStorage();
         this.getNameOfPaymentFor();
         this.receiptService.nextStep();
@@ -308,7 +307,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
       } else {
         this.receiptService.clearReceiptLines();
         this.addReceiptLine();
-        this.receiptService.amount.next(this.totalPaymentAmount);
+        this.receiptService.amount.next(this.paymentAmount.value);
         this.getNameOfPaymentFor();
         this.setItemsToLocalStorage();
         this.receiptService.nextStep();
@@ -366,26 +365,20 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     this.generalService.setItemToLastSelection('accountId', paymentOptionsGroup.accountId.value);
     this.generalService.setItemToLastSelection('project', paymentOptionsGroup.project.value);
     this.generalService.setItemToLastSelection('associationId', paymentOptionsGroup.associationId.value);
-    // localStorage.setItem('projectCategory', paymentOptionsGroup.projectCategory.value);
-    // localStorage.setItem('currency', paymentOptionsGroup.currency.value);
-    // localStorage.setItem('paymentFor', paymentOptionsGroup.paymentFor.value);
-    // localStorage.setItem('accountId', paymentOptionsGroup.accountId.value);
-    // localStorage.setItem('project', paymentOptionsGroup.project.value);
-    // localStorage.setItem('associationId', paymentOptionsGroup.associationId.value);
   }
 
   checkIfNextStepIsDisabled() {
     if (this.paymentMethodId === 2 || this.paymentMethodId === 7) {
       if (this.receiptService.newReceipt.Receipt.recieptlines.length === 0) {
-        this.checkIfNextStepIsDisabledDisabled = true;
+        this.nextStepIsDisabled = true;
       } else {
-        this.checkIfNextStepIsDisabledDisabled = false;
+        this.nextStepIsDisabled = false;
       }
     } else {
       if (this.paymentOptionsGroup.valid) {
-        this.checkIfNextStepIsDisabledDisabled = false;
+        this.nextStepIsDisabled = false;
       } else {
-        this.checkIfNextStepIsDisabledDisabled = true;
+        this.nextStepIsDisabled = true;
       }
     }
   }

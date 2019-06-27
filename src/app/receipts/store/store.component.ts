@@ -1,11 +1,13 @@
+import { ConfirmPurchasesComponent } from './../modals/confirm-purchases/confirm-purchases.component';
 import { Component, OnInit, ChangeDetectorRef, ViewChild, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { ReceiptsService } from '../../services/receipts.service';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { Product } from 'src/app/models/products.model';
 import { NgForm } from '@angular/forms';
-import { MatTable, MatSelectChange, MatDialog } from '@angular/material';
+import { MatTable, MatSelectChange, MatDialog, MatDialogConfig } from '@angular/material';
 import { CreditCardComponent } from '../credit-card/credit-card.component';
 import { Subscription } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-store',
@@ -23,7 +25,6 @@ export class StoreComponent implements OnInit, OnDestroy {
   productsData: any[];
   productCategories: object[];
   productsName: object[];
-  displayedColumns = ['name', 'amount', 'price', 'total', 'delete'];
   addedProdToOrder: Product[] = [];
   totalPriceForOrder: number;
   totalPriceForProduct: number;
@@ -33,12 +34,14 @@ export class StoreComponent implements OnInit, OnDestroy {
     addedProdToORder: [],
   }
   prodCatName;
-  currentlyLang: string;
+  currentLang: string;
+  orderIsSaved = false;
   private subscriptions: Subscription = new Subscription();
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
     private dialog: MatDialog,
+    private toaster: ToastrService
   ) {
     this.product = {
       discount: null,
@@ -51,14 +54,26 @@ export class StoreComponent implements OnInit, OnDestroy {
     };
   }
   ngOnInit() {
-    this.subscriptions.add(this.generalService.currentlyLang$.subscribe((lang: string) => {
-      this.currentlyLang = lang;
-    }));
-    this.subscriptions.add(this.receiptService.currentlyStep.subscribe(step => this.step = step));
+    this.getCurrentLanguage();
+    this.getCurrenStep();
     this.getProductData();
-    this.subscriptions.add(this.receiptService.payTypeCreditCard.subscribe(data => {
+
+    this.subscriptions.add(this.receiptService.currenPayTypeCreditCard$.subscribe(data => {
       this.payByCreditCard = data;
-      console.log(data);
+    }));
+  }
+
+  // checkIsOrderSaved() {
+  //   this.subscriptions.add(this.receiptService.currentOrderInStoreIsSaved.subscribe((value: boolean) => {
+  //     this.orderIsSaved = value;
+  //   }));
+  // }
+  getCurrenStep() {
+    this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
+  }
+  getCurrentLanguage() {
+    this.subscriptions.add(this.generalService.currentLang$.subscribe((lang: string) => {
+      this.currentLang = lang;
     }));
   }
   getProductData() {
@@ -139,8 +154,8 @@ export class StoreComponent implements OnInit, OnDestroy {
     console.log(product, amount, product.totalrow);
   }
   deleteProduct(productId: number) {
-      this.receiptService.setProducts(this.receiptService.getProducts().filter(data => data.productid != productId));
-      this.showTotalPriceForOrder();
+    this.receiptService.setProducts(this.receiptService.getProducts().filter(data => data.productid != productId));
+    this.showTotalPriceForOrder();
   }
   backToPayment() {
     if (this.payByCreditCard) {
@@ -165,15 +180,61 @@ export class StoreComponent implements OnInit, OnDestroy {
     // this.receiptService.amount.next(this.totalPriceForOrder);
     console.log(this.receiptService.newReceipt);
   }
+  nextStep() {
+    const step = 'next';
+    this.confirmPurchoses(step);
+  }
+
+  prevStep() {
+    const step = 'prev';
+    this.confirmPurchoses(step);
+  }
   refreshForm() {
-    debugger
     this.form.controls.amount.reset();
     this.form.controls.productName.reset();
     console.log(this.form);
+  }
+  confirmPurchoses(step?: string) {
+    if (this.receiptService.getProducts().length > 0) {
+      const dialogRef = this.dialog.open(ConfirmPurchasesComponent, { disableClose: true });
+      const sub = dialogRef.afterClosed().subscribe((data: boolean) => {
+        if (data === true) {
+          this.addProductsToReceipt();
+          // this.receiptService.orderInStoreIsSaved.next(true);
+          const message = this.currentLang === 'he' ? 'ההזמנה נשמרה' : 'Order saved';
+          this.toaster.success('', message, {
+            positionClass: 'toast-top-center'
+          });
+        } else {
+          this.receiptService.deleteAllProductsFromStore();
+          // this.receiptService.orderInStoreIsSaved.next(false);
+          this.product.pricebyunit = null;
+        }
+        if (step === 'next') {
+          this.receiptService.nextStep();
+        } else if (step === 'prev') {
+          this.receiptService.prevStep();
+        }
+      },
+        () => console.log('Error'),
+        () => {
+          sub.unsubscribe();
+          console.log('Complete');
+        }
+      );
+    } else {
+      if (step === 'next') {
+        this.receiptService.nextStep();
+      } else if (step === 'prev') {
+        this.receiptService.prevStep();
+      }
+    }
+
   }
   ngOnDestroy() {
     console.log('STORE SUBSCRIBE', this.subscriptions);
     this.subscriptions.unsubscribe();
     console.log('STORE SUBSCRIBE On Destroy', this.subscriptions);
   }
+
 }

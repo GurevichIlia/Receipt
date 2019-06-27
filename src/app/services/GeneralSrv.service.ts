@@ -1,11 +1,9 @@
 import { LastSelection } from './../models/lastSelection.model';
 import { CreditCardVerify } from './../models/credirCardVerify.model';
 import { Injectable, NgZone } from '@angular/core';
-import { serviceConfig } from '../Myappconfig';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject, Subscription } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 // import { Storage } from "@ionic/storage";
 import { AuthenticationService } from '../services/authentication.service';
@@ -23,16 +21,18 @@ export class GeneralSrv {
   baseUrl: string;
   fullReceiptDataFromServer: any[] = [];
   fullReceiptData = new BehaviorSubject(this.fullReceiptDataFromServer);
-  receiptData = this.fullReceiptData.asObservable();
+  currentReceiptData$ = this.fullReceiptData.asObservable();
   position;
   language = new BehaviorSubject('he');
-  currentlyLang$ = this.language.asObservable();
+  currentLang$ = this.language.asObservable();
   orgName: string;
-  httpOptions
+  httpOptions;
   _lastSelection: LastSelection = <LastSelection>{};
-  private subscribtions: Subscription = new Subscription();
   lastSelect = new BehaviorSubject(this._lastSelection);
-  currentLastSelect = this.lastSelect.asObservable();
+  /**
+   *  Show which options customer selected at the last time
+   */
+  currentLastSelect$ = this.lastSelect.asObservable();
 
   constructor(private http: HttpClient,
     private authen: AuthenticationService,
@@ -42,7 +42,7 @@ export class GeneralSrv {
     console.log('ORG NAME', this.orgName);
     this.userGuid = localStorage.getItem('userGuid');
     console.log('this.userGuid', this.userGuid)
-    this.currentlyLang$.subscribe(lang => {
+    this.currentLang$.subscribe(lang => {
       this.zone.runOutsideAngular(() => {
         // setInterval(() => {
         if (lang === 'he') {
@@ -57,7 +57,7 @@ export class GeneralSrv {
         // }, 1);
       });
     });
-    this.baseUrl = 'https://jaffawebapi.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
+    this.baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
     this.httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
