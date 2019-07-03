@@ -11,10 +11,10 @@ const routes: Routes = [
   { path: '', redirectTo: 'newreceipt',
    pathMatch: 'full'
    },
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, },
   { path: 'newreceipt', canActivate: [AuthGuardService], component: NewReceiptComponent , canDeactivate: [CanDeactivateGuardService] },
   { path: 'test', component: TestCComponent },
-  { path: 'send-message', component: SendMessageComponent },
+  { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
   { path: '**', redirectTo: '/newreceipt'},
   // { path: "home", loadChildren: "./home/home.module#HomePageModule" },
   // {

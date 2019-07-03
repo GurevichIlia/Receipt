@@ -24,6 +24,8 @@ export class AppComponent implements OnInit, OnDestroy {
     translate.setDefaultLang('en');
 
   }
+
+  title = 'jaffaCrmAng';
   @HostListener('window:beforeunload', ['$event'])
   unloadNotification($event: any) {
     if (this.receiptService.unsavedData) {
@@ -31,9 +33,10 @@ export class AppComponent implements OnInit, OnDestroy {
       $event.returnValue = true;
     }
   }
-
-
-  title = 'jaffaCrmAng';
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.generalService.sizeOfWindow.next(event.currentTarget.innerWidth);
+  }
 
   ngOnInit() {
 

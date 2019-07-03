@@ -1,9 +1,15 @@
+import { HttpClient } from '@angular/common/http';
 import { GeneralSrv } from './../services/GeneralSrv.service';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { GeneralGroups } from '../models/generalGroups.model';
 
-
+export class SendMessageForm {
+  CellFrom: string;
+  Msg: string;
+  date: string;
+  groups: number[];
+}
 export class TodoItemNode {
   GroupId: number;
   GroupName: string;
@@ -43,12 +49,13 @@ export class TodoItemFlatNode {
 export class SendMessageService {
   generalGroups: [] = [];
   dataChange = new BehaviorSubject<TodoItemNode[]>([]);
-
+  selectedGroups = new Subject();
+  baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/LandingPage/';
   get data(): TodoItemNode[] { return this.dataChange.value; }
   constructor(
-    private generalService: GeneralSrv
+    private generalService: GeneralSrv,
+    private http: HttpClient
   ) {
-
 
   }
 
@@ -64,7 +71,6 @@ export class SendMessageService {
     node.GroupName = name;
     this.dataChange.next(this.data);
   }
-
   getNestedChildren(arr, parent) {
     const children = [];
     for (let i = 0; i < arr.length; ++i) {
@@ -86,4 +92,14 @@ export class SendMessageService {
     this.dataChange.next(children);
     return children;
   }
+  // createHebrewAlphabet() {
+  //   let groupArray = 'אבגדהוזחטיכלמנסעפצקרשת';
+  //   const hebrewAlphabet = groupArray.split('');
+  //   console.log('GROUP ARRAY', hebrewAlphabet, groupArray);
+  //   return hebrewAlphabet;
+  // }
+  // sendToServer(sendMessageForm: SendMessageForm) {
+  //   return this.http.post(`${this.baseUrl}SendGoupSMS?orgGuid=amaxamax`, sendMessageForm);
+  // }
+ 
 }

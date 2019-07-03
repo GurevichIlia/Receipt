@@ -2,6 +2,9 @@
       "Create new": "Create new",
       "Search customer": "Search customer",
       "LogOut": "LogOut",
+      "Create a receipt": "Create a receipt",
+      "Send message": "Send message",
+
 
 
       "New receipt": "New receipt",
@@ -131,11 +134,10 @@
      "Customer id": "Customer id",
      "Receipt number": "Receipt number",
      "Create the new receipt": "Create the new receipt",
-     "Show receipt info": "Show receipt info"
+     "Show receipt info": "Show receipt info",
 
-  
-
-
+     "From number / Company name(English)": "From number / Company name(English)",
+     "Message": "Message"
 
     
       

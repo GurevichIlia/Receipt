@@ -28,6 +28,11 @@ export class AuthenticationService {
     private router: Router
   ) {
     console.log(this.tokenNo);
+    if (localStorage.getItem('id_token')) {
+      this.authenticationstate.next(true);
+    } else {
+      this.authenticationstate.next(false);
+    }
   }
 
   login(responseData) {

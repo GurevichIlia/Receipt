@@ -1,5 +1,9 @@
 .header {
-      align-items: flex-end;
-      direction: initial;
-    }
-    
+  direction: initial;
+  justify-content: space-between;
+  align-items: self-end;
+}
+
+a {
+  color: black;
+}

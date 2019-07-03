@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 export class HeaderComponent implements OnInit, OnDestroy {
   currentLang: string;
   subscriptions = new Subscription();
+  mobileVersion: boolean;
   constructor(
     private authen: AuthenticationService,
     private router: Router,
@@ -20,8 +21,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.checkWidth();
+    // tslint:disable-next-line: max-line-length
+    this.subscriptions.add(this.generalSrv.sizeOfWindow.subscribe(windowWidth => {
+      this.mobileVersion = windowWidth > 500 ? false : true;
+    }));
     this.subscriptions.add(this.generalSrv.currentLang$.subscribe(lang => this.currentLang = lang));
-
+  }
+  checkWidth() {
+    this.mobileVersion = window.innerWidth > 500 ? false : true;
   }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

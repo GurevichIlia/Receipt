@@ -18,7 +18,7 @@ export class TreeOfGroupsComponent implements OnInit {
   generalGroups: GeneralGroups[] = [];
   treeViewGeneralGroups: GeneralGroups[] = [];
   selectedGroups: number[] = [];
-  @Output() sendGroups = new EventEmitter();
+  groups: any[] = []
   constructor(private _database: SendMessageService,
     private sendMessage: SendMessageService,
     private generalService: GeneralSrv
@@ -60,13 +60,22 @@ export class TreeOfGroupsComponent implements OnInit {
   getGroups() {
     this.generalService.GetSystemTables()
       .subscribe(response => {
-        this.generalGroups = response.CustomerGroupsGeneral;
+        this.generalGroups = response.CustomerGroupsGeneral.sort(this.compareName);
         this.treeViewGeneralGroups = this.sendMessage.getNestedChildren(this.generalGroups, 0);
 
       });
   }
+  compareName(a: GeneralGroups, b: GeneralGroups) {
+    if (a.GroupName < b.GroupName) {
+      return -1;
+    }
+    if (a.GroupName < b.GroupName) {
+      return 1;
+    }
+    // a must be equal to b
+    return 0;
 
-
+  }
 
 
   getLevel = (node: TodoItemFlatNode) => node.level;
@@ -201,10 +210,12 @@ export class TreeOfGroupsComponent implements OnInit {
     }
     return selectedGroup;
   }
-  getGroupsFromChild(event) {
-    console.log(event)
+  sendGroupsToService() {
+    this.sendMessage.selectedGroups.next(this.getAllSelectedGroups());
+    console.log(this.getAllSelectedGroups())
   }
-  sendGroupsToParent() {
-    // this.sendGroups.emit('', this.getAllSelectedGroups())
-  }
+  // addGroup(node){
+  //   this.groups.push(node.GroupId);
+  //   console.log(this.groups)
+  // }
 }

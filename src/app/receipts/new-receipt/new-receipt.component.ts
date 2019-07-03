@@ -71,7 +71,7 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
     private httpClient: HttpClient,
    
     private receiptService: ReceiptsService,
-     private generalSrv: GeneralSrv,private translate: TranslateService,
+     private generalSrv: GeneralSrv, private translate: TranslateService,
     private authService: AuthenticationService,
     private modal: MatDialog
 
@@ -102,28 +102,11 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
       this.step = step;
     }));
     // this.generalSrv.addSubscription(currentlyStep$);
-    this.checkExpToken();
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.receiptService.createNewEvent.subscribe(data => this.myControl.patchValue(''));
   }
   ngDoCheck() {
     // this.checkExpToken();
-  }
-  checkExpToken() {
-    // const expTime = this.authService.getExpiration();
-    // const date = new Date(0);
-    // const tokenExpDate = date.setUTCSeconds(+expTime);
-    // console.log('TOKE', tokenExpDate.valueOf())
-    // console.log('DATE', new Date().valueOf())
-    // if (tokenExpDate.valueOf() <= new Date().valueOf()) {
-    //   console.log('TOKEN EXPIRED');
-    // } else {
-    //   console.log('TOKEN not EXPIRED');
-
-    // }
-  }
-  test(event) {
-    console.log(event)
   }
 
   filterOption() {

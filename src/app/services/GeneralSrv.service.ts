@@ -3,11 +3,10 @@ import { CreditCardVerify } from './../models/credirCardVerify.model';
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 // import { Storage } from "@ionic/storage";
 import { AuthenticationService } from '../services/authentication.service';
-import { Receipt } from '../models/receipt.model';
 import { NewReceipt } from '../models/newReceipt.model';
 // import { AlertController } from "@ionic/angular";
 import { Guid } from 'guid-typescript';
@@ -30,6 +29,8 @@ export class GeneralSrv {
   httpOptions;
   _lastSelection: LastSelection = <LastSelection>{};
   lastSelect = new BehaviorSubject(this._lastSelection);
+  sizeOfWindow = new Subject();
+  currentSizeOfWindow = this.sizeOfWindow.asObservable();
   /**
    *  Show which options customer selected at the last time
    */
@@ -68,6 +69,7 @@ export class GeneralSrv {
         Authorization: 'Bearer ' + this.authen.tokenNo
       })
     };
+    this.getWindowWidth();
   }
 
   switchLanguage(language: string) {
@@ -349,5 +351,7 @@ export class GeneralSrv {
     this.lastSelect.next(this.lastSelection);
     console.log('LAS SELECT', this.lastSelection);
   }
-
+  getWindowWidth() {
+   this.sizeOfWindow.next(window.innerWidth);
+  }
 }

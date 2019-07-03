@@ -71,6 +71,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ModalFinalScreenComponent,
     ConfirmPurchasesComponent,
     SendMessageComponent,
+    TreeOfGroupsComponent,
     HeaderComponent,
     HomeComponentComponent
   ],

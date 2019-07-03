@@ -2,7 +2,8 @@
       "Create new": "יצירת חדשה",
       "Search customer": "חיפוש לקוח",
       "LogOut": "להתנתק",
-
+      "Create a receipt": "ליצור קבלה",
+      "Send message": "לשלוח הודעה",
 
       "New receipt": "קבלה חדשה",
       "Customer Info": "פרטי לקוח",
@@ -131,8 +132,9 @@
       "Customer id": "מספר לקוח",
       "Receipt number": "מספר קבלה",
       "Create the new receipt": "צור את הקבלה החדשה",
-      "Show receipt info": "הצג פרטי קבלה"
+      "Show receipt info": "הצג פרטי קבלה",
 
+      "From number / Company name(English)": "ממספר / שם החברה (English)",
+      "Message": "הודעה"
 
-      
   }

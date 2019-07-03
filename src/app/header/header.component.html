@@ -1,25 +1,48 @@
 <div class="container mb-3" *ngIf="authen.currentlyAuthStatus | async">
-<mat-card [style.fontSize]="'20px'">
-  <!-- <div class="col-12 mr-5">
+  <mat-card [style.fontSize]="'20px'">
+    <!-- <div class="col-12 mr-5">
     <img class="mb-2" src="assets/images/amax180-1.jpg" alt="Amax-logo">
   </div> -->
 
-  <div class="col-12">
     <div class="row header mb-2">
-      <div class="col-xs-3 col-sm-3 col-md-12 col-lg-12 col-xl-12 text-right">
-        <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
-          (click)="generalSrv.switchLanguage('en')">en</button>
-        <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"
-          (click)="generalSrv.switchLanguage('he')">he</button>
-        <button [style.fontSize]="'16px'" mat-button color="primary" (click)="authen.logout()"><i class="material-icons">
-            exit_to_app
-          </i></button>
-      </div>
-      <div class="col-xs-4 col-sm-4 col-md-10 col-lg-10 col-xl-10 mb-2">
-        <img src="assets/images/amax180-1.jpg" alt="Amax-logo">
+      <div class="col-xs-1 col-sm-1 col-md-1 col-lg-12 col-xl-12 text-right" *ngIf="mobileVersion">
+        <button  class="mr-2" mat-icon-button
+          [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon [style.fontSize]="'35px'" >menu</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button [style.fontSize]="'16px'" mat-menu-item routerLink="/newreceipt" [routerLinkActive]="['is-active'] "
+            [routerLinkActiveOptions]="{exact: true}">{{'Create a receipt' | translate }}</button>
+          <button [style.fontSize]="'16px'" mat-menu-item routerLink="/send-message"
+            [routerLinkActive]="['is-active']">{{'Send message' | translate}}</button>
+          <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'he'"
+            (click)="generalSrv.switchLanguage('en')">en</button>
+          <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'en'"
+            (click)="generalSrv.switchLanguage('he')">he</button>
+          <button [style.fontSize]="'16px'" mat-menu-item color="primary" (click)="authen.logout()"><i
+              class="material-icons">
+              exit_to_app
+            </i></button>
+        </mat-menu>
       </div>
 
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right" *ngIf="!mobileVersion">
+          <button [style.fontSize]="'16px'" mat-button routerLink="/newreceipt" [routerLinkActive]="['is-active'] "
+            [routerLinkActiveOptions]="{exact: true}">{{'Create a receipt' | translate }}</button>
+          <button [style.fontSize]="'16px'" mat-button routerLink="/send-message"
+            [routerLinkActive]="['is-active']">{{'Send message' | translate}}</button>
+          <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
+            (click)="generalSrv.switchLanguage('en')">en</button>
+          <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"
+            (click)="generalSrv.switchLanguage('he')">he</button>
+          <button [style.fontSize]="'16px'" mat-button color="primary" (click)="authen.logout()"><i
+              class="material-icons">
+              exit_to_app
+            </i></button>
+        </div>
+      <div class="col-xs-1 col-sm-1 col-md-10 col-lg-10 col-xl-10 mb-2">
+        <img src="assets/images/amax180-1.jpg" alt="Amax-logo">
+      </div>
     </div>
-  </div>
-</mat-card>
+  </mat-card>
 </div>
