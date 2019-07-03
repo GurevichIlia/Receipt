@@ -2,10 +2,10 @@
   (opened)="receiptService.setStep(4)" hideToggle>
   <mat-expansion-panel-header>
     <mat-panel-title>
-      <h4>{{'Payment' | translate}}</h4>
+      <h6>{{'Payment' | translate}}</h6>
     </mat-panel-title>
     <mat-panel-description>
-      <h4>{{'Payment method' | translate}}</h4>
+      <h6>{{'Payment method' | translate}}</h6>
       <mat-icon>date_range</mat-icon>
     </mat-panel-description>
   </mat-expansion-panel-header>
@@ -104,7 +104,7 @@
                 </mat-form-field>
 
                 <mat-form-field class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                  <mat-select placeholder="{{'Association Id' | translate}}" formControlName="associationId" required>
+                  <mat-select placeholder="{{'Deposit by' | translate}}" formControlName="associationId" required>
                     <mat-option [value]="association.associationId"
                       *ngFor="let association of associations ; let i = index">
                       {{currentLang === 'he' ? association.associationName : association.associationNameEng}}
@@ -206,7 +206,7 @@
           </tbody>
         </table>
       </div>
-      <h5 *ngIf="payments.length > 0">{{'Total amount' | translate}}:
+      <h5 *ngIf="receiptService.newReceipt.Receipt.recieptlines.length > 0">{{'Total amount' | translate}}:
         {{paymentAmount.value | currency : ' NIS ' : number : '1.2'}}</h5>
     </div>
   </div>

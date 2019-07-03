@@ -12,6 +12,7 @@ import { NewReceipt } from '../models/newReceipt.model';
 // import { AlertController } from "@ionic/angular";
 import { Guid } from 'guid-typescript';
 import { ReceiptsService } from './receipts.service';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Injectable()
@@ -37,7 +38,10 @@ export class GeneralSrv {
   constructor(private http: HttpClient,
     private authen: AuthenticationService,
     private zone: NgZone,
-    private receiptService: ReceiptsService) {
+    private receiptService: ReceiptsService,
+    private translate: TranslateService,
+  ) {
+    this.switchLanguage('he');
     this.orgName = localStorage.getItem('OrgName');
     console.log('ORG NAME', this.orgName);
     this.userGuid = localStorage.getItem('userGuid');
@@ -66,20 +70,15 @@ export class GeneralSrv {
     };
   }
 
-  // private getHeader(): Headers {
-  //   var header = new Headers();
-  //   header.append("Content-Type", "application/json; charset=utf-8");
-  //   if (sessionStorage.getItem(serviceConfig.accesTokenStoreName)) {
-  //     header.append(
-  //       serviceConfig.accesTokenRequestHeader,
-  //       sessionStorage.getItem(serviceConfig.accesTokenStoreName)
-  //     );
-  //   } else {
-  //     throw "Access token not available";
-  //   }
-  //   return header;
-  // }
-
+  switchLanguage(language: string) {
+    this.translate.use(language);
+    this.language.next(language);
+    if (language === 'he') {
+      document.body.setAttribute('dir', 'rtl');
+    } else {
+      document.body.setAttribute('dir', 'ltr');
+    }
+  }
 
   /**
      *  Get all customers
@@ -177,7 +176,7 @@ export class GeneralSrv {
     return obs;
   }
 
-  public CallTestAfterLOgin(url: string): Observable<any> {
+  public CallTestAfterLOgin(): Observable<any> {
     let apiUrl = `${this.baseUrl}'LandingPage/AfterLoginToSystem?urlAddr='${this.orgName}`;
 
     // const headers = new HttpHeaders();
@@ -202,8 +201,8 @@ export class GeneralSrv {
     return obs;
   }
 
-  public GetSystemTables(url: string): Observable<any> {
-    let apiUrl = `${this.baseUrl}LandingPage/GetSytemTablesData?urlAddr=${url}`;
+  public GetSystemTables(): Observable<any> {
+    let apiUrl = `${this.baseUrl}LandingPage/GetSytemTablesData?urlAddr=${this.orgName}`;
 
     // const headers = new HttpHeaders();
     // console.log(this.authen.getToken());
@@ -232,7 +231,7 @@ export class GeneralSrv {
     return obs;
   }
 
-  public GetCustomerSearchData(url: string): Observable<any> {
+  public GetCustomerSearchData(): Observable<any> {
     let apiUrl = `${this.baseUrl}'Receipt/GetCustomerSearchData?urlAddr='${this.orgName}`;
 
     // const headers = new HttpHeaders();
@@ -350,4 +349,5 @@ export class GeneralSrv {
     this.lastSelect.next(this.lastSelection);
     console.log('LAS SELECT', this.lastSelection);
   }
+
 }

@@ -1,0 +1,12 @@
+.example-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.example-container>* {
+  width: 100%;
+}
+.search-results {
+  height: 800px;
+  overflow: scroll;
+}

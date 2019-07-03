@@ -3,10 +3,10 @@
   <mat-expansion-panel [expanded]="step === 1 || step === 0" (opened)="receiptService.setStep(1)" hideToggle>
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <h4>{{'Customer Info' | translate}}</h4>
+        <h6>{{'Customer Info' | translate}}</h6>
       </mat-panel-title>
       <mat-panel-description>
-        <h4>{{customerInfoTitle || 'Customer Name' | translate}}{{customerId}} </h4>
+        <h6>{{customerInfoTitle || 'Customer Name' | translate}}{{customerId}} </h6>
         <mat-icon class="text-right">account_circle</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>

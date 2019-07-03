@@ -97,7 +97,10 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       this.receiptsType = data['ReceiptTypes'];
 
     }));
-
+    this.subscriptions.add(this.receiptService.currentAddress.subscribe(address => {
+      debugger
+      this.addressOnTheReceipt.patchValue(address);
+    }))
     this.subscriptions.add(this.receiptService.currentFullName$.subscribe(name => {
       this.customerName = name;
       this.receiptName.patchValue(this.customerName);

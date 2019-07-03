@@ -2,7 +2,7 @@
 
 
   <!-- <div class="row align-items-center"> -->
-    <!-- <mat-card>
+  <!-- <mat-card>
       <div class="col-6" style="width: 300px">
       <form class="example-form">
         <mat-form-field class="example-full-width">
@@ -19,88 +19,96 @@
       </div>
       <button mat-raised-button color="primary" class="mb-2" (click)="createNew()">Create new</button>
     </mat-card> -->
-    <!-- <div class="col-2">
+  <!-- <div class="col-2">
       <h5>ID: {{customerInfo?.CustomerInfoForReceiept[0].CustomerId}}</h5>
     </div> -->
 
 
 
-    <mat-card [style.fontSize]="'20px'">
-      <!-- <div class="col-12 mr-5">
+  <mat-card [style.fontSize]="'20px'">
+    <!-- <div class="col-12 mr-5">
       <img class="mb-2" src="assets/images/amax180-1.jpg" alt="Amax-logo">
     </div> -->
 
-      <div class="col-12">
-        <div class="row header mb-2">
-          <div class="col-xs-4 col-sm-4 col-md-10 col-lg-10 col-xl-10">
-            <img  src="assets/images/amax180-1.jpg" alt="Amax-logo" >
-          </div>
-          <div class="col-xs-3 col-sm-3 col-md-2 col-lg-2 col-xl-2" >
-            <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'" (click)="switchLanguage('en')">en</button>
-            <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'" (click)="switchLanguage('he')">he</button>
-            <button [style.fontSize]="'16px'" mat-button color="primary" (click)="logOut()"><i class="material-icons">
-                exit_to_app
-                </i></button>
-          </div>
+    <!-- <div class="col-12">
+      <div class="row header mb-2">
+        <div class="col-xs-3 col-sm-3 col-md-12 col-lg-12 col-xl-12 text-right">
+          <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
+            (click)="switchLanguage('en')">en</button>
+          <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"
+            (click)="switchLanguage('he')">he</button>
+          <button [style.fontSize]="'16px'" mat-button color="primary" (click)="logOut()"><i class="material-icons">
+              exit_to_app
+            </i></button>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-10 col-lg-10 col-xl-10 mb-2">
+          <img src="assets/images/amax180-1.jpg" alt="Amax-logo">
+        </div>
+
+      </div>
+    </div> -->
+    <mat-card *ngIf="step !== 6">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <h2 class="text-center" translate>Create a new Receipt</h2>
         </div>
       </div>
-      <mat-card *ngIf="step !== 6">
-        <div class="row justify-content-center">
-          <div class="col-12">
-            <h2 class="text-center" translate>Create a new Receipt</h2>
-          </div>
-        </div>
-        <div *ngIf="step === 1 || step === 0 " class="row justify-content-center
+      <div *ngIf="step === 1 || step === 0 " class="row justify-content-center
       align-items-center">
-          <div class="col-xs-4 col-sm-4 col-md-6 col-lg-6 col-xl-6">
-            <form class="example-form">
-              <mat-form-field class="example-full-width" style="width: 95%">
-                <input type="text" placeholder="{{ 'Search customer' | translate}}" aria-label="Number" matInput
-                  [formControl]="myControl" [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete">
-                  <mat-option (click)="getCustomerInfoById(user.CustomerId)"
-                    *ngFor="let user of filteredOptions | async | slice:0:50; let i = index" [value]="user.FileAs1">
-                    {{user.FileAs1}}
-                  </mat-option>
-                </mat-autocomplete>
-              </mat-form-field>
-            </form>
-          </div>
-          <div class="col-xs-1 col-sm-1 col-md-3 col-lg-2 col-xl-2">
-            <button mat-raised-button color="primary" class="mb-2 mr-3 ml-3" style="background-color: 		#34DDD8; color: white" 
-              (click)="createNew($event)">{{'Create new' | translate}}</button>
-          </div>
-
-          <!-- </div> -->
-
+        <div class="col-xs-4 col-sm-4 col-md-6 col-lg-6 col-xl-6">
+          <form class="example-form">
+            <mat-form-field class="example-full-width" style="width: 95%">
+              <input type="text" placeholder="{{ 'Search customer' | translate}}" aria-label="Number" matInput
+                [formControl]="myControl" [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option (click)="getCustomerInfoById(user.CustomerId)"
+                  *ngFor="let user of filteredOptions | async | slice:0:50; let i = index" [value]="user.FileAs1">
+                  {{user.FileAs1}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </form>
         </div>
-      </mat-card>
-      <mat-card-content>
-        <h4 class="mb-2"></h4>
-        <mat-accordion class="example-headers-align">
-          <!--CUSTOMER INFO-->
-          <app-customer-info [cities]="cities" [customerInfo]="customerInfo">
-          </app-customer-info>
+        <div class="col-xs-1 col-sm-1 col-md-3 col-lg-2 col-xl-2">
+          <button mat-raised-button color="primary" class="mb-2 mr-3 ml-3"
+            style="background-color: 		#34DDD8; color: white"
+            (click)="createNew($event)">{{'Create new' | translate}}</button>
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-3 col-lg-2 col-xl-2">
+          <button mat-raised-button color="primary" class="mb-2 mr-3 ml-3"
+           [routerLink]="['/send-message']" style="background-color: 		#34DDD8; color: white"
+            >{{'Send message' | translate}}</button>
+        </div>
+        <!-- </div> -->
 
-          <!-- CREDIT CARD -->
-          <!-- <app-credit-card></app-credit-card>  POP UP MODAL-->
-
-          <!--STORE-->
-          <app-store></app-store>
-
-          <!--RECEIPT TYPE-->
-          <app-receipt-type></app-receipt-type>
-
-          <!-- PAYMENT -->
-          <app-payment></app-payment>
-
-
-          <!-- PROCCESS RECEIPT -->
-          <app-proccess-reciept [nameFilter]="nameFilter" [customerInfo]="customerInfo">
-          </app-proccess-reciept>
-
-        </mat-accordion>
-      </mat-card-content>
+      </div>
     </mat-card>
+    <mat-card-content>
+      <h4 class="mb-2"></h4>
+      <mat-accordion class="example-headers-align">
+        <!--CUSTOMER INFO-->
+        <app-customer-info [cities]="cities" [customerInfo]="customerInfo">
+        </app-customer-info>
+
+        <!-- CREDIT CARD -->
+        <!-- <app-credit-card></app-credit-card>  POP UP MODAL-->
+
+        <!--STORE-->
+        <app-store></app-store>
+
+        <!--RECEIPT TYPE-->
+        <app-receipt-type></app-receipt-type>
+
+        <!-- PAYMENT -->
+        <app-payment></app-payment>
+
+
+        <!-- PROCCESS RECEIPT -->
+        <app-proccess-reciept [nameFilter]="nameFilter" [customerInfo]="customerInfo">
+        </app-proccess-reciept>
+
+      </mat-accordion>
+    </mat-card-content>
+  </mat-card>
   <!-- </div> -->
 </div>

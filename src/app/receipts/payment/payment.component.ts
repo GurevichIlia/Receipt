@@ -226,8 +226,8 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }
   }
   addPaymentToList(payment: NgForm) {
+    debugger
     console.log('payment', payment.value)
-
     const paymentDate = moment(payment.value['dueDate']).format('DD/MM/YYYY');
     const paymentCheckNo =
       // this.checksOrWires.push(payment.value);
@@ -319,6 +319,9 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }
 
   }
+/**
+ * 
+ */
   addCreditCardPayToReceipt() {
     if (this.credirCardService.verifiedCredCard) {
       this.creditCard = this.credirCardService.verifiedCredCard;

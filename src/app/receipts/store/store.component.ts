@@ -135,12 +135,17 @@ export class StoreComponent implements OnInit, OnDestroy {
     }
     return newProduct;
   }
+  calcTotalPrice() {
+    this.totalPriceForOrder = this.receiptService.getProducts().reduce((x, product: Product) => x + product.totalrow, 0);
+  }
   showTotalPriceForOrder() {
-    let totalPrice = 0;
-    for (const price of this.receiptService.getProducts()) {
-      totalPrice += price.totalrow;
-    }
-    this.totalPriceForOrder = totalPrice;
+    // let totalPrice = 0;
+    // for (const price of this.receiptService.getProducts()) {
+    //   totalPrice += price.totalrow;
+    // }
+    // this.totalPriceForOrder = totalPrice;
+
+    this.calcTotalPrice()
   }
   totalPriceForProd() {
     this.totalPriceForProduct = this.product.pricebyunit * this.product.amount;

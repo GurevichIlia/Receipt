@@ -68,6 +68,8 @@
       "Debit": "רגילה",
       "Credit": "זיכוי",
       "Credit password": "סיסמת זיכוי",
+      "Booklet name": "שם הפנקס",
+
 
       "Credit card verification": "בדיקת כרטיס אשראי",
       "Card number": "מספר כרטיס",
@@ -102,6 +104,10 @@
       "Total amount": "סהכ סכום",
       "Payment info": "פרטי תשלום",
       "Add": "הוסף",
+      "Deposit by": "הופקד על ידי",
+      "Due date": "תאר'ך ערך",
+
+
 
       "Proccess receipt": "הפק קבלה",
       "Name of the receipt": "השם שיופיע על הקבלה",
@@ -109,7 +115,7 @@
       "For": "עבור",
       "Address": "כתובת",
       "Receipt print template": "תבנית הדפסת הקבלה",
-      "Textarea": "Textarea",
+      "Textarea": "טקסט חופשי",
       "Send to email": "שלח לדואל",
       "Send to WhatsApp": "שלח לוואטסאפ",
       "Do not send": "ללא שליחה",
@@ -118,6 +124,7 @@
       "Finish": "הפק",
       "Please select a thanks letter": "בחר מכתב תודה",
       "Amount less than the amount in the store": "סכום פחות מהסכום בחנות",
+      
 
 
 

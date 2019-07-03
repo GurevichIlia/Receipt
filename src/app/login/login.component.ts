@@ -35,9 +35,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   orgid: string;
 
   form: FormGroup = new FormGroup({
-    username: new FormControl(''),
+    username: new FormControl(localStorage.getItem('username')),
     password: new FormControl(''),
-    orgid: new FormControl('')
+    orgid: new FormControl(localStorage.getItem('organisationName'))
   });
   submit() {
     if (this.form.valid) {
@@ -57,7 +57,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   // @Output() submitEM = new EventEmitter();
 
   ngOnInit() {
-
     // this.platform.setDir("ltr", true); ionio 4 nit support
     this.subscription.add(this.generalSrv.currentLang$.subscribe(lang => this.currentLang = lang));
     document.body.setAttribute('dir', 'rtl');
@@ -86,12 +85,14 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.toastr.error(errMes, '', { positionClass: 'toast-top-center' });
 
           } else {
-            this.toastr.success('', 'בהצלחה', { positionClass: 'toast-top-center' });
+            this.toastr.success('', 'מחובר', { positionClass: 'toast-top-center' });
 
             this.authen.login(response.Data);
             this.generalSrv.setOrgName(this.form.controls['orgid'].value, response.Data.EmployeeId);
             // this.router.navigate(["newreceipt"]);
             // debugger;
+            localStorage.setItem('username', this.form.controls['username'].value);
+            localStorage.setItem('organisationName', this.form.controls['orgid'].value);
             this.router.navigate(['newreceipt']);
           }
         },
@@ -110,4 +111,5 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
+
 }

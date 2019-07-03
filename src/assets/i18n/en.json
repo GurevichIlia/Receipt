@@ -68,6 +68,7 @@
       "Debit": "Debit",
       "Credit": "Credit",
       "Credit password": "Credit password",
+      "Booklet name": "Booklet name",
 
       "Credit card verification": "Credit card verification",
       "Card number": "Card number",
@@ -82,6 +83,7 @@
       "Submit": "Submit",
       "Charge credit card": "Charge credit card",
       "Use a card reader": "Use a card reader",
+
 
 
 
@@ -102,6 +104,8 @@
       "Total amount": "Total amount",
       "Payment info": "Payment info",
       "Add": "Add",
+      "Deposit by": "Deposit by",
+      "Due date": "Due date",
 
 
 
@@ -121,6 +125,7 @@
       "Finish": "Finish",
       "Please select a thanks letter": "Please select a thanks letter",
       "Amount less than the amount in the store": "Amount less than the amount in the store",
+
       
 
      "Customer id": "Customer id",

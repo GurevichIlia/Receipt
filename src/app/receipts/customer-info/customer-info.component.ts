@@ -99,6 +99,12 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     });
 
   }
+  get city() {
+    return this.userInfoGroup.get('addresses.city');
+  }
+  get street() {
+    return this.userInfoGroup.get('addresses.street');
+  }
   get customerInfoGroup() {
     return this.userInfoGroup.get('customerMainInfo');
   }
@@ -359,8 +365,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       }
     }
     // this.disabledNextStep();
-  //   console.log('work');
-  // console.log('GROUPS', this.customerInfo.QuickGeneralGroupList);
+    //   console.log('work');
+    // console.log('GROUPS', this.customerInfo.QuickGeneralGroupList);
   }
   refreshRequiredFormFields() {
     this.userInfoGroup.patchValue({
@@ -431,7 +437,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.receiptService.setAdresses(this.userInfoGroup.get('addresses').value);
     this.receiptService.customerEmails.next(this.checkEmptyEmail());
     this.receiptService.addGroupsToReceipt(this.addGroups());
-
+    this.addCurrentAddress();
     // this.receiptService.newReceipt.customerInfo.groups = this.userInfoGroup.get('groups').value;
     // this.receiptService.newReceipt.PaymentType = this.payMath.value;
 
@@ -444,6 +450,24 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     console.log('form.value', this.userInfoGroup.value);
     console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
 
+  }
+  addCurrentAddress() {
+    if (this.street.value === null) {
+      this.street.patchValue('');
+    }
+    if (this.city.value === null) {
+      this.city.patchValue('');
+    }
+    if (this.city.value !== '' || this.street.value !== '') {
+      if (this.city.value !== '' && this.street.value !== '') {
+        this.receiptService.fullAddress.next(`${this.city.value}, ${this.street.value}`);
+
+      } else if (this.city.value !== '' || this.city.value !== null) {
+        this.receiptService.fullAddress.next(`${this.city.value}`);
+      } else if (this.street.value !== '' || this.street.value !== null) {
+        this.receiptService.fullAddress.next(`${this.street.value}`);
+      }
+    }
   }
   submit() {
     this.addCUstomerInfoToReceipt()

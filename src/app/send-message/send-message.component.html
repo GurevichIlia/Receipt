@@ -1,0 +1,38 @@
+<div class="container">
+      <mat-card>
+            <mat-card>
+                  <h3>Send message</h3>
+                  <hr>
+                  <form [formGroup]="messageForm" (ngSubmit)="submitForm(messageForm)">
+
+                        <div class="row" style="direction: initial">
+                              <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 search-results">
+
+                                    <app-tree-of-groups ></app-tree-of-groups>
+                              </div>
+                              <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7 col-xl-7 example-container mb-3 ml-5"
+                                    [style.fontSize]="'20px'" [ngClass]="{'order-first': orderFirst}">
+
+
+                                    <mat-form-field>
+                                          <input formControlName="CellFrom" matInput placeholder="Number">
+                                    </mat-form-field>
+
+                                    <mat-form-field>
+                                          <textarea formControlName="Msg" style="height: 100px" matInput
+                                                placeholder="Message"></textarea>
+                                    </mat-form-field>
+                                    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                          <button type="submit" style="width: 100%" mat-raised-button
+                                                color="primary">Send
+                                          </button>
+                                    </div>
+
+
+                              </div>
+
+                        </div>
+                  </form>
+            </mat-card>
+      </mat-card>
+</div>

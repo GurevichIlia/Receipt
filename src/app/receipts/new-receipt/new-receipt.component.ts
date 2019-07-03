@@ -1,6 +1,6 @@
 import { MatDialog } from '@angular/material';
 import { Subscription } from 'rxjs';
-import { Component, OnInit, DoCheck, OnDestroy } from '@angular/core';
+import { Component, OnInit, DoCheck, OnDestroy, HostListener } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Router } from '@angular/router';
 import { GeneralSrv } from '../../services/GeneralSrv.service';
@@ -14,7 +14,7 @@ import {
 import {
   map,
 } from 'rxjs/operators';
-import {  HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ReceiptsService } from '../../services/receipts.service';
 
@@ -65,12 +65,13 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   constructor(
-    private generalSrv: GeneralSrv,
+    
     private authen: AuthenticationService,
     private router: Router,
     private httpClient: HttpClient,
+   
     private receiptService: ReceiptsService,
-    private translate: TranslateService,
+     private generalSrv: GeneralSrv,private translate: TranslateService,
     private authService: AuthenticationService,
     private modal: MatDialog
 
@@ -78,19 +79,19 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
     translate.setDefaultLang('he');
   }
 
-  switchLanguage(language: string) {
-    this.translate.use(language);
-    this.currentLang = language;
-    this.generalSrv.language.next(language);
-    if (language === 'he') {
-      document.body.setAttribute('dir', 'rtl');
-    } else {
-      document.body.setAttribute('dir', 'ltr');
-    }
-  }
+  // switchLanguage(language: string) {
+  //   this.translate.use(language);
+  //   this.currentLang = language;
+  //   this.generalSrv.language.next(language);
+  //   if (language === 'he') {
+  //     document.body.setAttribute('dir', 'rtl');
+  //   } else {
+  //     document.body.setAttribute('dir', 'ltr');
+  //   }
+  // }
 
   ngOnInit() {
-    this.switchLanguage('he');
+    // this.switchLanguage('he');
     this.LoadSystemTables();
     this.GetCustomerSearchData1();
     this.filterOption();
@@ -172,7 +173,7 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
     console.log(form.value);
   }
   GetCustomerSearchData() {
-    this.subscriptions.add(this.generalSrv.GetCustomerSearchData('jaffanet1').subscribe(
+    this.subscriptions.add(this.generalSrv.GetCustomerSearchData().subscribe(
       response => {
         // response = JSON.parse(response);
         if (response.IsError == true) {
@@ -207,7 +208,7 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
     this.myControl.patchValue('');
   }
   LoadSystemTables() {
-    this.subscriptions.add(this.generalSrv.GetSystemTables('jaffanet1')
+    this.subscriptions.add(this.generalSrv.GetSystemTables()
       .subscribe(
         response => {
           console.log('LoadSystemTables', response);
@@ -237,11 +238,11 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
       ));
   }
 
-  logOut() {
-    console.log('Is logOut')
-    this.authen.logout();
-    this.router.navigate(['login']);
-  }
+  // logOut() {
+  //   console.log('Is logOut')
+  //   this.authen.logout();
+  //   this.router.navigate(['login']);
+  // }
   ngOnDestroy() {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.subscriptions.unsubscribe();

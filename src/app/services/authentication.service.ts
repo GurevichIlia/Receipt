@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { ReceiptsService } from './receipts.service';
 import { CreditCardService } from '../receipts/credit-card/credit-card.service';
 import * as jwt_decode from 'jwt-decode';
+import { Router } from '@angular/router';
 
 
 const TOKEN_KEY = 'auth-token';
@@ -23,7 +24,8 @@ export class AuthenticationService {
 
   constructor(
     private receiptService: ReceiptsService,
-    private creditCardService: CreditCardService
+    private creditCardService: CreditCardService,
+    private router: Router
   ) {
     console.log(this.tokenNo);
   }
@@ -59,18 +61,11 @@ export class AuthenticationService {
   }
   logout() {
     //  alert(2);
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('expires_at');
-    sessionStorage.removeItem('OrgName');
     sessionStorage.clear();
-    this.receiptService.setStep(1);
-    this.authenticationstate.next(false);
-    this.receiptService.amount.next(null);
-    this.receiptService.createNewEvent.next();
-
-    this.creditCardService.credCardIsVerified.next(false);
+    this.refreshFullState();
+    this.router.navigate(['login']);
   }
-  public isLoggedIn() {
+  isLoggedIn() {
     //  alert(1);
     return moment().isBefore(this.getExpiration());
   }
@@ -86,6 +81,15 @@ export class AuthenticationService {
     const expiresAt = expiration;
     console.log('GetExpiration', expiresAt);
     return expiresAt;
+  }
+  refreshFullState() {
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('expires_at');
+    this.receiptService.setStep(1);
+    this.authenticationstate.next(false);
+    this.receiptService.amount.next(null);
+    this.creditCardService.credCardIsVerified.next(false);
+    this.receiptService.createNewEvent.next();
   }
 }
 

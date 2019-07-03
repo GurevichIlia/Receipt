@@ -157,7 +157,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
 
   createReceiptTypeGroup() {
     this.receiptTypeGroup = this.fb.group({
-      paymentMethodId: [''],
+      paymentMethodId: [{value: '', disabled: this.disabledPayMethod}],
       receiptTypeId: [''],
       selected_receiptIsForDonation: [true],
       selected_receiptCreditOrDebit: [false],

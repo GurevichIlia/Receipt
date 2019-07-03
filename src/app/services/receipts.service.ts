@@ -84,6 +84,9 @@ export class ReceiptsService {
   currentCustomerEmails$ = this.customerEmails.asObservable();
   // orderInStoreIsSaved = new BehaviorSubject(false);
   // currentOrderInStoreIsSaved = this.orderInStoreIsSaved.asObservable();
+  unsavedData = true;
+  fullAddress = new Subject();
+  currentAddress = this.fullAddress.asObservable();
   constructor(
     private dialog: MatDialog,
   ) {

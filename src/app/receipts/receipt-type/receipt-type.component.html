@@ -2,11 +2,11 @@
   (opened)="receiptService.setStep(3)" hideToggle>
   <mat-expansion-panel-header class="mb-2">
     <mat-panel-title>
-      <h4>{{'Receipt type' | translate}}</h4>
+      <h6>{{'Receipt type' | translate}}</h6>
     </mat-panel-title>
     <mat-panel-description translate>
-      <h4 *ngIf="selected_receiptIsForDonation.value === true">{{'Donation' | translate}}</h4>
-      <h4 *ngIf="selected_receiptIsForDonation.value === false">{{'Sales' | translate}}</h4>
+      <h6 *ngIf="selected_receiptIsForDonation.value === true">{{'Donation' | translate}}</h6>
+      <h6 *ngIf="selected_receiptIsForDonation.value === false">{{'Sales' | translate}}</h6>
       <mat-icon>date_range</mat-icon>
     </mat-panel-description>
   </mat-expansion-panel-header>
@@ -27,9 +27,9 @@
             <hr>
           </span>
 
-          <mat-form-field style="width: 100%">
+          <mat-form-field style="width: 100%" >
             <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" formControlName='paymentMethodId'
-              required>
+              required >
               <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
                 (click)="creditCardModalOpen(payment.PayTypeId)">
                 {{currentLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
@@ -49,7 +49,7 @@
 
         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
           <mat-form-field style="width: 100%">
-            <mat-select placeholder="{{'Type' | translate}}" formControlName="receiptTypeId" required>
+            <mat-select placeholder="{{'Booklet name' | translate}}" formControlName="receiptTypeId" required>
               <mat-option *ngFor="let type of newReceiptTypes" [value]="type.RecieptTypeId"
                 (click)="setSelectedReceiptType(type)">{{type.RecieptName}}
               </mat-option>
