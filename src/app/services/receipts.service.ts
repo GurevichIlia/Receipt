@@ -68,14 +68,16 @@ export class ReceiptsService {
   totalAmountStore = null;
   storeAmount = new BehaviorSubject(this.totalAmountStore);
   currentStoreAmount$ = this.storeAmount.asObservable();
-
-  newCustomer = true;
-  customer = new BehaviorSubject(this.newCustomer);
-  currentNewCustomer$ = this.customer.asObservable();
+/**
+ * Show if customer is new or already exist
+ */
+ 
+  newCustomer = new BehaviorSubject(true);
+  currentNewCustomer$ = this.newCustomer.asObservable();
 
   receiptIsSubmited = false;
   receiptIsSub = new BehaviorSubject(this.receiptIsSubmited);
-  currentreceiptIsSubmited$ = this.customer.asObservable();
+  currentreceiptIsSubmited$ = this.newCustomer.asObservable();
 
   nameOfPaymentFor = new BehaviorSubject('');
   currentNameOfPaymentFor$ = this.nameOfPaymentFor.asObservable();

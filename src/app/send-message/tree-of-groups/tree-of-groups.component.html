@@ -22,8 +22,8 @@
           {{treeControl.isExpanded(node) ? 'remove' : 'add'}}
         </mat-icon>
       </button>
-      <mat-checkbox [checked]="descendantsAllSelected(node)" [indeterminate]="descendantsPartiallySelected(node)"
-        (change)="todoItemSelectionToggle(node);  sendGroupsToService()"><span class="ml-2">{{node.GroupName}}</span></mat-checkbox>
+      <mat-checkbox [checked]="descendantsAllSelected(node)" [indeterminate]=""
+        (change)=" sendGroupsToService()"><span class="ml-2">{{node.GroupName}}</span></mat-checkbox>
       <!-- <button mat-icon-button (click)="addNewItem(node)">
         <mat-icon>add</mat-icon>
       </button> -->

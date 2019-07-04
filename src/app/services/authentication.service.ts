@@ -27,6 +27,9 @@ export class AuthenticationService {
     private creditCardService: CreditCardService,
     private router: Router
   ) {
+    console.log('AUTH SERVICE LOADED');
+    console.log('AUTH',  this.isAuthenticated() )
+    this. currentlyAuthStatus.subscribe(data => console.log('CURRENT AUTH STATUS', data))
     console.log(this.tokenNo);
     if (localStorage.getItem('id_token')) {
       this.authenticationstate.next(true);

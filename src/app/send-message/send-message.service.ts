@@ -3,6 +3,7 @@ import { GeneralSrv } from './../services/GeneralSrv.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GeneralGroups } from '../models/generalGroups.model';
+import { map } from 'rxjs/operators';
 
 export class SendMessageForm {
   CellFrom: string;
@@ -47,30 +48,30 @@ export class TodoItemFlatNode {
   providedIn: 'root'
 })
 export class SendMessageService {
-  generalGroups: [] = [];
+  generalGroups: GeneralGroups[] = [];
   dataChange = new BehaviorSubject<TodoItemNode[]>([]);
   selectedGroups = new Subject();
   baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/LandingPage/';
+  orgName: string;
   get data(): TodoItemNode[] { return this.dataChange.value; }
   constructor(
     private generalService: GeneralSrv,
     private http: HttpClient
   ) {
+    console.log('SEND NESSAGE SERVICE LOADED');
 
   }
-
   /** Add an item to to-do list */
-  insertItem(parent: TodoItemNode, name: string) {
-    if (parent.children) {
-      parent.children.push({ GroupName: name } as TodoItemNode);
-      this.dataChange.next(this.data);
-    }
-  }
-
-  updateItem(node: TodoItemNode, name: string) {
-    node.GroupName = name;
-    this.dataChange.next(this.data);
-  }
+  // insertItem(parent: TodoItemNode, name: string) {
+  //   if (parent.children) {
+  //     parent.children.push({ GroupName: name } as TodoItemNode);
+  //     this.dataChange.next(this.data);
+  //   }
+  // }
+  // updateItem(node: TodoItemNode, name: string) {
+  //   node.GroupName = name;
+  //   this.dataChange.next(this.data);
+  // }
   getNestedChildren(arr, parent) {
     const children = [];
     for (let i = 0; i < arr.length; ++i) {
@@ -98,8 +99,9 @@ export class SendMessageService {
   //   console.log('GROUP ARRAY', hebrewAlphabet, groupArray);
   //   return hebrewAlphabet;
   // }
-  // sendToServer(sendMessageForm: SendMessageForm) {
-  //   return this.http.post(`${this.baseUrl}SendGoupSMS?orgGuid=amaxamax`, sendMessageForm);
-  // }
- 
+  sendToServer(orgName: string, option: number, sendMessageForm?: SendMessageForm) {
+    console.log('SMS DATA', sendMessageForm)
+    return this.http.post(`${this.baseUrl}SendGoupSMS?orgGuid=${orgName}&verifyOnly=${option}`, sendMessageForm)
+    .pipe(map(response => response['Data']));
+  }
 }

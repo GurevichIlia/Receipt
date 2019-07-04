@@ -25,17 +25,24 @@ export class GeneralSrv {
   position;
   language = new BehaviorSubject('he');
   currentLang$ = this.language.asObservable();
-  orgName: string;
+  orgName = localStorage.getItem('OrgName');
   httpOptions;
-  _lastSelection: LastSelection = <LastSelection>{};
-  lastSelect = new BehaviorSubject(this._lastSelection);
+
   sizeOfWindow = new Subject();
   currentSizeOfWindow = this.sizeOfWindow.asObservable();
+
+  _lastSelection: LastSelection = <LastSelection>{};
+  lastSelect = new BehaviorSubject(this._lastSelection);
   /**
    *  Show which options customer selected at the last time
    */
   currentLastSelect$ = this.lastSelect.asObservable();
 
+  orgNameSubj = new BehaviorSubject(this.orgName);
+  /**
+   *  Show the current organisation name after login
+   */
+  currentOrgName$ = this.orgNameSubj.asObservable();
   constructor(private http: HttpClient,
     private authen: AuthenticationService,
     private zone: NgZone,
@@ -43,7 +50,6 @@ export class GeneralSrv {
     private translate: TranslateService,
   ) {
     this.switchLanguage('he');
-    this.orgName = localStorage.getItem('OrgName');
     console.log('ORG NAME', this.orgName);
     this.userGuid = localStorage.getItem('userGuid');
     console.log('this.userGuid', this.userGuid)
@@ -352,6 +358,6 @@ export class GeneralSrv {
     console.log('LAS SELECT', this.lastSelection);
   }
   getWindowWidth() {
-   this.sizeOfWindow.next(window.innerWidth);
+    this.sizeOfWindow.next(window.innerWidth);
   }
 }

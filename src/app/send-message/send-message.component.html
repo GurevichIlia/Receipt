@@ -3,7 +3,7 @@
             <mat-card>
                   <h3>{{'Send message' | translate}}</h3>
                   <hr>
-                  <form [formGroup]="messageForm" (ngSubmit)="submitForm(messageForm)">
+                  <form [formGroup]="messageForm" (ngSubmit)="sendConfirmation(messageForm)">
 
                         <div class="row" style="direction: initial">
                               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 search-results">
@@ -25,7 +25,10 @@
                                     <mat-form-field class="mb-3">
                                           <textarea #message formControlName="Msg" style="height: 100px" matInput
                                                 placeholder="{{'Message' | translate}}"></textarea>
-                                          <mat-hint [style.fontSize]="'16px'" align="end">{{message.value?.length || 0}}</mat-hint>
+                                          <mat-hint class="text-left" [style.fontSize]="'14px'">Number of messages:
+                                                {{quantityOfMessages || 'loading...'}}</mat-hint>
+                                          <mat-hint [style.fontSize]="'14px'" align="end">
+                                                {{message.value?.length || 0}}/140</mat-hint>
                                     </mat-form-field>
                                     <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
                                           <button type="submit" style="width: 100%" mat-raised-button
@@ -36,7 +39,6 @@
 
 
                               </div>
-
                         </div>
                   </form>
             </mat-card>

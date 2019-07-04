@@ -166,7 +166,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
         this.foundCustomerPhones = this.customerInfo['CustomerMobilePhones'];
       }
     }
-    this.changeCustomerInfoAfterUserIsFound(this.customerInfo);
+    this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
     console.log('isVerified ;', this.isVerified);
     console.log('nextStepDisabled', this.nextStepDisabled);
     console.log(this.foundCustomerEmails, this.foundCustomerPhones);
@@ -181,9 +181,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   ngOnInit() {
     this.getCurrentLanguage();
     // console.log('this.payMath', this.payMath)
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
-      this.customerTitle = data['CustomerTitle'];
-    }));
+    this.getCustomerTitle();
+
     this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       this.customerTypes = data['GetCustomerTypes'];
       console.log(this.customerTypes);
@@ -213,22 +212,16 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     //   this.disabledPayMethod = data;
     //   console.log(this.disabledPayMethod)
     // });
-    this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
-      this.customerInfoTitle = '';
-      this.userInfoGroup.reset();
-      sessionStorage.clear();
-      this.showMoreInfo = false;
-      this.resetEmails();
-      this.resetPhones();
-      this.resetGroup();
-      this.refreshRequiredFormFields();
-      this.disabledNextStep();
-    }));
+    this.refreshFormIfCleckCreateNewCustomer();
     console.log(this.userInfoGroup.value)
     // this.filterOptionForCustomerSearch();
-    setTimeout(() => {
-      this.cityNameAutocompl();
-    }, 2000);
+
+    this.cityNameAutocompl();
+  }
+  getCustomerTitle() {
+    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
+      this.customerTitle = data['CustomerTitle'];
+    }));
   }
   getCurrentLanguage() {
     this.subscriptions.add(this.generalService.currentLang$.subscribe((lang: string) => {
@@ -254,7 +247,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   }
   updateCustomerInfo() {
     if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
-      this.changeCustomerInfoAfterUserIsFound(this.customerInfo);
+      this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
       this.showMoreInfo = false;
     }
   }
@@ -300,73 +293,108 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   resetForm() {
     // this.userInfoGroup.reset('');
   }
-  changeCustomerInfoAfterUserIsFound(customer) {
+  changeCustomerInfoIfCustomerIsFound(customer) {
     if (customer !== undefined) {
       const custInfo = customer.CustomerInfoForReceiept[0];
-      this.receiptService.customer.next(false);
+      this.receiptService.newCustomer.next(false);
       this.receiptService.setStep(1);
       this.customerInfoTitle = `${custInfo.FileAs} ${custInfo.CustomerId}`;
       console.log(this.customerInfoTitle);
+      this.updateCustomerMainInfo(custInfo);
 
-      this.userInfoGroup.controls.customerMainInfo.patchValue({
-        customerId: custInfo.CustomerId,
-        firstName: custInfo.fname,
-        lastName: custInfo.lname,
-        company: custInfo.Company,
-        customerType: custInfo.CustomerType,
-        title: custInfo.Title,
-        gender: custInfo.Gender,
-        tZ: custInfo.CustomerCode,
-        spouseName: custInfo.SpouseName,
-        fileAs: custInfo.FileAs,
-        birthday: moment(customer.CustomerInfoForReceiept[0].BirthDate).format('DD/MM/YYYY'),
-        afterSunset: custInfo.AfterSunset1,
-      });
-      if (customer.CustomerAddresses.length > 0) {
+      this.updateCustomerAddress(customer);
+      this.updateCustomerPhones();
 
-        this.userInfoGroup.controls.addresses.patchValue({
-          city: customer.CustomerAddresses[0].CityName,
-          street: customer.CustomerAddresses[0].Street,
-          zip: customer.CustomerAddresses[0].Zip,
-          addresstypeid: customer.CustomerAddresses[0].AddressTypeId
-
-        });
-      } else {
-        this.userInfoGroup.controls.addresses.patchValue({
-          city: '',
-          street: '',
-          zip: '',
-          addresstypeid: ''
-        });
-      }
-      if (this.foundCustomerPhones.length > 0) {
-        this.phones.controls[0].patchValue({
-          PhoneTypeId: this.foundCustomerPhones[0]['PhoneTypeId'],
-          phone: this.foundCustomerPhones[0]['Phone'],
-        });
-        this.foundCustomerPhones = [];
-      } else {
-        this.phones.controls[0].patchValue({
-          PhoneTypeId: 2,
-          phone: ''
-        });
-      }
-      if (this.foundCustomerEmails.length > 0) {
-        this.emails.controls[0].patchValue({
-          emailname: this.foundCustomerEmails[0]['EmailName'],
-          email: this.foundCustomerEmails[0]['Email'],
-        });
-        this.foundCustomerEmails = [];
-      } else {
-        this.emails.controls[0].patchValue({
-          emailname: custInfo.fname,
-          email: ''
-        });
-      }
+      this.updateCustomerEmails(custInfo);
     }
     // this.disabledNextStep();
     //   console.log('work');
     // console.log('GROUPS', this.customerInfo.QuickGeneralGroupList);
+  }
+
+  updateCustomerMainInfo(custInfo) {
+    this.userInfoGroup.controls.customerMainInfo.patchValue({
+      customerId: custInfo.CustomerId,
+      firstName: custInfo.fname,
+      lastName: custInfo.lname,
+      company: custInfo.Company,
+      customerType: custInfo.CustomerType,
+      title: custInfo.Title,
+      gender: custInfo.Gender,
+      tZ: custInfo.CustomerCode,
+      spouseName: custInfo.SpouseName,
+      fileAs: custInfo.FileAs,
+      birthday: moment(custInfo.BirthDate).format('DD/MM/YYYY'),
+      afterSunset: custInfo.AfterSunset1,
+    });
+  }
+  updateCustomerAddress(customer) {
+    if (customer.CustomerAddresses.length > 0) {
+      this.userInfoGroup.controls.addresses.patchValue({
+        city: customer.CustomerAddresses[0].CityName,
+        street: customer.CustomerAddresses[0].Street,
+        zip: customer.CustomerAddresses[0].Zip,
+        addresstypeid: customer.CustomerAddresses[0].AddressTypeId
+
+      });
+    } else {
+      this.userInfoGroup.controls.addresses.patchValue({
+        city: '',
+        street: '',
+        zip: '',
+        addresstypeid: ''
+      });
+    }
+  }
+  updateCustomerPhones() {
+    if (this.foundCustomerPhones.length > 0) {
+      this.phones.controls[0].patchValue({
+        PhoneTypeId: this.foundCustomerPhones[0]['PhoneTypeId'],
+        phone: this.foundCustomerPhones[0]['PhoneNumber'],
+      });
+      this.foundCustomerPhones = [];
+    } else {
+      this.phones.controls[0].patchValue({
+        PhoneTypeId: 2,
+        phone: ''
+      });
+    }
+  }
+  updateCustomerEmails(custInfo) {
+    if (this.foundCustomerEmails.length > 0) {
+      let i = 0;
+      for (const email of this.foundCustomerEmails) {
+        this.emails.controls[i].patchValue({
+          emailname: email['EmailName'],
+          email: email['Email'],
+        });
+        if (this.foundCustomerEmails.length > i + 1) {
+          this.addEmail();
+          i++;
+        } else {
+          break;
+        }
+      }
+      this.foundCustomerEmails = [];
+    } else {
+      this.emails.controls[0].patchValue({
+        emailname: custInfo.fname,
+        email: ''
+      });
+    }
+  }
+  refreshFormIfCleckCreateNewCustomer() {
+    this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
+      this.customerInfoTitle = '';
+      this.userInfoGroup.reset();
+      sessionStorage.clear();
+      this.showMoreInfo = false;
+      this.resetEmails();
+      this.resetPhones();
+      this.resetGroup();
+      this.refreshRequiredFormFields();
+      this.disabledNextStep();
+    }));
   }
   refreshRequiredFormFields() {
     this.userInfoGroup.patchValue({
@@ -394,7 +422,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       phone: ['']
     }));
   }
-  addMail() {
+  addEmail() {
     this.emails.push(this.fb.group({
       emailname: [''],
       email: [''],

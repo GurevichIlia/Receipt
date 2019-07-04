@@ -117,11 +117,11 @@ export class TreeOfGroupsComponent implements OnInit {
   }
 
   /** Whether part of the descendants are selected */
-  descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
-    const descendants = this.treeControl.getDescendants(node);
-    const result = descendants.some(child => this.checklistSelection.isSelected(child));
-    return result && !this.descendantsAllSelected(node);
-  }
+  // descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
+  //   const descendants = this.treeControl.getDescendants(node);
+  //   const result = descendants.some(child => this.checklistSelection.isSelected(child));
+  //   return result && !this.descendantsAllSelected(node);
+  // }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
   todoItemSelectionToggle(node: TodoItemFlatNode): void {
@@ -147,11 +147,11 @@ export class TreeOfGroupsComponent implements OnInit {
 
   /* Checks all the parents when a leaf node is selected/unselected */
   checkAllParentsSelection(node: TodoItemFlatNode): void {
-    let parent: TodoItemFlatNode | null = this.getParentNode(node);
-    while (parent) {
-      this.checkRootNodeSelection(parent);
-      parent = this.getParentNode(parent);
-    }
+    // let parent: TodoItemFlatNode | null = this.getParentNode(node);
+    // while (parent) {
+    //   this.checkRootNodeSelection(parent);
+    //   // parent = this.getParentNode(parent);
+    // }
 
   }
 
@@ -170,38 +170,38 @@ export class TreeOfGroupsComponent implements OnInit {
   }
 
   /* Get the parent node of a node */
-  getParentNode(node: TodoItemFlatNode): TodoItemFlatNode | null {
-    const currentLevel = this.getLevel(node);
+  // getParentNode(node: TodoItemFlatNode): TodoItemFlatNode | null {
+  //   const currentLevel = this.getLevel(node);
 
-    if (currentLevel < 1) {
-      return null;
-    }
-    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+  //   if (currentLevel < 1) {
+  //     return null;
+  //   }
+  //   const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
 
-    for (let i = startIndex; i >= 0; i--) {
-      const currentNode = this.treeControl.dataNodes[i];
+  //   for (let i = startIndex; i >= 0; i--) {
+  //     const currentNode = this.treeControl.dataNodes[i];
 
-      if (this.getLevel(currentNode) < currentLevel) {
-        return currentNode;
-      }
-    }
-    return null;
-  }
+  //     if (this.getLevel(currentNode) < currentLevel) {
+  //       return currentNode;
+  //     }
+  //   }
+  //   return null;
+  // }
 
   /** Select the category so we can insert the new item. */
-  addNewItem(node: TodoItemFlatNode) {
-    const parentNode = this.flatNodeMap.get(node);
-    this._database.insertItem(parentNode!, '');
-    this.treeControl.expand(node);
+  // addNewItem(node: TodoItemFlatNode) {
+  //   const parentNode = this.flatNodeMap.get(node);
+  //   this._database.insertItem(parentNode!, '');
+  //   this.treeControl.expand(node);
 
-  }
+  // }
 
   /** Save the node to database */
-  saveNode(node: TodoItemFlatNode, itemValue: string) {
-    const nestedNode = this.flatNodeMap.get(node);
-    this._database.updateItem(nestedNode!, itemValue);
+  // saveNode(node: TodoItemFlatNode, itemValue: string) {
+  //   const nestedNode = this.flatNodeMap.get(node);
+  //   this._database.updateItem(nestedNode!, itemValue);
 
-  }
+  // }
 
   getAllSelectedGroups() {
     const selectedGroup = []
