@@ -7,12 +7,14 @@ import { Component, OnInit, Input, OnChanges, ElementRef, ViewChild, NgZone, OnD
 import { ReceiptsService } from 'src/app/services/receipts.service';
 import { MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { Observable, Subscription, Subject } from 'rxjs';
+import { startWith, map, takeUntil } from 'rxjs/operators';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { ReceiptHeader } from 'src/app/models/receiptHeader.model';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { emailsFromCustomerById } from 'src/app/models/emailsFromCustomerById.mode';
 
 @Component({
   selector: 'app-proccess-reciept',
@@ -33,7 +35,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
   proccessReceipt: FormGroup;
   sendReceiptTo = 'email';
   thanksLetters: any[];
-  requirdEmailOrPhone = true;
+  requiredEmail = true;
+  requiredPhone = false;
   totalAmount: number;
   selectedReceipt: object;
   selectedReceiptName: string;
@@ -45,6 +48,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
   currentlyStoreAmount = 0;
   amountError = false;
   finalResolve: FinalResolve;
+  customerEmails: Emails[] = [];
+  unsubscribe$: Subject<boolean> = new Subject();
   private subscriptions: Subscription = new Subscription();
   constructor(
     private receiptService: ReceiptsService,
@@ -54,7 +59,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     private zone: NgZone,
     private toaster: ToastrService,
     private router: Router,
-    private creditCardService: CreditCardService
+    private creditCardService: CreditCardService,
+    private spinner: NgxUiLoaderService
   ) {
   }
   ngOnChanges() {
@@ -98,7 +104,6 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
 
     }));
     this.subscriptions.add(this.receiptService.currentAddress.subscribe(address => {
-      debugger
       this.addressOnTheReceipt.patchValue(address);
     }))
     this.subscriptions.add(this.receiptService.currentFullName$.subscribe(name => {
@@ -107,14 +112,18 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     }));
 
     this.compareStoreAndTotalAmount();
+    this.getEmails()
 
-    this.subscriptions.add(this.receiptService.currentCustomerEmails$
-      .subscribe((emails: Emails[]) => {
-        if (emails.length === 0) {
-        } else {
-          this.sendToEmail.patchValue(emails[0].email);
-        }
-      }));
+    // .pipe(takeUntil(this.unsubscribe$)).subscribe((data: Emails[]) => {
+    //   this.customerEmails = data
+    //   this.sendToEmail.patchValue(this.customerEmails[0].email);
+    // });
+    // .subscribe((emails: Emails[]) => {
+    //   if (emails.length === 0) {
+    //   } else {
+    //     this.sendToEmail.patchValue(emails);
+    //   }
+    // }));
 
     this.subscriptions.add(this.receiptService.currentNameOfPaymentFor$.subscribe(
       (nameOfPaymentFor: string) => {
@@ -130,6 +139,19 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.filterOptionReceiptFor();
     this.filterOptionNameForReceipt();
   }
+  getEmails() {
+    this.receiptService.currentCustomerEmails$.pipe(takeUntil(this.unsubscribe$)).subscribe((emails: Emails[]) => {
+      this.customerEmails = emails;
+      if (this.customerEmails.length !== 0) {
+        this.sendToEmail.patchValue(this.customerEmails[0].email);
+      } else {
+        this.sendToEmail.patchValue('');
+      }
+
+    })
+    // console.log('EMAILS OBSERVBLE', this.customerEmails$)
+
+  }
   createProcessReceiptForm() {
     this.proccessReceipt = this.fb.group({
       totalPayAmount: [''],
@@ -139,8 +161,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       receiptTemplate: [''],
       textarea: [''],
       sendTo: [this.sendReceiptTo],
-      sendToEmail: [''],
-      sendToPhone: [''],
+      sendToEmail: ['', Validators.required],
+      sendToPhone: ['', Validators.required],
       showOnScreen: [true]
     });
     this.getLastSelection();
@@ -258,11 +280,17 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.subscriptions.add(sendTo.valueChanges.subscribe(data => {
       this.sendReceiptTo = data;
       if (this.sendReceiptTo === 'dontSend') {
-        this.requirdEmailOrPhone = false;
+        this.sendToEmail.clearValidators();
+        this.requiredEmail = false;
+        this.requiredPhone = false;
+      } else if (this.sendReceiptTo === 'email') {
+        this.sendToEmail.setValidators(Validators.required);
+        this.requiredEmail = true;
       } else {
-        this.requirdEmailOrPhone = true;
+        this.sendToEmail.clearValidators();
+        this.requiredPhone = true;
       }
-      console.log(this.requirdEmailOrPhone)
+      console.log('this.requiredPhone', this.requiredPhone, 'this.requiredEmail', this.requiredEmail);
     }));
   }
   /**
@@ -298,6 +326,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       console.log(this.receiptService.newReceipt);
       const newReceipt = this.receiptService.getFullNewReceipt();
       console.log(JSON.stringify(newReceipt));
+      this.spinner.start();
       this.subscriptions.add(this.generalService.sendFullReceiptToServer(newReceipt).subscribe((res: FinalResolve) => {
         res = res['Data'];
         if (res.error === 'true') {
@@ -305,6 +334,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
           this.toaster.error('Please contact customer support', `Something went wrong ${res.moreinfo}`, {
             positionClass: 'toast-top-center'
           });
+          this.spinner.stop();
           console.log('ERROR', this.receiptService.newReceipt, res);
         } else {
           const message = this.currentLang === 'he' ? 'עסקה בוצעה בהצלחה' : 'Transaction successfully completed';
@@ -320,6 +350,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
           this.receiptService.nextStep();
           this.finalResolve = res;
           // this.receiptService.refreshNewReceipt();
+          this.spinner.stop();
           console.log('Success', res);
         }
       }));
@@ -357,7 +388,10 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     // Add 'implements OnDestroy' to the class.
     console.log('PROCCESS SUBSCRIBE', this.subscriptions);
     this.subscriptions.unsubscribe();
-    console.log('PROCCESS SUBSCRIBE On Destroy', this.subscriptions);
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+    console.log('TAKE UNTILE WORK', this.receiptService.currentCustomerEmails$)
+    console.log('PROCCESS SUBSCRIBE On Destroy', this.generalService.currentReceiptData$ );
   }
 }
 

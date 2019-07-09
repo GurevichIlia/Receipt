@@ -28,8 +28,9 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'jaffaCrmAng';
   @HostListener('window:beforeunload', ['$event'])
   unloadNotification($event: any) {
+    
     if (this.receiptService.unsavedData) {
-
+      debugger
       $event.returnValue = true;
     }
   }
@@ -39,7 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
+    this.receiptService.currentReceiptLine$.subscribe(data => console.log('RECEIPT DATA CURRENT', data))
 
   }
   ngOnDestroy() {

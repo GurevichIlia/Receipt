@@ -1,9 +1,10 @@
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { Subscription } from 'rxjs';
 import { SendMessageService } from './send-message.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component, OnInit, DoCheck, HostListener, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-send-message',
@@ -16,24 +17,39 @@ export class SendMessageComponent implements OnInit, OnDestroy {
   subscription = new Subscription;
   orgName: string;
   quantityOfMessages: string;
+  selectedGroups: number[] = [];
+  postfix = new FormControl('');
+  currentLang: string;
   constructor(
     private fb: FormBuilder,
     private sendMessageService: SendMessageService,
     private generalService: GeneralSrv,
     private toastr: ToastrService,
+    private spinner: NgxUiLoaderService
   ) { }
 
 
   ngOnInit() {
+    this.postfix.valueChanges.subscribe(postfix => {
+      let message: string = this.message.value;
+      if (this.currentLang === 'he') {
+        this.message.patchValue(`{${postfix}} ${message}`);
+      } else {
+        this.message.patchValue(`${message} {${postfix}} `);
+      }
+    })
+    this.spinner.start();
     this.checkWindowSize();
     this.addClassOrderFirst();
     this.createMessageForm();
     this.getSelectedGroups();
     this.getOrgName();
     this.getQuantityOfMessages();
+    this.generalService.currentLang$.subscribe(lang => this.currentLang = lang);
+    this.spinner.stop();
   }
   addClassOrderFirst() {
-    this.orderFirst = window.innerWidth > 450 ? false : true;
+    this.orderFirst = window.innerWidth > 765 ? false : true;
   }
   createMessageForm() {
     this.messageForm = this.fb.group({
@@ -53,9 +69,20 @@ export class SendMessageComponent implements OnInit, OnDestroy {
     return this.messageForm.get('groups');
   }
   getSelectedGroups() {
-    this.subscription.add(this.sendMessageService.selectedGroups.subscribe((groups: number[]) => this.groups.patchValue(groups)));
+    this.subscription.add(this.sendMessageService.selectedGroups.subscribe((group: number) => {
+      if (this.selectedGroups.includes(group)) {
+        this.selectedGroups.splice(this.selectedGroups.indexOf(group), 1);
+      } else {
+        this.selectedGroups.push(group);
+      }
+      this.updateGroups();
+      console.log('SELECTION', this.groups.value)
+    }))
   }
-
+  updateGroups() {
+    debugger
+    this.groups.patchValue(this.selectedGroups);
+  }
   checkWindowSize() {
     this.generalService.currentSizeOfWindow.subscribe(width => this.addClassOrderFirst());
   }
@@ -67,6 +94,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
   }
   sendMessage() {
     // tslint:disable-next-line: max-line-length
+    this.spinner.start();
     this.subscription.add(this.sendMessageService.sendToServer(this.orgName, 0, this.messageForm.value).subscribe((response: { message: string, Error: string }) => {
       console.log('Final response', response);
       this.toastr.success(response.message, '', {
@@ -74,16 +102,19 @@ export class SendMessageComponent implements OnInit, OnDestroy {
       });
       this.resetMessageForm();
       this.getQuantityOfMessages();
+      this.spinner.stop();
     }));
   }
   sendConfirmation() {
     console.log(this.messageForm.value);
     // tslint:disable-next-line: max-line-length
+    this.spinner.start();
     this.subscription.add(this.sendMessageService.sendToServer(this.orgName, 1, this.messageForm.value).subscribe((response: { message: string, Error: string }) => {
       if (confirm(response.message)) {
+        this.spinner.stop();
         this.sendMessage();
       } else {
-
+        this.spinner.stop();
       }
     }));
   }
@@ -100,9 +131,8 @@ export class SendMessageComponent implements OnInit, OnDestroy {
       // date: [''],
       groups: []
     });
-    this.messageForm.markAsUntouched();
-    this.messageForm.updateValueAndValidity();
-    console.log(this.messageForm.value)
+    this.updateGroups();
+    console.log(this.messageForm)
   }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

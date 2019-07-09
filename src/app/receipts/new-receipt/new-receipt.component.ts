@@ -1,9 +1,9 @@
+import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { MatDialog } from '@angular/material';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, DoCheck, OnDestroy, HostListener } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Router } from '@angular/router';
-import { GeneralSrv } from '../../services/GeneralSrv.service';
 import { TranslateService } from '@ngx-translate/core';
 
 import {
@@ -17,6 +17,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ReceiptsService } from '../../services/receipts.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 
 ///////////////////////// START CLASS
@@ -65,15 +66,16 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   constructor(
-    
+
     private authen: AuthenticationService,
     private router: Router,
     private httpClient: HttpClient,
-   
+
     private receiptService: ReceiptsService,
-     private generalSrv: GeneralSrv, private translate: TranslateService,
+    private generalService: GeneralSrv, private translate: TranslateService,
     private authService: AuthenticationService,
-    private modal: MatDialog
+    private modal: MatDialog,
+    private spinner: NgxUiLoaderService
 
   ) {
     translate.setDefaultLang('he');
@@ -82,7 +84,7 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
   // switchLanguage(language: string) {
   //   this.translate.use(language);
   //   this.currentLang = language;
-  //   this.generalSrv.language.next(language);
+  //   this.generalService.language.next(language);
   //   if (language === 'he') {
   //     document.body.setAttribute('dir', 'rtl');
   //   } else {
@@ -91,19 +93,22 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
   // }
 
   ngOnInit() {
+    this.receiptService.setStep(1);
+    this.spinner.start();
     // this.switchLanguage('he');
     this.LoadSystemTables();
     this.GetCustomerSearchData1();
     this.filterOption();
-    this.generalSrv.getLastSelectionFromLocalStore();
-    this.subscriptions.add(this.generalSrv.currentLang$.subscribe(lang => this.currentLang = lang));
-    // this.generalSrv.addSubscription(currentLang$);
+    this.generalService.getLastSelectionFromLocalStore();
+    this.subscriptions.add(this.generalService.currentLang$.subscribe(lang => this.currentLang = lang));
+    // this.generalService.addSubscription(currentLang$);
     this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => {
       this.step = step;
     }));
-    // this.generalSrv.addSubscription(currentlyStep$);
+    // this.generalService.addSubscription(currentlyStep$);
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.receiptService.createNewEvent.subscribe(data => this.myControl.patchValue(''));
+    this.spinner.stop();
   }
   ngDoCheck() {
     // this.checkExpToken();
@@ -121,30 +126,36 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
 
   }
   GetCustomerSearchData1() {
-    this.subscriptions.add(this.generalSrv
-      .getUsers()
-      .pipe(
-        map(response => {
-          if (response.length === 0) {
-            // this.authService.logout();
-            return response;
-          } else {
-            return response;
-          }
-        }),
-        map(response => response),
-      ).subscribe(
-        data => {
-          this.AllCustomerTables = data;
-          this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
-          console.log('this.AllCustomerTables', this.AllCustomerTables);
-        },
-      ));
-
+    if (this.generalService.checkLocalStorage('customerSearchData')) {
+      this.AllCustomerTables = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
+    } else {
+      this.subscriptions.add(this.generalService
+        .getUsers()
+        .pipe(
+          map(response => {
+            if (response.length === 0) {
+              // this.authService.logout();
+              return response;
+            } else {
+              return response;
+            }
+          }),
+          map(response => response),
+        ).subscribe(
+          data => {
+            this.AllCustomerTables = data;
+            this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
+            localStorage.setItem('customerSearchData', JSON.stringify(this.AllCustomerTables));
+            console.log('this.AllCustomerTables', this.AllCustomerTables);
+          },
+        ));
+    }
   }
   getCustomerInfoById(customerId: number) {
-    this.subscriptions.add(this.generalSrv.getCustomerInfoById(customerId).subscribe(customer => {
+    this.spinner.start();
+    this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
       this.customerInfo = customer;
+      this.spinner.stop();
       // this.clickToBtnCreateNew = false;
       // this.receiptService.subject.next(customer);
       // this.receiptService.setCustomerInfo(customer);
@@ -155,70 +166,77 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
   submit(form: NgForm) {
     console.log(form.value);
   }
-  GetCustomerSearchData() {
-    this.subscriptions.add(this.generalSrv.GetCustomerSearchData().subscribe(
-      response => {
-        // response = JSON.parse(response);
-        if (response.IsError == true) {
-          // this.disableAfterclick = false;
-          // this.presentAlert(response.ErrMsg);
-          alert('err');
-        } else {
-          // this.generalSrv.presentAlert("", "", "בוצע בהצלחה!");
-          console.log(response.Data);
-          console.log(JSON.parse(response.Data));
-          this.AllCustomerTables = JSON.parse(response.Data);
+  // GetCustomerSearchData() {
+  //   debugger
+  //   this.subscriptions.add(this.generalService.GetCustomerSearchData().subscribe(
+  //     response => {
+  //       // response = JSON.parse(response);
+  //       if (response.IsError == true) {
+  //         // this.disableAfterclick = false;
+  //         // this.presentAlert(response.ErrMsg);
+  //         alert('err');
+  //       } else {
+  //         // this.generalService.presentAlert("", "", "בוצע בהצלחה!");
+  //         console.log(response.Data);
+  //         console.log(JSON.parse(response.Data));
+  //         this.AllCustomerTables = JSON.parse(response.Data);
 
-          this.CustomerSearchData = Object.assign(
-            [],
-            this.AllCustomerTables['CustomerTables'].FastSearchData
-          );
-        }
-      },
-      error => {
-        console.log(error);
-        // this.generalSrv.presentAlert("Error", "an error accured", error.status);
-        // this.disableAfterclick = false;
-      },
-      () => {
-        console.log('CallCompleted');
-      }
-    ));
-  }
+  //         this.CustomerSearchData = Object.assign(
+  //           [],
+  //           this.AllCustomerTables['CustomerTables'].FastSearchData
+  //         );
+  //       }
+  //     },
+  //     error => {
+  //       console.log(error);
+  //       // this.generalService.presentAlert("Error", "an error accured", error.status);
+  //       // this.disableAfterclick = false;
+  //     },
+  //     () => {
+  //       console.log('CallCompleted');
+  //     }
+  //   ));
+  // }
   createNew() {
     this.receiptService.createNewEvent.next();
     this.receiptService.setStep(1);
     this.myControl.patchValue('');
   }
   LoadSystemTables() {
-    this.subscriptions.add(this.generalSrv.GetSystemTables()
-      .subscribe(
-        response => {
-          console.log('LoadSystemTables', response);
-          // response = JSON.parse(response)
-          if (response.IsError == true) {
+    if (this.generalService.checkLocalStorage('cities')) {
+      this.cities = JSON.parse(this.generalService.checkLocalStorage('cities'));
+    } else {
+      this.subscriptions.add(this.generalService.GetSystemTables()
+        .subscribe(
+          response => {
+            console.log('LoadSystemTables', response);
+            // response = JSON.parse(response)
+            if (response.IsError == true) {
+              // this.disableAfterclick = false;
+              // this.presentAlert(response.ErrMsg);
+              alert('err');
+            } else {
+              // this.generalService.presentAlert("", "", "בוצע בהצלחה!");
+              // console.log(response.Data);
+              // console.log(JSON.parse(response.Data));
+              // this.AllsysTables = JSON.parse(response.Data);
+              // this.SelectRecType(1);
+              this.cities = response.Cities;
+              localStorage.setItem('cities', JSON.stringify(this.cities))
+              console.log('this.cities', this.cities)
+            }
+          },
+          error => {
+            console.log(error);
+            // this.generalService.presentAlert("Error", "an error accured", error.status);
             // this.disableAfterclick = false;
-            // this.presentAlert(response.ErrMsg);
-            alert('err');
-          } else {
-            // this.generalSrv.presentAlert("", "", "בוצע בהצלחה!");
-            // console.log(response.Data);
-            // console.log(JSON.parse(response.Data));
-            // this.AllsysTables = JSON.parse(response.Data);
-            // this.SelectRecType(1);
-            this.cities = response.Cities;
-            console.log('this.cities', this.cities)
+          },
+          () => {
+            console.log('CallCompleted');
           }
-        },
-        error => {
-          console.log(error);
-          // this.generalSrv.presentAlert("Error", "an error accured", error.status);
-          // this.disableAfterclick = false;
-        },
-        () => {
-          console.log('CallCompleted');
-        }
-      ));
+        ));
+    }
+
   }
 
   // logOut() {

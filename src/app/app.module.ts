@@ -12,6 +12,7 @@ import { NgxPageScrollModule } from 'ngx-page-scroll';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatTreeModule } from '@angular/material/tree';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { NgxUiLoaderModule, NgxUiLoaderRouterModule } from  'ngx-ui-loader';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -46,6 +47,7 @@ import { SendMessageComponent } from './send-message/send-message.component';
 import { TreeOfGroupsComponent } from './send-message/tree-of-groups/tree-of-groups.component';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponentComponent } from './home-component/home-component.component';
+import { DisableControlDirective } from './shared/directives/disable-control.directive';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -73,7 +75,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     SendMessageComponent,
     TreeOfGroupsComponent,
     HeaderComponent,
-    HomeComponentComponent
+    HomeComponentComponent,
+    DisableControlDirective
   ],
   imports: [
     ScrollingModule,
@@ -98,7 +101,11 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    })
+    }),
+    NgxUiLoaderModule, // import NgxUiLoaderModule
+    NgxUiLoaderRouterModule, // import NgxUiLoaderRouterModule. By default, it will show foreground loader.
+    // If you need to show background spinner, do as follow:
+    // NgxUiLoaderRouterModule.forRoot({ showForeground: false })
 
     // MatInputModule,
     // MatFormFieldModule,

@@ -10,6 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import { Subscription } from 'rxjs';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 
 
@@ -41,7 +42,9 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private generalService: GeneralSrv,
     private credirCardService: CreditCardService,
-    private creditCard: CreditCardService
+    private creditCard: CreditCardService,
+    private spinner: NgxUiLoaderService
+
   ) {
     this.creditCardForm = this.fb.group({
       creditCard: ['', [<any>CreditCardValidator.validateCCNumber]],
@@ -173,6 +176,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
             ofirstpaymentsum: ''
           };
           console.log(JSON.stringify(this.verifyCreditCard));
+          this.spinner.start();
           this.subscription.add(this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {
             console.log(res);
             if (res['IsError'] === true) {
@@ -188,6 +192,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
                 positionClass: 'toast-top-center'
               });
               this.generalService.setItemToLastSelection('creditCardAccId', this.verifyCreditCard.accountid);
+              this.spinner.stop();
               // localStorage.setItem('creditCardAccId', this.verifyCreditCard.accountid.toString());
               this.closeModal();
             }
@@ -198,6 +203,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
           this.toastr.warning('Amount is invalid', '', {
             positionClass: 'toast-top-center'
           });
+          this.spinner.stop();
         }
       } else {
         this.toastr.warning('Number of payments is invalid', '', {

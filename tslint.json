@@ -2,6 +2,9 @@
   "rulesDirectory": [
     "codelyzer"
   ],
+  
+  "extends": ["tslint:recommended", "tslint-sonarts"],
+  
   "rules": {
     "arrow-return-shorthand": true,
     "callable-types": true,
@@ -63,6 +66,7 @@
       true,
       "ignore-params"
     ],
+  
     "no-misused-new": true,
     "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,

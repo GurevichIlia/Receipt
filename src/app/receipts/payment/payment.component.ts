@@ -78,7 +78,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }
   }
   ngOnInit() {
-
+    this.receiptService.selectedPaymentMethod.subscribe(payId => {
+      console.log('payMethod', payId)
+      this.receiptService.clearReceiptLines();
+      console.log('WORK PAY METH CHANGED');
+    });
     this.getDataFromGeneralService();
     this.createPaymentOptionsGroupForm();
     this.getLastSelection();
@@ -138,7 +142,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
   }
   refreshFormFieldsIfPushedCreateNew() {
     this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
-      this.refreshForm();
+      this.refreshCheckForm();
       this.paymentAmount.patchValue('');
       this.paymentAmount.markAsUntouched();
     }));
@@ -226,7 +230,6 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }
   }
   addPaymentToList(payment: NgForm) {
-    debugger
     console.log('payment', payment.value)
     const paymentDate = moment(payment.value['dueDate']).format('DD/MM/YYYY');
     const paymentCheckNo =
@@ -254,8 +257,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     this.showTotalAmount();
     this.checkPaymentsLength();
     this.checkIfNextStepIsDisabled();
-    console.log(this.payments);
-    console.log(this.receiptLines)
+    console.log('Receipltiles Receipt Service', this.receiptService.newReceipt.Receipt.recieptlines);
   }
   deletePayment(payment) {
     console.log('payment', payment);
@@ -268,7 +270,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
 
   }
   checkPaymentsLength() {
-    if (this.payments.length === 0) {
+    if (this.receiptService.getReceiptLines().length === 0) {
       this.receiptService.blockPaymentMethod.next(false);
     } else {
       this.receiptService.blockPaymentMethod.next(true);
@@ -335,9 +337,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
       alert('Please add your credit card')
     }
   }
-  /**
-   * Добавляет receiptline с нужными данными в NewReceipt, только при оплате картой
-   */
+  /** * Добавляет receiptline с нужными данными в NewReceipt, только при оплате картой */
   addReceiptLine() {
     const paymentOptionsGroup = this.paymentOptionsGroup.controls;
     this.receiptLine = {
@@ -385,7 +385,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
       }
     }
   }
-  refreshForm() {
+  refreshCheckForm() {
     this.bankInput.reset();
     this.newCheckOrWire = {
       payAccount: '',

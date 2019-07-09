@@ -12,7 +12,7 @@ const routes: Routes = [
    pathMatch: 'full'
    },
   { path: 'login', component: LoginComponent, },
-  { path: 'newreceipt', canActivate: [AuthGuardService], component: NewReceiptComponent , canDeactivate: [CanDeactivateGuardService] },
+  { path: 'newreceipt', canActivate: [AuthGuardService], component: NewReceiptComponent },
   { path: 'test', component: TestCComponent },
   { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
   { path: '**', redirectTo: '/newreceipt'},

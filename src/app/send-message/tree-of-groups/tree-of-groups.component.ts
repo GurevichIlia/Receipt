@@ -1,3 +1,4 @@
+import { FormControl } from '@angular/forms';
 import { GeneralGroups } from './../../models/generalGroups.model';
 import { GeneralSrv } from './../../services/GeneralSrv.service';
 import { SendMessageService, TodoItemFlatNode, TodoItemNode } from './../send-message.service';
@@ -5,7 +6,7 @@ import { Component, OnInit, Output } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { EventEmitter } from 'protractor';
+import { Subscription } from 'rxjs';
 
 
 
@@ -18,9 +19,11 @@ export class TreeOfGroupsComponent implements OnInit {
   generalGroups: GeneralGroups[] = [];
   treeViewGeneralGroups: GeneralGroups[] = [];
   selectedGroups: number[] = [];
-  groups: any[] = []
+  groups: any[] = [];
+  subscription = new Subscription();
+
   constructor(private _database: SendMessageService,
-    private sendMessage: SendMessageService,
+    private sendMessageService: SendMessageService,
     private generalService: GeneralSrv
   ) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
@@ -58,12 +61,18 @@ export class TreeOfGroupsComponent implements OnInit {
     this.getGroups();
   }
   getGroups() {
-    this.generalService.GetSystemTables()
-      .subscribe(response => {
-        this.generalGroups = response.CustomerGroupsGeneral.sort(this.compareName);
-        this.treeViewGeneralGroups = this.sendMessage.getNestedChildren(this.generalGroups, 0);
-
-      });
+    console.log(JSON.parse(this.generalService.checkLocalStorage('generalGroups')))
+    if (this.generalService.checkLocalStorage('generalGroups')) {
+      this.generalGroups = JSON.parse(this.generalService.checkLocalStorage('generalGroups'))
+      this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
+    } else {
+      this.subscription.add(this.generalService.GetSystemTables()
+        .subscribe(response => {
+          this.generalGroups = response.CustomerGroupsGeneral.sort(this.compareName);
+          localStorage.setItem('generalGroups', JSON.stringify(this.generalGroups));
+          this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
+        }));
+    }
   }
   compareName(a: GeneralGroups, b: GeneralGroups) {
     if (a.GroupName < b.GroupName) {
@@ -74,9 +83,7 @@ export class TreeOfGroupsComponent implements OnInit {
     }
     // a must be equal to b
     return 0;
-
   }
-
 
   getLevel = (node: TodoItemFlatNode) => node.level;
 
@@ -117,11 +124,11 @@ export class TreeOfGroupsComponent implements OnInit {
   }
 
   /** Whether part of the descendants are selected */
-  // descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
-  //   const descendants = this.treeControl.getDescendants(node);
-  //   const result = descendants.some(child => this.checklistSelection.isSelected(child));
-  //   return result && !this.descendantsAllSelected(node);
-  // }
+  descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
+    const descendants = this.treeControl.getDescendants(node);
+    const result = descendants.some(child => this.checklistSelection.isSelected(child));
+    return result && !this.descendantsAllSelected(node);
+  }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
   todoItemSelectionToggle(node: TodoItemFlatNode): void {
@@ -147,11 +154,11 @@ export class TreeOfGroupsComponent implements OnInit {
 
   /* Checks all the parents when a leaf node is selected/unselected */
   checkAllParentsSelection(node: TodoItemFlatNode): void {
-    // let parent: TodoItemFlatNode | null = this.getParentNode(node);
-    // while (parent) {
-    //   this.checkRootNodeSelection(parent);
-    //   // parent = this.getParentNode(parent);
-    // }
+    let parent: TodoItemFlatNode | null = this.getParentNode(node);
+    while (parent) {
+      this.checkRootNodeSelection(parent);
+      // parent = this.getParentNode(parent);
+    }
 
   }
 
@@ -170,23 +177,23 @@ export class TreeOfGroupsComponent implements OnInit {
   }
 
   /* Get the parent node of a node */
-  // getParentNode(node: TodoItemFlatNode): TodoItemFlatNode | null {
-  //   const currentLevel = this.getLevel(node);
+  getParentNode(node: TodoItemFlatNode): TodoItemFlatNode | null {
+    const currentLevel = this.getLevel(node);
 
-  //   if (currentLevel < 1) {
-  //     return null;
-  //   }
-  //   const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+    if (currentLevel < 1) {
+      return null;
+    }
+    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
 
-  //   for (let i = startIndex; i >= 0; i--) {
-  //     const currentNode = this.treeControl.dataNodes[i];
+    for (let i = startIndex; i >= 0; i--) {
+      const currentNode = this.treeControl.dataNodes[i];
 
-  //     if (this.getLevel(currentNode) < currentLevel) {
-  //       return currentNode;
-  //     }
-  //   }
-  //   return null;
-  // }
+      if (this.getLevel(currentNode) < currentLevel) {
+        return currentNode;
+      }
+    }
+    return null;
+  }
 
   /** Select the category so we can insert the new item. */
   // addNewItem(node: TodoItemFlatNode) {
@@ -203,16 +210,13 @@ export class TreeOfGroupsComponent implements OnInit {
 
   // }
 
-  getAllSelectedGroups() {
-    const selectedGroup = []
-    for (const group of this.checklistSelection.selected) {
-      selectedGroup.push(group.GroupId);
-    }
-    return selectedGroup;
+  addGroup(groupId: number) {
+    this.sendMessageService.selectedGroups.next(groupId);
+    // console.log('SELECTED', this.checklistSelection.selected);
   }
   sendGroupsToService() {
-    this.sendMessage.selectedGroups.next(this.getAllSelectedGroups());
-    console.log(this.getAllSelectedGroups())
+
+
   }
   // addGroup(node){
   //   this.groups.push(node.GroupId);

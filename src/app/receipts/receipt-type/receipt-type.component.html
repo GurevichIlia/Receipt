@@ -29,7 +29,7 @@
 
           <mat-form-field style="width: 100%" >
             <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" formControlName='paymentMethodId'
-              required >
+              required [disableControl]="disabledPayMethod">
               <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
                 (click)="creditCardModalOpen(payment.PayTypeId)">
                 {{currentLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
@@ -56,7 +56,7 @@
             </mat-select>
           </mat-form-field>
           <hr *ngIf="organisations.length !== 0">
-          <button *ngIf="paymentMethodId === 3 && isVerified === false" type="button" class="mb-1"
+          <button *ngIf="paymentMethodId.value === 3 && isVerified === false" type="button" class="mb-1"
             (click)="creditCardModalOpen(3)" mat-raised-button color="warn">{{'Charge credit card' | translate}}
           </button>
         </div>
@@ -89,7 +89,7 @@
             </mat-radio-button>
           </mat-radio-group>
         </div>
-        <div *ngIf="receiptCreditOrDebit === true && paymentMethodId === 3"
+        <div *ngIf="receiptCreditOrDebit === true && paymentMethodId.value === 3"
           class="col-xs-12 col-sm-12 col-md-4 col-lg-2 col-xl-2">
           <p><strong>will be text</strong></p>
           <mat-form-field style="width: 100%">

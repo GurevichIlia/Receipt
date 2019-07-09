@@ -3,7 +3,7 @@
             <mat-card>
                   <h3>{{'Send message' | translate}}</h3>
                   <hr>
-                  <form [formGroup]="messageForm" (ngSubmit)="sendConfirmation(messageForm)">
+                  <form [formGroup]="messageForm" (ngSubmit)="sendConfirmation()">
 
                         <div class="row" style="direction: initial">
                               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 search-results">
@@ -15,28 +15,40 @@
                               </div>
                               <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7 col-xl-7 example-container mb-3"
                                     [style.fontSize]="'17px'" [ngClass]="{'order-first': orderFirst}">
+                                    <div class="row">
 
 
-                                    <mat-form-field>
-                                          <input formControlName="CellFrom" matInput
-                                                placeholder="{{'From number / Company name(English)' | translate}}">
-                                    </mat-form-field>
+                                          <mat-form-field class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                                                <mat-select [formControl]="prefix"  placeholder="">
+                                                      <mat-option [value]="'FirstName'">FirstName</mat-option>
+                                                      <mat-option [value]="'LastName'">LastName</mat-option>
+                                                      <mat-option [value]="'Title'">Title</mat-option>
+                                                </mat-select>
+                                          </mat-form-field>
 
-                                    <mat-form-field class="mb-3">
-                                          <textarea #message formControlName="Msg" style="height: 100px" matInput
-                                                placeholder="{{'Message' | translate}}"></textarea>
-                                          <mat-hint class="text-left" [style.fontSize]="'14px'">Number of messages:
-                                                {{quantityOfMessages || 'loading...'}}</mat-hint>
-                                          <mat-hint [style.fontSize]="'14px'" align="end">
-                                                {{message.value?.length || 0}}/140</mat-hint>
-                                    </mat-form-field>
-                                    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                                          <button type="submit" style="width: 100%" mat-raised-button
-                                                [disabled]="messageForm.invalid"
-                                                [ngStyle]="{'background-color': messageForm.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': messageForm.invalid === false ? 'white' : ''}">Send
-                                          </button>
+                                          <mat-form-field class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+
+                                                <input class="col-4" formControlName="CellFrom" matInput
+                                                      placeholder="{{'From number / Company name(English)' | translate}}">
+                                          </mat-form-field>
+
+                                          <mat-form-field
+                                                class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-12 mb-3">
+                                                <textarea #message formControlName="Msg" style="height: 100px" matInput
+                                                      placeholder="{{'Message' | translate}}"></textarea>
+                                                <mat-hint class="text-left" [style.fontSize]="'14px'">Number of
+                                                      messages:
+                                                      {{quantityOfMessages || 'loading...'}}</mat-hint>
+                                                <mat-hint [style.fontSize]="'14px'" align="end">
+                                                      {{message.value?.length || 0}}/140</mat-hint>
+                                          </mat-form-field>
+                                          <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                                <button type="submit" style="width: 100%" mat-raised-button
+                                                      [disabled]="messageForm.invalid"
+                                                      [ngStyle]="{'background-color': messageForm.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': messageForm.invalid === false ? 'white' : ''}">Send
+                                                </button>
+                                          </div>
                                     </div>
-
 
                               </div>
                         </div>

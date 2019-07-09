@@ -89,7 +89,8 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-error *ngIf="currentlyLetters.length === 0">אין מכתבי תודה! בחר סוג קבלה אחר או צור קשר עם תמיכת הלקוחות.</mat-error>
+          <mat-error *ngIf="currentlyLetters.length === 0">אין מכתבי תודה! בחר סוג קבלה אחר או צור קשר עם תמיכת הלקוחות.
+          </mat-error>
 
           <mat-form-field class="col-12">
             <textarea matInput placeholder="{{'Textarea' | translate}}" formControlName="textarea"></textarea>
@@ -107,11 +108,18 @@
               {{'Do not send' | translate}}
             </mat-radio-button>
           </mat-radio-group>
-          <mat-form-field class="col-12" *ngIf="sendReceiptTo === 'email'">
-            <input matInput placeholder="{{'Email' | translate}}" formControlName="sendToEmail">
+          <mat-form-field class="col-8" *ngIf="sendReceiptTo === 'email'">
+            <input type="text" placeholder="{{'Email' | translate}}" aria-label="Number" matInput
+              formControlName="sendToEmail" [matAutocomplete]="Auto">
+            <mat-autocomplete #Auto="matAutocomplete">
+              <mat-option *ngFor="let email of customerEmails" [value]="email.email">
+                {{email.email}}
+              </mat-option>
+            </mat-autocomplete>
           </mat-form-field>
+
           <mat-form-field class="col-12" *ngIf="sendReceiptTo === 'whatsApp'">
-            <input matInput placeholder="{{'Mobile phone' | translate}}" formControlName="sendToPhone">
+            <input matInput placeholder="{{'Mobile phone' | translate}}" formControlName="sendToPhone" >
           </mat-form-field>
           <hr>
           <mat-radio-group #showOnScreen aria-labelledby="example-radio-group-label" class="example-radio-group"

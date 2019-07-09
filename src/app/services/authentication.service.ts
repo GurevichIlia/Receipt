@@ -91,6 +91,9 @@ export class AuthenticationService {
     return expiresAt;
   }
   refreshFullState() {
+    localStorage.removeItem('cities');
+    localStorage.removeItem('customerSearchData');
+    localStorage.removeItem('generalGroups');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
     this.receiptService.setStep(1);

@@ -360,4 +360,7 @@ export class GeneralSrv {
   getWindowWidth() {
     this.sizeOfWindow.next(window.innerWidth);
   }
+  checkLocalStorage(itemName: string) {
+    return localStorage.getItem(itemName);
+  }
 }

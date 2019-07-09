@@ -9,7 +9,7 @@ import { CreditCardVerify } from './../models/credirCardVerify.model';
 import { NewReceipt } from './../models/newReceipt.model';
 
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { Customerinfo } from '../models/customerInfo.model';
 import { Creditcard } from '../models/creditCard.model';
 import { Receipt } from '../models/receipt.model';
@@ -19,6 +19,7 @@ import { LastSelection } from '../models/lastSelection.model';
 import { Group } from '../receipts/customer-info/customer-info.component';
 import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/confirm-purchases.component';
 import { MatDialog } from '@angular/material';
+import { emailsFromCustomerById } from '../models/emailsFromCustomerById.mode';
 
 @Injectable({
   providedIn: 'root'
@@ -33,31 +34,27 @@ export class ReceiptsService {
   createNewEvent = new Subject<void>();
   amount = new BehaviorSubject(this.totalAmount);
   currentAmount$ = this.amount.asObservable();
-  // Check if array "payments" is not empty disabled payment method in customer info component
+
   paymentsNotEmpty = false;
   blockPaymentMethod = new BehaviorSubject(this.paymentsNotEmpty);
+  /** disabled payment method if user added checks for payment */
   blockPayMethod$ = this.blockPaymentMethod.asObservable();
-  /**
-   * Show selected currency from receipt type in step(receipt type)
-   */
+
   selReceiptCurrencyId = new BehaviorSubject('');
+   /*** Show selected currency from receipt type in step(receipt type)*/
   selCurrencyId$ = this.selReceiptCurrencyId.asObservable();
-  /**
-   * Show if payment method is credit card
-   */
+ 
   creditCard = false;
   payByCreditCard = new BehaviorSubject(this.creditCard);
+   /** * Show if payment method is credit card */
   currenPayTypeCreditCard$ = this.payByCreditCard.asObservable();
 
-  /**
-   * Show which payment method id selected
-   */
   paymentId: number = null;
   paymentMethod = new BehaviorSubject(this.paymentId);
+    /*** Show which payment method id selected*/
   selectedPaymentMethod = this.paymentMethod.asObservable();
-  /**
-   * Show current name of customer name for step(proccess-receipt)
-   */
+  
+  /*** Show current name of customer name for step(proccess-receipt)*/
   fullName: string;
   private customerName = new BehaviorSubject(this.fullName);
   currentFullName$ = this.customerName.asObservable();
@@ -68,10 +65,8 @@ export class ReceiptsService {
   totalAmountStore = null;
   storeAmount = new BehaviorSubject(this.totalAmountStore);
   currentStoreAmount$ = this.storeAmount.asObservable();
-/**
- * Show if customer is new or already exist
- */
- 
+
+/*** Show if customer is new or already exist*/
   newCustomer = new BehaviorSubject(true);
   currentNewCustomer$ = this.newCustomer.asObservable();
 
@@ -82,13 +77,15 @@ export class ReceiptsService {
   nameOfPaymentFor = new BehaviorSubject('');
   currentNameOfPaymentFor$ = this.nameOfPaymentFor.asObservable();
 
-  customerEmails = new Subject();
+  customerEmails = new Subject<Emails[]>();
   currentCustomerEmails$ = this.customerEmails.asObservable();
   // orderInStoreIsSaved = new BehaviorSubject(false);
   // currentOrderInStoreIsSaved = this.orderInStoreIsSaved.asObservable();
   unsavedData = true;
   fullAddress = new Subject();
   currentAddress = this.fullAddress.asObservable();
+  receiptLines = new BehaviorSubject(null);
+  currentReceiptLine$ = this.receiptLines.asObservable();
   constructor(
     private dialog: MatDialog,
   ) {
@@ -129,10 +126,7 @@ export class ReceiptsService {
       PaymentType: null,
       creditCard: <Creditcard>{}
     };
-    this.selectedPaymentMethod.subscribe(payId => {
-      this.clearReceiptLines();
-      console.log('WORK PAY METH CHANGED');
-    });
+    this.receiptLines.next(this.newReceipt.Receipt.recieptlines);
   }
 
   setCustomerInfo(customerInfo) {
@@ -150,11 +144,15 @@ export class ReceiptsService {
   nextStep() {
     this.step++;
     this.currStep.next(this.step)
+    console.log('RECEIPT LINES', this.newReceipt.Receipt.recieptlines)
+
   }
 
   prevStep() {
     this.step--;
     this.currStep.next(this.step)
+    console.log('RECEIPT LINES', this.newReceipt.Receipt.recieptlines)
+
   }
 
   sendReceiptToServer() {
@@ -255,7 +253,6 @@ export class ReceiptsService {
   getFirstLastName() {
     const custInfo = this.newReceipt.customerInfo.customermaininfo;
     const fullName = `${custInfo.firstName} ${custInfo.lastName}`;
-    console.log('FULL NAME', fullName);
     return fullName;
   }
   getTz() {

@@ -11,15 +11,15 @@ export class CanDeactivateGuardService {
 
   ) { }
   // You have unsaved changes! If you leave, your changes will be lost.
-  canDeactivate() {
-    if (this.receiptService.unsavedData) {
-      if (confirm('יש לך שינויים שלא נשמרו! אם תעזוב, השינויים שלך יאבדו')) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    return true;
-  }
+  // canDeactivate() {
+  //   if (this.receiptService.unsavedData) {
+  //     if (confirm('יש לך שינויים שלא נשמרו! אם תעזוב, השינויים שלך יאבדו')) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
 }
 
