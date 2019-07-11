@@ -1,6 +1,6 @@
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
 import { Subscription } from 'rxjs';
-import { SendMessageService } from './send-message.service';
+import { SendMessageService } from '../send-message.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -58,6 +58,11 @@ export class SendMessageComponent implements OnInit, OnDestroy {
       // date: [''],
       groups: [[], Validators.required]
     });
+    if (localStorage.getItem('cellFrom')) {
+      this.cellFrom.patchValue(localStorage.getItem('cellFrom'));
+    } else {
+      this.cellFrom.patchValue('');
+    }
   }
   get cellFrom() {
     return this.messageForm.get('CellFrom');
@@ -76,11 +81,10 @@ export class SendMessageComponent implements OnInit, OnDestroy {
         this.selectedGroups.push(group);
       }
       this.updateGroups();
-      console.log('SELECTION', this.groups.value)
+      console.log('SELECTION', this.groups.value);
     }))
   }
   updateGroups() {
-    debugger
     this.groups.patchValue(this.selectedGroups);
   }
   checkWindowSize() {
@@ -103,7 +107,10 @@ export class SendMessageComponent implements OnInit, OnDestroy {
       this.resetMessageForm();
       this.getQuantityOfMessages();
       this.spinner.stop();
-    }));
+      localStorage.setItem('cellFrom', this.cellFrom.value);
+    }, error => this.toastr.warning(error.message, '', {
+      positionClass: 'toast-top-center'
+    })));
   }
   sendConfirmation() {
     console.log(this.messageForm.value);
@@ -121,7 +128,12 @@ export class SendMessageComponent implements OnInit, OnDestroy {
   getQuantityOfMessages() {
     // tslint:disable-next-line: max-line-length
     this.subscription.add(this.sendMessageService.sendToServer(this.orgName, 2, this.messageForm.value).subscribe((response: { message: string, Error: string }) => {
-      this.quantityOfMessages = response.message;
+      if (response.Error === '1') {
+        this.quantityOfMessages = 'error'
+      } else {
+        this.quantityOfMessages = response.message;
+      }
+
     }));
   }
   resetMessageForm() {

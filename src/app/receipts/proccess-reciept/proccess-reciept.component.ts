@@ -50,6 +50,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
   finalResolve: FinalResolve;
   customerEmails: Emails[] = [];
   unsubscribe$: Subject<boolean> = new Subject();
+  proccessReceiptIsInvalid$: Observable<boolean>;
   private subscriptions: Subscription = new Subscription();
   constructor(
     private receiptService: ReceiptsService,
@@ -113,7 +114,11 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
 
     this.compareStoreAndTotalAmount();
     this.getEmails()
-
+    this.proccessReceiptIsInvalid$ = this.proccessReceipt.statusChanges;
+    // .subscribe(status => {
+    //    = status
+    //   console.log('STATUS', status)
+    // });
     // .pipe(takeUntil(this.unsubscribe$)).subscribe((data: Emails[]) => {
     //   this.customerEmails = data
     //   this.sendToEmail.patchValue(this.customerEmails[0].email);
@@ -161,8 +166,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       receiptTemplate: [''],
       textarea: [''],
       sendTo: [this.sendReceiptTo],
-      sendToEmail: ['', Validators.required],
-      sendToPhone: ['', Validators.required],
+      sendToEmail: ['', Validators.required,],
+      sendToPhone: [''],
       showOnScreen: [true]
     });
     this.getLastSelection();
@@ -281,14 +286,13 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       this.sendReceiptTo = data;
       if (this.sendReceiptTo === 'dontSend') {
         this.sendToEmail.clearValidators();
-        this.requiredEmail = false;
-        this.requiredPhone = false;
+        this.sendToEmail.updateValueAndValidity();
       } else if (this.sendReceiptTo === 'email') {
         this.sendToEmail.setValidators(Validators.required);
-        this.requiredEmail = true;
+        this.sendToEmail.updateValueAndValidity();
       } else {
         this.sendToEmail.clearValidators();
-        this.requiredPhone = true;
+        this.sendToEmail.updateValueAndValidity();
       }
       console.log('this.requiredPhone', this.requiredPhone, 'this.requiredEmail', this.requiredEmail);
     }));
@@ -391,7 +395,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
     console.log('TAKE UNTILE WORK', this.receiptService.currentCustomerEmails$)
-    console.log('PROCCESS SUBSCRIBE On Destroy', this.generalService.currentReceiptData$ );
+    console.log('PROCCESS SUBSCRIBE On Destroy', this.generalService.currentReceiptData$);
   }
 }
 

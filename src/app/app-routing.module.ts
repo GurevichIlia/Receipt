@@ -5,16 +5,19 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { NewReceiptComponent } from './receipts/new-receipt/new-receipt.component';
 import { TestCComponent } from './test-c/test-c.component';
-import { SendMessageComponent } from './send-message/send-message.component';
+import { SendMessageComponent } from './message/send-message/send-message.component';
+import { LoginGuard } from './services/login.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'newreceipt',
    pathMatch: 'full'
    },
-  { path: 'login', component: LoginComponent, },
+         { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
+
+  { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'newreceipt', canActivate: [AuthGuardService], component: NewReceiptComponent },
   { path: 'test', component: TestCComponent },
-  { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
+  // { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
   { path: '**', redirectTo: '/newreceipt'},
   // { path: "home", loadChildren: "./home/home.module#HomePageModule" },
   // {

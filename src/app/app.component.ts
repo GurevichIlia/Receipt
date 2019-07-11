@@ -30,7 +30,6 @@ export class AppComponent implements OnInit, OnDestroy {
   unloadNotification($event: any) {
     
     if (this.receiptService.unsavedData) {
-      debugger
       $event.returnValue = true;
     }
   }

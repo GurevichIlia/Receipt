@@ -6,7 +6,15 @@
 .example-container>* {
   width: 100%;
 }
+
 .search-results {
   height: 800px;
   overflow: scroll;
+}
+
+
+
+
+::ng-deep .mat-select-arrow-wrapper {
+  /* padding-right: 167px; */
 }

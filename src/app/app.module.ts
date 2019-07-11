@@ -1,3 +1,5 @@
+import { SendMessageModule } from './message/send-message.module';
+import { ReceiptsService } from 'src/app/services/receipts.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material';
@@ -12,7 +14,7 @@ import { NgxPageScrollModule } from 'ngx-page-scroll';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatTreeModule } from '@angular/material/tree';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { NgxUiLoaderModule, NgxUiLoaderRouterModule } from  'ngx-ui-loader';
+import { NgxUiLoaderModule, NgxUiLoaderRouterModule } from 'ngx-ui-loader';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -43,11 +45,12 @@ import { ServerErrorInterceptor } from './services/server-error-interceptor.serv
 import { ModalSessionexpiredComponent } from './receipts/modals/modal-sessionexpired/modal-sessionexpired.component';
 import { ModalFinalScreenComponent } from './receipts/modals/modal-final-screen/modal-final-screen.component';
 import { ConfirmPurchasesComponent } from './receipts/modals/confirm-purchases/confirm-purchases.component';
-import { SendMessageComponent } from './send-message/send-message.component';
-import { TreeOfGroupsComponent } from './send-message/tree-of-groups/tree-of-groups.component';
+import { SendMessageComponent } from './message/send-message/send-message.component';
+import { TreeOfGroupsComponent } from './message/send-message/tree-of-groups/tree-of-groups.component';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponentComponent } from './home-component/home-component.component';
 import { DisableControlDirective } from './shared/directives/disable-control.directive';
+import { SharedModule } from './shared/shared.module';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -72,29 +75,28 @@ export function HttpLoaderFactory(http: HttpClient) {
     ModalSessionexpiredComponent,
     ModalFinalScreenComponent,
     ConfirmPurchasesComponent,
-    SendMessageComponent,
-    TreeOfGroupsComponent,
     HeaderComponent,
     HomeComponentComponent,
-    DisableControlDirective
+    DisableControlDirective,
   ],
   imports: [
     ScrollingModule,
     BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
+    // FormsModule,
+    // ReactiveFormsModule,
     AppRoutingModule,
     MaterialModule,
     HttpClientModule,
     MomentModule,
-    MatTreeModule,
-    InfiniteScrollModule,
+    // InfiniteScrollModule,
     CreditCardDirectivesModule,
     NgxPageScrollCoreModule,
     NgxPageScrollModule,
-    NgxMaskModule.forRoot({ showMaskTyped: true }),
+    // NgxMaskModule.forRoot({ showMaskTyped: true }),
     BrowserAnimationsModule, // required animations module
     ToastrModule.forRoot(), // ToastrModule added
+    SharedModule,
+    SendMessageModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -102,19 +104,11 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    NgxUiLoaderModule, // import NgxUiLoaderModule
-    NgxUiLoaderRouterModule, // import NgxUiLoaderRouterModule. By default, it will show foreground loader.
-    // If you need to show background spinner, do as follow:
-    // NgxUiLoaderRouterModule.forRoot({ showForeground: false })
 
-    // MatInputModule,
-    // MatFormFieldModule,
-    // MatCardModule
-    // MatButtonModule,
-    // MatCheckboxModule
+    
   ],
   // tslint:disable-next-line: max-line-length
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, GeneralSrv, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, GeneralSrv, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }, ReceiptsService],
   bootstrap: [AppComponent],
   entryComponents: [CreditCardComponent, ModalFinalScreenComponent, ModalSessionexpiredComponent, ConfirmPurchasesComponent]
 

@@ -3,7 +3,14 @@
       "Search customer": "חיפוש לקוח",
       "LogOut": "להתנתק",
       "Create a receipt": "ליצור קבלה",
-      "Send message": "לשלוח הודעה",
+      "Send message": "SMS שליחת",
+
+      "OrganisationId": "קוד ארגון",
+      "Name": "שם משתמש",
+      "Password": "סיסמה",
+      "Login": "התחברות",
+      "SystemLogin": "כניסה למערכת",
+
 
       "New receipt": "קבלה חדשה",
       "Customer Info": "פרטי לקוח",

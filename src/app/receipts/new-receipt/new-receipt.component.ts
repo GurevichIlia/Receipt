@@ -246,6 +246,7 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
   // }
   ngOnDestroy() {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
+    this.receiptService.createNewEvent.next();
     this.subscriptions.unsubscribe();
     console.log('NEW RECEIPT SUBSCRIBE On Destroy', this.subscriptions);
 

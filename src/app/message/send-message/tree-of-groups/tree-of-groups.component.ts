@@ -1,7 +1,6 @@
-import { FormControl } from '@angular/forms';
-import { GeneralGroups } from './../../models/generalGroups.model';
-import { GeneralSrv } from './../../services/GeneralSrv.service';
-import { SendMessageService, TodoItemFlatNode, TodoItemNode } from './../send-message.service';
+import { GeneralGroups } from '../../../models/generalGroups.model';
+import { GeneralSrv } from '../../../services/GeneralSrv.service';
+import { SendMessageService, TodoItemFlatNode, TodoItemNode } from '../../send-message.service';
 import { Component, OnInit, Output } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
@@ -61,7 +60,6 @@ export class TreeOfGroupsComponent implements OnInit {
     this.getGroups();
   }
   getGroups() {
-    console.log(JSON.parse(this.generalService.checkLocalStorage('generalGroups')))
     if (this.generalService.checkLocalStorage('generalGroups')) {
       this.generalGroups = JSON.parse(this.generalService.checkLocalStorage('generalGroups'))
       this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
@@ -73,6 +71,10 @@ export class TreeOfGroupsComponent implements OnInit {
           this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
         }));
     }
+  }
+  refreshGroups() {
+    localStorage.removeItem('generalGroups');
+    this.getGroups();
   }
   compareName(a: GeneralGroups, b: GeneralGroups) {
     if (a.GroupName < b.GroupName) {
@@ -222,4 +224,9 @@ export class TreeOfGroupsComponent implements OnInit {
   //   this.groups.push(node.GroupId);
   //   console.log(this.groups)
   // }
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.subscription.unsubscribe();
+  }
 }

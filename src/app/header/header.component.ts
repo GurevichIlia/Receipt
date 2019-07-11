@@ -41,7 +41,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   }
   goToSendMessage() {
-   
     if (confirm('יש לך שינויים שלא נשמרו! אם תעזוב, השינויים שלך יאבדו')) {
       this.router.navigate(['send-message'])
     }

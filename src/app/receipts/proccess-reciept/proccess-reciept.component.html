@@ -118,7 +118,7 @@
             </mat-autocomplete>
           </mat-form-field>
 
-          <mat-form-field class="col-12" *ngIf="sendReceiptTo === 'whatsApp'">
+          <mat-form-field class="col-8" *ngIf="sendReceiptTo === 'whatsApp'">
             <input matInput placeholder="{{'Mobile phone' | translate}}" formControlName="sendToPhone" >
           </mat-form-field>
           <hr>
@@ -146,10 +146,8 @@
       [disabled]="proccessReceipt.invalid" (click)="addProccessReceiptToReceipt(proccessReceipt)">
       {{'Finish' | translate}}
     </button>
-
   </mat-action-row>
 </mat-expansion-panel>
-
 
 <mat-card class="text-center" *ngIf="step === 6">
 
