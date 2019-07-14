@@ -17,8 +17,8 @@ import { NgxUiLoaderModule, NgxUiLoaderRouterModule } from 'ngx-ui-loader';
             ReactiveFormsModule,
             FormsModule,
             MaterialModule,
-            NgxUiLoaderModule, // import NgxUiLoaderModule
-            NgxUiLoaderRouterModule,
+            // NgxUiLoaderModule, // import NgxUiLoaderModule
+            // NgxUiLoaderRouterModule,
             // import NgxUiLoaderRouterModule. By default, it will show foreground loader.
             // If you need to show background spinner, do as follow:
 

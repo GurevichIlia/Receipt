@@ -87,14 +87,14 @@
 
             <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
               <mat-icon matPrefix>money</mat-icon>
-              <input matInput placeholder="Amount" type="number" formControlName="amount" autocomplete="off"
+              <input matInput placeholder="{{'Amount' | translate}}" type="number" formControlName="amount" autocomplete="off"
                 (change)="calculateAmountPay()" required>
               <mat-error *ngIf="amountError">Minimum amount:{{currentlyStoreAmount}}</mat-error>
             </mat-form-field>
 
             <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
               <mat-icon matPrefix>money</mat-icon>
-              <input matInput placeholder="Number of payments" type="number" formControlName="numberOfPayments"
+              <input matInput placeholder="{{'Number of payments' | translate}}" type="number" formControlName="numberOfPayments"
                 autocomplete="off" required>
             </mat-form-field>
             <!-- <mat-form-field class="col-6">
@@ -104,7 +104,7 @@
                                       </mat-form-field> -->
             <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
               <mat-icon matPrefix>money</mat-icon>
-              <input class="eachPayment" matInput placeholder="Each payment" type="number" formControlName="eachPayment"
+              <input class="eachPayment" matInput placeholder="{{'Each payment' | translate}}" type="number" formControlName="eachPayment"
                 autocomplete="off">
             </mat-form-field>
           </div>

@@ -9,16 +9,13 @@ import { SendMessageComponent } from './message/send-message/send-message.compon
 import { LoginGuard } from './services/login.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'newreceipt',
-   pathMatch: 'full'
-   },
-         { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
-
+  { path: '', redirectTo: 'newreceipt', pathMatch: 'full' },
+  { path: 'send-message', loadChildren: './message/send-message.routing.module#SendMessageRoutingModule' },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'newreceipt', canActivate: [AuthGuardService], component: NewReceiptComponent },
   { path: 'test', component: TestCComponent },
   // { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
-  { path: '**', redirectTo: '/newreceipt'},
+  { path: '**', redirectTo: '/newreceipt' },
   // { path: "home", loadChildren: "./home/home.module#HomePageModule" },
   // {
   //   path: "creat-receipt",
@@ -36,4 +33,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

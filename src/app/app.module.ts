@@ -51,6 +51,7 @@ import { HeaderComponent } from './header/header.component';
 import { HomeComponentComponent } from './home-component/home-component.component';
 import { DisableControlDirective } from './shared/directives/disable-control.directive';
 import { SharedModule } from './shared/shared.module';
+import { SendMessageRoutingModule } from './message/send-message.routing.module';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -96,7 +97,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserAnimationsModule, // required animations module
     ToastrModule.forRoot(), // ToastrModule added
     SharedModule,
-    SendMessageModule,
+    NgxUiLoaderModule, // import NgxUiLoaderModule
+    NgxUiLoaderRouterModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

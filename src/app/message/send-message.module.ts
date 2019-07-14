@@ -9,22 +9,23 @@ import { SendMessageComponent } from './send-message/send-message.component';
 import { SharedModule } from '../shared/shared.module';
 import { TreeOfGroupsComponent } from './send-message/tree-of-groups/tree-of-groups.component';
 import { MessageComponent } from './message.component';
-
+import { RouterModule } from '@angular/router';
+import { sendMessageRoutes } from  './send-message.routing.module';
 
 
 
 @NgModule({
       declarations: [
-            SendMessageComponent,
-            TreeOfGroupsComponent,
-            MessageComponent
+            // SendMessageComponent,
+            // TreeOfGroupsComponent,
+            // MessageComponent
       ],
       imports: [
-            CommonModule,
-            SharedModule,
-            InfiniteScrollModule,
-            TranslateModule,
-            SendMessageRoutingModule
+            // CommonModule,
+            // SharedModule,
+            // InfiniteScrollModule,
+            // TranslateModule,
+            // SendMessageRoutingModule
       ]
 })
 export class SendMessageModule { }
