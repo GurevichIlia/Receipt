@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { Router, Route, ActivatedRoute } from '@angular/router';
 import { GeneralSrv } from '../services/GeneralSrv.service';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -13,30 +14,41 @@ export class HeaderComponent implements OnInit, OnDestroy {
   currentLang: string;
   subscriptions = new Subscription();
   mobileVersion: boolean;
-  currentlyAuthStatus$;
+  currentlyAuthStatus$: Observable<boolean>;
+  typeOfUser = null;
+  unsubscribe$ = new Subject<void>();
   constructor(
-    private authen: AuthenticationService,
+    private auth: AuthenticationService,
     private router: Router,
     private generalSrv: GeneralSrv,
     private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    this.activatedRoute.url.subscribe(data => console.log('URL', data))
     this.checkWidth();
     // tslint:disable-next-line: max-line-length
-    this.subscriptions.add(this.generalSrv.sizeOfWindow.subscribe(windowWidth => {
+    this.generalSrv.sizeOfWindow.pipe(takeUntil(this.unsubscribe$)).subscribe(windowWidth => {
       this.mobileVersion = windowWidth > 500 ? false : true;
-    }));
-    this.subscriptions.add(this.generalSrv.currentLang$.subscribe(lang => this.currentLang = lang));
-    this.currentlyAuthStatus$ = this.authen.currentlyAuthStatus;
+    });
+    this.generalSrv.currentLang$.pipe(takeUntil(this.unsubscribe$)).subscribe(lang => this.currentLang = lang);
+    this.getAuthStatus();
+    this.getTypeofuser();
+  }
+  getTypeofuser() {
+    this.auth.currentTypeOfUser$.pipe(takeUntil(this.unsubscribe$)).subscribe((type: number) => {
+      this.typeOfUser = type;
+      console.log('TYPE', type);
+    })
+  }
+  getAuthStatus() {
+    this.currentlyAuthStatus$ = this.auth.currentlyAuthStatus;
   }
   checkWidth() {
     this.mobileVersion = window.innerWidth > 500 ? false : true;
   }
   logout() {
     if (confirm('יש לך שינויים שלא נשמרו! אם תעזוב, השינויים שלך יאבדו')) {
-      this.authen.logout();
+      this.auth.logout();
     }
 
   }
@@ -45,9 +57,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.router.navigate(['send-message'])
     }
   }
+  goToGrid() {
+    this.router.navigate(['payments-grid'])
+  }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.
     // Add 'implements OnDestroy' to the class.
-    this.subscriptions.unsubscribe();
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+
   }
 }

@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   subscription: Subscription = new Subscription();
   constructor(
     private generalSrv: GeneralSrv,
-    private authen: AuthenticationService,
+    private auth: AuthenticationService,
     private router: Router,
     private toastr: ToastrService,
     private translate: TranslateService,
@@ -87,13 +87,15 @@ export class LoginComponent implements OnInit, OnDestroy {
           } else {
             this.toastr.success('', 'מחובר', { positionClass: 'toast-top-center' });
 
-            this.authen.login(response.Data);
+            this.auth.login(response.Data);
             this.generalSrv.setOrgName(this.form.controls['orgid'].value, response.Data.EmployeeId);
             // this.router.navigate(["newreceipt"]);
             // debugger;
             localStorage.setItem('username', this.form.controls['username'].value);
             localStorage.setItem('organisationName', this.form.controls['orgid'].value);
-            this.router.navigate(['newreceipt']);
+            this.auth.typeOfUser.next(4)
+            localStorage.setItem('typeOfUser', '4');
+            this.router.navigate(['home']);
           }
         },
         error => {

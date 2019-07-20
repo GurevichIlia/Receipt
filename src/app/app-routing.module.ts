@@ -1,3 +1,4 @@
+import { HomeComponentComponent } from './home-component/home-component.component';
 import { CanDeactivateGuardService } from './services/can-deactivate-guard.service';
 import { AuthGuardService } from './services/auth-guard.service';
 import { NgModule } from '@angular/core';
@@ -9,13 +10,15 @@ import { SendMessageComponent } from './message/send-message/send-message.compon
 import { LoginGuard } from './services/login.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'newreceipt', pathMatch: 'full' },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponentComponent },
   { path: 'send-message', loadChildren: './message/send-message.routing.module#SendMessageRoutingModule' },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'newreceipt', canActivate: [AuthGuardService], component: NewReceiptComponent },
-  { path: 'test', component: TestCComponent },
+  
+  { path: 'payments-grid', loadChildren: './grid/grid.module#GridModule' },
   // { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
-  { path: '**', redirectTo: '/newreceipt' },
+  { path: '**', redirectTo: '/home' },
   // { path: "home", loadChildren: "./home/home.module#HomePageModule" },
   // {
   //   path: "creat-receipt",

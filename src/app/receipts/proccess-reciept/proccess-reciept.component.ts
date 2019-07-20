@@ -285,15 +285,18 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.subscriptions.add(sendTo.valueChanges.subscribe(data => {
       this.sendReceiptTo = data;
       if (this.sendReceiptTo === 'dontSend') {
+        this.sendToEmail.patchValue('');
         this.sendToEmail.clearValidators();
         this.sendToEmail.updateValueAndValidity();
       } else if (this.sendReceiptTo === 'email') {
         this.sendToEmail.setValidators(Validators.required);
         this.sendToEmail.updateValueAndValidity();
       } else {
+        this.sendToEmail.patchValue('');
         this.sendToEmail.clearValidators();
         this.sendToEmail.updateValueAndValidity();
       }
+      console.log('SEND TO', data)
       console.log('this.requiredPhone', this.requiredPhone, 'this.requiredEmail', this.requiredEmail);
     }));
   }
@@ -377,11 +380,11 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
   }
   createNewReceipt() {
     this.proccessReceipt.reset();
-    this.sendToEmail.patchValue('email');
     this.showOnScreen.patchValue(true);
     this.receiptService.refreshNewReceipt();
     this.receiptService.createNewEvent.next();
     this.receiptService.setStep(1);
+    this.sendTo.patchValue('email');
   }
   showReceiptTemplate() {
     window.open(this.finalResolve.link, '_blank');

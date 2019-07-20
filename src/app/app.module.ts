@@ -52,6 +52,7 @@ import { HomeComponentComponent } from './home-component/home-component.componen
 import { DisableControlDirective } from './shared/directives/disable-control.directive';
 import { SharedModule } from './shared/shared.module';
 import { SendMessageRoutingModule } from './message/send-message.routing.module';
+import { GridModule } from './grid/grid.module';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -107,7 +108,6 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     }),
 
-    
   ],
   // tslint:disable-next-line: max-line-length
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, GeneralSrv, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }, ReceiptsService],

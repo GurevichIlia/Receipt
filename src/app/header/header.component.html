@@ -1,4 +1,4 @@
-<div class="container mb-3" *ngIf="currentlyAuthStatus$ | async">
+<div class="mb-3" *ngIf="currentlyAuthStatus$ | async">
   <mat-card [style.fontSize]="'20px'">
     <!-- <div class="col-12 mr-5">
     <img class="mb-2" src="assets/images/amax180-1.jpg" alt="Amax-logo">
@@ -11,15 +11,20 @@
           <mat-icon [style.fontSize]="'35px'">menu</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <button [style.fontSize]="'16px'" mat-menu-item
+          <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4 " [style.fontSize]="'16px'" mat-menu-item
             routerLink="/newreceipt">{{'Create a receipt' | translate }}</button>
-          <button [style.fontSize]="'16px'" mat-menu-item
+
+          <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
             (click)="goToSendMessage()">{{'Send message' | translate}}</button>
+
+            <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
+            (click)="goToGrid()">{{'Table' | translate}} Table</button>
+
           <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'he'"
             (click)="generalSrv.switchLanguage('en')">en</button>
           <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'en'"
             (click)="generalSrv.switchLanguage('he')">he</button>
-          <button [style.fontSize]="'16px'" mat-menu-item color="primary" (click)="authen.logout()"><i
+          <button [style.fontSize]="'16px'" mat-menu-item color="primary" (click)="auth.logout()"><i
               class="material-icons">
               exit_to_app
             </i></button>
@@ -27,10 +32,12 @@
       </div>
 
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right" *ngIf="!mobileVersion">
-        <button [style.fontSize]="'16px'" mat-button routerLink="/newreceipt" 
+        <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button routerLink="/newreceipt" 
           >{{'Create a receipt' | translate }}</button>
-        <button [style.fontSize]="'16px'" mat-button (click)="goToSendMessage()"
+        <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button (click)="goToSendMessage()"
           >{{'Send message' | translate}}</button>
+          <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+          (click)="goToGrid()">{{'Table' | translate}} Table</button>
         <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
           (click)="generalSrv.switchLanguage('en')">en</button>
         <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"

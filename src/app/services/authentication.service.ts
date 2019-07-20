@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { MomentModule } from 'ngx-moment';
 import * as moment from 'moment';
 import { ReceiptsService } from './receipts.service';
@@ -20,6 +20,8 @@ const TokenConfig = {
 export class AuthenticationService {
   authenticationstate = new BehaviorSubject(false);
   currentlyAuthStatus = this.authenticationstate.asObservable();
+  typeOfUser = new BehaviorSubject(null);
+  currentTypeOfUser$ = this.typeOfUser.asObservable();
   public tokenNo = localStorage.getItem('id_token');
 
   constructor(
@@ -28,13 +30,16 @@ export class AuthenticationService {
     private router: Router
   ) {
     console.log('AUTH SERVICE LOADED');
-    console.log('AUTH',  this.isAuthenticated() )
-    this. currentlyAuthStatus.subscribe(data => console.log('CURRENT AUTH STATUS', data))
+    console.log('AUTH', this.isAuthenticated())
+    this.currentlyAuthStatus.subscribe(data => console.log('CURRENT AUTH STATUS', data))
     console.log(this.tokenNo);
     if (localStorage.getItem('id_token')) {
       this.authenticationstate.next(true);
     } else {
       this.authenticationstate.next(false);
+    }
+    if (localStorage.getItem('typeOfUser')) {
+      this.typeOfUser.next(+localStorage.getItem('typeOfUser'));
     }
   }
 

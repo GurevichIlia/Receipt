@@ -3,6 +3,8 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 /* @import "~@angular/material/prebuilt-s/deeppurple-amber.css"; */
 
+@import "~ag-grid-community/dist/styles/ag-grid.css";
+@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
 
 body {
   font-family: Roboto, Arial, sans-serif;
