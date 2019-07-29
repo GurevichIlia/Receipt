@@ -1,0 +1,72 @@
+<div class="container">
+  <h5>FileAs</h5>
+  <hr class="mb-2">
+  <form [formGroup]="newPaymentForm">
+    <div class="row">
+      <div class="col-3">
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Something">
+        </mat-form-field>
+      </div>
+    </div>
+    <mat-accordion class="mb-5" expanded="true" multi="true">
+      <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+          This is the expansion 1 title
+        </mat-expansion-panel-header>
+
+        <!-- ROW ONE -->
+        <app-first-step [globalData]="globalData$ | async" [firstStep]="newPaymentForm.get('firstStep')"></app-first-step>
+        <!-- ROW ONE -->
+
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          This is the expansion 2 title
+        </mat-expansion-panel-header>
+
+        <!-- ROW TWO -->
+        <app-second-step [secondStep]="newPaymentForm.get('secondStep')"></app-second-step>
+        <!-- ROW TWO -->
+
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          This is the expansion 2 title
+        </mat-expansion-panel-header>
+
+        <!-- ROW THREE -->
+        <app-third-step [paymentType]="paymentType" [thirdStep]="newPaymentForm.get('thirdStep')"></app-third-step>
+        <!-- ROW THREE -->
+
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          This is the expansion 2 title
+        </mat-expansion-panel-header>
+
+        <!-- ROW FOUR -->
+        <app-fourth-step [globalData]="globalData$ | async" [fourthStep]="newPaymentForm.get('fourthStep')"></app-fourth-step>
+        <!-- ROW FOUR -->
+
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          This is the expansion 2 title
+        </mat-expansion-panel-header>
+
+        <!-- ROW FIVE -->
+        <app-fifth-step [projectCat]="projectCat" [globalData]="globalData$ | async" [fifthStep]="newPaymentForm.get('fifthStep')" ></app-fifth-step>
+        <!-- ROW FIVE -->
+
+
+      </mat-expansion-panel>
+    </mat-accordion>
+    <div class="row mt-3">
+      <div class="col-2">
+        <button type="submite" class="example-full-width" mat-raised-button color="accent">Submit</button>
+      </div>
+    </div>
+  </form>
+</div>

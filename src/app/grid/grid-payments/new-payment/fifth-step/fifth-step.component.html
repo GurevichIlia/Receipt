@@ -1,0 +1,116 @@
+<div class="row text-right align-items-center" [formGroup]="fifthStep">
+  <div class="col-12">
+    <h5>title</h5>
+  </div>
+  <div class="col-4">
+    <mat-form-field class="example-full-width">
+      <mat-label>receipt</mat-label>
+      <mat-select formControlName="receipt">
+        <ng-container *ngFor="let recType of globalData?.ReceiptTypes">
+          <mat-option *ngIf="recType.UseAsCreditReceipt === false && recType.ForCanclation === false"
+            [value]="recType.RecieptTypeId">
+            {{recType.RecieptName}}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-4">
+    <mat-form-field class="example-full-width">
+      <mat-label>receipt</mat-label>
+      <mat-select formControlName="receipt2">
+        <ng-container *ngFor="let recType of globalData?.ReceiptTypes">
+          <mat-option *ngIf="recType.UseAsCreditReceipt === false && recType.ForCanclation === true"
+            [value]="recType.RecieptTypeId">
+            {{recType.RecieptName}}
+          </mat-option>
+        </ng-container>
+
+
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-4">
+    <mat-form-field class="example-full-width">
+      <mat-label>goal</mat-label>
+      <mat-select formControlName="goal">
+        <mat-option *ngFor="let donType of globalData?.DonationTypes" 
+          [value]="donType.DonationTypeId">
+          {{donType.DonationTypeOther}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-4">
+    <mat-form-field class="example-full-width">
+      <mat-label>acc ..</mat-label>
+      <mat-select formControlName="account">
+        <mat-option *ngFor="let acc of globalData?.Accounts" [value]="acc.AccountId">
+          {{acc.AccountName}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-4">
+    <mat-form-field class="example-full-width">
+      <mat-label>project cat</mat-label>
+      <mat-select formControlName="projCat">
+        <mat-option *ngFor="let cat of globalData?.ProjectsCategories" [value]="cat.ProjectCategoryId">
+          {{cat.CategoryName}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-4">
+    <mat-form-field class="example-full-width">
+      <mat-label>project</mat-label>
+      <mat-select formControlName="project">
+        <ng-container *ngFor="let project of globalData?.Projects4Receipts">
+          <mat-option *ngIf="project.ProjectCategoryId === projectCat.value" [value]="project.ProjectId">
+            {{project.ProjectName}}
+          </mat-option>
+        </ng-container>
+
+
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-4">
+    <mat-form-field class="example-full-width">
+      <mat-label> dont know</mat-label>
+      <mat-select formControlName="input1">
+        <mat-option>
+
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-4">
+    <mat-form-field class="example-full-width">
+      <mat-label> dont know</mat-label>
+      <mat-select formControlName="input2">
+        <mat-option>
+
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-6">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Address" formControlName="fileAs">
+    </mat-form-field>
+  </div>
+  <div class="col-6">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="File As" formControlName="address">
+    </mat-form-field>
+  </div>
+  <div class="col-6">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="don't know" formControlName="field">
+    </mat-form-field>
+  </div>
+  <div class="col-6">
+    <mat-checkbox formControlName="checkbox">Check me!</mat-checkbox>
+  </div>
+</div>

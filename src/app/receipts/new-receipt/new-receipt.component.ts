@@ -166,37 +166,6 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
   submit(form: NgForm) {
     console.log(form.value);
   }
-  // GetCustomerSearchData() {
-  //   debugger
-  //   this.subscriptions.add(this.generalService.GetCustomerSearchData().subscribe(
-  //     response => {
-  //       // response = JSON.parse(response);
-  //       if (response.IsError == true) {
-  //         // this.disableAfterclick = false;
-  //         // this.presentAlert(response.ErrMsg);
-  //         alert('err');
-  //       } else {
-  //         // this.generalService.presentAlert("", "", "בוצע בהצלחה!");
-  //         console.log(response.Data);
-  //         console.log(JSON.parse(response.Data));
-  //         this.AllCustomerTables = JSON.parse(response.Data);
-
-  //         this.CustomerSearchData = Object.assign(
-  //           [],
-  //           this.AllCustomerTables['CustomerTables'].FastSearchData
-  //         );
-  //       }
-  //     },
-  //     error => {
-  //       console.log(error);
-  //       // this.generalService.presentAlert("Error", "an error accured", error.status);
-  //       // this.disableAfterclick = false;
-  //     },
-  //     () => {
-  //       console.log('CallCompleted');
-  //     }
-  //   ));
-  // }
   createNew() {
     this.receiptService.createNewEvent.next();
     this.receiptService.setStep(1);

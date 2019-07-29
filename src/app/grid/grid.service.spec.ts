@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GridService } from './grid.service';
+import { PaymentsService } from './payments.service';
 
 describe('GridService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: GridService = TestBed.get(GridService);
+    const service: PaymentsService = TestBed.get(PaymentsService);
     expect(service).toBeTruthy();
   });
 });

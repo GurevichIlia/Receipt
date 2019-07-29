@@ -1,0 +1,98 @@
+<div class="row mb-5" [formGroup]="fourthStep">
+  <div class="col-12 text-right">
+    <h5>Title</h5>
+  </div>
+  <div class="col-2">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Amount" formControlName="amount">
+    </mat-form-field>
+  </div>
+  <div class="col-2">
+    <mat-form-field class="example-full-width">
+      <mat-label>currency</mat-label>
+      <mat-select formControlName="currency">
+        <mat-option *ngFor="let group of globalData?.GetCurrencyTypes" [value]="group.CurrencyId">
+          {{group.CurrencyId}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field class="example-full-width">
+      <mat-label>day</mat-label>
+      <mat-select formControlName="day">
+        <mat-option *ngFor="let day of days" [value]="day + 1">
+          {{day + 1}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field class="example-full-width">
+      <mat-label>company</mat-label>
+      <mat-select formControlName="company">
+        <mat-option *ngFor="let inst of globalData?.institutes" [value]="inst.instituteId">
+          {{inst.Mosad}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <!-- <div class="col-2">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="hashbon" formControlName="startDate">
+    </mat-form-field>
+  </div> -->
+  <div class="col-3">
+    <mat-form-field>
+      <input matInput [matDatepicker]="startDate" formControlName="startDate" placeholder="Choose a date">
+      <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+      <mat-datepicker #startDate></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field>
+      <input matInput [matDatepicker]="date1" formControlName="date1" placeholder="Choose a date">
+      <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
+      <mat-datepicker #date1></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field>
+      <input matInput [matDatepicker]="date2" formControlName="date2" placeholder="Choose a date">
+      <mat-datepicker-toggle matSuffix [for]="date2"></mat-datepicker-toggle>
+      <mat-datepicker #date2></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field>
+      <input matInput [matDatepicker]="date3" formControlName="date3" placeholder="Choose a date">
+      <mat-datepicker-toggle matSuffix [for]="date3"></mat-datepicker-toggle>
+      <mat-datepicker #date3></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="month to charge" formControlName="monthToCharge">
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="chatge m" formControlName="chargeMonth">
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="left to charge" formControlName="letToCharge">
+    </mat-form-field>
+  </div>
+  <div class="col-3">
+    <mat-form-field class="example-full-width">
+      <mat-label>tadirut</mat-label>
+      <mat-select formControlName="tadirut">
+        <mat-option>
+
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GridTableComponent } from './grid-table.component';
+import { FirstStepComponent } from './first-step.component';
 
-describe('GridTableComponent', () => {
-  let component: GridTableComponent;
-  let fixture: ComponentFixture<GridTableComponent>;
+describe('FirstStepComponent', () => {
+  let component: FirstStepComponent;
+  let fixture: ComponentFixture<FirstStepComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GridTableComponent ]
+      declarations: [ FirstStepComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GridTableComponent);
+    fixture = TestBed.createComponent(FirstStepComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

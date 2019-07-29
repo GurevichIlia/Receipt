@@ -1,0 +1,9 @@
+table {
+  width: 5000px;
+  text-align: right;
+}
+.elevation {
+  height: 85%;
+    width: 100%;
+    overflow: auto;
+}
