@@ -72,17 +72,20 @@
   </div>
   <div class="col-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="month to charge" formControlName="monthToCharge">
+      <input #monthToCharge matInput placeholder="month to charge" formControlName="monthToCharge">
+      <mat-hint>{{monthToCharge.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="chatge m" formControlName="chargeMonth">
+      <input #chargeMonth matInput placeholder="chatge m" formControlName="chargeMonth">
+      <mat-hint>{{chargeMonth.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="left to charge" formControlName="letToCharge">
+      <input #letToCharge matInput placeholder="left to charge" formControlName="letToCharge">
+      <mat-hint>{{letToCharge.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-3">

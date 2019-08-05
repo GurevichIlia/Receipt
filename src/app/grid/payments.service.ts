@@ -1,8 +1,13 @@
 import { AuthenticationService } from '../services/authentication.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { ReceiptsService } from '../services/receipts.service';
+import { Customerinfo } from '../models/customerInfo.model';
+import { GeneralSrv } from '../services/GeneralSrv.service';
+import { PaymentKeva } from '../models/paymentKeva.model';
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -54,17 +59,30 @@ export class PaymentsService {
   ]
   baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/';
   httpOptions;
-  paymentsTableData = new Subject();
+  subscription$ = new Subject<void>();
+  paymentsTableData = new BehaviorSubject<PaymentKeva[]>([]);
   currentPaymentsTableData$ = this.paymentsTableData.asObservable();
+
   globalData = new BehaviorSubject<object>({});
+  /** Using this data in payments part of application */
   currentGlobalData$ = this.globalData.asObservable();
+
   filterValue = new Subject();
   currentFilterValue$ = this.filterValue.asObservable();
+
   paymentType = new BehaviorSubject('');
-  currentPaymentType = this.paymentType.asObservable();
+  currentPaymentType$ = this.paymentType.asObservable();
+
+  customerInfo: BehaviorSubject<Customerinfo> = new BehaviorSubject(<Customerinfo>{});
+  currentCustomerInfo$ = this.customerInfo.asObservable();
+
+  editingPayment = new BehaviorSubject<PaymentKeva | ''>('');
+  currentEditingPayment$ = this.editingPayment.asObservable();
   constructor(
     private http: HttpClient,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private receiptService: ReceiptsService,
+    private generalService: GeneralSrv
   ) {
     this.httpOptions = {
       headers: new HttpHeaders({
@@ -72,12 +90,66 @@ export class PaymentsService {
         Authorization: 'Bearer ' + this.auth.tokenNo
       })
     };
+    console.log('Service payment loaded');
+    this.getKevaGlbData();
+  }
+  getCustomerInfo() {
+    this.customerInfo.next(this.receiptService.getCustomerInfo());
+    console.log('CUSTOMER INFO', this.customerInfo)
+  }
+  getGridData(filterParams: { kevaTypeid: string, instituteid: string, KevaStatusid: string, KevaGroupid: string }): Observable<PaymentKeva[]> {
+    return this.http.post(`${this.baseUrl}keva/GetKevaListData?urlAddr=jaffanet1`, filterParams, this.httpOptions)
+      .pipe(map(data => data = data['Data']
+      ),
+        map(data => data.map(data => {
+          data.LastChargeDate = data.LastChargeDate === null ? '' : this.generalService.changeDateFormat(data.LastChargeDate, 'YYYY-MM-DD');
+          data.KEVACancleDate = this.generalService.changeDateFormat(data.KEVACancleDate, 'YYYY-MM-DD');
+          data.KEVAEnd = this.generalService.changeDateFormat(data.KEVAEnd, 'YYYY-MM-DD');
+          data.KEVAJoinDate = this.generalService.changeDateFormat(data.KEVAJoinDate, 'YYYY-MM-DD');
+          data.KEVAStart = this.generalService.changeDateFormat(data.KEVAStart, 'YYYY-MM-DD');
+          return data;
+        })
+        ));
   }
 
-  getGridData(filterParams: { kevaTypeid: string, instituteid: string, KevaStatusid: string, KevaGroupid: string }) {
-    return this.http.post(`${this.baseUrl}keva/GetKevaListData?urlAddr=jaffanet1`, filterParams, this.httpOptions).pipe(map(data => data = data['Data']))
-  }
   getKevaGlbData() {
-    return this.http.get(`${this.baseUrl}keva/GetKevaGlbData?urlAddr=jaffanet1`, this.httpOptions).pipe(map(data => data = data['Data']))
+    return this.http.get(`${this.baseUrl}keva/GetKevaGlbData?urlAddr=jaffanet1`, this.httpOptions)
+      .pipe(map(data => data = data['Data']),
+        takeUntil(this.subscription$))
+      .subscribe(data => {
+        this.globalData.next(data);
+        console.log('GLOBAL DATA', data);
+      })
+  }
+  updatePaymentForm(paymentForm: FormGroup, newData: PaymentKeva | null) {
+    debugger;
+    paymentForm.get('firstStep').patchValue({
+      type: String(newData.HokType),
+      status: newData.KevaStatusId,
+      groups: newData.GroupId
+    });
+    paymentForm.get('secondStep').patchValue({
+      fileAs: newData.FileAs,
+    });
+    paymentForm.get('thirdStep.bank').patchValue({
+      codeBank: newData.BankCode.trim(),
+      snif: newData.SnifNo.trim(),
+      accNumber: newData.AccountNo.trim()
+    });
+    paymentForm.get('thirdStep.creditCard').patchValue({
+      credCard: newData.customercreditCardid
+    });
+
+  }
+  setPaymentType(type: string) {
+    this.paymentType.next(type);
+  }
+  setEditingPayment(payment) {
+    this.editingPayment.next(payment);
+  }
+  unsubscribe() {
+    console.log('Payments service unsubscribe')
+    this.subscription$.next();
+    this.subscription$.complete();
   }
 }

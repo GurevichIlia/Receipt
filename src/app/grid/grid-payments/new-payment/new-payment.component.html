@@ -1,27 +1,56 @@
 <div class="container">
-  <h5>FileAs</h5>
-  <hr class="mb-2">
   <form [formGroup]="newPaymentForm">
     <div class="row">
+      <div class="col-8 text-right" *ngIf="!isEditFileAs && fileAs.value !== ''">
+        <h5> {{fileAs.value}} <span (click)="editFileAs()" style="cursor: pointer" mat-cell>
+            <mat-icon>create</mat-icon>
+          </span> </h5>
+      </div>
+      <div class="col-5" *ngIf="isEditFileAs">
+        <mat-form-field class="example-full-width">
+          <input #FileAs [(value)]="fileAs.value" matInput placeholder="File as"
+            (blur)="saveEditFileAs(fileAs, FileAs.value)" (keydown.enter)="saveEditFileAs(fileAs, FileAs.value)">
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <button (click)="openAllSteps();">Open All</button>
+    <hr class="mb-2">
+
+    <div class="row  align-items-center justify-content-between">
       <div class="col-3">
         <mat-form-field class="example-full-width">
           <input matInput placeholder="Something">
         </mat-form-field>
       </div>
+      <!-- <div class="col-2">
+        <button mat-raised-button type="button" (click)="openAllSteps()">Open</button>
+      </div> -->
+      <div class="col-3">
+        <div class="row" style="justify-content: flex-end">
+          <span (click)="toCustomerSearch()" style="cursor: pointer" class="col-9">Customer search</span>
+          <mat-icon class="col-1">arrow_back</mat-icon>
+        </div>
+      </div>
     </div>
-    <mat-accordion class="mb-5" expanded="true" multi="true">
-      <mat-expansion-panel expanded="true">
+
+    <mat-accordion #accordion="matAccordion" class="mb-5" multi="true">
+      <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
         <mat-expansion-panel-header>
           This is the expansion 1 title
         </mat-expansion-panel-header>
 
         <!-- ROW ONE -->
-        <app-first-step [globalData]="globalData$ | async" [firstStep]="newPaymentForm.get('firstStep')"></app-first-step>
+        <app-first-step [globalData]="globalData$ | async" [firstStep]="newPaymentForm.get('firstStep')">
+        </app-first-step>
         <!-- ROW ONE -->
-
+        <mat-action-row>
+          <button mat-button color="primary" (click)="nextStep()">Next</button>
+        </mat-action-row>
       </mat-expansion-panel>
 
-      <mat-expansion-panel>
+      <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
         <mat-expansion-panel-header>
           This is the expansion 2 title
         </mat-expansion-panel-header>
@@ -29,9 +58,12 @@
         <!-- ROW TWO -->
         <app-second-step [secondStep]="newPaymentForm.get('secondStep')"></app-second-step>
         <!-- ROW TWO -->
-
+        <mat-action-row>
+          <button mat-button color="warn" (click)="prevStep()">Previous</button>
+          <button mat-button color="primary" (click)="nextStep()">Next</button>
+        </mat-action-row>
       </mat-expansion-panel>
-      <mat-expansion-panel>
+      <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
         <mat-expansion-panel-header>
           This is the expansion 2 title
         </mat-expansion-panel-header>
@@ -39,33 +71,45 @@
         <!-- ROW THREE -->
         <app-third-step [paymentType]="paymentType" [thirdStep]="newPaymentForm.get('thirdStep')"></app-third-step>
         <!-- ROW THREE -->
-
+        <mat-action-row>
+          <button mat-button color="warn" (click)="prevStep()">Previous</button>
+          <button mat-button color="primary" (click)="nextStep()">Next</button>
+        </mat-action-row>
       </mat-expansion-panel>
-      <mat-expansion-panel>
+      <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
         <mat-expansion-panel-header>
           This is the expansion 2 title
         </mat-expansion-panel-header>
 
         <!-- ROW FOUR -->
-        <app-fourth-step [globalData]="globalData$ | async" [fourthStep]="newPaymentForm.get('fourthStep')"></app-fourth-step>
+        <app-fourth-step [globalData]="globalData$ | async" [fourthStep]="newPaymentForm.get('fourthStep')">
+        </app-fourth-step>
         <!-- ROW FOUR -->
-
+        <mat-action-row>
+          <button mat-button color="warn" (click)="prevStep()">Previous</button>
+          <button mat-button color="primary" (click)="nextStep()">Next</button>
+        </mat-action-row>
       </mat-expansion-panel>
-      <mat-expansion-panel>
+      <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)">
         <mat-expansion-panel-header>
           This is the expansion 2 title
         </mat-expansion-panel-header>
 
         <!-- ROW FIVE -->
-        <app-fifth-step [projectCat]="projectCat" [globalData]="globalData$ | async" [fifthStep]="newPaymentForm.get('fifthStep')" ></app-fifth-step>
+        <app-fifth-step [projectCat]="projectCat" [globalData]="globalData$ | async"
+          [fifthStep]="newPaymentForm.get('fifthStep')"></app-fifth-step>
         <!-- ROW FIVE -->
 
-
+        <mat-action-row>
+          <button mat-button color="warn" (click)="prevStep()">Previous</button>
+          <button mat-button color="primary" (click)="nextStep()">Next</button>
+        </mat-action-row>
       </mat-expansion-panel>
     </mat-accordion>
     <div class="row mt-3">
       <div class="col-2">
-        <button type="submite" class="example-full-width" mat-raised-button color="accent">Submit</button>
+        <button type="submite" [disabled]="newPaymentForm.invalid" class="example-full-width" mat-raised-button
+          color="accent">Submit</button>
       </div>
     </div>
   </form>

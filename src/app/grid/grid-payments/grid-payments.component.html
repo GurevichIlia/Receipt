@@ -1,2 +1,4 @@
-<app-payments-filter></app-payments-filter>
+<app-payments-filter [filterForm]="filterForm" [globalData]="globalData" (paymentType)="setPaymentType($event)" (filterValue)="applyFilter($event)" (showPayments)="showFilteredPayments()"></app-payments-filter>
 <app-payments-table></app-payments-table>
+<router-outlet></router-outlet>
+

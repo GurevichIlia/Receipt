@@ -1,12 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-fifth-step',
   templateUrl: './fifth-step.component.html',
-  styleUrls: ['./fifth-step.component.css']
+  styleUrls: ['./fifth-step.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FifthStepComponent implements OnInit {
+export class FifthStepComponent implements OnInit, OnChanges {
   @Input() fifthStep: FormGroup;
   @Input() globalData: object;
   @Input() projectCat: FormControl;
@@ -14,5 +15,7 @@ export class FifthStepComponent implements OnInit {
 
   ngOnInit() {
   }
-
+  ngOnChanges(){
+    console.log('Changes')
+  }
 }

@@ -230,63 +230,6 @@ export class CreditCardComponent implements OnInit, OnDestroy {
       }
     }
   }
-  // checkFieldsValue() {
-  //   this.receiptService.currentlyStoreAmount.subscribe(data => {
-  //     this.totalPaymentAmount = data; // Setter
-  //   });
-  //   const totalAmount = this.creditCardForm.get('amount');
-  //   const firstPayment = this.creditCardForm.get('firstPayment');
-  //   const numberOfPayments = this.creditCardForm.get('numberOfPayments');
-  //   totalAmount.valueChanges.pipe(debounceTime(500))
-  //     .subscribe(total => {
-  //       if (numberOfPayments.value === 1) {
-  //         this.creditCardForm.controls.firstPayment.patchValue(null);
-  //         this.creditCardForm.controls.eachPayment.patchValue(null);
-  //         firstPayment.clearValidators();
-  //       } else {
-  //         firstPayment.setValidators([Validators.required]);
-  //         if (firstPayment.status === 'INVALID' || totalAmount.status === 'INVALID' || numberOfPayments.status === 'INVALID') {
-  //           this.creditCardForm.controls.eachPayment.patchValue(null);
-  //         } else {
-  //           this.calculatePaymentsForCredCard();
-  //         }
-  //       }
-  //     });
-  //   firstPayment.valueChanges.pipe(
-  //     debounceTime(500))
-  //     .subscribe(firstPay => {
-  //       if (numberOfPayments.value === 1) {
-  //         this.creditCardForm.controls.firstPayment.patchValue(null);
-  //         this.creditCardForm.controls.eachPayment.patchValue(null);
-  //         firstPayment.clearValidators();
-  //       } else {
-  //         firstPayment.setValidators([Validators.required]);
-  //         if (firstPayment.status === 'INVALID' || totalAmount.status === 'INVALID' || numberOfPayments.status === 'INVALID') {
-  //           this.creditCardForm.controls.eachPayment.patchValue(null);
-  //         } else {
-  //           this.calculatePaymentsForCredCard();
-  //         }
-  //       }
-  //     });
-  //   numberOfPayments.valueChanges.pipe(
-  //     debounceTime(500))
-  //     .subscribe(totalPay => {
-  //       debugger
-  //       if (numberOfPayments.value === 1) {
-  //         this.creditCardForm.controls.firstPayment.patchValue(null);
-  //         this.creditCardForm.controls.eachPayment.patchValue(null);
-  //         firstPayment.clearValidators();
-  //       } else {
-  //         firstPayment.setValidators([Validators.required]);
-  //         if (firstPayment.status === 'INVALID' || totalAmount.status === 'INVALID' || numberOfPayments.status === 'INVALID') {
-  //           this.creditCardForm.controls.eachPayment.patchValue(null);
-  //         } else {
-  //           this.calculatePaymentsForCredCard();
-  //         }
-  //       }
-  //     });
-  // }
-
 
   getCurrentlyAmountFromStore() {
     this.subscription.add(this.receiptService.currentStoreAmount$.subscribe(data => {

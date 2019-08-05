@@ -52,10 +52,7 @@
     </div>
   </div>
 </form> -->
-<div class="col-2 ml-2">
-  <button type="button" style="width: 100%" [routerLink]="[ '/payments-grid/new-payment']" mat-raised-button color="accent">New</button>
-</div>
-<hr>
+
 <!-- <span style="font-size: 14px"> Selected: {{selectedCustomers.length}}</span> -->
 <div class="elevation">
   <table mat-table [dataSource]="dataSource" matSort>
@@ -71,6 +68,22 @@
         <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
           [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
         </mat-checkbox>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="edit">
+      <th mat-header-cell *matHeaderCellDef>
+        <span>edit</span>
+      </th>
+      <td (click)="editPaymentRow(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
+        <mat-icon>create</mat-icon>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef>
+        <span>delete</span>
+      </th>
+      <td (click)="deletePaymentRow(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
+        <mat-icon>delete</mat-icon>
       </td>
     </ng-container>
 

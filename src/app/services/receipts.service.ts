@@ -15,11 +15,8 @@ import { Creditcard } from '../models/creditCard.model';
 import { Receipt } from '../models/receipt.model';
 import { ReceiptType } from '../models/receiptType.interface';
 import { Receiptlines } from '../models/receiptlines.model';
-import { LastSelection } from '../models/lastSelection.model';
 import { Group } from '../receipts/customer-info/customer-info.component';
-import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/confirm-purchases.component';
 import { MatDialog } from '@angular/material';
-import { emailsFromCustomerById } from '../models/emailsFromCustomerById.mode';
 
 @Injectable({
   providedIn: 'root'
@@ -89,6 +86,7 @@ export class ReceiptsService {
   constructor(
     private dialog: MatDialog,
   ) {
+    console.log('RECEIPT SERVICE');
     this.paymentMethod.next(localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null);
     this.newReceipt = {
       customerInfo: <Customerinfo>{},
@@ -134,7 +132,7 @@ export class ReceiptsService {
     console.log('receipt srvice', this.customerInfo)
   }
   getCustomerInfo() {
-    return this.customerInfo;
+    return this.newReceipt.customerInfo;
   }
   setStep(index: number) {
     this.step = index;

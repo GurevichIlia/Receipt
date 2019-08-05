@@ -1,10 +1,3 @@
-<div class="col-2" style="position:absolute">
-  <div class="text-right row mr-5" style="width: 100%">
-    <mat-form-field class="col">
-      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-    </mat-form-field>
-  </div>
-</div>
 <form [formGroup]="filterForm" (ngSubmit)="showFilteredPayments()">
   <div class="container">
     <div class="row justify-content-center align-items-baseline">
@@ -47,8 +40,35 @@
         </mat-form-field>
       </div>
       <div class="col-2">
-        <button type="submit" style="width: 100%" mat-raised-button color="accent">Show</button>
+        <button type="submit" mat-raised-button
+          style="background-color:#34DDD8; color: white; width: 100%">Show</button>
       </div>
     </div>
   </div>
 </form>
+
+<hr>
+<div class="row" style="align-items: baseline; width: 100%">
+  <div class="col-1">
+    <button type="button" [routerLink]="[ '/payments-grid/customer-search']" mat-raised-button
+      style="background-color: rgb(38, 87, 122); color: white" (click)="setPaymentType('1')"> מס"ב -
+      חיוב לקוח</button>
+  </div>
+  <div class="col-1">
+    <button type="button" [routerLink]="[ '/payments-grid/customer-search']" mat-raised-button
+      style="background-color: rgb(38, 87, 122); color: white" (click)="setPaymentType('2')">מס"ב -
+      זיכוי לקוח</button>
+  </div>
+  <div class="col-1 mb-3">
+    <button type="button" [routerLink]="[ '/payments-grid/customer-search']" mat-raised-button
+      style="background-color: rgb(38, 87, 122); color: white" (click)="setPaymentType('3')">כ.אשראי -
+      חיוב לקוח</button>
+  </div>
+  <div class="col-11 text-right mr-3">
+    <mat-form-field style="width: 300px">
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+    </mat-form-field>
+  </div>
+</div>
+
+<hr>

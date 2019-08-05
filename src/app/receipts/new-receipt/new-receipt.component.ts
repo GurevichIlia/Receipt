@@ -1,20 +1,12 @@
-import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
-import { MatDialog } from '@angular/material';
-import { Subscription } from 'rxjs';
-import { Component, OnInit, DoCheck, OnDestroy, HostListener } from '@angular/core';
-import { AuthenticationService } from '../../services/authentication.service';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormControl, NgForm} from '@angular/forms';
+
 import { TranslateService } from '@ngx-translate/core';
+import { CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
+import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { Subscription } from 'rxjs';
 
-import {
-
-  FormControl,
-  NgForm
-} from '@angular/forms';
-import {
-  map,
-} from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { map,} from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ReceiptsService } from '../../services/receipts.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
@@ -43,8 +35,8 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
   templateUrl: './new-receipt.component.html',
   styleUrls: ['./new-receipt.component.css']
 })
-export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
-  customerInfo: object;
+export class NewReceiptComponent implements OnInit, OnDestroy {
+  customerInfo: CustomerInfoById;
   myControl = new FormControl();
   filteredOptions: Observable<any[]>;
   CustomerSearchData: Observable<any[]>;
@@ -66,15 +58,8 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   constructor(
-
-    private authen: AuthenticationService,
-    private router: Router,
-    private httpClient: HttpClient,
-
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv, private translate: TranslateService,
-    private authService: AuthenticationService,
-    private modal: MatDialog,
     private spinner: NgxUiLoaderService
 
   ) {
@@ -109,9 +94,6 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.receiptService.createNewEvent.subscribe(data => this.myControl.patchValue(''));
     this.spinner.stop();
-  }
-  ngDoCheck() {
-    // this.checkExpToken();
   }
 
   filterOption() {
@@ -156,9 +138,6 @@ export class NewReceiptComponent implements OnInit, DoCheck, OnDestroy {
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
       this.customerInfo = customer;
       this.spinner.stop();
-      // this.clickToBtnCreateNew = false;
-      // this.receiptService.subject.next(customer);
-      // this.receiptService.setCustomerInfo(customer);
     },
       error => console.log(error),
     ));

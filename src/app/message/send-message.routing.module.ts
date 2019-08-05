@@ -23,7 +23,7 @@ export const sendMessageRoutes: Routes = [
       exports: [],
       declarations: [
             SendMessageComponent,
-            TreeOfGroupsComponent, 
+            TreeOfGroupsComponent,
             MessageComponent]
 })
 export class SendMessageRoutingModule { }

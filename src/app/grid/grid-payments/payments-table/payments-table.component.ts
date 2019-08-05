@@ -1,11 +1,10 @@
 import { PaymentsService } from '../../payments.service';
 import { FormControl, FormBuilder, FormGroup } from '@angular/forms';
-import { Component, OnInit, ViewChild, AfterViewInit, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ElementRef, AfterViewChecked, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import * as moment from 'moment';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -15,9 +14,10 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-payments-table',
   templateUrl: './payments-table.component.html',
-  styleUrls: ['./payments-table.component.css']
+  styleUrls: ['./payments-table.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PaymentsTableComponent implements OnInit, AfterViewChecked, AfterViewInit {
+export class PaymentsTableComponent implements OnInit {
   @ViewChild(MatSort, { read: '' }) sort: MatSort;
   @ViewChild(MatPaginator, { read: '', }) paginator: MatPaginator;
   @ViewChild('weight', { read: '' }) weight: ElementRef;
@@ -37,33 +37,16 @@ export class PaymentsTableComponent implements OnInit, AfterViewChecked, AfterVi
     private paymentsService: PaymentsService,
     private fb: FormBuilder
   ) { }
+
   ngOnInit() {
     this.createTableColumns();
     this.getValueForColumns();
-
-
     this.selection.onChange.pipe(takeUntil(this.subscription$)).subscribe(data => {
       this.selectedCustomers = data.source.selected;
       console.log(this.selectedCustomers)
     });
-    this.createFilterForm();
     this.getPaymentsTableData();
     this.filterPaymentTable();
-    // this.filterForm.valueChanges.pipe(takeUntil(this.subscription$)).subscribe(value => {
-    //   const keys = Object.keys(value);
-    //   for (let i = 0; i < keys.length; i++) {
-    //     value[keys[i]] = String(value[keys[i]]);
-    //   }
-    //   console.log(value);
-    // });
-  }
-  createFilterForm() {
-    this.filterForm = this.fb.group({
-      kevaTypeid: ['1'],
-      instituteid: ['1'],
-      KevaStatusid: ['9999'],
-      KevaGroupid: ['9999']
-    })
   }
   filterPaymentTable() {
     this.paymentsService.currentFilterValue$.pipe(takeUntil(this.subscription$)).subscribe((data: string) => {
@@ -75,29 +58,29 @@ export class PaymentsTableComponent implements OnInit, AfterViewChecked, AfterVi
     this.displayedColumns = this.paymentsService.displayedColumns;
     this.listDisplayedColumns = this.displayedColumns.map(c => c.value);
     this.listDisplayedColumns.unshift('select');
+    this.listDisplayedColumns.splice(1, 0, 'delete');
+    this.listDisplayedColumns.splice(2, 0, 'edit');
+
   }
   /**Create rows for table */
   getValueForColumns() {
     this.displayedColumns.map(c =>
       this.columns.push({ columnDef: c.value, header: c.label, cell: (element: any) => `${element[c.value]}` }));
   }
-  get filterFormValue() {
-    return this.filterForm;
-  }
-  ngAfterViewChecked() {
-    if (this.weight) {
-      this.weight.nativeElement.focus()
-    }
-  }
+  // ngAfterViewChecked() {
+  //   if (this.weight) {
+  //     this.weight.nativeElement.focus()
+  //   }
+  // }
   ngAfterViewInit(): void {
     // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
     // Add 'implements AfterViewInit' to the class.
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'symbol': return new Date(item.symbol);
-        default: return item[property];
-      }
-    };
+    // this.dataSource.sortingDataAccessor = (item, property) => {
+    //   switch (property) {
+    //     case 'symbol': return new Date(item.symbol);
+    //     default: return item[property];
+    //   }
+    // };
   }
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -129,20 +112,27 @@ export class PaymentsTableComponent implements OnInit, AfterViewChecked, AfterVi
     this.router.navigate(['/payments-grid/customer-details'])
   }
   getPaymentsTableData() {
-    this.paymentsService.currentPaymentsTableData$.subscribe((data: any[]) => {
-      this.dataSource.data = data;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    })
+    this.paymentsService.currentPaymentsTableData$.pipe(
+      takeUntil(this.subscription$))
+      .subscribe((data: any[]) => {
+        this.dataSource.data = data;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      })
   }
+  editPaymentRow(paymentRow) {
+    this.paymentsService.setEditingPayment(paymentRow);
+    console.log('edit row', paymentRow);
+    this.router.navigate(['/payments-grid/new-payment'], paymentRow);
 
-  // showFilteredPayments() {
-  //   this.gridService.getGridData(this.filterFormValue.value).pipe(takeUntil(this.subscription$)).subscribe(data => {
+  }
+  deletePaymentRow(paymentRow) {
+    console.log('delete row', paymentRow)
 
-  //     console.log('DATA SOURCE', data)
-  //   })
-  // }
+  }
+  duplicatePaymentRow() {
 
+  }
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.

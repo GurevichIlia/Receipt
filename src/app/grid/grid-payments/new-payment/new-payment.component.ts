@@ -1,26 +1,46 @@
+import { Customerinfo } from './../../../models/customerInfo.model';
 import { PaymentsService } from '../../payments.service';
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { MatAccordion } from '@angular/material';
+import { Router } from '@angular/router';
+import { PaymentsFilterComponent } from '../payments-filter/payments-filter.component';
+import { Subject } from 'rxjs';
+import { takeUntil, delay } from 'rxjs/operators';
+import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { PaymentKeva } from 'src/app/models/paymentKeva.model';
 
 @Component({
   selector: 'app-new-payment',
   templateUrl: './new-payment.component.html',
   styleUrls: ['./new-payment.component.css']
 })
-export class NewPaymentComponent implements OnInit {
+export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('accordion') expansionPanel: MatAccordion
   step = 0;
   newPaymentForm: FormGroup;
-  globalData$
+  globalData$;
+  customerInfoById: Customerinfo;
+  editMode = false;
+  isEditFileAs = false;
+  subscription$ = new Subject();
   constructor(
     private _formBuilder: FormBuilder,
-    private paymentsService: PaymentsService
+    private paymentsService: PaymentsService,
+    private router: Router,
+    private generalService: GeneralSrv
   ) { }
 
   ngOnInit() {
     this.createNewPaymentForm();
     this.getGlobalData();
-    this.newPaymentForm.valueChanges.subscribe(data => console.log(data));
-    console.log('Proj cat', this.projectCat)
+    this.newPaymentForm.valueChanges.pipe(takeUntil(this.subscription$)).subscribe(data => console.log(data));
+    console.log('Proj cat', this.projectCat);
+    this.getCustomerInfoById();
+    this.getPaymentType();
+  }
+  ngAfterViewInit() {
+    this.getEditingPayment();
   }
   setStep(index: number) {
     this.step = index;
@@ -29,14 +49,13 @@ export class NewPaymentComponent implements OnInit {
   nextStep() {
     this.step++;
   }
-
   prevStep() {
     this.step--;
   }
   createNewPaymentForm() {
     this.newPaymentForm = this._formBuilder.group({
       firstStep: this._formBuilder.group({
-        type: ['', Validators.required],
+        type: ['1', Validators.required],
         status: ['', Validators.required],
         groups: ['', Validators.required],
       }),
@@ -45,45 +64,45 @@ export class NewPaymentComponent implements OnInit {
         Tz: ['', Validators.required],
         tel1: ['', Validators.required],
         tel2: ['', Validators.required],
-        remark: ['']
+        remark: ['', Validators.required]
       }),
       thirdStep: this._formBuilder.group({
         bank: this._formBuilder.group({
-          codeBank: [''],
-          snif: [''],
-          accNumber: ['']
+          codeBank: ['', [Validators.required, Validators.maxLength(2)]],
+          snif: ['', [Validators.required, Validators.maxLength(3)]],
+          accNumber: ['', [Validators.required, Validators.maxLength(11)]]
         }),
         creditCard: this._formBuilder.group({
-          credCard: ['']
+          credCard: ['', Validators.required]
         })
       }),
       fourthStep: this._formBuilder.group({
-        amount: [''],
-        currency: [''],
-        day: [''],
-        company: [''],
-        startDate: [''],
-        date1: [''],
-        date2: [''],
-        date3: [''],
-        monthToCharge: [''],
-        chargeMonth: [''],
-        letToCharge: [''],
-        tadirut: ['']
+        amount: ['', Validators.required],
+        currency: ['', Validators.required],
+        day: ['', Validators.required],
+        company: ['', Validators.required],
+        startDate: ['', Validators.required],
+        date1: ['', Validators.required],
+        date2: ['', Validators.required],
+        date3: ['', Validators.required],
+        monthToCharge: ['', [Validators.required, Validators.maxLength(4)]],
+        chargeMonth: ['', [Validators.required, Validators.maxLength(4)]],
+        letToCharge: ['', [Validators.required, Validators.maxLength(4)]],
+        tadirut: ['', Validators.required]
       }),
       fifthStep: this._formBuilder.group({
-        receipt: [''],// receipt ForCanclation: false
-        receipt2: [''],// receipt ForCanclation: true
-        goal: [''],
-        account: [''],
-        projCat: [''],
-        project: [''],
-        input1: [''],
-        input2: [''],
-        fileAs: [''],
-        address: [''],
-        field: [''],
-        checkbox: ['']
+        receipt: ['', Validators.required],// receipt ForCanclation: false
+        receipt2: ['', Validators.required],// receipt ForCanclation: true
+        goal: ['', Validators.required],
+        account: ['', Validators.required],
+        projCat: ['', Validators.required],
+        project: ['', Validators.required],
+        input1: ['', Validators.required],
+        input2: ['', Validators.required],
+        fileAs: ['', Validators.required],
+        address: ['', Validators.required],
+        field: ['', Validators.required],
+        checkbox: ['', Validators.required]
       })
     })
   }
@@ -91,10 +110,90 @@ export class NewPaymentComponent implements OnInit {
     return this.newPaymentForm.get('fifthStep.projCat');
   }
   get paymentType() {
-    return this.newPaymentForm.get('firstStep.type')
+    return this.newPaymentForm.get('firstStep.type');
+  }
+  get fileAs() {
+    return this.newPaymentForm.get('secondStep.fileAs');
+  }
+  get Tz() {
+    return this.newPaymentForm.get('secondStep.Tz');
+  }
+  get tel1() {
+    return this.newPaymentForm.get('secondStep.tel1');
+  }
+  get tel2() {
+    return this.newPaymentForm.get('secondStep.tel2');
   }
   getGlobalData() {
     this.globalData$ = this.paymentsService.currentGlobalData$
+  }
+  openAllSteps() {
 
+    this.expansionPanel.openAll();
+    console.log('Open')
+  }
+  closeAllSteps() {
+    this.expansionPanel.closeAll();
+  }
+  getCustomerInfoById() {
+    this.paymentsService.currentCustomerInfo$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((data: Customerinfo) => {
+        if (!!Object.keys(data).length) {
+          this.customerInfoById = data;
+          this.setInputValue(this.fileAs, this.customerInfoById.customermaininfo.fileAs);
+          console.log('Customer info', this.customerInfoById)
+        }
+      })
+  }
+  toCustomerSearch() {
+    this.router.navigate(['/payments-grid/customer-search'])
+  }
+  setInputValue(input: AbstractControl, newValue: any) {
+    if (newValue === null) {
+      newValue = '';
+    }
+    input.patchValue(newValue);
+  }
+  editFileAs() {
+    this.isEditFileAs = true;
+  }
+  saveEditFileAs(input: AbstractControl, newValue: any) {
+    this.setInputValue(input, newValue);
+    this.isEditFileAs = false;
+  }
+  getEditingPayment() {
+    this.paymentsService.currentEditingPayment$
+      .pipe(
+        delay(0),
+        takeUntil(this.subscription$))
+      .subscribe((data: PaymentKeva) => {
+        if (data) {
+          console.log('EDITING PAYMENT', data);
+          this.openAllSteps();
+          this.paymentsService.updatePaymentForm(this.newPaymentForm, data)
+        } else {
+          this.setStep(1);
+        }
+      })
+  }
+  getPaymentType() {
+    this.paymentsService.currentPaymentType$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(type => {
+        this.paymentType.patchValue(type);
+      })
+  }
+
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.setStep(0);
+    this.paymentsService.setEditingPayment('');
+    this.fileAs.patchValue('');
+    this.subscription$.next();
+    this.subscription$.complete();
   }
 }

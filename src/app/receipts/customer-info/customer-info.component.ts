@@ -1,12 +1,13 @@
+import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
-import { CreditCardService } from '../credit-card/credit-card.service';
-import { Component, OnInit, Input, OnChanges, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, OnDestroy, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { ReceiptsService } from '../../services/receipts.service';
 import { FormArray, Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
-import { MatDialog } from '@angular/material';
 import * as moment from 'moment';
 import { startWith, map, debounceTime } from 'rxjs/operators';
+import { CustomerType } from 'src/app/models/customerType.model';
+import { CustomerInfoById, GetCustomerReceipts } from 'src/app/models/customer-info-by-ID.model';
 
 export interface Group {
   GroupId: number;
@@ -18,8 +19,11 @@ export interface Group {
   styleUrls: ['./customer-info.component.css']
 })
 export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
-  @Input() customerInfo: object;
+  @Input() customerInfo: CustomerInfoById;
   @Input() cities: any[];
+  @Input() customerTitle: { TitleEng: string, TitleHeb: string, TitleId: string }[];;
+  @Input() customerTypes: CustomerType[] = [];
+  @Output() toNewPayment = new EventEmitter();
   step: number;
   myControl = new FormControl();
   filteredOptions$: Observable<any[]>;
@@ -34,7 +38,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   requiredField = true;
   disabledPayMethod = false;
   clickToBtnCreateNew = false;
-  customerTitle: any[] = [];
+  // customerTitle: any[] = [];
   // tslint:disable-next-line: max-line-length
   subs;
   // selectedPayMethod: number;
@@ -43,15 +47,16 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   currentLang: string;
   foundCustomerEmails: object[] = [];
   foundCustomerPhones: object[] = [];
-  customerTypes: any[] = [];
+
   selectedGroups: Group[] = [];
+  currentRoute: string;
   private subscriptions: Subscription = new Subscription();
+  paymentsListData: GetCustomerReceipts
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
-    private dialog: MatDialog,
     private fb: FormBuilder,
-    private creditCardService: CreditCardService
+    private activatedRoute: Router
   ) {
     // tslint:disable-next-line: max-line-length
     // this.payMath = new FormControl({ value: localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null, disabled: this.disabledPayMethod }, [Validators.required])
@@ -156,6 +161,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   ngAfterViewInit() {
     // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
     // Add 'implements AfterViewInit' to the class.
+
   }
   ngOnChanges() {
     if (this.customerInfo !== undefined) {
@@ -167,8 +173,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       }
     }
     this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
-    console.log('isVerified ;', this.isVerified);
-    console.log('nextStepDisabled', this.nextStepDisabled);
+
+    console.log('CUSTOMER INFO GOT', this.customerInfo);
     console.log(this.foundCustomerEmails, this.foundCustomerPhones);
 
     // this.creditCardService.currentlyCreditCardVerified.subscribe((isVerified: boolean) => {
@@ -184,7 +190,9 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.getCustomerTitle();
 
     this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
-      this.customerTypes = data['GetCustomerTypes'];
+      if (data) {
+        this.customerTypes = data['GetCustomerTypes'];
+      }
       console.log(this.customerTypes);
     }));
     this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
@@ -217,10 +225,18 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     // this.filterOptionForCustomerSearch();
 
     this.cityNameAutocompl();
+    this.getCurrentRoute()
+  }
+  getCurrentRoute() {
+    console.log('Route', this.activatedRoute.url)
+    this.currentRoute = this.activatedRoute.url;
+    this.generalService.partOfApplication.next(this.currentRoute);
   }
   getCustomerTitle() {
     this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
-      this.customerTitle = data['CustomerTitle'];
+      if (data) {
+        this.customerTitle = data['CustomerTitle'];
+      }
     }));
   }
   getCurrentLanguage() {
@@ -277,12 +293,11 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   customerTitleAutoCompl() {
     this.filterCustTitle$ = this.userInfoGroup.controls.customerMainInfo.get('title').valueChanges
       .pipe(
-        debounceTime(500),
         startWith(''),
         map(value => this.filter(value))
       );
   }
-  private filter(value: string): string[] {
+  private filter(value: string): { TitleEng: string, TitleHeb: string, TitleId: string }[] {
     if (value == null) {
       value = '';
     }
@@ -489,7 +504,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     if (this.city.value !== '' || this.street.value !== '') {
       if (this.city.value !== '' && this.street.value !== '') {
         this.receiptService.fullAddress.next(`${this.city.value}, ${this.street.value}`);
-
       } else if (this.city.value !== '' || this.city.value !== null) {
         this.receiptService.fullAddress.next(`${this.city.value}`);
       } else if (this.street.value !== '' || this.street.value !== null) {
@@ -499,7 +513,11 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   }
   submit() {
     this.addCUstomerInfoToReceipt()
-    this.receiptService.setStep(3);
+    if (this.currentRoute === '/newreceipt') {
+      this.receiptService.setStep(3);
+    } else if (this.currentRoute === '/payments-grid/customer-search') {
+      this.goToCreateNewPayment();
+    }
   }
   openStore() {
     this.addCUstomerInfoToReceipt()
@@ -512,21 +530,13 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       return '';
     }
   }
-  // getItemsFromLocalStorage(item) {
-  //   if (localStorage.getItem(item)) {
-  //     return localStorage.getItem(item);
-  //   } else {
-  //     return;
-  //   }
-
-  // }
   setItemToSessionStorage(key: string, value: string) {
-    if (value != '' && value != null) {
+    if (value === '' || value === null) {
+      value = '';
       sessionStorage.setItem(key, value);
     } else {
-      return;
+      sessionStorage.setItem(key, value);
     }
-
   }
   getPayMethFromLocalStorage() {
     if (localStorage.getItem('paymenthMethod')) {
@@ -568,11 +578,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   resetGroup() {
     this.group.patchValue('');
   }
-  ngOnDestroy() {
-    console.log('CUSTOMER INFO SUBSCRIBE', this.subscriptions);
-    this.subscriptions.unsubscribe();
-    console.log('CUSTOMER INFO SUBSCRIBE On Destroy', this.subscriptions);
-  }
+
   pickCustomerTypeId(typeId: number) {
     for (const customerType of this.customerTypes) {
       if (customerType['TypeId'] === typeId) {
@@ -592,7 +598,14 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     } else {
       return [];
     }
-
   }
 
+  goToCreateNewPayment() {
+    this.toNewPayment.emit();
+  }
+  ngOnDestroy() {
+    console.log('CUSTOMER INFO SUBSCRIBE', this.subscriptions);
+    this.subscriptions.unsubscribe();
+    console.log('CUSTOMER INFO SUBSCRIBE On Destroy', this.subscriptions);
+  }
 }

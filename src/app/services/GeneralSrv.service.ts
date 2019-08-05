@@ -1,17 +1,20 @@
-import { LastSelection } from './../models/lastSelection.model';
-import { CreditCardVerify } from './../models/credirCardVerify.model';
+
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
-// import { Storage } from "@ionic/storage";
+
+import { LastSelection } from './../models/lastSelection.model';
+import { CreditCardVerify } from './../models/credirCardVerify.model';
 import { AuthenticationService } from '../services/authentication.service';
 import { NewReceipt } from '../models/newReceipt.model';
-// import { AlertController } from "@ionic/angular";
 import { Guid } from 'guid-typescript';
 import { ReceiptsService } from './receipts.service';
 import { TranslateService } from '@ngx-translate/core';
+import * as moment from 'moment';
+import { CustomerInfoById } from '../models/customer-info-by-ID.model';
+
 
 
 @Injectable()
@@ -19,8 +22,8 @@ export class GeneralSrv {
   id: Guid;
   userGuid: string;
   baseUrl: string;
-  fullReceiptDataFromServer: any[] = [];
-  fullReceiptData = new BehaviorSubject(this.fullReceiptDataFromServer);
+  // fullReceiptDataFromServer = <any>{};
+  fullReceiptData = new BehaviorSubject<any>('');
   currentReceiptData$ = this.fullReceiptData.asObservable();
   position;
   language = new BehaviorSubject('he');
@@ -33,22 +36,22 @@ export class GeneralSrv {
 
   _lastSelection: LastSelection = <LastSelection>{};
   lastSelect = new BehaviorSubject(this._lastSelection);
-  /**
-   *  Show which options customer selected at the last time
-   */
+  /** *  Show which options customer selected at the last time */
   currentLastSelect$ = this.lastSelect.asObservable();
 
   orgNameSubj = new BehaviorSubject(this.orgName);
-  /**
-   *  Show the current organisation name after login
-   */
+  /**  *  Show the current organisation name after login*/
   currentOrgName$ = this.orgNameSubj.asObservable();
+
+  partOfApplication = new BehaviorSubject('');
+  currentPartOfApplication$ = this.partOfApplication.asObservable();
   constructor(private http: HttpClient,
     private authen: AuthenticationService,
     private zone: NgZone,
     private receiptService: ReceiptsService,
     private translate: TranslateService,
   ) {
+    console.log('GENERAL SERVICE')
     this.switchLanguage('he');
     console.log('ORG NAME', this.orgName);
     this.userGuid = localStorage.getItem('userGuid');
@@ -102,19 +105,32 @@ export class GeneralSrv {
       httpOptions)
       .pipe(map(response => response.Data));
   }
-  /**
-   *  Get customer bt customerId
-   */
-  getCustomerInfoById(customerId: number) {
+  /***  Get customer bt customerId */
+  getCustomerInfoById(customerId: number): Observable<CustomerInfoById> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + this.authen.tokenNo
       })
     };
-    // tslint:disable-next-line: max-line-length
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerDataByCustomerID?urlAddr=${this.orgName}&customerid=${customerId}`, httpOptions)
-      .pipe(map(response => response.Data));
+      .pipe(
+        map(response => response.Data),
+        map(data => {
+          data.GetCustomerReciepts_CameFrom.map(data => {
+            data.ValueDate = this.changeDateFormat(data.ValueDate, 'YYYY-MM-DD');
+            data.RecieptDate = this.changeDateFormat(data.RecieptDate, 'YYYY-MM-DD');
+          })
+          data.GetCustomerReciepts.map(data => {
+            data.ValueDate = this.changeDateFormat(data.ValueDate, 'YYYY-MM-DD');
+            data.RecieptDate = this.changeDateFormat(data.RecieptDate, 'YYYY-MM-DD');
+          })
+          data.GetCustomerReciepts_Involved.map(data => {
+            data.ValueDate = this.changeDateFormat(data.ValueDate, 'YYYY-MM-DD');
+            data.RecieptDate = this.changeDateFormat(data.RecieptDate, 'YYYY-MM-DD');
+          })
+          return data;
+        }));
   }
   /**
    *  Get receipts data
@@ -362,5 +378,8 @@ export class GeneralSrv {
   }
   checkLocalStorage(itemName: string) {
     return localStorage.getItem(itemName);
+  }
+  changeDateFormat(date: string, format: string) {
+    return moment(date).format(format);
   }
 }

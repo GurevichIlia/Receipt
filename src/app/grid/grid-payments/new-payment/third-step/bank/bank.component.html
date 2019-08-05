@@ -4,17 +4,20 @@
   </div>
   <div class="col-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="code bank" formControlName="codeBank">
+      <input #CodeBank matInput placeholder="code bank" formControlName="codeBank">
+      <mat-hint>{{CodeBank.value.length}}/2</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Snif" formControlName="snif">
+      <input #Snif matInput placeholder="Snif" formControlName="snif">
+      <mat-hint>{{Snif.value.length}}/3</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Acc number" formControlName="accNumber">
+      <input #AccNumber matInput placeholder="Acc number" formControlName="accNumber">
+      <mat-hint>{{AccNumber.value.length}}/11</mat-hint>
     </mat-form-field>
   </div>
 </div>

@@ -2,25 +2,38 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from './../material.module';
+import { CustomerInfoComponent } from '../receipts/customer-info/customer-info.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgxPageScrollCoreModule } from 'ngx-page-scroll-core';
+import { NgxPageScrollModule } from 'ngx-page-scroll';
+import { CustomerPaymentsComponent } from '../receipts/payments-list/customer-payments/customer-payments.component';
+import { PaymentsListComponent } from '../receipts/payments-list/payments-list.component';
 
 @NgModule({
       declarations: [
-
+            CustomerInfoComponent,
+            PaymentsListComponent,
+            CustomerPaymentsComponent
       ],
-      // imports: [
-
-      // ],
-      exports: [
+      imports: [
             CommonModule,
+            TranslateModule,
+            MaterialModule,
+            FormsModule,
+            ReactiveFormsModule,
+            NgxPageScrollCoreModule,
+            NgxPageScrollModule,
+      ],
+      exports: [
             ReactiveFormsModule,
             FormsModule,
             MaterialModule,
-            // NgxUiLoaderModule, // import NgxUiLoaderModule
-            // NgxUiLoaderRouterModule,
-            // import NgxUiLoaderRouterModule. By default, it will show foreground loader.
-            // If you need to show background spinner, do as follow:
-
-
+            CustomerInfoComponent,
+            TranslateModule,
+            NgxPageScrollCoreModule,
+            NgxPageScrollModule,
+            PaymentsListComponent,
+            CustomerPaymentsComponent
       ]
 })
 export class SharedModule {

@@ -17,10 +17,11 @@ import { FourthStepComponent } from './grid-payments/new-payment/fourth-step/fou
 import { FifthStepComponent } from './grid-payments/new-payment/fifth-step/fifth-step.component';
 import { BankComponent } from './grid-payments/new-payment/third-step/bank/bank.component';
 import { CreditCardComponent } from './grid-payments/new-payment/third-step/credit-card/credit-card.component';
+import { SearchComponent } from './grid-payments/customer-search/search/search.component';
 
 
 const gridRouter: Routes = [
-  { path: '', component: GridPaymentsComponent },
+  { path: '', component: GridPaymentsComponent, children: [] },
   { path: 'customer-details', component: CustomerDetailsComponent },
   { path: 'customer-search', component: CustomerSearchComponent },
   { path: 'new-payment', component: NewPaymentComponent },
@@ -28,7 +29,21 @@ const gridRouter: Routes = [
 
 
 @NgModule({
-  declarations: [GridPaymentsComponent, PaymentsTableComponent, CustomerDetailsComponent, CustomerSearchComponent, NewPaymentComponent, PaymentsFilterComponent, FirstStepComponent, SecondStepComponent, ThirdStepComponent, FourthStepComponent, FifthStepComponent, BankComponent, CreditCardComponent],
+  declarations: [
+    GridPaymentsComponent,
+    PaymentsTableComponent,
+    CustomerDetailsComponent,
+    CustomerSearchComponent,
+    NewPaymentComponent,
+    PaymentsFilterComponent,
+    FirstStepComponent,
+    SecondStepComponent,
+    ThirdStepComponent,
+    FourthStepComponent,
+    FifthStepComponent,
+    BankComponent,
+    CreditCardComponent,
+    SearchComponent],
   imports: [
     SharedModule,
     CommonModule,

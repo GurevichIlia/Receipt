@@ -22,19 +22,22 @@
         <mat-form-field class="col-12">
           <input #firstName formControlName="firstName" matInput placeholder="{{'First name' | translate}}"
             [required]="requiredField" />
-          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}</mat-error>
+          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field class="col-12">
           <input #lastName formControlName="lastName" matInput placeholder="{{'Last name' | translate}}"
             [required]="requiredField" />
-          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}</mat-error>
+          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field class="col-12">
           <input #company formControlName="company" matInput placeholder="{{'Company' | translate}}"
             [required]="requiredField" />
-          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}</mat-error>
+          <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}
+          </mat-error>
 
         </mat-form-field>
       </div>
@@ -147,7 +150,8 @@
           </div>
         </div>
         <button *ngIf="phones.controls.length !== 10" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" type="button"
-          mat-raised-button style="background-color:  rgb(38, 87, 122); color: white" (click)="addPhone()">{{'Add more phone' | translate}}</button>
+          mat-raised-button style="background-color:  rgb(38, 87, 122); color: white"
+          (click)="addPhone()">{{'Add more phone' | translate}}</button>
         <hr>
         <h4 class="mb-2">{{'Email' | translate}}</h4>
         <div formArrayName="emails">
@@ -172,7 +176,8 @@
           </div>
         </div>
         <button *ngIf="emails.controls.length !== 10" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" type="button"
-          mat-raised-button style="background-color:  rgb(38, 87, 122); color: white" (click)="addEmail()">{{'Add more email' | translate}}</button>
+          mat-raised-button style="background-color:  rgb(38, 87, 122); color: white"
+          (click)="addEmail()">{{'Add more email' | translate}}</button>
 
         <hr>
         <!-- <button type="button" mat-button color="primary"
@@ -235,12 +240,19 @@
       </p>
 
       <mat-action-row>
-        <button class="mr-1 ml-2" type="button" mat-raised-button
-          [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}" (click)="openStore()"
-          [disabled]="requiredField === true">
-          {{'Store' | translate}}
-        </button>
-        <button type="submit" mat-raised-button color="primary"
+        <div *ngIf="currentRoute === '/newreceipt'">
+          <button class="mr-1 ml-2" type="button" mat-raised-button
+            [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}" (click)="openStore()"
+            [disabled]="requiredField === true">
+            {{'Store' | translate}}
+          </button>
+          <button type="submit" mat-raised-button color="primary"
+            [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
+            [disabled]="requiredField === true">
+            {{'Next' | translate}}
+          </button>
+        </div>
+        <button *ngIf="currentRoute !== '/newreceipt'" type="submit" mat-raised-button color="primary"
           [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
           [disabled]="requiredField === true">
           {{'Next' | translate}}
@@ -248,4 +260,5 @@
       </mat-action-row>
     </form>
   </mat-expansion-panel>
+  <app-payments-list *ngIf="currentRoute === '/newreceipt'" [customerInfo]="customerInfo"></app-payments-list>
 </div>
