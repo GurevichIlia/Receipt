@@ -1,5 +1,5 @@
 import { GeneralGroups } from '../../../models/generalGroups.model';
-import { GeneralSrv } from '../../../services/GeneralSrv.service';
+import { GeneralSrv } from '../../../receipts/services/GeneralSrv.service';
 import { SendMessageService, TodoItemFlatNode, TodoItemNode } from '../../send-message.service';
 import { Component, OnInit, Output } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';

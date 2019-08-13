@@ -1,3 +1,4 @@
+import { GlobalData } from 'src/app/models/globalData.model';
 
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -5,15 +6,15 @@ import { HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { LastSelection } from './../models/lastSelection.model';
-import { CreditCardVerify } from './../models/credirCardVerify.model';
-import { AuthenticationService } from '../services/authentication.service';
-import { NewReceipt } from '../models/newReceipt.model';
+import { LastSelection } from '../../models/lastSelection.model';
+import { CreditCardVerify } from '../../models/credirCardVerify.model';
+import { AuthenticationService } from './authentication.service';
+import { NewReceipt } from '../../models/newReceipt.model';
 import { Guid } from 'guid-typescript';
 import { ReceiptsService } from './receipts.service';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { CustomerInfoById } from '../models/customer-info-by-ID.model';
+import { CustomerInfoById } from '../../models/customer-info-by-ID.model';
 
 
 
@@ -23,7 +24,7 @@ export class GeneralSrv {
   userGuid: string;
   baseUrl: string;
   // fullReceiptDataFromServer = <any>{};
-  fullReceiptData = new BehaviorSubject<any>('');
+  fullReceiptData = new BehaviorSubject<GlobalData | ''>('');
   currentReceiptData$ = this.fullReceiptData.asObservable();
   position;
   language = new BehaviorSubject('he');
@@ -35,11 +36,11 @@ export class GeneralSrv {
   currentSizeOfWindow = this.sizeOfWindow.asObservable();
 
   _lastSelection: LastSelection = <LastSelection>{};
-  lastSelect = new BehaviorSubject(this._lastSelection);
+  lastSelect = new BehaviorSubject<LastSelection>(this._lastSelection);
   /** *  Show which options customer selected at the last time */
   currentLastSelect$ = this.lastSelect.asObservable();
 
-  orgNameSubj = new BehaviorSubject(this.orgName);
+  orgNameSubj = new BehaviorSubject<string>(this.orgName);
   /**  *  Show the current organisation name after login*/
   currentOrgName$ = this.orgNameSubj.asObservable();
 

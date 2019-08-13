@@ -1,6 +1,5 @@
-import { ModalSessionexpiredComponent } from './../receipts/modals/modal-sessionexpired/modal-sessionexpired.component';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { GeneralSrv } from './GeneralSrv.service';
+import { ModalSessionexpiredComponent } from '../modals/modal-sessionexpired/modal-sessionexpired.component';
+import { AuthenticationService } from 'src/app/receipts/services/authentication.service';
 import { Injectable } from '@angular/core';
 import {
   HttpEvent, HttpRequest, HttpHandler,

@@ -1,3 +1,4 @@
+import { PaymentKeva } from './../../../models/paymentKeva.model';
 import { PaymentsService } from '../../payments.service';
 import { FormControl, FormBuilder, FormGroup } from '@angular/forms';
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef, AfterViewChecked, OnChanges, ChangeDetectionStrategy } from '@angular/core';
@@ -7,7 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, startWith } from 'rxjs/operators';
 
 
 
@@ -31,6 +32,7 @@ export class PaymentsTableComponent implements OnInit {
   selectedCustomers: any[] = [];
   filterForm: FormGroup;
   globalData: object; // Основная дата из которой мы берем данные для фильтра и для создания новых платежей
+  dataSourceFilterData: PaymentKeva[] = []
   subscription$ = new Subject();
   constructor(
     private router: Router,
@@ -47,10 +49,18 @@ export class PaymentsTableComponent implements OnInit {
     });
     this.getPaymentsTableData();
     this.filterPaymentTable();
+    this.filterPaymentTableByday();
+    this.getCurrentPaymentTablePageIndex();
   }
   filterPaymentTable() {
     this.paymentsService.currentFilterValue$.pipe(takeUntil(this.subscription$)).subscribe((data: string) => {
+
       this.applyFilter(data);
+    })
+  }
+  filterPaymentTableByday() {
+    this.paymentsService.currentFilterValueByDay$.pipe(takeUntil(this.subscription$)).subscribe((data: string) => {
+      this.applyFilterByDay(data);
     })
   }
   /**Create header lables of columns for table */
@@ -108,6 +118,17 @@ export class PaymentsTableComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
+  applyFilterByDay(filterValue: string) {
+    this.dataSource.data = this.dataSourceFilterData.filter((data: PaymentKeva) => {
+      if (data.HokChargeDay === + filterValue.trim().toLowerCase()) {
+        return data
+      }
+      if ('' === filterValue.trim().toLowerCase()) {
+        return data
+      }
+
+    })
+  }
   showDetails(element) {
     this.router.navigate(['/payments-grid/customer-details'])
   }
@@ -115,7 +136,9 @@ export class PaymentsTableComponent implements OnInit {
     this.paymentsService.currentPaymentsTableData$.pipe(
       takeUntil(this.subscription$))
       .subscribe((data: any[]) => {
+        console.log('GRID DATA', data)
         this.dataSource.data = data;
+        this.dataSourceFilterData = data;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       })
@@ -124,7 +147,8 @@ export class PaymentsTableComponent implements OnInit {
     this.paymentsService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
     this.router.navigate(['/payments-grid/new-payment'], paymentRow);
-
+    this.setCurrentPaymentTablePageIndex(this.paginator.pageIndex, this.paginator.pageSize);
+    console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
   }
   deletePaymentRow(paymentRow) {
     console.log('delete row', paymentRow)
@@ -132,6 +156,15 @@ export class PaymentsTableComponent implements OnInit {
   }
   duplicatePaymentRow() {
 
+  }
+  setCurrentPaymentTablePageIndex(pageIndex: number, pageSize: number) {
+    this.paymentsService.setPaymentTablePage({ pageIndex, pageSize });
+  }
+  getCurrentPaymentTablePageIndex() {
+    this.paymentsService.currentPaymentTablePage$.pipe(takeUntil(this.subscription$)).subscribe((pageOptions: { pageIndex: number, pageSize: number }) => {
+      this.paginator.pageIndex = pageOptions.pageIndex;
+      this.paginator.pageSize = pageOptions.pageSize;
+    });
   }
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.

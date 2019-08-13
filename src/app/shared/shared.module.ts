@@ -1,3 +1,4 @@
+import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -8,12 +9,14 @@ import { NgxPageScrollCoreModule } from 'ngx-page-scroll-core';
 import { NgxPageScrollModule } from 'ngx-page-scroll';
 import { CustomerPaymentsComponent } from '../receipts/payments-list/customer-payments/customer-payments.component';
 import { PaymentsListComponent } from '../receipts/payments-list/payments-list.component';
+import { MomentModule } from 'ngx-moment';
 
 @NgModule({
       declarations: [
             CustomerInfoComponent,
             PaymentsListComponent,
-            CustomerPaymentsComponent
+            CustomerPaymentsComponent,
+            CreditCardComponent
       ],
       imports: [
             CommonModule,
@@ -23,6 +26,7 @@ import { PaymentsListComponent } from '../receipts/payments-list/payments-list.c
             ReactiveFormsModule,
             NgxPageScrollCoreModule,
             NgxPageScrollModule,
+            MomentModule,
       ],
       exports: [
             ReactiveFormsModule,
@@ -30,11 +34,14 @@ import { PaymentsListComponent } from '../receipts/payments-list/payments-list.c
             MaterialModule,
             CustomerInfoComponent,
             TranslateModule,
+            MomentModule,
             NgxPageScrollCoreModule,
             NgxPageScrollModule,
             PaymentsListComponent,
-            CustomerPaymentsComponent
-      ]
+            CustomerPaymentsComponent,
+         
+      ],
+      entryComponents:[CreditCardComponent]
 })
 export class SharedModule {
 

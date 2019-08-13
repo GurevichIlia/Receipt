@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { GeneralSrv } from '../services/GeneralSrv.service';
+import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GeneralGroups } from '../models/generalGroups.model';

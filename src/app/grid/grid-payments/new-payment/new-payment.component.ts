@@ -1,14 +1,19 @@
+import { CustomerCreditCard } from './../../../models/customerCreditCard.model';
+import { CreditCardAccount } from './../../../models/credit-card-account.model';
 import { Customerinfo } from './../../../models/customerInfo.model';
 import { PaymentsService } from '../../payments.service';
 import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import { MatAccordion } from '@angular/material';
+import { MatAccordion, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { PaymentsFilterComponent } from '../payments-filter/payments-filter.component';
-import { Subject } from 'rxjs';
-import { takeUntil, delay } from 'rxjs/operators';
-import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { PaymentsFilterComponent } from '../payments-table-header/payments-filter/payments-filter.component';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, delay, map, filter } from 'rxjs/operators';
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { PaymentKeva } from 'src/app/models/paymentKeva.model';
+import { GlobalData } from 'src/app/models/globalData.model';
+import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
+import { CreditCardService } from 'src/app/receipts/credit-card/credit-card.service';
 
 @Component({
   selector: 'app-new-payment',
@@ -19,16 +24,21 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('accordion') expansionPanel: MatAccordion
   step = 0;
   newPaymentForm: FormGroup;
-  globalData$;
+  globalData$: Observable<GlobalData>;
   customerInfoById: Customerinfo;
   editMode = false;
   isEditFileAs = false;
   subscription$ = new Subject();
+  creditCardAccounts$: Observable<CreditCardAccount[]>;
+  listCustomerCreditCard: CustomerCreditCard[] = [];
+  listCustomerCreditCard$: Observable<CustomerCreditCard[]>
   constructor(
     private _formBuilder: FormBuilder,
     private paymentsService: PaymentsService,
     private router: Router,
-    private generalService: GeneralSrv
+    private generalService: GeneralSrv,
+    private dialog: MatDialog,
+    private creditCardService: CreditCardService
   ) { }
 
   ngOnInit() {
@@ -61,7 +71,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
       secondStep: this._formBuilder.group({
         fileAs: ['', Validators.required],
-        Tz: ['', Validators.required],
+        ID: ['', Validators.required],
         tel1: ['', Validators.required],
         tel2: ['', Validators.required],
         remark: ['', Validators.required]
@@ -82,12 +92,12 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         day: ['', Validators.required],
         company: ['', Validators.required],
         startDate: ['', Validators.required],
-        date1: ['', Validators.required],
-        date2: ['', Validators.required],
-        date3: ['', Validators.required],
+        endDate: ['', Validators.required],
+        KEVAJoinDate: ['', Validators.required],
+        KEVACancleDate: ['', Validators.required],
         monthToCharge: ['', [Validators.required, Validators.maxLength(4)]],
         chargeMonth: ['', [Validators.required, Validators.maxLength(4)]],
-        letToCharge: ['', [Validators.required, Validators.maxLength(4)]],
+        leftToCharge: ['', [Validators.required, Validators.maxLength(4)]],
         tadirut: ['', Validators.required]
       }),
       fifthStep: this._formBuilder.group({
@@ -98,7 +108,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         projCat: ['', Validators.required],
         project: ['', Validators.required],
         input1: ['', Validators.required],
-        input2: ['', Validators.required],
+        thanksLetter: ['', Validators.required],
         fileAs: ['', Validators.required],
         address: ['', Validators.required],
         field: ['', Validators.required],
@@ -116,7 +126,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.newPaymentForm.get('secondStep.fileAs');
   }
   get Tz() {
-    return this.newPaymentForm.get('secondStep.Tz');
+    return this.newPaymentForm.get('secondStep.ID');
   }
   get tel1() {
     return this.newPaymentForm.get('secondStep.tel1');
@@ -125,10 +135,10 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.newPaymentForm.get('secondStep.tel2');
   }
   getGlobalData() {
-    this.globalData$ = this.paymentsService.currentGlobalData$
+    this.globalData$ = this.paymentsService.currentGlobalData$;
+    this.creditCardAccounts$ = this.paymentsService.currentGlobalData$.pipe(map(data => data.Accounts));
   }
   openAllSteps() {
-
     this.expansionPanel.openAll();
     console.log('Open')
   }
@@ -143,6 +153,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!!Object.keys(data).length) {
           this.customerInfoById = data;
           this.setInputValue(this.fileAs, this.customerInfoById.customermaininfo.fileAs);
+          this.setInputValue(this.Tz, this.customerInfoById.customermaininfo.tZ);
+          // this.getListCustomerCreditCard()
+          this. getListCustomerCreditCard();
           console.log('Customer info', this.customerInfoById)
         }
       })
@@ -172,7 +185,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         if (data) {
           console.log('EDITING PAYMENT', data);
           this.openAllSteps();
-          this.paymentsService.updatePaymentForm(this.newPaymentForm, data)
+          this.paymentsService.updatePaymentFormForEditeMode(this.newPaymentForm, data)
         } else {
           this.setStep(1);
         }
@@ -185,6 +198,22 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(type => {
         this.paymentType.patchValue(type);
       })
+  }
+  openModalForNewCreditCard() {
+    this.dialog.open(CreditCardComponent, { width: '1150px', height: '500px', data: { fullName: this.fileAs.value, tZ: this.Tz.value, creditCardAccounts: this.creditCardAccounts$ } });
+  }
+  setDataForNewPaymentKeva() {
+    const newKeva = this.newPaymentForm.value;
+    this.paymentsService.setNewPaymentKeva(newKeva)
+  }
+  // getListCustomerCreditCard() {
+  //   this.listCustomerCreditCard = this.paymentsService.getListCustomerCreditCard();
+  // }
+  getListCustomerCreditCard(customerId?: number) {
+    this.listCustomerCreditCard$ = this.paymentsService.currentCreditCardList$.pipe(map(data => {
+      console.log('TEST', data)
+      return data;
+    }))
   }
 
   ngOnDestroy(): void {

@@ -1,63 +1,6 @@
-<!-- <div class="col-2" style="position:absolute">
-  <div class="text-right row mr-5" style="width: 100%">
-    <mat-form-field class="col">
-      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-    </mat-form-field>
-  </div>
-</div> -->
-<!-- <form [formGroup]="filterForm" (ngSubmit)="showFilteredPayments()">
-  <div class="container">
-    <div class="row justify-content-center align-items-baseline">
-      <div class="col-2">
-        <mat-form-field>
-          <mat-label>Clearing firm</mat-label>
-          <mat-select formControlName="instituteid">
-            <mat-option *ngFor="let group of globalData?.institutes" [value]="group.instituteId">{{group.Mosad}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-2">
-        <mat-form-field>
-          <mat-label>Standing bank</mat-label>
-          <mat-select formControlName="kevaTypeid">
-            <mat-option value="1"> מס"ב - חיוב לקוח</mat-option>
-            <mat-option value="2"> מס"ב - זיכוי לקוח </mat-option>
-            <mat-option value="3"> כ.אשראי - חיוב לקוח</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-2">
-        <mat-form-field>
-          <mat-label>Activity Status</mat-label>
-          <mat-select formControlName="KevaStatusid">
-            <mat-option *ngFor="let group of globalData?.KevaStatus" [value]="group.KevaStatusId">
-              {{group.KevaStatusIdname}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-2">
-        <mat-form-field>
-          <mat-label>Group</mat-label>
-          <mat-select formControlName="KevaGroupid">
-            <mat-option value="9999">All groups</mat-option>
-            <mat-option *ngFor="let group of globalData?.KevaGroups" [value]="group.GroupId">{{group.GroupName}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-2">
-        <button type="submit" style="width: 100%" mat-raised-button color="accent">Show</button>
-      </div>
-    </div>
-  </div>
-</form> -->
-
-<!-- <span style="font-size: 14px"> Selected: {{selectedCustomers.length}}</span> -->
 <div class="elevation">
   <table mat-table [dataSource]="dataSource" matSort>
 
-    Checkbox Column
     <ng-container matColumnDef="select">
       <th mat-header-cell *matHeaderCellDef>
         <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
@@ -87,30 +30,23 @@
       </td>
     </ng-container>
 
-    <!-- AccName Column -->
+
     <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header}} </th>
-      <td mat-cell *matCellDef="let row"> {{col.cell(row)}} </td>
+      <td mat-cell *matCellDef="let row">
+        <ng-container>
+          {{col.cell(row) === 'null'? '' : col.cell(row)}}
+        </ng-container>
+
+
+      </td>
     </ng-container>
-
-    <!-- AccountID Column
-  <ng-container matColumnDef="AccName">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> AccName </th>
-    <td mat-cell *matCellDef="let element"> {{element.AccName}} </td>
-  </ng-container>
-
-  AccountNo Column -->
-
 
 
     <tr mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true"></tr>
-    <tr mat-row *matRowDef="let row; columns: listDisplayedColumns;"></tr>
-    <!-- <ng-container matColumnDef="details">
-    <th mat-header-cell *matHeaderCellDef></th>
-    <td mat-cell *matCellDef="let row">
-      <button mat-raised-button color="accent" (click)="showDetails(row)">details</button>
-    </td>
-  </ng-container>  -->
+    <tr (dblclick)="row.backColor = !row.backColor"
+      [ngStyle]="{'background-color': row.backColor? 'rgb(231, 227, 227)' : 'white' }" mat-row
+      *matRowDef="let row; columns: listDisplayedColumns;"></tr>
 
 
   </table>

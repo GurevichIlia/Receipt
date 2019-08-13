@@ -1,5 +1,6 @@
+import { CustomerCreditCard } from './../../../../../models/customerCreditCard.model';
 import { FormControl } from '@angular/forms';
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-credit-card',
@@ -7,11 +8,16 @@ import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core
   styleUrls: ['./credit-card.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreditCardComponent implements OnInit {
+export class CreditCardComponent implements OnChanges {
   @Input() creditCard: FormControl;
+  @Input() listCustomerCreditCard: CustomerCreditCard[];
+  @Output() addNewCardIsClicked = new EventEmitter();
   constructor() { }
 
-  ngOnInit() {
+  ngOnChanges() {
+console.log('CREDIT CARD LIST', this.listCustomerCreditCard)
   }
-
+  clickAddNewCard() {
+    this.addNewCardIsClicked.emit();
+  }
 }

@@ -54,5 +54,18 @@ export class PaymentKeva {
       instituteCode: string;
       instituteId: number;
       tadirut: number;
-
+      Expr1: number;
+      ProjectName: string;
+      RecieptName: string;
+      RecieptNameForRecord: string;
+      TadirutName: string;
+      ThanksLetterName: string;
+      TokenNum: number;
+      createDate: string;
+      creditCardMonth: number;
+      creditCardYear: number;
+      digits6: number;
+      creditCardMonthAndYears: string;
+   
+      
 }

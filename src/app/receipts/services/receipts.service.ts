@@ -1,21 +1,21 @@
 import { GeneralSrv } from './GeneralSrv.service';
-import { Addresses } from './../models/addresses.model';
-import { Emails } from './../models/emails.model';
-import { Phones } from './../models/phones.model';
-import { Product } from './../models/products.model';
-import { ReceiptHeader } from './../models/receiptHeader.model';
-import { Customermaininfo } from './../models/customermaininfo.model';
-import { CreditCardVerify } from './../models/credirCardVerify.model';
-import { NewReceipt } from './../models/newReceipt.model';
+import { Addresses } from '../../models/addresses.model';
+import { Emails } from '../../models/emails.model';
+import { Phones } from '../../models/phones.model';
+import { Product } from '../../models/products.model';
+import { ReceiptHeader } from '../../models/receiptHeader.model';
+import { Customermaininfo } from '../../models/customermaininfo.model';
+import { CreditCardVerify } from '../../models/credirCardVerify.model';
+import { NewReceipt } from '../../models/newReceipt.model';
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
-import { Customerinfo } from '../models/customerInfo.model';
-import { Creditcard } from '../models/creditCard.model';
-import { Receipt } from '../models/receipt.model';
-import { ReceiptType } from '../models/receiptType.interface';
-import { Receiptlines } from '../models/receiptlines.model';
-import { Group } from '../receipts/customer-info/customer-info.component';
+import { Customerinfo } from '../../models/customerInfo.model';
+import { Creditcard } from '../../models/creditCard.model';
+import { Receipt } from '../../models/receipt.model';
+import { ReceiptType } from '../../models/receiptType.interface';
+import { Receiptlines } from '../../models/receiptlines.model';
+import { Group } from '../customer-info/customer-info.component';
 import { MatDialog } from '@angular/material';
 
 @Injectable({
@@ -38,19 +38,19 @@ export class ReceiptsService {
   blockPayMethod$ = this.blockPaymentMethod.asObservable();
 
   selReceiptCurrencyId = new BehaviorSubject('');
-   /*** Show selected currency from receipt type in step(receipt type)*/
+  /*** Show selected currency from receipt type in step(receipt type)*/
   selCurrencyId$ = this.selReceiptCurrencyId.asObservable();
- 
+
   creditCard = false;
   payByCreditCard = new BehaviorSubject(this.creditCard);
-   /** * Show if payment method is credit card */
+  /** * Show if payment method is credit card */
   currenPayTypeCreditCard$ = this.payByCreditCard.asObservable();
 
   paymentId: number = null;
   paymentMethod = new BehaviorSubject(this.paymentId);
-    /*** Show which payment method id selected*/
+  /*** Show which payment method id selected*/
   selectedPaymentMethod = this.paymentMethod.asObservable();
-  
+
   /*** Show current name of customer name for step(proccess-receipt)*/
   fullName: string;
   private customerName = new BehaviorSubject(this.fullName);
@@ -63,7 +63,7 @@ export class ReceiptsService {
   storeAmount = new BehaviorSubject(this.totalAmountStore);
   currentStoreAmount$ = this.storeAmount.asObservable();
 
-/*** Show if customer is new or already exist*/
+  /*** Show if customer is new or already exist*/
   newCustomer = new BehaviorSubject(true);
   currentNewCustomer$ = this.newCustomer.asObservable();
 

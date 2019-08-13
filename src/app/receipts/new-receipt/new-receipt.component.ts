@@ -3,12 +3,12 @@ import { FormControl, NgForm} from '@angular/forms';
 
 import { TranslateService } from '@ngx-translate/core';
 import { CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
-import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { Subscription } from 'rxjs';
 
 import { map,} from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { ReceiptsService } from '../../services/receipts.service';
+import { ReceiptsService } from '../services/receipts.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 

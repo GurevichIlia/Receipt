@@ -2,5 +2,5 @@
 <app-bank *ngIf="paymentType.value === '2' || paymentType.value === '1'" [bank]="thirdStep.get('bank')"></app-bank>
 <!-- ROW bank -->
 <!-- ROW credit card -->
-<app-credit-card *ngIf="paymentType.value === '3'" [creditCard]="thirdStep.get('creditCard')"></app-credit-card>
+<app-credit-card *ngIf="paymentType.value === '3'" [listCustomerCreditCard]="listCustomerCreditCard" [creditCard]="thirdStep.get('creditCard')" (addNewCardIsClicked)="clickAddNewCard()"></app-credit-card>
 <!-- ROW credit card -->

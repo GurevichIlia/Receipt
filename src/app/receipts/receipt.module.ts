@@ -9,10 +9,11 @@ import { TestCComponent } from '../test-c/test-c.component';
 import { ReceiptTypeComponent } from './receipt-type/receipt-type.component';
 import { StoreComponent } from './store/store.component';
 import { PaymentComponent } from './payment/payment.component';
-import { CreditCardComponent } from './credit-card/credit-card.component';
 import { ProccessRecieptComponent } from './proccess-reciept/proccess-reciept.component';
 import { DisableControlDirective } from '../shared/directives/disable-control.directive';
 import { FilterProductsByCatPipe } from '../myPipes/filter-products-by-cat.pipe';
+import { ModalFinalScreenComponent } from './modals/modal-final-screen/modal-final-screen.component';
+import { ConfirmPurchasesComponent } from './modals/confirm-purchases/confirm-purchases.component';
 
 
 const receiptRoutes: Routes = [
@@ -27,8 +28,9 @@ const receiptRoutes: Routes = [
             ReceiptTypeComponent,
             StoreComponent,
             PaymentComponent,
-            CreditCardComponent,
             ProccessRecieptComponent,
+            ModalFinalScreenComponent,
+            ConfirmPurchasesComponent,
             DisableControlDirective,
             FilterProductsByCatPipe,
       ],
@@ -39,7 +41,9 @@ const receiptRoutes: Routes = [
       ],
       exports: [
             RouterModule
-      ]
+      ],
+      entryComponents: [ModalFinalScreenComponent,
+            ConfirmPurchasesComponent,]
 })
 
 

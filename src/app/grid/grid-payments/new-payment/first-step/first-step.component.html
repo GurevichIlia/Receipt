@@ -1,5 +1,5 @@
 <div class="row mb-5" [formGroup]="firstStep">
-  <div class="col-4">
+  <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>Type</mat-label>
       <mat-select formControlName="type">
@@ -9,21 +9,21 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>Status</mat-label>
       <mat-select formControlName="status">
-        <mat-option *ngFor="let group of globalData?.KevaStatus" [value]="group.KevaStatusId">
+        <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus " [value]="group.KevaStatusId">
           {{group.KevaStatusIdname}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>Groups</mat-label>
       <mat-select formControlName="groups">
-        <mat-option *ngFor="let group of globalData?.KevaGroups" [value]="group.GroupId">{{group.GroupName}}
+        <mat-option *ngFor="let group of (globalData$ | async)?.KevaGroups" [value]="group.GroupId">{{group.GroupName}}
         </mat-option>
       </mat-select>
     </mat-form-field>

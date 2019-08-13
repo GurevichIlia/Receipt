@@ -1,4 +1,4 @@
-import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { Subscription } from 'rxjs';
 import { SendMessageService } from '../send-message.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';

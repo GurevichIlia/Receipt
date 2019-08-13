@@ -1,20 +1,20 @@
 <div class="row mb-5" [formGroup]="bank">
   <div class="col-12 text-right">
-    <h5>title</h5>
+    <h6 >חשבון בנק</h6>
   </div>
-  <div class="col-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
       <input #CodeBank matInput placeholder="code bank" formControlName="codeBank">
       <mat-hint>{{CodeBank.value.length}}/2</mat-hint>
     </mat-form-field>
   </div>
-  <div class="col-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
       <input #Snif matInput placeholder="Snif" formControlName="snif">
       <mat-hint>{{Snif.value.length}}/3</mat-hint>
     </mat-form-field>
   </div>
-  <div class="col-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
       <input #AccNumber matInput placeholder="Acc number" formControlName="accNumber">
       <mat-hint>{{AccNumber.value.length}}/11</mat-hint>

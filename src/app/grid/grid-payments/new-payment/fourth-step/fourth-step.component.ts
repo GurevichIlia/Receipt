@@ -1,5 +1,7 @@
+import { GlobalData } from './../../../../models/globalData.model';
 import { FormGroup } from '@angular/forms';
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-fourth-step',
@@ -7,13 +9,16 @@ import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core
   styleUrls: ['./fourth-step.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FourthStepComponent implements OnInit {
-@Input() fourthStep: FormGroup;
-@Input() globalData: object;
-days = Array.from(Array(31).keys());
+export class FourthStepComponent implements OnInit, OnChanges {
+  @Input() fourthStep: FormGroup;
+  @Input() globalData$: Observable<GlobalData | ''>;
+  days = Array.from(Array(31).keys());
   constructor() { }
-
+  ngOnChanges() {
+    
+  }
   ngOnInit() {
+    this.globalData$.subscribe(data => console.log('FOurth STEP', data))
   }
 
 }

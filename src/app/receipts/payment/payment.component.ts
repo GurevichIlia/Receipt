@@ -1,12 +1,12 @@
 import { CreditCardService } from './../credit-card/credit-card.service';
-import { Component, OnInit, ViewChild, Input, AfterViewInit, DoCheck, OnDestroy } from '@angular/core';
-import { ReceiptsService } from 'src/app/services/receipts.service';
-import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { Component, OnInit, ViewChild, AfterViewInit, DoCheck, OnDestroy } from '@angular/core';
+import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import * as moment from 'moment';
 import { NgForm, FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
-import { startWith, map, delay, debounceTime } from 'rxjs/operators';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { startWith, map } from 'rxjs/operators';
+import { MatDialog} from '@angular/material';
 import { Receiptlines } from 'src/app/models/receiptlines.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import { ToastrService } from 'ngx-toastr';

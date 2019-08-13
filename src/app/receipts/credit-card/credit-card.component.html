@@ -18,7 +18,7 @@
             <mat-form-field class="col-12">
               <mat-icon matPrefix>person</mat-icon>
               <mat-select #Account placeholder="{{'Account' | translate}}" required formControlName="accountId">
-                <mat-option [value]="account.AccountId" *ngFor="let account of accounts; let i = index" required>
+                <mat-option [value]="account.AccountId" *ngFor="let account of accounts$ | async; let i = index" required>
                   {{account.AccountNameEng}}
                 </mat-option>
               </mat-select>

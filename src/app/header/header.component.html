@@ -1,4 +1,5 @@
 <div class="mb-3" *ngIf="currentlyAuthStatus$ | async">
+
   <mat-card [style.fontSize]="'20px'">
     <!-- <div class="col-12 mr-5">
     <img class="mb-2" src="assets/images/amax180-1.jpg" alt="Amax-logo">
@@ -18,7 +19,7 @@
             (click)="goToSendMessage()">{{'Send message' | translate}}</button>
 
             <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
-            (click)="goToGrid()">{{'Table' | translate}} Table</button>
+            (click)="goToGrid()">הוראת קבע</button>
 
           <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'he'"
             (click)="generalSrv.switchLanguage('en')">en</button>
@@ -37,7 +38,7 @@
         <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button (click)="goToSendMessage()"
           >{{'Send message' | translate}}</button>
           <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
-          (click)="goToGrid()">{{'Table' | translate}} Table</button>
+          (click)="goToGrid()">הוראת קבע</button>
         <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
           (click)="generalSrv.switchLanguage('en')">en</button>
         <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"

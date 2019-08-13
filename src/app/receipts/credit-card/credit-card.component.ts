@@ -1,16 +1,24 @@
-import { LastSelection } from './../../models/lastSelection.model';
-import { CreditCardService } from './credit-card.service';
-import { GeneralSrv } from './../../services/GeneralSrv.service';
-import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
-import { ReceiptsService } from 'src/app/services/receipts.service';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA } from '@angular/material';
+
+
+import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
+import { CreditCardService } from './credit-card.service';
+import { GeneralSrv } from '../services/GeneralSrv.service';
+
+import { LastSelection } from './../../models/lastSelection.model';
+import { Creditcard } from 'src/app/models/creditCard.model';
+
+
 import { CreditCardValidator } from 'angular-cc-library';
 import { ToastrService } from 'ngx-toastr';
-import { debounceTime } from 'rxjs/operators';
-import { Creditcard } from 'src/app/models/creditCard.model';
-import { Subscription } from 'rxjs';
+import { debounceTime, takeUntil, map, take } from 'rxjs/operators';
+
+import { Subscription, Subject, Observable } from 'rxjs';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { CreditCardAccount } from 'src/app/models/credit-card-account.model';
 
 
 
@@ -23,7 +31,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   @ViewChild('creditCard') creditCardInput: ElementRef;
   @ViewChild('expYear') expYearInput: ElementRef;
   creditCardForm: FormGroup;
-  accounts: object[] = [];
+  accounts$: Observable<CreditCardAccount[]>
   termNo: string;
   termName: string;
   verifyCreditCard: Creditcard;
@@ -35,6 +43,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   amountError = false;
   subscription = new Subscription();
   useCardReaderControl: FormControl;
+  subscription$ = new Subject();
   constructor(
     private toastr: ToastrService,
     private receiptService: ReceiptsService,
@@ -43,7 +52,10 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     private generalService: GeneralSrv,
     private credirCardService: CreditCardService,
     private creditCard: CreditCardService,
-    private spinner: NgxUiLoaderService
+    private spinner: NgxUiLoaderService,
+    public dialogRef: MatDialogRef<CreditCardComponent>,
+    @Inject(MAT_DIALOG_DATA) public dialogData: { fullName: string, tZ: string, creditCardAccounts: Observable<CreditCardAccount[]> }
+
 
   ) {
     this.creditCardForm = this.fb.group({
@@ -95,8 +107,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
         this.onFocusCrediCardNumber();
       }
     }));
-    this.setFullName(this.receiptService.getFirstLastName());
-    this.setTz(this.receiptService.getTz());
+    // this.setFullName(this.receiptService.getFirstLastName());
     this.subscription.add(this.generalService.currentLang$.subscribe(lang => {
       if (lang === 'he') {
         this.heLang = true;
@@ -108,19 +119,21 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     }));
     this.getLastSelection();
     console.log('accountCred', this.accountId.value);
-    this.subscription.add(this.generalService.currentReceiptData$.subscribe(data => {
-      this.accounts = data['Accounts'];
-    }));
+    // this.subscription.add(this.generalService.currentReceiptData$.subscribe(data => {
+    //   this.accounts = data['Accounts'];
+    // }));
     this.subscription.add(this.accountId.valueChanges.subscribe(accountCredId => {
       this._accountId = accountCredId;
-      this.pickAccount();
+      this.pickAccount(this.dialogData.creditCardAccounts);
       console.log(accountCredId);
     }));
-    this.pickAccount();
+
     // this.checkFieldsValue();
     this.getCurrentlyAmountFromStore();
     this.detectChangeAmount();
     this.onFocusExpYear();
+    this.getDataForModalDialog(this.dialogData);
+    this.pickAccount(this.dialogData.creditCardAccounts);
   }
   onFocusExpYear() {
     this.subscription.add(this.expMonth.valueChanges.subscribe((value: string) => {
@@ -213,22 +226,27 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     }
   }
   getLastSelection() {
-    this.generalService.currentLastSelect$.subscribe((lastSelect: LastSelection) => {
+    this.generalService.currentLastSelect$.pipe(takeUntil(this.subscription$)).subscribe((lastSelect: LastSelection) => {
       if (lastSelect === null) {
       } else {
         this.accountId.patchValue(lastSelect.creditCardAccId);
         this._accountId = lastSelect.creditCardAccId;
-        this.pickAccount();
+        this.pickAccount(this.dialogData.creditCardAccounts);
       }
     });
   }
-  pickAccount() {
-    for (const acc of this.accounts) {
-      if (acc['AccountId'] === this._accountId) {
-        this.termNo = acc['ASHRAY'];
-        this.termName = acc['Username'];
-      }
-    }
+  pickAccount(accounts$: Observable<CreditCardAccount[]>) {
+    accounts$
+      .pipe(
+        map(data => {
+          data.map(account => {
+            if (account.AccountId === this._accountId) {
+              this.termNo = account.ASHRAY;
+              this.termName = account.Username;
+            }
+          })
+        }), takeUntil(this.subscription$)).subscribe(() => '');
+
   }
 
   getCurrentlyAmountFromStore() {
@@ -286,14 +304,16 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   refreshCreditCardForm() {
     this.creditCardForm.reset();
   }
-  setFullName(value) {
-    this.creditCardForm.get('customerName').patchValue(value);
+  setFullName(fullName: string) {
+    this.creditCardForm.get('customerName').patchValue(fullName);
+    console.log('FULL NAME', fullName)
   }
-  setTz(value) {
-    this.creditCardForm.get('tz').patchValue(value);
+  setTz(tZ: string) {
+    this.creditCardForm.get('tz').patchValue(tZ);
   }
-  // tslint:disable-next-line: use-life-cycle-interface
-
+  setAccounts(accounts: Observable<CreditCardAccount[]>) {
+    this.accounts$ = accounts;
+  }
   createToggleControl() {
     return this.useCardReaderControl = this.fb.control(false);
   }
@@ -329,12 +349,20 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   onFocusCrediCardNumber() {
     this.creditCardInput.nativeElement.focus();
   }
+  getDataForModalDialog(data: { fullName: string, tZ: string, creditCardAccounts: Observable<CreditCardAccount[]> }) {
+    this.setFullName(data.fullName);
+    this.setTz(data.tZ);
+    this.setAccounts(data.creditCardAccounts)
+    data.creditCardAccounts.subscribe(data => console.log('COMING ACCOUNTS', data))
+  }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.
     // Add 'implements OnDestroy' to the class.
     console.log('CREDIT CARD SUBSCRIBE', this.subscription);
     this.subscription.unsubscribe();
     console.log('CREDIT CARD DESTROED', this.subscription);
+    this.subscription$.next();
+    this.subscription$.complete();
   }
 }
 

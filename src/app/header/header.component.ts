@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthenticationService } from '../services/authentication.service';
+import { AuthenticationService } from '../receipts/services/authentication.service';
 import { Router, Route, ActivatedRoute } from '@angular/router';
-import { GeneralSrv } from '../services/GeneralSrv.service';
+import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
 import { Subscription, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, map } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../app.reducer'
 
 @Component({
   selector: 'app-header',
@@ -21,7 +23,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private auth: AuthenticationService,
     private router: Router,
     private generalSrv: GeneralSrv,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private store: Store<{ auth: fromApp.State }>
   ) { }
 
   ngOnInit() {
@@ -41,7 +44,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     })
   }
   getAuthStatus() {
-    this.currentlyAuthStatus$ = this.auth.currentlyAuthStatus;
+    // this.currentlyAuthStatus$ = this.auth.currentlyAuthStatus;
+    this.currentlyAuthStatus$ = this.store.pipe(map(state => state.auth.isLogged
+    ));
+
   }
   checkWidth() {
     this.mobileVersion = window.innerWidth > 500 ? false : true;

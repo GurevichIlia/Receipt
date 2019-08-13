@@ -1,11 +1,11 @@
-import { GeneralSrv } from './services/GeneralSrv.service';
+import { GeneralSrv } from './receipts/services/GeneralSrv.service';
 import { Component, HostListener, OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
-import { AuthenticationService } from './services/authentication.service';
+import { AuthenticationService } from './receipts/services/authentication.service';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { ReceiptsService } from './services/receipts.service';
+import { ReceiptsService } from './receipts/services/receipts.service';
 
 @Component({
   selector: 'app-root',

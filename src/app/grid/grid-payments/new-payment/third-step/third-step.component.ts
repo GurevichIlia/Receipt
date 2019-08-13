@@ -1,5 +1,6 @@
 import { FormGroup } from '@angular/forms';
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { CustomerCreditCard } from 'src/app/models/customerCreditCard.model';
 
 @Component({
   selector: 'app-third-step',
@@ -10,11 +11,14 @@ import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges } from '@a
 export class ThirdStepComponent implements OnInit {
   @Input() thirdStep: FormGroup;
   @Input() paymentType: FormGroup;
-
+  @Input() listCustomerCreditCard: CustomerCreditCard[];
+  @Output() addNewCardIsClicked = new EventEmitter();
   constructor() { }
 
   ngOnInit() {
     
   }
-
+  clickAddNewCard() {
+    this.addNewCardIsClicked.emit();
+  }
 }

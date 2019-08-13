@@ -3,8 +3,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material';
-import { GeneralSrv } from '../services/GeneralSrv.service';
-import { AuthenticationService } from '../services/authentication.service';
+import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
+import { AuthenticationService } from '../receipts/services/authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 
 

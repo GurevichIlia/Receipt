@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Creditcard } from '../../models/creditCard.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -22,8 +22,8 @@ export class CreditCardService {
     this.credCardIsVerified.next(value);
   }
   getCreditCardInfoWithCardreader(terminalNumberMain: string, creditCardNumber: string, terminalNumberMainUser: string) {
-// tslint:disable-next-line: max-line-length
+    // tslint:disable-next-line: max-line-length
     const txtXml = `${this.url}TerminalNumber=${terminalNumberMain}&cardchanle2=${creditCardNumber}&username=${terminalNumberMainUser}&jparameter=2&dealcode=0`;
-    return this.http.get(txtXml, {responseType: 'text'});
+    return this.http.get(txtXml, { responseType: 'text' });
   }
 }

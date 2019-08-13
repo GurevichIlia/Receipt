@@ -1,11 +1,16 @@
-import { Router, ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { PaymentsService } from './../../grid/payments.service';
 import { Component, OnInit, Input, OnChanges, OnDestroy, AfterViewInit, Output, EventEmitter } from '@angular/core';
-import { ReceiptsService } from '../../services/receipts.service';
+import { Router } from '@angular/router';
 import { FormArray, Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
-import * as moment from 'moment';
+
+import { Observable, Subscription } from 'rxjs';
 import { startWith, map, debounceTime } from 'rxjs/operators';
+
+import { ReceiptsService } from '../services/receipts.service';
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+
+import * as moment from 'moment';
+
 import { CustomerType } from 'src/app/models/customerType.model';
 import { CustomerInfoById, GetCustomerReceipts } from 'src/app/models/customer-info-by-ID.model';
 
@@ -51,12 +56,13 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   selectedGroups: Group[] = [];
   currentRoute: string;
   private subscriptions: Subscription = new Subscription();
-  paymentsListData: GetCustomerReceipts
+  paymentsListData: GetCustomerReceipts;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
     private fb: FormBuilder,
-    private activatedRoute: Router
+    private activatedRoute: Router,
+    private paymentsService: PaymentsService
   ) {
     // tslint:disable-next-line: max-line-length
     // this.payMath = new FormControl({ value: localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null, disabled: this.disabledPayMethod }, [Validators.required])
@@ -192,6 +198,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
       if (data) {
         this.customerTypes = data['GetCustomerTypes'];
+
       }
       console.log(this.customerTypes);
     }));
@@ -264,6 +271,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   updateCustomerInfo() {
     if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
       this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
+
       this.showMoreInfo = false;
     }
   }
@@ -458,9 +466,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
   }
   addCUstomerInfoToReceipt() {
-    // tslint:disable-next-line: max-line-length
     let birthday = moment(this.birthday.value).format('DD/MM/YYYY');
-    // birthday.patchValue(moment(birthday).format('YYYY-MM-DD'));
     if (birthday === 'Invalid date') {
       birthday = '';
     }
@@ -481,6 +487,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.receiptService.customerEmails.next(this.checkEmptyEmail());
     this.receiptService.addGroupsToReceipt(this.addGroups());
     this.addCurrentAddress();
+    this.getCustomerCreditCardList();
     // this.receiptService.newReceipt.customerInfo.groups = this.userInfoGroup.get('groups').value;
     // this.receiptService.newReceipt.PaymentType = this.payMath.value;
 
@@ -603,9 +610,13 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   goToCreateNewPayment() {
     this.toNewPayment.emit();
   }
+  getCustomerCreditCardList() {
+    if (this.customerInfo !== undefined) {
+      this.paymentsService.setListCustomerCreditCard(this.customerInfo.CustomerCreditCardTokens);
+    }
+  }
   ngOnDestroy() {
-    console.log('CUSTOMER INFO SUBSCRIBE', this.subscriptions);
     this.subscriptions.unsubscribe();
-    console.log('CUSTOMER INFO SUBSCRIBE On Destroy', this.subscriptions);
+    console.log('CUSTOMER INFO DESTROED');
   }
 }

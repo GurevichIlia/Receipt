@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { AuthGuard } from '../receipts/services/auth.guard';
+import { Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-message',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MessageComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authGuard: AuthGuard) { }
 
   ngOnInit() {
   }

@@ -1,0 +1,84 @@
+<div *ngIf="windowWidth > 1375" class="search" style="width: 250px">
+  <mat-form-field style="width: 250px">
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+  </mat-form-field>
+</div>
+<div class="container">
+  <form (window:resize)="onResize($event)" [formGroup]="filterForm" (ngSubmit)="showFilteredPayments()">
+    <div class="row justify-content-center align-items-baseline">
+
+        <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
+          <input matInput (keyup)="applyFilterByDay($event.target.value)" placeholder="Search by day">
+        </mat-form-field>
+   
+      <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
+        <mat-label>Clearing firm</mat-label>
+        <mat-select formControlName="instituteid">
+          <mat-option *ngFor="let group of (globalData$ | async)?.institutes" [value]="group.instituteId">
+            {{group.Mosad}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
+        <mat-label>Standing bank</mat-label>
+        <mat-select formControlName="kevaTypeid">
+          <mat-option value="1"> מס"ב - חיוב לקוח</mat-option>
+          <mat-option value="2"> מס"ב - זיכוי לקוח </mat-option>
+          <mat-option value="3"> כ.אשראי - חיוב לקוח</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+
+      <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
+        <mat-label>Activity Status</mat-label>
+        <mat-select formControlName="KevaStatusid">
+          <mat-option value="9999">All</mat-option>
+          <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus " [value]="group.KevaStatusId">
+            {{group.KevaStatusIdname}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
+        <mat-label>Group</mat-label>
+        <mat-select formControlName="KevaGroupid">
+          <mat-option value="9999">All groups</mat-option>
+          <mat-option *ngFor="let group of (globalData$ | async)?.KevaGroups" [value]="group.GroupId">
+            {{group.GroupName}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="col-xs-6 col-sm-5 col-md-2 col-lg-2 col-xl-2 mb-2">
+        <button type="submit" mat-raised-button
+          style="background-color:#34DDD8; color: white; width: 100%">Show</button>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- <div class="col-xs-6 col-sm-5 col-md-2 col-lg-2 col-xl-2 text-right mr-3"> -->
+
+
+<!-- </div> -->
+
+<div class="row" style="align-items: center; width: 100%">
+  <div class="col-1 text-right mr-3">
+    <button mat-stroked-button [matMenuTriggerFor]="menu">New payment</button>
+    <mat-menu #menu="matMenu">
+      <button [routerLink]="[ '/payments-grid/customer-search']" (click)="setPaymentType('1')" mat-menu-item>מס"ב - חיוב
+        לקוח</button>
+      <button [routerLink]="[ '/payments-grid/customer-search']" (click)="setPaymentType('2')" mat-menu-item>מס"ב -
+        זיכוי לקוח</button>
+      <button [routerLink]="[ '/payments-grid/customer-search']" (click)="setPaymentType('3')" mat-menu-item>כ.אשראי -
+        חיוב לקוח</button>
+    </mat-menu>
+  </div>
+  <div *ngIf="1375 > windowWidth" class="col-1">
+    <mat-form-field class="searchMobileVers">
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+    </mat-form-field>
+  </div>
+
+</div>
+
+<hr>

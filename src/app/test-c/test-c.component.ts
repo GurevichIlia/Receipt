@@ -21,7 +21,7 @@ import {
   first
 } from "rxjs/operators";
 import { Observable, throwError, empty } from "rxjs";
-import { GeneralSrv } from "../services/GeneralSrv.service";
+import { GeneralSrv } from "../receipts/services/GeneralSrv.service";
 
 @Injectable()
 export class Service {

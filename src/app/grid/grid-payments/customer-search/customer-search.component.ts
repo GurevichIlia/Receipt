@@ -4,9 +4,9 @@ import { Observable, Subscription, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 
-import { ReceiptsService } from 'src/app/services/receipts.service';
+import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
 import { TranslateService } from '@ngx-translate/core';
-import { GeneralSrv } from 'src/app/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { PaymentsService } from '../../payments.service';
 import { CustomerType } from 'src/app/models/customerType.model';

@@ -1,12 +1,9 @@
 <div class="row text-right align-items-center" [formGroup]="fifthStep">
-  <div class="col-12">
-    <h5>title</h5>
-  </div>
-  <div class="col-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>receipt</mat-label>
       <mat-select formControlName="receipt">
-        <ng-container *ngFor="let recType of globalData?.ReceiptTypes">
+        <ng-container *ngFor="let recType of (globalData$ | async)?.ReceiptTypes">
           <mat-option *ngIf="recType.UseAsCreditReceipt === false && recType.ForCanclation === false"
             [value]="recType.RecieptTypeId">
             {{recType.RecieptName}}
@@ -15,11 +12,11 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>receipt</mat-label>
       <mat-select formControlName="receipt2">
-        <ng-container *ngFor="let recType of globalData?.ReceiptTypes">
+        <ng-container *ngFor="let recType of (globalData$ | async)?.ReceiptTypes">
           <mat-option *ngIf="recType.UseAsCreditReceipt === false && recType.ForCanclation === true"
             [value]="recType.RecieptTypeId">
             {{recType.RecieptName}}
@@ -28,42 +25,41 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>goal</mat-label>
       <mat-select formControlName="goal">
-        <mat-option *ngFor="let donType of globalData?.DonationTypes" 
-          [value]="donType.DonationTypeId">
+        <mat-option *ngFor="let donType of (globalData$ | async)?.DonationTypes" [value]="donType.DonationTypeId">
           {{donType.DonationTypeOther}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>acc ..</mat-label>
       <mat-select formControlName="account">
-        <mat-option *ngFor="let acc of globalData?.Accounts" [value]="acc.AccountId">
+        <mat-option *ngFor="let acc of (globalData$| async)?.Accounts " [value]="acc.AccountId">
           {{acc.AccountName}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>project cat</mat-label>
       <mat-select formControlName="projCat">
-        <mat-option *ngFor="let cat of globalData?.ProjectsCategories" [value]="cat.ProjectCategoryId">
+        <mat-option *ngFor="let cat of (globalData$ | async)?.ProjectsCategories" [value]="cat.ProjectCategoryId">
           {{cat.CategoryName}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label>project</mat-label>
       <mat-select formControlName="project">
-        <ng-container *ngFor="let project of globalData?.Projects4Receipts">
+        <ng-container *ngFor="let project of (globalData$ | async)?.Projects4Receipts">
           <mat-option *ngIf="project.ProjectCategoryId === projectCat.value" [value]="project.ProjectId">
             {{project.ProjectName}}
           </mat-option>
@@ -73,34 +69,34 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
       <mat-label> dont know</mat-label>
       <mat-select formControlName="input1">
-        <mat-option>
-
+        <mat-option >
+           
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
-      <mat-label> dont know</mat-label>
-      <mat-select formControlName="input2">
-        <mat-option>
-
+      <mat-label>Thanks letter</mat-label>
+      <mat-select formControlName="thanksLetter">
+        <mat-option *ngFor="let project of (globalData$ | async)?.ReceiptThanksLetter" [value]="project.ThanksLetterId">
+          {{project.ThanksLetterName}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-6">
+  <div class="col-xs-6 col-sm-6col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Address" formControlName="fileAs">
+      <input matInput placeholder="Address" formControlName="address">
     </mat-form-field>
   </div>
-  <div class="col-6">
+  <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="File As" formControlName="address">
+      <input matInput placeholder="File As" formControlName="fileAs">
     </mat-form-field>
   </div>
   <div class="col-6">

@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { MomentModule } from 'ngx-moment';
+import { BehaviorSubject } from 'rxjs';
 import * as moment from 'moment';
 import { ReceiptsService } from './receipts.service';
-import { CreditCardService } from '../receipts/credit-card/credit-card.service';
+import { CreditCardService } from '../credit-card/credit-card.service';
 import * as jwt_decode from 'jwt-decode';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../app.reducer'
 
 
 const TOKEN_KEY = 'auth-token';
@@ -19,7 +20,7 @@ const TokenConfig = {
 })
 export class AuthenticationService {
   authenticationstate = new BehaviorSubject(false);
-  currentlyAuthStatus = this.authenticationstate.asObservable();
+  currentlyAuthStatus$ = this.authenticationstate.asObservable();
   typeOfUser = new BehaviorSubject(null);
   currentTypeOfUser$ = this.typeOfUser.asObservable();
   public tokenNo = localStorage.getItem('id_token');
@@ -27,16 +28,21 @@ export class AuthenticationService {
   constructor(
     private receiptService: ReceiptsService,
     private creditCardService: CreditCardService,
-    private router: Router
+    private router: Router,
+    private store: Store<{auth: fromApp.State}>
   ) {
     console.log('AUTH SERVICE LOADED');
     console.log('AUTH', this.isAuthenticated())
-    this.currentlyAuthStatus.subscribe(data => console.log('CURRENT AUTH STATUS', data))
-    console.log(this.tokenNo);
+
+    this.store.subscribe(data => console.log('CURRENT AUTH STATUS', data.auth.isLogged))
     if (localStorage.getItem('id_token')) {
-      this.authenticationstate.next(true);
+      // this.authenticationstate.next(true);
+      this.store.dispatch({type: 'IS_LOGGED'});
+
     } else {
-      this.authenticationstate.next(false);
+      // this.authenticationstate.next(false);
+      this.store.dispatch({type: 'NO_LOGGED'});
+
     }
     if (localStorage.getItem('typeOfUser')) {
       this.typeOfUser.next(+localStorage.getItem('typeOfUser'));
@@ -46,7 +52,9 @@ export class AuthenticationService {
   login(responseData) {
     this.tokenNo = responseData.token;
     this.setSession(responseData.token);
-    this.authenticationstate.next(true);
+    // this.authenticationstate.next(true);
+    this.store.dispatch({type: 'IS_LOGGED'});
+
   }
 
   isAuthenticated() {
@@ -102,7 +110,8 @@ export class AuthenticationService {
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
     this.receiptService.setStep(1);
-    this.authenticationstate.next(false);
+    // this.authenticationstate.next(false);
+    this.store.dispatch({type: 'NO_LOGGED'});
     this.receiptService.amount.next(null);
     this.creditCardService.credCardIsVerified.next(false);
     this.receiptService.createNewEvent.next();
