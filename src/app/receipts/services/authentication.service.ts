@@ -29,7 +29,7 @@ export class AuthenticationService {
     private receiptService: ReceiptsService,
     private creditCardService: CreditCardService,
     private router: Router,
-    private store: Store<{auth: fromApp.State}>
+    private store: Store<{ auth: fromApp.State }>,
   ) {
     console.log('AUTH SERVICE LOADED');
     console.log('AUTH', this.isAuthenticated())
@@ -37,11 +37,11 @@ export class AuthenticationService {
     this.store.subscribe(data => console.log('CURRENT AUTH STATUS', data.auth.isLogged))
     if (localStorage.getItem('id_token')) {
       // this.authenticationstate.next(true);
-      this.store.dispatch({type: 'IS_LOGGED'});
+      this.store.dispatch({ type: 'IS_LOGGED' });
 
     } else {
       // this.authenticationstate.next(false);
-      this.store.dispatch({type: 'NO_LOGGED'});
+      this.store.dispatch({ type: 'NO_LOGGED' });
 
     }
     if (localStorage.getItem('typeOfUser')) {
@@ -53,7 +53,7 @@ export class AuthenticationService {
     this.tokenNo = responseData.token;
     this.setSession(responseData.token);
     // this.authenticationstate.next(true);
-    this.store.dispatch({type: 'IS_LOGGED'});
+    this.store.dispatch({ type: 'IS_LOGGED' });
 
   }
 
@@ -111,7 +111,7 @@ export class AuthenticationService {
     localStorage.removeItem('expires_at');
     this.receiptService.setStep(1);
     // this.authenticationstate.next(false);
-    this.store.dispatch({type: 'NO_LOGGED'});
+    this.store.dispatch({ type: 'NO_LOGGED' });
     this.receiptService.amount.next(null);
     this.creditCardService.credCardIsVerified.next(false);
     this.receiptService.createNewEvent.next();

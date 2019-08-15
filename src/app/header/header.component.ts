@@ -1,3 +1,4 @@
+import { PaymentsService } from 'src/app/grid/payments.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../receipts/services/authentication.service';
 import { Router, Route, ActivatedRoute } from '@angular/router';
@@ -24,7 +25,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
     private generalSrv: GeneralSrv,
     private activatedRoute: ActivatedRoute,
-    private store: Store<{ auth: fromApp.State }>
+    private store: Store<{ auth: fromApp.State }>,
+    private paymentsService: PaymentsService
   ) { }
 
   ngOnInit() {
@@ -69,6 +71,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.
     // Add 'implements OnDestroy' to the class.
+
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
 

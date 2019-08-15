@@ -1,0 +1,19 @@
+.elevation {
+  height: 490px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+  text-align: right;
+
+}
+
+th,
+td {
+  overflow: hidden;
+  width: 150px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

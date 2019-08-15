@@ -383,4 +383,7 @@ export class GeneralSrv {
   changeDateFormat(date: string, format: string) {
     return moment(date).format(format);
   }
+  getOrgName() {
+    return this.orgName;
+  }
 }

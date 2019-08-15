@@ -39,6 +39,7 @@ import { HeaderComponent } from './header/header.component';
 import { HomeComponentComponent } from './home-component/home-component.component';
 import { SharedModule } from './shared/shared.module';
 import { appReducer } from './app.reducer';
+import { PaymentsService } from './grid/payments.service';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -62,7 +63,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
 
     CreditCardDirectivesModule,
-    StoreModule.forRoot({auth: appReducer}),
+    StoreModule.forRoot({ auth: appReducer }),
     BrowserAnimationsModule, // required animations module
     ToastrModule.forRoot(), // ToastrModule added
 
@@ -74,12 +75,12 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    }), 
+    }),
   ],
   // tslint:disable-next-line: max-line-length
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, GeneralSrv, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }, ReceiptsService],
   bootstrap: [AppComponent],
-  entryComponents: [ ModalSessionexpiredComponent]
+  entryComponents: [ModalSessionexpiredComponent]
 
 })
 export class AppModule { }

@@ -1,1 +1,9 @@
-<app-customer-payments [dataSource]="dataSource" [listDisplayedColumns]="listDisplayedColumns" [columns]="columns" ></app-customer-payments>
+<mat-accordion #accordion="matAccordion" class="mb-5" multi="true">
+      <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                  <h5>Customer payments</h5>
+            </mat-expansion-panel-header>
+            <app-customer-payments [dataSource]="dataSource" [listDisplayedColumns]="listDisplayedColumns"
+                  [columns]="columns"></app-customer-payments>
+      </mat-expansion-panel>
+</mat-accordion>

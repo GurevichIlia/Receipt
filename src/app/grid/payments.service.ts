@@ -1,3 +1,4 @@
+import { KevaCharge } from './../models/kevaCharge.model';
 import { Projects4Receipt } from './../models/projects4receipt.model';
 import { GlobalData } from './../models/globalData.model';
 import { AuthenticationService } from '../receipts/services/authentication.service';
@@ -15,6 +16,8 @@ import { NewKevaDetails } from '../models/newKevaDetails.model';
 import * as moment from 'moment';
 import { CustomerCreditCard } from '../models/customerCreditCard.model';
 import { CreditCardList } from '../models/creditCardList.model';
+import { KevaChargeById } from '../models/kevaChargeById.model';
+import { UpdateKevaHistoryChargeStatus } from '../models/upadateKevaHistoryChargeStatus.model';
 
 
 @Injectable({
@@ -101,6 +104,9 @@ export class PaymentsService {
   customertCreditCardList = new BehaviorSubject<CreditCardList[]>([]);
   currentCreditCardList$ = this.customertCreditCardList.asObservable();
 
+  kevaChargesHistory = new BehaviorSubject<KevaCharge[]>([]);
+  currentKevaChargesHistory = this.kevaChargesHistory.asObservable();
+
   listCustomerCreditCard: CustomerCreditCard[] = [];
   constructor(
     private http: HttpClient,
@@ -140,20 +146,33 @@ export class PaymentsService {
   }
   getKevaGlbData(orgName: string) {
     return this.http.get(`${this.baseUrl}keva/GetKevaGlbData?urlAddr=${orgName}`, this.httpOptions)
-      .pipe(map(data => data = data['Data']),
-        takeUntil(this.subscription$))
-      .subscribe(data => {
-        this.globalData.next(data);
-        console.log('GLOBAL DATA', data);
-      })
+      .pipe(map(data => data = data['Data']));
+
   }
   getCustomerCreditCardListData(orgName: string) {
     return this.http.post(`${this.baseUrl}keva/GetCreditCardTokens?urlAddr=${orgName}`, '', this.httpOptions)
       .pipe(map(data => data = data['Data']), catchError(this.handleError));
   }
-  getPaymentsCharges(orgName: string, instituteId: { instituteid: number}) {
+  getKevaCharges(orgName: string, instituteId: { instituteid: number }) {
     return this.http.post(`${this.baseUrl}keva/GetKevaCharges?urlAddr=${orgName}`, instituteId, this.httpOptions)
-      .pipe(map(data => data ), catchError(this.handleError));
+      .pipe(map(data => data = data['Data']), catchError(this.handleError));
+  }
+  getKevaChargesByChargeId(orgName: string, KevaChargeId?: string, customerid?: string): Observable<KevaChargeById[]> {
+    const params = { KevaChargeId, customerid }
+    return this.http.post(`${this.baseUrl}keva/GetKevaChargesByKevaChargeId?urlAddr=${orgName}`, params, this.httpOptions)
+      .pipe(map(data => {
+        console.log('CHARGES BY ID', data);
+        return data = data['Data']
+      }
+      ), catchError(this.handleError));
+  }
+  updateKevaHistoryChargeStatus(orgName: string, params: UpdateKevaHistoryChargeStatus
+    //  {KevaHistoryid: string, customerid: string, Remark: string, ReturnResonId: string, Kevaid: string, RecieptNo: string, RecieptType: string}
+  ) {
+    const updateParams = params;
+    // { KevaHistoryid, customerid, Remark, ReturnResonId, Kevaid, RecieptNo, RecieptType }
+    return this.http.get(`${this.baseUrl}keva/UpadateKevaHistoryChargeStatus?urlAddr=${orgName}&KevaHistoryid=${updateParams.KevaHistoryid}&customerid=${updateParams.customerid}&Remark=${updateParams.Remark}&ReturnResonId=${updateParams.ReturnResonId}&Kevaid=${updateParams.Kevaid}&RecieptNo=${updateParams.RecieptNo}&RecieptType=${updateParams.RecieptType}`, this.httpOptions)
+      .pipe(map(data => data = data['Data']), catchError(this.handleError));
   }
   updatePaymentFormForEditeMode(paymentForm: FormGroup, newData: PaymentKeva | null) {
     paymentForm.get('firstStep').patchValue({
@@ -303,6 +322,19 @@ export class PaymentsService {
   setCreditCardList(creditCardList: CreditCardList[]) {
     this.customertCreditCardList.next(creditCardList);
   }
+  setKevaCharges(kevaCharges: KevaCharge[]) {
+    this.kevaChargesHistory.next(kevaCharges);
+  }
+  setGlobalDataState(state: GlobalData) {
+    this.globalData.next(state)
+  }
+  clearPaymentsTableState() {
+    this.paymentsTableData.next(<PaymentKeva[]>[]);
+    this.currentPaymentsTableData$.subscribe(data => console.log('TABLE DATA AFTER CLEAR', data))
+  }
+  clearGlobalDataState() {
+    this.globalData.next(<GlobalData>{})
+  }
   // Error handling 
   handleError(error) {
     let errorMessage = '';
@@ -320,5 +352,12 @@ export class PaymentsService {
     console.log('Payments service unsubscribe');
     this.subscription$.next();
     this.subscription$.complete();
+  }
+  ngOnDestroy(): void {
+    this.clearPaymentsTableState();
+    this.clearGlobalDataState();
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    console.log('PAYMENTS SERVICE DESTROYED')
   }
 }

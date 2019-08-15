@@ -1,3 +1,5 @@
+<app-payments-table-header></app-payments-table-header>
+
 <div class="elevation">
   <table mat-table [dataSource]="dataSource" matSort>
 
@@ -37,8 +39,6 @@
         <ng-container>
           {{col.cell(row) === 'null'? '' : col.cell(row)}}
         </ng-container>
-
-
       </td>
     </ng-container>
 
@@ -47,7 +47,6 @@
     <tr (dblclick)="row.backColor = !row.backColor"
       [ngStyle]="{'background-color': row.backColor? 'rgb(231, 227, 227)' : 'white' }" mat-row
       *matRowDef="let row; columns: listDisplayedColumns;"></tr>
-
 
   </table>
 </div>

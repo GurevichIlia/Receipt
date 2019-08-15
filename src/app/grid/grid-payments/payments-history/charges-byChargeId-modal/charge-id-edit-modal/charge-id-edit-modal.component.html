@@ -1,0 +1,38 @@
+<div class="container" style="direction: rtl">
+  <div style="height: 150px">
+    <h5>
+      Keva charge name : {{dialogData.chargeById.KEVANAME}}
+    </h5>
+    <h5>
+      Keva charge id : {{dialogData.chargeById.Kevaid}}
+    </h5>
+  </div>
+
+  <form [formGroup]="reasonFormGroup">
+    <div class="row align-items-baseline">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <mat-form-field class="maxWidth">
+          <mat-label>Options</mat-label>
+          <mat-select formControlName="reasonId">
+            <mat-option [value]="reason.ReturnResonId" *ngFor="let reason of reasons$ | async">
+              {{reason.ReturnResonname}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <mat-form-field class="textarea maxWidth">
+          <textarea formControlName="reasonRemark" matInput placeholder="Reason"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <button class="maxWidth" mat-raised-button color="primary" (click)="submitNewData()">Save</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
+      <button class="maxWidth" mat-raised-button color="primary" (click)="submitNewData()">Cancel</button>
+    </div> -->
+
+</div>

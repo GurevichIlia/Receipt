@@ -1,3 +1,11 @@
+<div class="container">
+  <!-- <div class="row">
+    <div class="col-xs-6 col-sm-5 col-md-2 col-lg-2 col-xl-2 mb-2">
+      <button type="submit" mat-raised-button (click)="kevaHistory()"
+        style="background-color:#34DDD8; color: white; width: 100%">הסטוריית שידורים</button>
+    </div>
+  </div> -->
+</div>
 <div *ngIf="windowWidth > 1375" class="search" style="width: 250px">
   <mat-form-field style="width: 250px">
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
@@ -5,12 +13,12 @@
 </div>
 <div class="container">
   <form (window:resize)="onResize($event)" [formGroup]="filterForm" (ngSubmit)="showFilteredPayments()">
-    <div class="row justify-content-center align-items-baseline">
 
-        <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
-          <input matInput (keyup)="applyFilterByDay($event.target.value)" placeholder="Search by day">
-        </mat-form-field>
-   
+    <div class="row justify-content-center align-items-baseline">
+      <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
+        <input matInput (keyup)="applyFilterByDay($event.target.value)" placeholder="Search by day">
+      </mat-form-field>
+
       <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
         <mat-label>Clearing firm</mat-label>
         <mat-select formControlName="instituteid">
@@ -62,18 +70,23 @@
 <!-- </div> -->
 
 <div class="row" style="align-items: center; width: 100%">
-  <div class="col-1 text-right mr-3">
+  <div class="col-xs-3 col-sm-6 col-md-6 col-lg-1 col-xl-1 mr-lg-3 mr-xl-3">
     <button mat-stroked-button [matMenuTriggerFor]="menu">New payment</button>
     <mat-menu #menu="matMenu">
-      <button [routerLink]="[ '/payments-grid/customer-search']" (click)="setPaymentType('1')" mat-menu-item>מס"ב - חיוב
+      <button  (click)="setPaymentType('1')" mat-menu-item>מס"ב - חיוב
         לקוח</button>
-      <button [routerLink]="[ '/payments-grid/customer-search']" (click)="setPaymentType('2')" mat-menu-item>מס"ב -
+      <button  (click)="setPaymentType('2')" mat-menu-item>מס"ב -
         זיכוי לקוח</button>
-      <button [routerLink]="[ '/payments-grid/customer-search']" (click)="setPaymentType('3')" mat-menu-item>כ.אשראי -
+      <button (click)="setPaymentType('3')" mat-menu-item>כ.אשראי -
         חיוב לקוח</button>
     </mat-menu>
   </div>
-  <div *ngIf="1375 > windowWidth" class="col-1">
+  <div class="col-xs-3 col-sm-6 col-md-6 col-lg-1 col-xl-1">
+    <button type="submit"  mat-stroked-button (click)="kevaHistory()"
+      style=" width: 100%"><strong>הסטוריית שידורים</strong>
+         </button>
+  </div>
+  <div *ngIf="1375 > windowWidth" class="col-xs-6 col-sm-6 col-md-6 col-lg-1 col-xl-1">
     <mat-form-field class="searchMobileVers">
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
     </mat-form-field>

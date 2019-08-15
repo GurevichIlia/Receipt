@@ -19,4 +19,7 @@ ProjectsCategories: [];
 ReceiptThanksLetter: [];
 ReceiptTypes: [];
 institutes: [];
+GetEmployees: [];
+GetEmployeesAll: [];
+kevaReturnReson: [];
 }

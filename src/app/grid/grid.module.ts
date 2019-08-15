@@ -20,15 +20,24 @@ import { SearchComponent } from './grid-payments/customer-search/search/search.c
 import { CreditCardComponent } from './grid-payments/new-payment/third-step/credit-card/credit-card.component';
 import { PaymentsTableHeaderComponent } from './grid-payments/payments-table-header/payments-table-header.component';
 import { PaymentsHistoryComponent } from './grid-payments/payments-history/payments-history.component';
+import { PaymentsTableViewComponent } from './grid-payments/payments-history/payments-table-view/payments-table-view.component';
+import { ChargesByChargeIdComponent } from './grid-payments/payments-history/charges-byChargeId-modal/charges-by-charge-id.component';
+import { ChargeIdEditModalComponent } from './grid-payments/payments-history/charges-byChargeId-modal/charge-id-edit-modal/charge-id-edit-modal.component';
 
 const gridRouter: Routes = [
-  { path: '', component: GridPaymentsComponent, children: [] },
-  { path: 'customer-details', component: CustomerDetailsComponent },
-  { path: 'customer-search', component: CustomerSearchComponent },
-  { path: 'new-payment', component: NewPaymentComponent },
+  {
+    path: '', component: GridPaymentsComponent, children: [
+      { path: '', redirectTo: 'payments' },
+      { path: 'customer-details', component: CustomerDetailsComponent },
+      { path: 'customer-search', component: CustomerSearchComponent },
+      { path: 'new-payment', component: NewPaymentComponent },
+      { path: 'payments', component: PaymentsTableComponent },
+      { path: 'keva-charges', component: PaymentsHistoryComponent },
+    ]
+  }
+
+
 ]
-
-
 @NgModule({
   declarations: [
     GridPaymentsComponent,
@@ -46,7 +55,11 @@ const gridRouter: Routes = [
     CreditCardComponent,
     SearchComponent,
     PaymentsTableHeaderComponent,
-    PaymentsHistoryComponent],
+    PaymentsHistoryComponent,
+    PaymentsTableViewComponent,
+    ChargesByChargeIdComponent,
+    ChargeIdEditModalComponent,
+  ],
   imports: [
     SharedModule,
     CommonModule,
@@ -54,7 +67,8 @@ const gridRouter: Routes = [
   ],
   exports: [
   ],
-  providers: [PaymentsService]
+  providers: [],
+  entryComponents: [ChargesByChargeIdComponent, ChargeIdEditModalComponent]
 
 })
 export class GridModule { }

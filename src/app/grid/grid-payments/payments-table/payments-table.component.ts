@@ -126,7 +126,6 @@ export class PaymentsTableComponent implements OnInit {
       if ('' === filterValue.trim().toLowerCase()) {
         return data
       }
-
     })
   }
   showDetails(element) {
@@ -138,7 +137,7 @@ export class PaymentsTableComponent implements OnInit {
       .subscribe((data: any[]) => {
         console.log('GRID DATA', data)
         this.dataSource.data = data;
-        this.dataSourceFilterData = data;
+        this.dataSourceFilterData = data;// after use to filter by day
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       })
@@ -147,8 +146,7 @@ export class PaymentsTableComponent implements OnInit {
     this.paymentsService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
     this.router.navigate(['/payments-grid/new-payment'], paymentRow);
-    this.setCurrentPaymentTablePageIndex(this.paginator.pageIndex, this.paginator.pageSize);
-    console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
+        console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
   }
   deletePaymentRow(paymentRow) {
     console.log('delete row', paymentRow)
@@ -169,6 +167,7 @@ export class PaymentsTableComponent implements OnInit {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
+    this.setCurrentPaymentTablePageIndex(this.paginator.pageIndex, this.paginator.pageSize);
     this.subscription$.next();
     this.subscription$.complete();
   }

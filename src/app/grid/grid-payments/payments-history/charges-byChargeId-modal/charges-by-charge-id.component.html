@@ -1,0 +1,28 @@
+<h4>Some title</h4>
+<hr>
+<p *ngIf="columns.length === 0">Loading...</p>
+<div class="row" style="direction: rtl">
+  <div class="col-12">
+    <div class="elevation">
+      <table mat-table [dataSource]="dataSource" matSort>
+        <!-- <ng-container matColumnDef="details">
+            <th mat-header-cell *matHeaderCellDef>
+              <span>details</span>
+            </th>
+            <td (click)="detailsKeva(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
+              <mat-icon>settings</mat-icon>
+            </td>
+          </ng-container> -->
+        <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header}} </th>
+          <td mat-cell *matCellDef="let row"> {{col.cell(row)}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true"></tr>
+        <tr style="cursor: pointer" (dblclick)="openChargeEditModal(row)" mat-row
+          *matRowDef="let row; columns: listDisplayedColumns;"></tr>
+      </table>
+    </div>
+  </div>
+</div>
+<mat-paginator style="direction: rtl" [pageSizeOptions]="[10, 25, 50, 100 ]"></mat-paginator>

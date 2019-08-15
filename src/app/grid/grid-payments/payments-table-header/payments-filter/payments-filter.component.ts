@@ -21,10 +21,12 @@ export class PaymentsFilterComponent {
   // @Output() filterValueByDay: EventEmitter<string> = new EventEmitter();
   @Output() showPayments: EventEmitter<void> = new EventEmitter();
   @Output() paymentType: EventEmitter<void> = new EventEmitter();
+  @Output() kevaChargesClicked: EventEmitter<void> = new EventEmitter();
   constructor(
-    private paymentsService: PaymentsService
+    private paymentsService: PaymentsService,
   ) {
     this.windowWidth = window.innerWidth;
+    console.log( ' this.windowWidth', this.windowWidth)
   }
   applyFilter(filterValue: string) {
     this.paymentsService.setFilterValue(filterValue);
@@ -43,5 +45,8 @@ export class PaymentsFilterComponent {
   }
   setPaymentType($event) {
     this.paymentType.emit($event);
+  }
+  kevaHistory() {
+    this.kevaChargesClicked.emit();
   }
 }
