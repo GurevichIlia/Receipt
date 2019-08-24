@@ -1,5 +1,5 @@
 import { GlobalData } from 'src/app/models/globalData.model';
-import { Component, OnInit, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 
@@ -13,11 +13,20 @@ export class FifthStepComponent implements OnInit, OnChanges {
   @Input() fifthStep: FormGroup;
   @Input() globalData$: Observable<GlobalData>;
   @Input() projectCat: FormControl;
+  @Input() employeeList$: Observable<{ employeeId: number, EmpName: string }[]>;
+
+  @Input() paymentType: string;
+
+  // @Input() set paymentType$(paymentType$: Observable<string>) {
+  //   debugger
+  //   this._paymentType$ = paymentType$.subscribe();
+  // };
   constructor() { }
 
   ngOnInit() {
   }
-  ngOnChanges(){
-    console.log('Changes')
+  ngOnChanges() {
+    console.log(this.paymentType)
+
   }
 }

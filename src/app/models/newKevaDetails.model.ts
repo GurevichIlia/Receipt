@@ -40,7 +40,8 @@ export class NewKevaDetails {
       maxToCharge: number;
       ThanksLetterId: number;
       KevaMakeRecieptByYear: number;
-      email: string
+      email: string;
+      Kevaid?: number
       constructor() {
 
       }

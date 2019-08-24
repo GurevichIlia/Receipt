@@ -40,6 +40,7 @@ import { HomeComponentComponent } from './home-component/home-component.componen
 import { SharedModule } from './shared/shared.module';
 import { appReducer } from './app.reducer';
 import { PaymentsService } from './grid/payments.service';
+import { FooterComponent } from './footer/footer.component';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -55,6 +56,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ModalSessionexpiredComponent,
     HeaderComponent,
     HomeComponentComponent,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,
@@ -78,7 +80,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
   ],
   // tslint:disable-next-line: max-line-length
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, GeneralSrv, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }, ReceiptsService],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
   bootstrap: [AppComponent],
   entryComponents: [ModalSessionexpiredComponent]
 

@@ -2,7 +2,7 @@ import { UpdateKevaHistoryChargeStatus } from './../../../../models/upadateKevaH
 import { KevaChargeById } from './../../../../models/kevaChargeById.model';
 import { ChargeIdEditModalComponent } from './charge-id-edit-modal/charge-id-edit-modal.component';
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialog, MatTableDataSource, MatSort, MatPaginator, MatDialogRef } from '@angular/material';
 import { Observable, Subject } from 'rxjs';
 import { GlobalData } from 'src/app/models/globalData.model';
 import { PaymentsService } from 'src/app/grid/payments.service';
@@ -45,13 +45,14 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private paymentsService: PaymentsService,
     private generalService: GeneralSrv,
+    private dialogRef: MatDialogRef<ChargesByChargeIdComponent>,
     @Inject(MAT_DIALOG_DATA) public dialogData: KevaCharge
   ) { }
 
   ngOnInit() {
     // console.log('GETTING DATA MODAL', this.dialogData$);
     // this.getDataForPaymentsTable(this.dialogData$);
-    this.getKevaReturnReason();
+    // this.getKevaReturnReason();
     this.showKevaDetails(this.dialogData);
   }
   getDataForPaymentsTable(kevaCharge$: Observable<KevaChargeById[]>, index?: number) {
@@ -77,7 +78,7 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
       this.listDisplayedColumns = this.displayedColumns.map(c => {
         return c.value
       })
-      // this.listDisplayedColumns.push('details')
+      this.listDisplayedColumns.unshift('details')
       this.getValueForColumns(this.displayedColumns);
     }
   }
@@ -89,26 +90,30 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
   }
   openChargeEditModal(data: KevaChargeById) {
     console.log('KevaChargeById', data)
-    const chargeIdEdit = this.dialog.open(ChargeIdEditModalComponent, { width: '300px', height: '400px', data: { chargeById: data, reasons$: this.kevaReturnReason$ } })
+    const chargeIdEdit = this.dialog.open(ChargeIdEditModalComponent, { width: '300px', height: '450px', data: { chargeById: data, reasons$: this.getKevaReturnReason() } })
 
     chargeIdEdit.afterClosed()
       .pipe(takeUntil(this.subscription$))
-      .subscribe((newValue: newData) => {
-        if (newValue) {
-          const newChargeStatus: UpdateKevaHistoryChargeStatus = {
-            KevaHistoryid: String(data.id),
-            customerid: String(data.Customerid),
-            Remark: newValue.newData.reasonRemark,
-            ReturnResonId: String(newValue.newData.reasonId),
-            Kevaid: String(data.Kevaid),
-            RecieptNo: data.RecieptNo,
-            RecieptType: String(data.RecieptTypeId)
-          }
-          console.log('DATA UPDATED', newChargeStatus);
-          this.updateKevaHistoryChargeStatus(this.generalService.getOrgName(), newChargeStatus);
+      .subscribe((newData: { action: newData | string }) => {
+        debugger
+        if (newData) {
+          if (newData.action !== 'Cancel') {
+            const newChargeStatus: UpdateKevaHistoryChargeStatus = {
+              KevaHistoryid: String(data.id),
+              customerid: String(data.Customerid),
+              Remark: newData.action['reasonRemark'],
+              ReturnResonId: String(newData.action['reasonId']),
+              Kevaid: String(data.Kevaid),
+              RecieptNo: data.RecieptNo,
+              RecieptType: String(data.RecieptTypeId)
+            }
+            console.log('DATA UPDATED', newChargeStatus);
+            this.updateKevaHistoryChargeStatus(this.generalService.getOrgName(), newChargeStatus);
 
-        } else {
-          console.log('CANCEL');
+          } else {
+            console.log('CANCEL');
+          }
+
         }
       });
   }
@@ -120,7 +125,7 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
           data.ValueDate = this.generalService.changeDateFormat(data.ValueDate, 'YYYY-MM-DD');
         })
         return keva;
-      }),take(1))// Использую этот оператор потому что использую этот метод каждый раз для обновления данных в таблице.
+      }), take(1))// Использую этот оператор потому что использую этот метод каждый раз для обновления данных в таблице.
       .subscribe((data: KevaChargeById[]) => {
         const paymentsListData = data;
         this.dataSource.data = paymentsListData;
@@ -131,19 +136,23 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
     console.log('SUBSCRIPTION TEST', subscription)
   }
   getKevaReturnReason() {
-    this.kevaReturnReason$ = this.paymentsService.currentGlobalData$.pipe(map(data => data.kevaReturnReson));
+    return this.kevaReturnReason$ = this.paymentsService.currentGlobalData$.pipe(map(data => data.kevaReturnReson ? data.kevaReturnReson : []));
   }
   updateKevaHistoryChargeStatus(orgName: string, newValue: UpdateKevaHistoryChargeStatus) {
-    const subscription =  this.paymentsService.updateKevaHistoryChargeStatus(orgName, newValue)
+    const subscription = this.paymentsService.updateKevaHistoryChargeStatus(orgName, newValue)
       .pipe(takeUntil(this.subscription$))
       .subscribe(data => {
         console.log('UPDATE RESPONSE', data);
         this.showKevaDetails(this.dialogData);
-        console.log('SUBSCRT TEST 2',subscription)
+        console.log('SUBSCRT TEST 2', subscription)
       });
   }
   ngOnDestroy() {
     this.subscription$.next();
     this.subscription$.complete();
+    Math.min.apply
+  }
+  closeModal() {
+    this.dialogRef.close();
   }
 }

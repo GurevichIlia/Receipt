@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: 'send-message', loadChildren: './message/send-message.routing.module#SendMessageRoutingModule', canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'newreceipt', loadChildren: './receipts/receipt.module#ReceiptModule'},
-  
+  { path: 'customer-details', loadChildren: './customer-details/customer-details.module#CustomerDetailsModule'},
   { path: 'payments-grid', loadChildren: './grid/grid.module#GridModule', canActivate: [AuthGuard] },
   // { path: 'send-message', component: SendMessageComponent, canActivate: [AuthGuardService] },
   { path: '**', redirectTo: '/home' },

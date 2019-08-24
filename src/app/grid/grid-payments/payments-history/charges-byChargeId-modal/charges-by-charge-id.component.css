@@ -1,5 +1,5 @@
 .elevation {
-  height: 490px;
+  height: 526px;
   overflow: auto;
 }
 
@@ -16,4 +16,9 @@ td {
   width: 150px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.closeBtn {
+  margin-left: auto;
+  margin-right: initial;
 }

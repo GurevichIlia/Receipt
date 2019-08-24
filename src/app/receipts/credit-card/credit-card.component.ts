@@ -12,13 +12,14 @@ import { LastSelection } from './../../models/lastSelection.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
 
 
-import { CreditCardValidator } from 'angular-cc-library';
+import { CreditCardValidator, CreditCard } from 'angular-cc-library';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, takeUntil, map, take } from 'rxjs/operators';
 
 import { Subscription, Subject, Observable } from 'rxjs';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { CreditCardAccount } from 'src/app/models/credit-card-account.model';
+import { Location } from '@angular/common';
 
 
 
@@ -44,16 +45,18 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   subscription = new Subscription();
   useCardReaderControl: FormControl;
   subscription$ = new Subject();
+  receiptRoute: boolean;
   constructor(
     private toastr: ToastrService,
     private receiptService: ReceiptsService,
-    private MatdialogRef: MatDialogRef<CreditCardComponent>,
+    // private MatdialogRef: MatDialogRef<CreditCardComponent>,
     private fb: FormBuilder,
     private generalService: GeneralSrv,
     private credirCardService: CreditCardService,
     private creditCard: CreditCardService,
     private spinner: NgxUiLoaderService,
     public dialogRef: MatDialogRef<CreditCardComponent>,
+    private location: Location,
     @Inject(MAT_DIALOG_DATA) public dialogData: { fullName: string, tZ: string, creditCardAccounts: Observable<CreditCardAccount[]> }
 
 
@@ -66,8 +69,8 @@ export class CreditCardComponent implements OnInit, OnDestroy {
       expYear: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(4), Validators.min(2019)]],
       cvv: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(4)]],
       tz: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]],
-      amount: [null, [Validators.required]],
-      numberOfPayments: [1, Validators.required],
+      amount: [null],
+      numberOfPayments: [1,],
       // firstPayment: ['', Validators.required],
       eachPayment: [{ value: null, disabled: true }],
       manualApprNum: [''],
@@ -77,6 +80,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     // this.generalService.currentLastSelect.subscribe((lastSelect: LastSelection) => {
     //   this.creditCardForm.get('accountId').patchValue(lastSelect.creditCardAccId);
     // });
+
   }
   get accountId() {
     return this.creditCardForm.get('accountId');
@@ -94,17 +98,18 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     return this.creditCardForm.get('expYear');
   }
   ngOnInit() {
+
     this.subscription.add(this.createToggleControl().valueChanges.subscribe((data: boolean) => {
       if (data === true) {
         this.creditCardNumber.patchValue('');
         this.creditCardNumber.clearValidators();
         this.creditCardNumber.updateValueAndValidity();
-        this.onFocusCrediCardNumber();
+        this.onFocusCreditCardNumber();
       } else {
         this.creditCardNumber.patchValue('');
         this.creditCardNumber.setValidators(<any>CreditCardValidator.validateCCNumber);
         this.creditCardNumber.updateValueAndValidity();
-        this.onFocusCrediCardNumber();
+        this.onFocusCreditCardNumber();
       }
     }));
     // this.setFullName(this.receiptService.getFirstLastName());
@@ -134,6 +139,8 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     this.onFocusExpYear();
     this.getDataForModalDialog(this.dialogData);
     this.pickAccount(this.dialogData.creditCardAccounts);
+    this.checkRoute();
+
   }
   onFocusExpYear() {
     this.subscription.add(this.expMonth.valueChanges.subscribe((value: string) => {
@@ -154,7 +161,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     console.log(this.creditCardForm.controls.amount)
   }
   closeModal() {
-    this.MatdialogRef.close();
+    this.dialogRef.close({action:'CANCEL'});
   }
   submitCreditCard(form) {
     if (this.accountId.value === null || this.accountId.value === '' || this.accountId.value === undefined) {
@@ -190,28 +197,34 @@ export class CreditCardComponent implements OnInit, OnDestroy {
           };
           console.log(JSON.stringify(this.verifyCreditCard));
           this.spinner.start();
-          this.subscription.add(this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {
-            console.log(res);
-            if (res['IsError'] === true) {
-              this.toastr.error('Credit card not verified', res['ErrMsg'], {
-                positionClass: 'toast-top-center'
-              });
-            } else {
-              this.credirCardService.verifiedCreditCardDetails = this.verifyCreditCard;
-              this.credirCardService.credCardIsVerified.next(true);
-              const data = res['Data'];
-              console.log('Credit card verified', data)
-              this.toastr.success('Credit card verified', '', {
-                positionClass: 'toast-top-center'
-              });
-              this.generalService.setItemToLastSelection('creditCardAccId', this.verifyCreditCard.accountid);
-              this.spinner.stop();
-              // localStorage.setItem('creditCardAccId', this.verifyCreditCard.accountid.toString());
-              this.closeModal();
-            }
-          }));
-          console.log(form.value.cvv);
-          this.receiptService.amount.next(this.totalPaymentAmount);
+          if (this.creditCardForm.controls.amount.value === null) {
+            
+            this.sendDataToParentComponent( this.verifyCreditCard);
+            this.spinner.stop();
+          } else {
+            this.subscription.add(this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {
+              console.log(res);
+              if (res['IsError'] === true) {
+                this.toastr.error('Credit card not verified', res['ErrMsg'], {
+                  positionClass: 'toast-top-center'
+                });
+              } else {
+                this.credirCardService.verifiedCreditCardDetails = this.verifyCreditCard;
+                this.credirCardService.credCardIsVerified.next(true);
+                const data = res['Data'];
+                console.log('Credit card verified', data)
+                this.toastr.success('Credit card verified', '', {
+                  positionClass: 'toast-top-center'
+                });
+                this.generalService.setItemToLastSelection('creditCardAccId', this.verifyCreditCard.accountid);
+                this.spinner.stop();
+                // localStorage.setItem('creditCardAccId', this.verifyCreditCard.accountid.toString());
+                this.closeModal();
+              }
+            }));
+            console.log(form.value.cvv);
+            this.receiptService.amount.next(this.totalPaymentAmount);
+          }
         } else {
           this.toastr.warning('Amount is invalid', '', {
             positionClass: 'toast-top-center'
@@ -323,7 +336,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   useCardReader() {
     const cardCode = '4580090107623093=24012010000016411000';
     if (this.useCardReaderControl.value === true) {
-      if (this.accountId.value === null) {
+      if (this.accountId.value === null || this.accountId.value === undefined || this.accountId.value === '') {
         this.toastr.warning('', 'Please select the account', {
           positionClass: 'toast-top-center'
         });
@@ -346,7 +359,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
       });
     }
   }
-  onFocusCrediCardNumber() {
+  onFocusCreditCardNumber() {
     this.creditCardInput.nativeElement.focus();
   }
   getDataForModalDialog(data: { fullName: string, tZ: string, creditCardAccounts: Observable<CreditCardAccount[]> }) {
@@ -354,6 +367,22 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     this.setTz(data.tZ);
     this.setAccounts(data.creditCardAccounts)
     data.creditCardAccounts.subscribe(data => console.log('COMING ACCOUNTS', data))
+  }
+  sendDataToParentComponent(creditCard: Creditcard) {
+    this.dialogRef.close({ newCredCard: creditCard });
+  }
+  checkRoute() {
+    if (this.location.path() === '/newreceipt') {
+      this.receiptRoute = true;
+      this.creditCardForm.get('amount').setValidators(Validators.required);
+      this.creditCardForm.get('numberOfPayments').setValidators(Validators.required)
+      this.creditCardForm.updateValueAndValidity();
+    } else {
+      this.receiptRoute = false;
+      this.creditCardForm.get('amount').clearValidators();
+      this.creditCardForm.get('numberOfPayments').clearValidators();
+      this.creditCardForm.updateValueAndValidity();
+    }
   }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

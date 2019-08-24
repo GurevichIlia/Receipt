@@ -11,6 +11,7 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { PaymentsService } from '../../payments.service';
 import { CustomerType } from 'src/app/models/customerType.model';
 import { Router } from '@angular/router';
+import { NewPaymentService } from '../new-payment/new-payment.service';
 
 @Component({
   selector: 'app-customer-search',
@@ -41,7 +42,8 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private spinner: NgxUiLoaderService,
     private paymentsService: PaymentsService,
-    private router: Router
+    private router: Router,
+    private newPaymentService: NewPaymentService
   ) { }
 
   ngOnInit() {
@@ -103,10 +105,8 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
       this.customerInfo = customer;
       this.spinner.stop();
-      console.log('FOUNDED CUSTOMER', customer)
-      // this.clickToBtnCreateNew = false;
-      // this.receiptService.subject.next(customer);
-      // this.receiptService.setCustomerInfo(customer);
+      this.newPaymentService.setFoundedCustomerId(customerId);
+      console.log('FOUNDED CUSTOMER', customer);
     },
       error => console.log(error),
     ));
@@ -168,7 +168,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   }
   goToCreateNewPayment() {
     this.router.navigate(['payments-grid/new-payment']);
-    this.paymentsService.getCustomerInfo();
+    this.newPaymentService.setCustomerInfo(this.receiptService.getCustomerInfo());
   }
   ngOnDestroy() {
     this.subscription$.next();

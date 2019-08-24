@@ -37,7 +37,7 @@ export class ChargeIdEditModalComponent implements OnInit {
     return this.reasonFormGroup;
   }
   submitNewData() {
-    this.DialogRef.close({ newData: this.getReasonForm().value })
+    this.DialogRef.close({ action: this.getReasonForm().value })
   }
   closeDialog() {
     this.DialogRef.close({ action: 'Cancel' })
@@ -47,5 +47,8 @@ export class ChargeIdEditModalComponent implements OnInit {
       reasonRemark: this.dialogData.chargeById.Remark,
       reasonId: this.dialogData.chargeById.ReturnResonId
     })
+  }
+  closeModal() {
+    this.DialogRef.close({ action: 'Cancel' });
   }
 }

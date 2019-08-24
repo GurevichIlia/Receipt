@@ -7,4 +7,5 @@ export interface ReceiptType {
       RecieptTypeId: number;
       UseAsCreditReceipt: boolean;
       orgid: number;
+      FORKEVA?: boolean;
 }

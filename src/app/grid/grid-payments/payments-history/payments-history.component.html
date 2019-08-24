@@ -17,7 +17,8 @@
       </mat-form-field>
 
       <div class="col-xs-6 col-sm-5 col-md-2 col-lg-2 col-xl-2 mb-2">
-        <button type="submit" mat-raised-button style="background-color:#34DDD8; color: white; width: 100%">Show
+        <button type="submit" mat-raised-button
+          style="background-color:rgb(38, 87, 122); color: white; width: 100%">Show
           charges</button>
       </div>
       <div class="col-xs-6 col-sm-5 col-md-2 col-lg-2 col-xl-2 mb-2">
@@ -37,4 +38,4 @@
   [listDisplayedColumns]="listDisplayedColumns" [columns]="columns">
 </app-payments-table-view>
 
-<mat-paginator  [pageSizeOptions]="[10, 25, 50, 100 ]"></mat-paginator>
+<mat-paginator [pageSizeOptions]="[10, 25, 50, 100 ]"></mat-paginator>

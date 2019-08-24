@@ -7,6 +7,8 @@ import { GlobalData } from 'src/app/models/globalData.model';
 import { PaymentsService } from '../../payments.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { takeUntil } from 'rxjs/operators';
+import { NewPaymentService } from '../new-payment/new-payment.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 
 @Component({
@@ -20,9 +22,11 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
   globalData$: Observable<GlobalData | ''>;
   constructor(
     private paymentsService: PaymentsService,
+    private newPaymentService: NewPaymentService,
     private fb: FormBuilder,
     private generalService: GeneralSrv,
-    private router: Router
+    private router: Router,
+    private spinner: NgxUiLoaderService,
   ) { }
 
   ngOnInit() {
@@ -31,9 +35,14 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
   }
   getTablePaymentsData() {
     console.log('Filter options', this.filterFormValue.value)
+    this.spinner.start();
     this.paymentsService.getGridData(this.filterFormValue.value, this.generalService.orgName).pipe(takeUntil(this.subscription$)).subscribe(data => {
       this.paymentsService.setTablePaymentsDataToPaymentsService(data);
       console.log('DATA SOURCE', data);
+      this.spinner.stop();
+    }, error => {
+      this.spinner.stop();
+      console.log(error)
     })
   }
   setPaymentType(type: string) {
@@ -42,15 +51,16 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
         console.log('ONE')
         break;
       case '2':
-       console.log('TWO')
+        console.log('TWO')
         break;
       case '3':
         console.log('THREE')
         break;
     }
-    this.paymentsService.setPaymentType(type);
+    this.newPaymentService.setPaymentType(type);
+    this.newPaymentService.setEditMode(false);
     this.router.navigate(['payments-grid/customer-search']);
-   
+
   }
   getGlobalData() {
     // this.paymentsService.currentGlobalData$.pipe(takeUntil(this.subscription$)).subscribe(data => {

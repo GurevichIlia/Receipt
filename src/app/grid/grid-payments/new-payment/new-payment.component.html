@@ -1,5 +1,5 @@
 <div class="container">
-  <form [formGroup]="newPaymentForm">
+  <form [formGroup]="newPaymentForm" (ngSubmit)="saveNewKeva()">
     <div class="row">
       <div class="col-xs-6 col-sm-6 col-md-8 col-lg-8 col-xl-8 text-right" *ngIf="!isEditFileAs && fileAs.value !== ''">
         <h5> {{fileAs.value}} <span (click)="editFileAs()" style="cursor: pointer" mat-cell>
@@ -17,11 +17,10 @@
 
     <hr class="mb-2">
 
-    <button mat-button (click)="toCustomerSearch()" style="cursor: pointer">
-      Customer info      <mat-icon>arrow_back</mat-icon>
+    <button type="button" mat-button (click)="goBack()" style="cursor: pointer">
+      back <mat-icon>arrow_back</mat-icon>
     </button>
 
-<button  (click)="setDataForNewPaymentKeva()">set data</button>
     <mat-accordion #accordion="matAccordion" class="mb-5" multi="true">
       <!-- ROW ONE -->
       <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
@@ -31,7 +30,7 @@
         <app-first-step [globalData$]="globalData$" [firstStep]="newPaymentForm.get('firstStep')">
         </app-first-step>
         <mat-action-row>
-          <button mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
       <!-- ROW ONE -->
@@ -42,8 +41,8 @@
         </mat-expansion-panel-header>
         <app-second-step [secondStep]="newPaymentForm.get('secondStep')"></app-second-step>
         <mat-action-row>
-          <button mat-button color="warn" (click)="prevStep()"> {{'Previous' | translate}}</button>
-          <button mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="warn" (click)="prevStep()"> {{'Previous' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
       <!-- ROW TWO -->
@@ -54,11 +53,12 @@
           <h5 *ngIf="paymentType.value === '3'">כרטיס אשראי</h5> -->
           <h5>Title 4</h5>
         </mat-expansion-panel-header>
-        <app-third-step [paymentType]="paymentType" [listCustomerCreditCard]="listCustomerCreditCard" [thirdStep]="newPaymentForm.get('thirdStep')"
-          (addNewCardIsClicked)=" openModalForNewCreditCard()"></app-third-step>
+        <app-third-step [paymentType]="paymentType" [listNewCreditCard]="listNewCreditCard" [listCustomerCreditCard$]="listCustomerCreditCard$"
+          [thirdStep]="newPaymentForm.get('thirdStep')" (addNewCardIsClicked)=" openModalForNewCreditCard()">
+        </app-third-step>
         <mat-action-row>
-          <button mat-button color="warn" (click)="prevStep()"> {{'Previous' | translate}}</button>
-          <button mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="warn" (click)="prevStep()"> {{'Previous' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
       <!-- ROW THREE -->
@@ -70,8 +70,8 @@
         <app-fourth-step [globalData$]="globalData$" [fourthStep]="newPaymentForm.get('fourthStep')">
         </app-fourth-step>
         <mat-action-row>
-          <button mat-button color="warn" (click)="prevStep()"> {{'Previous' | translate}}</button>
-          <button mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="warn" (click)="prevStep()"> {{'Previous' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
       <!-- ROW FOUR -->
@@ -80,19 +80,23 @@
         <mat-expansion-panel-header>
           <h5>מידע להפקת קבלות</h5>
         </mat-expansion-panel-header>
-        <app-fifth-step [projectCat]="projectCat" [globalData$]="globalData$"
+        <app-fifth-step [projectCat]="projectCat" [paymentType]="paymentType.value" [employeeList$]="employeeList$" [globalData$]="globalData$"
           [fifthStep]="newPaymentForm.get('fifthStep')"></app-fifth-step>
         <mat-action-row>
-          <button mat-button color="warn" (click)="prevStep()"> {{'Previous' | translate}}</button>
-          <button mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="warn" (click)="prevStep()"> {{'Previous' | translate}}</button>
+          <button *ngIf="!editMode" type="button" mat-button color="primary" (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
       <!-- ROW FIVE -->
     </mat-accordion>
-    <div class="row mt-3">
-      <div class="col-2">
-        <button type="submite" [disabled]="newPaymentForm.invalid" class="example-full-width" mat-raised-button
+    <div class="row mt-3" style="justify-content: flex-end">
+      <div *ngIf="!editMode" class="col-2">
+        <button type="submit"  class="example-full-width fontSize" mat-raised-button
           color="accent">Submit</button>
+      </div>
+      <div *ngIf="editMode" class="col-2">
+        <button type="button" [disabled]="newPaymentForm.invalid" (click)="updateCustomerKeva()"
+          class="example-full-width fontSize" mat-raised-button color="accent">Update</button>
       </div>
     </div>
   </form>

@@ -1,4 +1,4 @@
-<div class="row mb-5" [formGroup]="creditCard">
+<div class="row mb-5 fontSize" [formGroup]="creditCard">
   <div class="col-12 text-right">
     <h6>כרטיס אשראי</h6>
   </div>
@@ -7,11 +7,24 @@
     <mat-form-field class="example-full-width">
       <mat-label>List of cred card customer</mat-label>
       <mat-select formControlName="credCard">
-        <mat-option *ngFor="let creditCard of listCustomerCreditCard"[value]="creditCard.customercreditCardid">{{creditCard.creditCardName}}{{creditCard.digits6}}</mat-option>
+        <mat-option *ngFor="let creditCard of listCustomerCreditCard$ | async"
+          [value]="creditCard.customercreditCardid">
+          {{creditCard.creditCardName}} {{creditCard.digits6}}
+        </mat-option>
+        <ng-container>
+          <mat-option [value]="newCreditCard" *ngFor="let newCreditCard of listNewCreditCard">
+            {{newCreditCard.customername}} {{newCreditCard.ocardnumber | slice : 12 : 16}}
+          </mat-option>
+        </ng-container>
+
+
       </mat-select>
+      <mat-hint *ngIf="listCustomerCreditCard$ === undefined || (listCustomerCreditCard$ | async)?.length === 0 || listNewCreditCard.length === 0">No
+        credit cards</mat-hint>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
-    <button class="example-full-width" mat-raised-button color="primary" (click)="clickAddNewCard()">Add more</button>
+  <div class="col-xs-4 col-sm-4 col-md-2 col-lg-2col-xl-2">
+    <button type="button" class="example-full-width" mat-raised-button
+      style="background-color: rgb(38, 87, 122); color: white" (click)=" clickAddNewCard()">Add credit card</button>
   </div>
 </div>

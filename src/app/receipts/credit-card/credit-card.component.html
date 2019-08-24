@@ -1,15 +1,15 @@
-<mat-card class="mb-1">
-  <h4 class="mb-3">{{'Credit card verification' | translate}}</h4>
-  <mat-card-header>
-  </mat-card-header>
-  <mat-card-content>
-    <hr>
+<form [formGroup]="creditCardForm" (ngSubmit)="submitCreditCard(creditCardForm)" novalidate [style.fontSize]="'17px'">
+  <mat-card class="mb-2">
+    <h4 class="mb-3">{{'Credit card verification' | translate}}</h4>
+    <mat-card-header>
+    </mat-card-header>
+    <mat-card-content>
+      <hr>
 
-    <form [formGroup]="creditCardForm" (ngSubmit)="submitCreditCard(creditCardForm)" novalidate
-      [style.fontSize]="'17px'">
-      <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-12">
+
+      <div *ngIf="receiptRoute" class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-12">
         <mat-slide-toggle [formControl]="useCardReaderControl" class="mb-2">
-            {{'Use a card reader' | translate }}
+          {{'Use a card reader' | translate }}
         </mat-slide-toggle>
       </div>
       <div class="row" style="justify-content: space-around">
@@ -18,7 +18,8 @@
             <mat-form-field class="col-12">
               <mat-icon matPrefix>person</mat-icon>
               <mat-select #Account placeholder="{{'Account' | translate}}" required formControlName="accountId">
-                <mat-option [value]="account.AccountId" *ngFor="let account of accounts$ | async; let i = index" required>
+                <mat-option [value]="account.AccountId" *ngFor="let account of accounts$ | async; let i = index"
+                  required>
                   {{account.AccountNameEng}}
                 </mat-option>
               </mat-select>
@@ -84,195 +85,53 @@
               <input matInput placeholder="{{'CVV' | translate}}" id="cc-cvc" type="tel" formControlName="cvv"
                 autocomplete="off" ccCVC required>
             </mat-form-field>
+            <ng-container *ngIf="receiptRoute">
+              <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
+                <mat-icon matPrefix>money</mat-icon>
+                <input matInput placeholder="{{'Amount' | translate}}" type="number" formControlName="amount"
+                  autocomplete="off" (change)="calculateAmountPay()" required>
+                <mat-error *ngIf="amountError">Minimum amount:{{currentlyStoreAmount}}</mat-error>
+              </mat-form-field>
 
-            <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
-              <mat-icon matPrefix>money</mat-icon>
-              <input matInput placeholder="{{'Amount' | translate}}" type="number" formControlName="amount" autocomplete="off"
-                (change)="calculateAmountPay()" required>
-              <mat-error *ngIf="amountError">Minimum amount:{{currentlyStoreAmount}}</mat-error>
-            </mat-form-field>
-
-            <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
-              <mat-icon matPrefix>money</mat-icon>
-              <input matInput placeholder="{{'Number of payments' | translate}}" type="number" formControlName="numberOfPayments"
-                autocomplete="off" required>
-            </mat-form-field>
-            <!-- <mat-form-field class="col-6">
+              <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
+                <mat-icon matPrefix>money</mat-icon>
+                <input matInput placeholder="{{'Number of payments' | translate}}" type="number"
+                  formControlName="numberOfPayments" autocomplete="off" required>
+              </mat-form-field>
+              <!-- <mat-form-field class="col-6">
                                         <mat-icon matPrefix>money</mat-icon>
                                         <input matInput placeholder="First payment" type="tel" formControlName="firstPayment"
                                           autocomplete="off">
                                       </mat-form-field> -->
-            <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
-              <mat-icon matPrefix>money</mat-icon>
-              <input class="eachPayment" matInput placeholder="{{'Each payment' | translate}}" type="number" formControlName="eachPayment"
-                autocomplete="off">
-            </mat-form-field>
-          </div>
-        </div>
-
-
-
-
-
-
-
-
-
-
-        <!-- <mat-form-field class="col-12">
-                      <mat-select #Account placeholder="{{'Account' | translate}}" required formControlName="accountId">
-                        <mat-option [value]="account.AccountId" *ngFor="let account of accounts; let i = index" required>
-                          {{account.AccountNameEng}}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                    <div class="col-12" [ngClass]="{'account': heLang}" >
-                      <p>{{'Terminal No' | translate}} : {{termNo}}</p>
-                      <p>{{'Terminal name' | translate}} : {{termName}} </p>
-                    </div> -->
-        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-6 col-xl-6">
-          <div class="row" style="justify-content: center">
-            <button class="col-3" type="button" (click)="closeModal()" mat-raised-button
-              [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}">
-              {{'Cancel' | translate}}
-            </button>
-
-
-            <button class="col-3 ml-1" type="submit" mat-raised-button color="primary"
-              [ngStyle]="{'background-color': creditCardForm.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': creditCardForm.invalid === false ? 'white' : ''}"
-              [disabled]="creditCardForm.invalid">
-              {{'Submit' | translate}}
-            </button>
+              <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
+                <mat-icon matPrefix>money</mat-icon>
+                <input class="eachPayment" matInput placeholder="{{'Each payment' | translate}}" type="number"
+                  formControlName="eachPayment" autocomplete="off">
+              </mat-form-field>
+            </ng-container>
 
 
           </div>
         </div>
+
+
       </div>
-    </form>
-  </mat-card-content>
-</mat-card>
-
-
-<!--<mat-card class="mb-1">
-    <h4 class="mb-3">{{'Credit card verification' | translate}}</h4>
-    <hr>
-    <button (click)="useCardReader()"></button>
-    <mat-card-header>
-      <mat-card-title>
-
-      </mat-card-title>
-      <mat-card-subtitle></mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="creditCardForm" (ngSubmit)="submitCreditCard(creditCardForm)" novalidate
-        [style.fontSize]="'17px'">
-        <div class="row">
-          <mat-form-field class="col-6">
-            <mat-select #Account placeholder="{{'Account' | translate}}" required formControlName="accountId">
-              <mat-option [value]="account.AccountId" *ngFor="let account of accounts; let i = index" required>
-                {{account.AccountNameEng}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <div class="col-6 mb-2" [ngClass]="{'account': heLang}" *ngIf="_accountId !== null">
-            <p>{{'Terminal No' | translate}} : {{termNo}}</p>
-            <p>{{'Terminal name' | translate}} : {{termName}} </p>
-          </div>
-
-          <mat-slide-toggle [formControl]="useCardReaderControl">
-            Use card reader.
-          </mat-slide-toggle>
-
-
-
-          <hr>
-          <mat-form-field class="col-12">
-            <mat-icon matPrefix>credit_card</mat-icon>
-            <input matInput placeholder="{{'Card number' | translate}}" id="cc-number" formControlName="creditCard"
-              required>
-          </mat-form-field>
-          <mat-form-field class="col-6 mb-1">
-            <mat-icon matPrefix>date_range</mat-icon>
-            <input matInput placeholder="{{'Expiration' | translate}} " id="cc-exp-date"
-              formControlName="expirationDate" type="tel" autocomplete="cc-exp" ccExp required>
-            <mat-hint>mm / yyyy</mat-hint>
-          </mat-form-field>
-          <mat-form-field class="col-5">
-            <mat-icon matPrefix>vpn_key</mat-icon>
-            <input matInput placeholder="{{'CVV' | translate}}" id="cc-cvc" type="tel" formControlName="cvv"
-              autocomplete="off" ccCVC required>
-          </mat-form-field>
-          <mat-form-field class="col-12">
-            <mat-icon matPrefix>person</mat-icon>
-            <input matInput placeholder="{{'Full name' | translate}}" id="name" formControlName="customerName"
-              type="text" required>
-          </mat-form-field>
-          <mat-form-field class="col-12">
-            <mat-icon matPrefix>person</mat-icon>
-            <input matInput placeholder="{{'T.Z' | translate}}" type="tel" formControlName="tz" autocomplete="off"
-              required>
-          </mat-form-field>
-          <mat-form-field class="col-6 ">
-            <mat-icon matPrefix>money</mat-icon>
-            <input matInput placeholder="Amount" type="number" formControlName="amount" autocomplete="off"
-              (change)="calculateAmountPay()" required>
-            <mat-error *ngIf="amountError">Minimum amount:{{currentlyStoreAmount}}</mat-error>
-          </mat-form-field>
-
-          <mat-form-field class="col-6">
-            <mat-icon matPrefix>money</mat-icon>
-            <input matInput placeholder="Number of payments" type="number" formControlName="numberOfPayments"
-              autocomplete="off" required>
-          </mat-form-field>
-          <!-- <mat-form-field class="col-6">
-                      <mat-icon matPrefix>money</mat-icon>
-                      <input matInput placeholder="First payment" type="tel" formControlName="firstPayment"
-                        autocomplete="off">
-                    </mat-form-field> -->
-<!-- <mat-form-field class="col-6">
-            <mat-icon matPrefix>money</mat-icon>
-            <input class="eachPayment" matInput placeholder="Each payment" type="number" formControlName="eachPayment"
-              autocomplete="off">
-          </mat-form-field>
-          <mat-form-field class="col-12">
-            <mat-icon matPrefix>email</mat-icon>
-            <input matInput placeholder="{{'Manual approval number' | translate}}" type="tel"
-              formControlName="manualApprNum" autocomplete="off">
-          </mat-form-field> -->
-
-<!-- <mat-form-field class="col-12">
-            <mat-select #Account placeholder="{{'Account' | translate}}" required formControlName="accountId">
-              <mat-option [value]="account.AccountId" *ngFor="let account of accounts; let i = index" required>
-                {{account.AccountNameEng}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <div class="col-12" [ngClass]="{'account': heLang}" >
-            <p>{{'Terminal No' | translate}} : {{termNo}}</p>
-            <p>{{'Terminal name' | translate}} : {{termName}} </p>
-          </div> -->
-<!-- <div class="col-12">
-            <div class="row justify-content-center">
-
-              <button class="col-5 mr-1 ml-1" type="button" (click)="closeModal()" mat-raised-button
-                [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}">
-                {{'Cancel' | translate}}
-              </button>
-              <button class="col-5" type="submit" mat-raised-button color="primary"
-                [ngStyle]="{'background-color': creditCardForm.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': creditCardForm.invalid === false ? 'white' : ''}"
-                [disabled]="creditCardForm.invalid">
-                {{'Submit' | translate}}
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
-
-
     </mat-card-content>
-    <mat-card-actions>
-    </mat-card-actions>
-  </mat-card>  -->
-<!-- </cdk-virtual-scroll-viewport> -->
+    <hr>
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-6 col-xl-6">
+      <div class="row">
+        <button class="col-3" type="button" (click)="closeModal()" mat-raised-button
+          [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}">
+          {{'Cancel' | translate}}
+        </button>
 
-<!-- </mat-expansion-panel> -->
+
+        <button class="col-3 ml-1" type="submit" mat-raised-button color="primary"
+          [ngStyle]="{'background-color': creditCardForm.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': creditCardForm.invalid === false ? 'white' : ''}"
+          [disabled]="creditCardForm.invalid">
+          {{'Submit' | translate}}
+        </button>
+      </div>
+    </div>
+  </mat-card>
+</form>

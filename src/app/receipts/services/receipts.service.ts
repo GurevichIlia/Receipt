@@ -320,5 +320,7 @@ export class ReceiptsService {
   deleteAllProductsFromStore() {
     this.newReceipt.Receipt.products = [];
   }
-
+  createNewClicked() {
+    this.createNewEvent.next()
+  }
 }

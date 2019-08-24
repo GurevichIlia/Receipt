@@ -1,23 +1,23 @@
 import { FormGroup } from '@angular/forms';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CustomerCreditCard } from 'src/app/models/customerCreditCard.model';
+import { Observable } from 'rxjs';
+import { Creditcard } from 'src/app/models/creditCard.model';
 
 @Component({
   selector: 'app-third-step',
   templateUrl: './third-step.component.html',
   styleUrls: ['./third-step.component.css'],
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ThirdStepComponent implements OnInit {
+export class ThirdStepComponent {
   @Input() thirdStep: FormGroup;
   @Input() paymentType: FormGroup;
-  @Input() listCustomerCreditCard: CustomerCreditCard[];
+  @Input() listCustomerCreditCard$: Observable<CustomerCreditCard[]>;
   @Output() addNewCardIsClicked = new EventEmitter();
+  @Input() listNewCreditCard: Creditcard[];
   constructor() { }
 
-  ngOnInit() {
-    
-  }
   clickAddNewCard() {
     this.addNewCardIsClicked.emit();
   }

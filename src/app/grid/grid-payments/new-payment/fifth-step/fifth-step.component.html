@@ -1,5 +1,5 @@
-<div class="row text-right align-items-center" [formGroup]="fifthStep">
-  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+<div class="row text-right align-items-center fontSize" [formGroup]="fifthStep">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>receipt</mat-label>
       <mat-select formControlName="receipt">
@@ -12,20 +12,22 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+
+  <!-- FORKEVA = true CAncel = true UseAs = true for Zikyi
+  FOr = true CAncel = true useAs = false -->
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>receipt</mat-label>
       <mat-select formControlName="receipt2">
-        <ng-container *ngFor="let recType of (globalData$ | async)?.ReceiptTypes">
-          <mat-option *ngIf="recType.UseAsCreditReceipt === false && recType.ForCanclation === true"
-            [value]="recType.RecieptTypeId">
+        <ng-container *ngFor="let recType of (globalData$ | async)?.ReceiptTypes | paymentTypeFilter: paymentType">
+          <mat-option [value]="recType.RecieptTypeId">
             {{recType.RecieptName}}
           </mat-option>
         </ng-container>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>goal</mat-label>
       <mat-select formControlName="goal">
@@ -35,7 +37,7 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>acc ..</mat-label>
       <mat-select formControlName="account">
@@ -45,7 +47,7 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>project cat</mat-label>
       <mat-select formControlName="projCat">
@@ -55,7 +57,7 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>project</mat-label>
       <mat-select formControlName="project">
@@ -69,17 +71,17 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label> dont know</mat-label>
-      <mat-select formControlName="input1">
-        <mat-option >
-           
+      <mat-label>Employee ID</mat-label>
+      <mat-select formControlName="employeeId">
+        <mat-option *ngFor="let project of employeeList$ | async" [value]="project.employeeId">
+          {{project.EmpName}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>Thanks letter</mat-label>
       <mat-select formControlName="thanksLetter">
@@ -89,22 +91,22 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-6 col-sm-6col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <input matInput placeholder="Address" formControlName="address">
     </mat-form-field>
   </div>
   <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="File As" formControlName="fileAs">
+      <input matInput placeholder="File As" formControlName="receiptName">
     </mat-form-field>
   </div>
   <div class="col-6">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="don't know" formControlName="field">
+      <input matInput placeholder="email" formControlName="email">
     </mat-form-field>
   </div>
   <div class="col-6">
-    <mat-checkbox formControlName="checkbox">Check me!</mat-checkbox>
+    <mat-checkbox formControlName="kevaMakeRecieptByYear">Make reciept by year</mat-checkbox>
   </div>
 </div>

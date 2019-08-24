@@ -1,5 +1,10 @@
+<div class="text-right">
+  <button class="closeBtn mb-2" (click)="closeModal()" mat-button color="warn">Close</button>
+</div>
 <div class="container" style="direction: rtl">
-  <div style="height: 150px">
+
+  <div style="height: 100px">
+
     <h5>
       Keva charge name : {{dialogData.chargeById.KEVANAME}}
     </h5>
@@ -22,17 +27,12 @@
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
         <mat-form-field class="textarea maxWidth">
-          <textarea formControlName="reasonRemark" matInput placeholder="Reason"></textarea>
+          <textarea style="height: 70px" formControlName="reasonRemark" matInput placeholder="Reason"></textarea>
         </mat-form-field>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-        <button class="maxWidth" mat-raised-button color="primary" (click)="submitNewData()">Save</button>
+        <button class="maxWidth" mat-raised-button style="background-color:rgb(38, 87, 122); color: white;" (click)="submitNewData()">Save</button>
       </div>
     </div>
   </form>
-
-  <!-- <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
-      <button class="maxWidth" mat-raised-button color="primary" (click)="submitNewData()">Cancel</button>
-    </div> -->
-
 </div>

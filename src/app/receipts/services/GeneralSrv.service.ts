@@ -15,10 +15,14 @@ import { ReceiptsService } from './receipts.service';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { CustomerInfoById } from '../../models/customer-info-by-ID.model';
+import { Creditcard } from 'src/app/models/creditCard.model';
 
 
 
-@Injectable()
+@Injectable({
+  providedIn:'root'
+})
+
 export class GeneralSrv {
   id: Guid;
   userGuid: string;
@@ -161,7 +165,7 @@ export class GeneralSrv {
       .pipe(map(response => response.Data)
       );
   }
-  creditCardVerify(creditCard: CreditCardVerify) {
+  creditCardVerify(creditCard: Creditcard) {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',

@@ -291,7 +291,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     //   this._paymentMethodId = +localStorage.getItem('paymenthMethod');
     // }
     if (paymentMethodId === 3) {
-      this.dialog.open(CreditCardComponent, { width: '1150px', height: '500px', data: { fullName: this.receiptService.getFirstLastName(), tZ: this.receiptService.getTz(), creditCardAccounts: this.customerCreditCardAccounts$ } });
+      this.dialog.open(CreditCardComponent, { width: '1150px', height: '540px', data: { fullName: this.receiptService.getFirstLastName(), tZ: this.receiptService.getTz(), creditCardAccounts: this.customerCreditCardAccounts$ } });
       // this.creditCardService.setFullNameForNewCreditCard(this.receiptService.getFirstLastName());
     } else {
       return;

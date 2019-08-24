@@ -10,13 +10,15 @@ import { NgxPageScrollModule } from 'ngx-page-scroll';
 import { CustomerPaymentsComponent } from '../receipts/payments-list/customer-payments/customer-payments.component';
 import { PaymentsListComponent } from '../receipts/payments-list/payments-list.component';
 import { MomentModule } from 'ngx-moment';
+import { ReceiptTypeFilterPipe } from './pipes/receipt-type-filter.pipe';
 
 @NgModule({
       declarations: [
             CustomerInfoComponent,
             PaymentsListComponent,
             CustomerPaymentsComponent,
-            CreditCardComponent
+            CreditCardComponent,
+            ReceiptTypeFilterPipe
       ],
       imports: [
             CommonModule,
@@ -39,6 +41,7 @@ import { MomentModule } from 'ngx-moment';
             NgxPageScrollModule,
             PaymentsListComponent,
             CustomerPaymentsComponent,
+            ReceiptTypeFilterPipe
          
       ],
       entryComponents:[CreditCardComponent]

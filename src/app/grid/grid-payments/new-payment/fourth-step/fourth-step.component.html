@@ -1,5 +1,5 @@
-<div class="container">
-<div class="row mb-5" [formGroup]="fourthStep">
+
+<div class="row mb-5 fontSize" [formGroup]="fourthStep">
   <div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-xl-2">
     <mat-form-field class="example-full-width">
       <input matInput placeholder="Amount" formControlName="amount">
@@ -15,7 +15,7 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>day</mat-label>
       <mat-select formControlName="day">
@@ -25,7 +25,7 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>company</mat-label>
       <mat-select formControlName="company">
@@ -40,53 +40,53 @@
       <input matInput placeholder="hashbon" formControlName="startDate">
     </mat-form-field>
   </div> -->
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <input matInput [matDatepicker]="startDate" formControlName="startDate" placeholder="Choose a date">
       <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
       <mat-datepicker #startDate></mat-datepicker>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <input matInput [matDatepicker]="date1" formControlName="endDate" placeholder="Choose a date">
       <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
       <mat-datepicker #date1></mat-datepicker>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <input matInput [matDatepicker]="date2" formControlName="KEVAJoinDate" placeholder="Choose a date">
       <mat-datepicker-toggle matSuffix [for]="date2"></mat-datepicker-toggle>
       <mat-datepicker #date2></mat-datepicker>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <input matInput [matDatepicker]="date3" formControlName="KEVACancleDate" placeholder="Choose a date">
       <mat-datepicker-toggle matSuffix [for]="date3"></mat-datepicker-toggle>
       <mat-datepicker #date3></mat-datepicker>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <input #monthToCharge matInput placeholder="month to charge" formControlName="monthToCharge">
       <mat-hint>{{monthToCharge.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <input #chargeMonth matInput placeholder="chatge m" formControlName="chargeMonth">
       <mat-hint>{{chargeMonth.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <input #letToCharge matInput placeholder="left to charge" formControlName="leftToCharge">
       <mat-hint>{{letToCharge.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
-  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
+  <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>tadirut</mat-label>
       <mat-select formControlName="tadirut">
@@ -98,7 +98,7 @@
     </mat-form-field>
   </div>
 </div>
-</div>
+
 
 
 <!-- 0 חודשי

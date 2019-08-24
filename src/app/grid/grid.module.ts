@@ -6,7 +6,6 @@ import { SharedModule } from './../shared/shared.module';
 import { PaymentsService } from './payments.service';
 import { GridPaymentsComponent } from './grid-payments/grid-payments.component';
 import { PaymentsTableComponent } from './grid-payments/payments-table/payments-table.component';
-import { CustomerDetailsComponent } from './grid-payments/customer-details/customer-details.component';
 import { CustomerSearchComponent } from './grid-payments/customer-search/customer-search.component';
 import { NewPaymentComponent } from './grid-payments/new-payment/new-payment.component';
 import { PaymentsFilterComponent } from './grid-payments/payments-table-header/payments-filter/payments-filter.component';
@@ -23,12 +22,12 @@ import { PaymentsHistoryComponent } from './grid-payments/payments-history/payme
 import { PaymentsTableViewComponent } from './grid-payments/payments-history/payments-table-view/payments-table-view.component';
 import { ChargesByChargeIdComponent } from './grid-payments/payments-history/charges-byChargeId-modal/charges-by-charge-id.component';
 import { ChargeIdEditModalComponent } from './grid-payments/payments-history/charges-byChargeId-modal/charge-id-edit-modal/charge-id-edit-modal.component';
+import { NewPaymentService } from './grid-payments/new-payment/new-payment.service';
 
 const gridRouter: Routes = [
   {
     path: '', component: GridPaymentsComponent, children: [
       { path: '', redirectTo: 'payments' },
-      { path: 'customer-details', component: CustomerDetailsComponent },
       { path: 'customer-search', component: CustomerSearchComponent },
       { path: 'new-payment', component: NewPaymentComponent },
       { path: 'payments', component: PaymentsTableComponent },
@@ -42,7 +41,6 @@ const gridRouter: Routes = [
   declarations: [
     GridPaymentsComponent,
     PaymentsTableComponent,
-    CustomerDetailsComponent,
     CustomerSearchComponent,
     NewPaymentComponent,
     PaymentsFilterComponent,
@@ -67,7 +65,7 @@ const gridRouter: Routes = [
   ],
   exports: [
   ],
-  providers: [],
+  providers: [PaymentsService, NewPaymentService],
   entryComponents: [ChargesByChargeIdComponent, ChargeIdEditModalComponent]
 
 })

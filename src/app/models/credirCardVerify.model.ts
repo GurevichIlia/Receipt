@@ -1,14 +1,14 @@
 export class CreditCardVerify {
       accountid: number;
-      osumtobill: number;
+      osumtobill?: number;
       ocardvaliditymonth: string;
       oCardValidityYear: string;
       ocardnumber: string;
       ocardownerid: string;
       cvv: string;
-      customername: string;
+      customername?: string;
       ouserpassword?: string;
       oapprovalnumber?: string;
-      thecurrency: string;
+      thecurrency?: string;
       
 }

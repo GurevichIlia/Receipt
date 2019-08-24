@@ -12,6 +12,7 @@ import { takeUntil, map } from 'rxjs/operators';
 import { PaymentsTableViewComponent } from './payments-table-view/payments-table-view.component';
 import { GlobalData } from 'src/app/models/globalData.model';
 import { pipe } from '@angular/core/src/render3';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 interface DisplayedColumns {
   value: string,
@@ -37,13 +38,15 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
     private paymentsService: PaymentsService,
     private generalService: GeneralSrv,
     private fb: FormBuilder,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private spinner: NgxUiLoaderService,
 
   ) { }
 
   ngOnInit() {
     this.createFilterForm();
     this.getGlobalData();
+    this.getKevaCharges();
   }
   createFilterForm() {
     this.filterForm = this.fb.group({
@@ -58,6 +61,7 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
     this.globalData$ = this.paymentsService.currentGlobalData$;
   }
   getKevaCharges() {
+    this.spinner.start();
     this.paymentsService.getKevaCharges(this.generalService.orgName, { instituteid: this.filterForm.get('instituteid').value })
       .pipe(map(keva => {
         keva.map(data => {
@@ -68,8 +72,12 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
         return keva;
       }),
         takeUntil(this.subscription$)).subscribe(data => {
+          this.spinner.stop();
           this.getDataForPaymentsTable(data);
-        }, error => alert('Something went wrong'));
+        }, error =>{
+          this.spinner.stop();
+          alert('Something went wrong')
+        } );
   }
   getDataForPaymentsTable(kevaCharge: KevaCharge[], index?: number) {
     if (kevaCharge) {
@@ -90,7 +98,7 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
       this.listDisplayedColumns = this.displayedColumns.map(c => {
         return c.value
       })
-      this.listDisplayedColumns.push('details')
+      this.listDisplayedColumns.unshift('details')
       this.getValueForColumns(this.displayedColumns);
     }
   }
@@ -112,7 +120,7 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
     // .subscribe((data: KevaChargeById[]) => {
 
     //   console.log('DETAILS KEVA BY ID', data)
-    this.dialog.open(ChargesByChargeIdComponent, { width: '1300px', height: '600px', data: <KevaCharge>keva })
+    this.dialog.open(ChargesByChargeIdComponent, { width: '1500px', height: '700px', data: <KevaCharge>keva })
     // })
 
   }

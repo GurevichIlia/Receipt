@@ -1,3 +1,4 @@
+import { NewPaymentService } from './../new-payment/new-payment.service';
 import { PaymentKeva } from './../../../models/paymentKeva.model';
 import { PaymentsService } from '../../payments.service';
 import { FormControl, FormBuilder, FormGroup } from '@angular/forms';
@@ -37,7 +38,8 @@ export class PaymentsTableComponent implements OnInit {
   constructor(
     private router: Router,
     private paymentsService: PaymentsService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private newPaymentService: NewPaymentService
   ) { }
 
   ngOnInit() {
@@ -143,10 +145,11 @@ export class PaymentsTableComponent implements OnInit {
       })
   }
   editPaymentRow(paymentRow) {
-    this.paymentsService.setEditingPayment(paymentRow);
+    this.newPaymentService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
+    this.newPaymentService.setEditMode(true);
     this.router.navigate(['/payments-grid/new-payment'], paymentRow);
-        console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
+    console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
   }
   deletePaymentRow(paymentRow) {
     console.log('delete row', paymentRow)
