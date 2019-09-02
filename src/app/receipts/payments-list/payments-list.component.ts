@@ -22,14 +22,14 @@ export class PaymentsListComponent implements OnInit, OnChanges, AfterViewInit {
   columns: { columnDef: string, header: string, cell: any }[] = []
   dataSource = new MatTableDataSource<any>([]);
   constructor(
-    private generalService: GeneralSrv
+    // private generalService: GeneralSrv
   ) { }
 
   ngOnInit() {
 
   }
   ngOnChanges() {
-    this.getDataForPaymentsTable(this.customerInfo);
+    this.getDataForTable(this.customerInfo);
   }
   ngAfterViewInit(): void {
     // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
@@ -43,7 +43,7 @@ export class PaymentsListComponent implements OnInit, OnChanges, AfterViewInit {
     //   }
     // };
   }
-  getDataForPaymentsTable(customerInfo: CustomerInfoById, index?: number) {
+  getDataForTable(customerInfo: CustomerInfoById, index?: number) {
     if (customerInfo) {
       const customerData = Object.assign({}, customerInfo)
       const paymentsListData = [customerData.GetCustomerReciepts, customerData.GetCustomerReciepts_CameFrom, customerData.GetCustomerReciepts_Involved];
@@ -52,10 +52,9 @@ export class PaymentsListComponent implements OnInit, OnChanges, AfterViewInit {
       this.dataSource.sort = this.customerPaymentsComponent.sort;
       this.createTableColumns(paymentsListData[0]);
     }
-
   }
   /**Create header lables of columns for table */
-  createTableColumns(data: GetCustomerReceipts[]) {
+  createTableColumns(data: GetCustomerReceipts[] | any[]) {
     if (data && data.length !== 0) {
       this.displayedColumns = [];
       Object.keys(data[0]).map(data => this.displayedColumns.push({ value: data, label: data }))

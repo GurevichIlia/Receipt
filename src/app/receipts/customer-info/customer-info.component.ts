@@ -519,10 +519,10 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
   }
   submit() {
-    this.addCUstomerInfoToReceipt()
+        this.addCUstomerInfoToReceipt()
     if (this.currentRoute === '/newreceipt') {
       this.receiptService.setStep(3);
-    } else if (this.currentRoute === '/payments-grid/customer-search') {
+    } else if (this.currentRoute === '/home/payments-grid/customer-search') {
       this.goToCreateNewPayment();
       this.receiptService.createNewClicked();
     }

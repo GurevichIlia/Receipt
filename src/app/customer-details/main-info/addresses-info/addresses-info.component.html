@@ -1,0 +1,45 @@
+<form [formGroup]="mainInfoForm">
+  <div class="row justify-content-start mb-3">
+    <h5 class="col-2">{{'Address' | translate }}
+    </h5>
+    <i style="cursor: pointer; float: left" (click)="createAction('addNewAddress')"
+      class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 material-icons">add</i>
+      <i *ngIf="editMode" style="cursor: pointer; float: left" (click)="createAction('saveAddress', addresses)" class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 material-icons">save</i>
+
+  </div>
+  <div class="row mb-5 mr-3">
+    <div formArrayName="addresses">
+      <div *ngFor="let address of addresses.controls; let i=index">
+        <div [formGroupName]="i" style="text-align: justify" class="mb-2">
+          <mat-form-field class="col-4">
+            <mat-select formControlName="AddressTypeId" placeholder="{{'Address type' | translate}}">
+              <mat-option [value]="3">{{'Home' | translate}}</mat-option>
+              <mat-option [value]="1">{{'Work' | translate}}</mat-option>
+              <mat-option [value]="2">{{'Other' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <i *ngIf="i !== 0" style="cursor: pointer; float: left"
+            class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 material-icons"
+            (click)="createAction('deleteAddress', i)">delete</i>
+          <i style="cursor: pointer;float: left" (click)="createAction('editAddress', i)"
+            class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 material-icons">create</i>
+
+          <mat-form-field class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+            <input matInput formControlName="CityName" placeholder="City">
+          </mat-form-field>
+          <mat-form-field class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <input matInput formControlName="Zip" placeholder="Zip">
+          </mat-form-field>
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xl-10">
+            <input matInput formControlName="Street" placeholder="Street">
+          </mat-form-field>
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xl-10">
+            <input matInput formControlName="Street2" placeholder="Street 2">
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</form>

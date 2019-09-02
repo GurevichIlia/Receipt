@@ -43,7 +43,7 @@ export class GridPaymentsComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.paymentsService.clearPaymentsTableState();
-    this.paymentsService.clearGlobalDataState();
+    // this.paymentsService.clearGlobalDataState();
     this.paymentsService.refreshTablePageIndex();
     this.subscription$.next();
     this.subscription$.complete();

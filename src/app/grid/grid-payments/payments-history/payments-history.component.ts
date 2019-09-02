@@ -1,4 +1,4 @@
-import { KevaChargeById } from './../../../models/kevaChargeById.model';
+
 import { ChargesByChargeIdComponent } from './charges-byChargeId-modal/charges-by-charge-id.component';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { KevaCharge } from './../../../models/kevaCharge.model';
@@ -6,13 +6,13 @@ import { GeneralSrv } from './../../../receipts/services/GeneralSrv.service';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { PaymentsService } from '../../payments.service';
 import { Observable, Subject } from 'rxjs';
-import { CustomerPaymentsComponent } from 'src/app/receipts/payments-list/customer-payments/customer-payments.component';
 import { MatTableDataSource, MatDialog, MatPaginator } from '@angular/material';
 import { takeUntil, map } from 'rxjs/operators';
 import { PaymentsTableViewComponent } from './payments-table-view/payments-table-view.component';
 import { GlobalData } from 'src/app/models/globalData.model';
-import { pipe } from '@angular/core/src/render3';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { Location } from '@angular/common';
+
 
 interface DisplayedColumns {
   value: string,
@@ -40,6 +40,7 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private dialog: MatDialog,
     private spinner: NgxUiLoaderService,
+    private location: Location
 
   ) { }
 
@@ -74,10 +75,10 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
         takeUntil(this.subscription$)).subscribe(data => {
           this.spinner.stop();
           this.getDataForPaymentsTable(data);
-        }, error =>{
+        }, error => {
           this.spinner.stop();
           alert('Something went wrong')
-        } );
+        });
   }
   getDataForPaymentsTable(kevaCharge: KevaCharge[], index?: number) {
     if (kevaCharge) {
@@ -130,6 +131,9 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+  goBack() {
+    this.location.back();
   }
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.

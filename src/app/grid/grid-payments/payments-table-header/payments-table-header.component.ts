@@ -59,7 +59,7 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
     }
     this.newPaymentService.setPaymentType(type);
     this.newPaymentService.setEditMode(false);
-    this.router.navigate(['payments-grid/customer-search']);
+    this.router.navigate(['home/payments-grid/customer-search']);
 
   }
   getGlobalData() {
@@ -78,7 +78,7 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
     return this.filterForm;
   }
   goToKevaCharges() {
-    this.router.navigate(['payments-grid/keva-charges']);
+    this.router.navigate(['home/payments-grid/keva-charges']);
   }
 
   ngOnDestroy(): void {

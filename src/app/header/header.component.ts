@@ -33,7 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.checkWidth();
     // tslint:disable-next-line: max-line-length
     this.generalSrv.sizeOfWindow.pipe(takeUntil(this.unsubscribe$)).subscribe(windowWidth => {
-      this.mobileVersion = windowWidth > 500 ? false : true;
+      this.mobileVersion = windowWidth > 800 ? false : true;
     });
     this.generalSrv.currentLang$.pipe(takeUntil(this.unsubscribe$)).subscribe(lang => this.currentLang = lang);
     this.getAuthStatus();
@@ -52,7 +52,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   }
   checkWidth() {
-    this.mobileVersion = window.innerWidth > 500 ? false : true;
+    this.mobileVersion = window.innerWidth > 800 ? false : true;
   }
   logout() {
     if (confirm('יש לך שינויים שלא נשמרו! אם תעזוב, השינויים שלך יאבדו')) {
@@ -62,11 +62,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
   goToSendMessage() {
     if (confirm('יש לך שינויים שלא נשמרו! אם תעזוב, השינויים שלך יאבדו')) {
-      this.router.navigate(['send-message'])
+      this.router.navigate(['home/send-message'])
     }
   }
   goToGrid() {
-    this.router.navigate(['payments-grid'])
+    this.router.navigate(['home/payments-grid'])
+  }
+  goToCustomerDetails() {
+    this.router.navigate([`home/customer-details/${1}`])
+  }
+  goToReceipt(){
+    this.router.navigate(['home/newreceipt'])
   }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

@@ -167,7 +167,8 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.receiptService.createNewEvent.next();
   }
   goToCreateNewPayment() {
-    this.router.navigate(['payments-grid/new-payment']);
+    debugger
+    this.router.navigate(['home/payments-grid/new-payment']);
     this.newPaymentService.setCustomerInfo(this.receiptService.getCustomerInfo());
   }
   ngOnDestroy() {

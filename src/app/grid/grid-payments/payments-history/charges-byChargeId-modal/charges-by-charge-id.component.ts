@@ -95,7 +95,6 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
     chargeIdEdit.afterClosed()
       .pipe(takeUntil(this.subscription$))
       .subscribe((newData: { action: newData | string }) => {
-        debugger
         if (newData) {
           if (newData.action !== 'Cancel') {
             const newChargeStatus: UpdateKevaHistoryChargeStatus = {

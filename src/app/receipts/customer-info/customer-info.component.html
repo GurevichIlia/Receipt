@@ -146,7 +146,6 @@
                 *ngIf="i !== 0" type="button" mat-stroked-button color="warn">{{'Delete' | translate}}</button>
             </div>
             <hr>
-
           </div>
         </div>
         <button *ngIf="phones.controls.length !== 10" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" type="button"
@@ -168,11 +167,6 @@
             </div>
 
             <hr style="color: black">
-            <!-- <mat-form-field class="col-11">
-              <input matInput placeholder="{{'Email' | translate}} {{i + 1}}" type="text" [formGroupName]="i">
-            </mat-form-field>
-            <button *ngIf="i !== 0" (click)="deleteEmail(i)" type="button" mat-stroked-button
-              color="warn">delete</button> -->
           </div>
         </div>
         <button *ngIf="emails.controls.length !== 10" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" type="button"

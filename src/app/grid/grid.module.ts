@@ -65,7 +65,7 @@ const gridRouter: Routes = [
   ],
   exports: [
   ],
-  providers: [PaymentsService, NewPaymentService],
+  providers: [],
   entryComponents: [ChargesByChargeIdComponent, ChargeIdEditModalComponent]
 
 })

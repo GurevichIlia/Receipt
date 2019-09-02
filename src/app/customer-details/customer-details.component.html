@@ -1,1 +1,61 @@
-Works!
+<!-- <mat-grid-list cols="6" rowHeight="100px">
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="4" [rowspan]="1">
+            <div class="mainInfoBlock">
+                  <mat-card style="height: 100%">
+                        <mat-card-header></mat-card-header>
+                        <mat-card-content></mat-card-content>
+                        Search
+                  </mat-card>
+            </div>
+
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="1" [rowspan]="8">
+            <app-side-menu (selectedRoute)="navigation($event)" [customerDetailsById]="customerDetailsById$ | async"
+                  class="sideMenu"></app-side-menu>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+         <mat-card class="sideMenu" style="width: 99%">
+                  <mat-card-header></mat-card-header>
+                  <mat-card-content></mat-card-content>
+                  box 3
+            </mat-card> -->
+<!-- </mat-grid-tile>
+      <mat-grid-tile [colspan]="4" [rowspan]="7">
+            <mat-card style="height: 100%">
+                  <mat-card-header></mat-card-header>
+                  <mat-card-content></mat-card-content>
+                  <router-outlet></router-outlet>
+            </mat-card>
+            
+      </mat-grid-tile>
+</mat-grid-list> -->
+<mat-sidenav-container class="example-container">
+      <mat-sidenav mode="side" opened>
+            <app-side-menu (selectedRoute)="navigation($event)" [customerDetailsById]="customerDetailsById$ | async"
+                  class="sideMenu"></app-side-menu>
+      </mat-sidenav>
+      <mat-sidenav-content>
+
+            <div class="row mb-5 searchContent" >
+                  <div class="col-xs-12 col-sm-12 col-md-7 col-lg-8 col-xl-9">
+                        <mat-card style="height: 100px;margin-top: 10px">
+                              SEARCH
+                              <button type="button" mat-button (click)="test()">text</button>
+                        </mat-card>
+                  </div>
+
+            </div>
+
+            <div class="row mainContent" >
+                  <div class="col-xs-12 col-sm-12 col-md-7 col-lg-8 col-xl-9">
+
+                        <router-outlet></router-outlet>
+
+                  </div>
+
+            </div>
+      </mat-sidenav-content>
+</mat-sidenav-container>

@@ -11,6 +11,7 @@ import { CustomerPaymentsComponent } from '../receipts/payments-list/customer-pa
 import { PaymentsListComponent } from '../receipts/payments-list/payments-list.component';
 import { MomentModule } from 'ngx-moment';
 import { ReceiptTypeFilterPipe } from './pipes/receipt-type-filter.pipe';
+import { TableComponent } from './share-components/table/table.component';
 
 @NgModule({
       declarations: [
@@ -18,7 +19,8 @@ import { ReceiptTypeFilterPipe } from './pipes/receipt-type-filter.pipe';
             PaymentsListComponent,
             CustomerPaymentsComponent,
             CreditCardComponent,
-            ReceiptTypeFilterPipe
+            ReceiptTypeFilterPipe,
+            TableComponent,
       ],
       imports: [
             CommonModule,
@@ -41,7 +43,8 @@ import { ReceiptTypeFilterPipe } from './pipes/receipt-type-filter.pipe';
             NgxPageScrollModule,
             PaymentsListComponent,
             CustomerPaymentsComponent,
-            ReceiptTypeFilterPipe
+            ReceiptTypeFilterPipe,
+            TableComponent
          
       ],
       entryComponents:[CreditCardComponent]

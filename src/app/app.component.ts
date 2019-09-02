@@ -6,6 +6,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ReceiptsService } from './receipts/services/receipts.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +15,7 @@ import { ReceiptsService } from './receipts/services/receipts.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
-
+  subscription$ = new Subject();
   constructor(
     private receiptService: ReceiptsService,
     private authService: AuthenticationService,
@@ -28,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'jaffaCrmAng';
   @HostListener('window:beforeunload', ['$event'])
   unloadNotification($event: any) {
-    
+
     if (this.receiptService.unsavedData) {
       $event.returnValue = true;
     }
@@ -39,11 +41,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.receiptService.currentReceiptLine$.subscribe(data => console.log('RECEIPT DATA CURRENT', data))
-
+    this.receiptService.currentReceiptLine$.pipe(takeUntil(this.subscription$)).subscribe(data => console.log('RECEIPT DATA CURRENT', data))
   }
+
   ngOnDestroy() {
     this.authService.refreshFullState();
     this.receiptService.refreshNewReceipt();
+    this.subscription$.next();
+    this.subscription$.complete();
   }
 }

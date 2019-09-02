@@ -1,0 +1,13 @@
+<div>
+  <mat-card class="mb-3">
+    <app-table [dataSource]='customerReceiptsDataSource' [columns]="columns" [listDisplayedColumns]="listDisplayedColumns" #CustomerReceipts></app-table>
+  </mat-card>
+
+  <mat-card class="mb-3">
+    <app-table [dataSource]='receiptsCameFromDataSource' [columns]="columns" [listDisplayedColumns]="listDisplayedColumns" #CameFrom></app-table>
+  </mat-card>
+
+  <mat-card class="mb-3">
+    <app-table [dataSource]="receiptsInvolvedDataSource" [columns]="columns" [listDisplayedColumns]="listDisplayedColumns" #Involved ></app-table>
+  </mat-card>
+</div> 

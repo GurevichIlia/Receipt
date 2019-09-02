@@ -1,0 +1,13 @@
+table {
+  width: 100%;
+  text-align: right;
+  
+}
+
+
+.elevation {
+  height: 85%;
+  width: 100%;
+  overflow: auto;
+  min-height: 300px
+}

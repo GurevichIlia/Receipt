@@ -201,7 +201,7 @@ export class StoreComponent implements OnInit, OnDestroy {
   }
   confirmPurchoses(step?: string) {
     if (this.receiptService.getProducts().length > 0) {
-      const dialogRef = this.dialog.open(ConfirmPurchasesComponent, { disableClose: true });
+      const dialogRef = this.dialog.open(ConfirmPurchasesComponent, { disableClose: true, width: '400px', height: '150px', data: 'Would you like to save an order' });
       const sub = dialogRef.afterClosed().subscribe((data: boolean) => {
         if (data === true) {
           this.addProductsToReceipt();

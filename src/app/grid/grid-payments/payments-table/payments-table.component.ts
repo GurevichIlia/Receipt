@@ -131,7 +131,7 @@ export class PaymentsTableComponent implements OnInit {
     })
   }
   showDetails(element) {
-    this.router.navigate(['/payments-grid/customer-details'])
+    this.router.navigate(['home/payments-grid/customer-details'])
   }
   getPaymentsTableData() {
     this.paymentsService.currentPaymentsTableData$.pipe(
@@ -148,7 +148,7 @@ export class PaymentsTableComponent implements OnInit {
     this.newPaymentService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
     this.newPaymentService.setEditMode(true);
-    this.router.navigate(['/payments-grid/new-payment'], paymentRow);
+    this.router.navigate(['home/payments-grid/new-payment'], paymentRow);
     console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
   }
   deletePaymentRow(paymentRow) {

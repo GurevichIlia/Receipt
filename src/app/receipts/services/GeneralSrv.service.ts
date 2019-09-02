@@ -4,7 +4,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMapTo, takeUntil } from 'rxjs/operators';
 
 import { LastSelection } from '../../models/lastSelection.model';
 import { CreditCardVerify } from '../../models/credirCardVerify.model';
@@ -20,7 +20,7 @@ import { Creditcard } from 'src/app/models/creditCard.model';
 
 
 @Injectable({
-  providedIn:'root'
+  providedIn: 'root'
 })
 
 export class GeneralSrv {
@@ -33,8 +33,7 @@ export class GeneralSrv {
   position;
   language = new BehaviorSubject('he');
   currentLang$ = this.language.asObservable();
-  orgName = localStorage.getItem('OrgName');
-  httpOptions;
+  orgName = localStorage.getItem('OrgName');;
 
   sizeOfWindow = new Subject();
   currentSizeOfWindow = this.sizeOfWindow.asObservable();
@@ -50,11 +49,17 @@ export class GeneralSrv {
 
   partOfApplication = new BehaviorSubject('');
   currentPartOfApplication$ = this.partOfApplication.asObservable();
+
+  globalData = new BehaviorSubject<GlobalData>(<GlobalData>{});
+  /** Using this data in payments part of application */
+  currentGlobalData$ = this.globalData.asObservable();
+  subscription$ = new Subject();
   constructor(private http: HttpClient,
     private authen: AuthenticationService,
     private zone: NgZone,
     private receiptService: ReceiptsService,
     private translate: TranslateService,
+    private generalService: GeneralSrv
   ) {
     console.log('GENERAL SERVICE')
     this.switchLanguage('he');
@@ -77,12 +82,7 @@ export class GeneralSrv {
       });
     });
     this.baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
-    this.httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
+
     this.getWindowWidth();
   }
 
@@ -100,25 +100,25 @@ export class GeneralSrv {
      *  Get all customers
      */
   public getUsers(): Observable<any> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerSearchData?urlAddr=${this.orgName}`,
-      httpOptions)
+  )
       .pipe(map(response => response.Data));
   }
   /***  Get customer bt customerId */
   getCustomerInfoById(customerId: number): Observable<CustomerInfoById> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
-    return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerDataByCustomerID?urlAddr=${this.orgName}&customerid=${customerId}`, httpOptions)
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
+    return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerDataByCustomerID?urlAddr=${this.orgName}&customerid=${customerId}`)
       .pipe(
         map(response => response.Data),
         map(data => {
@@ -141,13 +141,13 @@ export class GeneralSrv {
    *  Get receipts data
    */
   getReceiptshData() {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
-    return this.http.get<any>(`${this.baseUrl}Receipt/GetReceiptshData?urlAddr=${this.orgName}`, httpOptions)
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
+    return this.http.get<any>(`${this.baseUrl}Receipt/GetReceiptshData?urlAddr=${this.orgName}`)
       .pipe(map(response => response.Data),
       );
   }
@@ -155,24 +155,24 @@ export class GeneralSrv {
    *  Get all products
    */
   getProductsData() {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
-    return this.http.get<any>(`${this.baseUrl}Receipt/GetProductsData?urlAddr=${this.orgName}`, httpOptions)
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
+    return this.http.get<any>(`${this.baseUrl}Receipt/GetProductsData?urlAddr=${this.orgName}`)
       .pipe(map(response => response.Data)
       );
   }
   creditCardVerify(creditCard: Creditcard) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
-    return this.http.post(`${this.baseUrl}Receipt/ChargeAshraiVerify?urlAddr=${this.orgName}`, creditCard, httpOptions);
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
+    return this.http.post(`${this.baseUrl}Receipt/ChargeAshraiVerify?urlAddr=${this.orgName}`, creditCard);
   }
 
   public validateLogin(
@@ -185,12 +185,12 @@ export class GeneralSrv {
       this.baseUrl + 'LandingPage/LoginToSystem?guid=' + OrganizationName;
 
     // const headers = new HttpHeaders();
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'my-auth-token'
-      })
-    };
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'my-auth-token'
+    //   })
+    // };
     // headers.append("Accept", "application/json");
 
     let userInfo = {
@@ -199,7 +199,7 @@ export class GeneralSrv {
       Password: Password
     };
     let params = JSON.stringify(userInfo);
-    const obs = this.http.post(apiUrl, params, httpOptions);
+    const obs = this.http.post(apiUrl, params);
     // obs.subscribe(response => console.log(response));
 
     return obs;
@@ -211,12 +211,12 @@ export class GeneralSrv {
     // const headers = new HttpHeaders();
     // console.log(this.authen.getToken());
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
 
     let OrganizationName;
 
@@ -224,7 +224,7 @@ export class GeneralSrv {
       OrgId: OrganizationName
     };
     let params = JSON.stringify(userInfo);
-    const obs = this.http.post(apiUrl, params, httpOptions);
+    const obs = this.http.post(apiUrl, params);
     // obs.subscribe(response => console.log(response));
 
     return obs;
@@ -236,12 +236,12 @@ export class GeneralSrv {
     // const headers = new HttpHeaders();
     // console.log(this.authen.getToken());
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
 
     let OrganizationName;
 
@@ -249,7 +249,7 @@ export class GeneralSrv {
       OrgId: OrganizationName
     };
     let params = JSON.stringify(userInfo);
-    const obs = this.http.get(apiUrl, httpOptions)
+    const obs = this.http.get(apiUrl)
       .pipe(map(response => response['Data']));
 
     // obs.subscribe(response => {
@@ -266,12 +266,12 @@ export class GeneralSrv {
     // const headers = new HttpHeaders();
     // console.log(this.authen.getToken());
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
 
     //  debugger;
 
@@ -281,7 +281,7 @@ export class GeneralSrv {
       OrgId: OrganizationName
     };
     let params = JSON.stringify(userInfo);
-    const obs = this.http.get<any>(apiUrl, httpOptions);
+    const obs = this.http.get<any>(apiUrl);
     // obs.subscribe(response => console.log(response));
     return obs;
   }
@@ -303,13 +303,13 @@ export class GeneralSrv {
     return this.position;
   }
   sendFullReceiptToServer(receipt: NewReceipt) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.authen.tokenNo
-      })
-    };
-    return this.http.post(`${this.baseUrl}Receipt/SaveReceiptInfo?urlAddr=${this.orgName}`, receipt, httpOptions);
+    // cons = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.authen.tokenNo
+    //   })
+    // };
+    return this.http.post(`${this.baseUrl}Receipt/SaveReceiptInfo?urlAddr=${this.orgName}`, receipt);
   }
   setOrgName(orgName: string, employeeId: string) {
     this.orgName = orgName;
@@ -389,5 +389,20 @@ export class GeneralSrv {
   }
   getOrgName() {
     return this.orgName;
+  }
+
+  getKevaGlbData(orgName: string): Observable<GlobalData> {
+    return this.http.get(`${this.baseUrl}keva/GetKevaGlbData?urlAddr=${orgName}`, )
+      .pipe(map(data => data = data['Data'])).pipe(takeUntil(this.subscription$));
+  }
+  setGlobalDataState(state: GlobalData) {
+
+    this.globalData.next(state);
+  }
+  getGlobalDataState() {
+    return this.globalData.getValue();
+  }
+  getGlobalData$() {
+    return this.currentGlobalData$;
   }
 }
