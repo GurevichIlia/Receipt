@@ -12,6 +12,7 @@ import { PaymentsListComponent } from '../receipts/payments-list/payments-list.c
 import { MomentModule } from 'ngx-moment';
 import { ReceiptTypeFilterPipe } from './pipes/receipt-type-filter.pipe';
 import { TableComponent } from './share-components/table/table.component';
+import { SendByEmailComponent } from './modals/send-by-email/send-by-email.component';
 
 @NgModule({
       declarations: [
@@ -21,6 +22,8 @@ import { TableComponent } from './share-components/table/table.component';
             CreditCardComponent,
             ReceiptTypeFilterPipe,
             TableComponent,
+            SendByEmailComponent
+            ,
       ],
       imports: [
             CommonModule,
@@ -47,7 +50,7 @@ import { TableComponent } from './share-components/table/table.component';
             TableComponent
          
       ],
-      entryComponents:[CreditCardComponent]
+      entryComponents:[CreditCardComponent,SendByEmailComponent]
 })
 export class SharedModule {
 

@@ -1,7 +1,7 @@
 table {
   width: 100%;
   text-align: right;
-  
+
 }
 
 
@@ -10,4 +10,8 @@ table {
   width: 100%;
   overflow: auto;
   min-height: 300px
+}
+
+.btn-lable-width {
+  width: 50px
 }

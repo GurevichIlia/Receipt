@@ -1,5 +1,5 @@
 <div class="sideBlock">
-  <mat-card class="sideCard">
+  <mat-card class="mat-card">
     <mat-card-header class="cardHeader">
       <div>
         <div class="mb-2">
@@ -15,44 +15,48 @@
     </mat-card-header>
     <mat-card-content class="cardContent">
       <mat-list role="list">
-        <mat-list-item role="listitem"><button (click)="showNestMenu = !showNestMenu;"
-            style="width: 200px" mat-button>
+        <mat-list-item role="listitem"><button (click)="showNestMenu = !showNestMenu;" style="width: 200px" mat-button>
             <strong>Main info</strong>
           </button></mat-list-item>
         <mat-list role="list" *ngIf="showNestMenu">
           <mat-list-item role="listitem">
             <button (click)="selectChildMenuItem('personalInfo')"
-              [ngClass]="{'nestedmenuBackColor': pickedMenu == 'personalInfo'}" 
-              style="width: 200px" mat-button><span class="nestedmenu">Personal info</span> </button>
+              [ngClass]="{'nestedmenuBackColor': pickedMenu == 'personalInfo'}" style="width: 200px" mat-button><span
+                class="nestedmenu">Personal info</span> </button>
           </mat-list-item>
-          <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('phones')" 
-            [ngClass]="{'nestedmenuBackColor': pickedMenu == 'phones'}"
-              style="width: 200px" mat-button><span class="nestedmenu">{{'Phone' | translate}}</span> </button></mat-list-item>
-          <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('emails')" 
-            [ngClass]="{'nestedmenuBackColor': pickedMenu == 'emails'}"
-              style="width: 200px" mat-button><span class="nestedmenu">{{'Email' | translate}}</span> </button></mat-list-item>
-          <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('addresses')" 
-            [ngClass]="{'nestedmenuBackColor': pickedMenu == 'addresses'}"
-              style="width: 200px" mat-button><span class="nestedmenu">Address</span> </button></mat-list-item>
+          <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('phones')"
+              [ngClass]="{'nestedmenuBackColor': pickedMenu == 'phones'}" style="width: 200px" mat-button><span
+                class="nestedmenu">{{'Phone' | translate}}</span> </button></mat-list-item>
+          <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('emails')"
+              [ngClass]="{'nestedmenuBackColor': pickedMenu == 'emails'}" style="width: 200px" mat-button><span
+                class="nestedmenu">{{'Email' | translate}}</span> </button></mat-list-item>
+          <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('addresses')"
+              [ngClass]="{'nestedmenuBackColor': pickedMenu == 'addresses'}" style="width: 200px" mat-button><span
+                class="nestedmenu">Address</span> </button></mat-list-item>
         </mat-list>
 
 
-        <mat-list-item role="listitem"><button (click)=" navigateTo('payments')" style="width: 200px" mat-button>
+        <mat-list-item role="listitem"><button (click)="showPaymentsNestMenu = !showPaymentsNestMenu;"
+            style="width: 200px" mat-button>
             <strong>Payments</strong></button>
         </mat-list-item>
-        <mat-list-item role="listitem"><button (click)=" navigateTo('receipts')" style="width: 200px" mat-button> <strong>Receipts</strong></button>
+        <mat-list role="list" *ngIf="showPaymentsNestMenu">
+          <mat-list-item role="listitem">
+            <button (click)=" navigateTo('receipts')"
+              [ngClass]="{'nestedmenuBackColor': pickedMenu == 'receipts'}" style="width: 200px" mat-button><span
+                class="nestedmenu">Receipts</span> </button>
+          </mat-list-item>
+        </mat-list>
+
+
+
+        <mat-list-item role="listitem"><button (click)=" navigateTo('receipts')" style="width: 200px" mat-button>
+            <strong>Receipts</strong></button>
         </mat-list-item>
+
         <mat-list-item role="listitem"><button style="width: 200px" mat-button> <strong>Item 1</strong></button>
         </mat-list-item>
 
-        <mat-list-item role="listitem"><button style="width: 200px" mat-button><strong>Item 1</strong></button>
-        </mat-list-item>
-        <mat-list-item role="listitem"><button style="width: 200px" mat-button><strong>Item 1</strong></button>
-        </mat-list-item>
-        <mat-list-item role="listitem"><button style="width: 200px" mat-button><strong>Item 1</strong></button>
-        </mat-list-item>
-        <mat-list-item role="listitem"><button style="width: 200px" mat-button><strong>Item 1</strong></button>
-        </mat-list-item>
       </mat-list>
     </mat-card-content>
 

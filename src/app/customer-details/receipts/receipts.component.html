@@ -1,13 +1,24 @@
-<div>
-  <mat-card class="mb-3">
-    <app-table [dataSource]='customerReceiptsDataSource' [columns]="columns" [listDisplayedColumns]="listDisplayedColumns" #CustomerReceipts></app-table>
+
+  <mat-card class="mb-3" [hidden]="customerReceiptsDataSource.data.length === 0 ? true : false">
+    <mat-card-header>
+<h4>Receipts</h4>
+    </mat-card-header>
+    <app-table [dataSource]='customerReceiptsDataSource' [columns]="columns"
+      [listDisplayedColumns]="listDisplayedColumns" (clickedButton)="getEventFromChildren($event)" [buttons]="buttonsForTable" #CustomerReceipts></app-table>
   </mat-card>
 
-  <mat-card class="mb-3">
-    <app-table [dataSource]='receiptsCameFromDataSource' [columns]="columns" [listDisplayedColumns]="listDisplayedColumns" #CameFrom></app-table>
+  <mat-card class="mb-3" [hidden]="receiptsCameFromDataSource.data.length === 0 ? true : false">
+    <mat-card-header>
+<h4>Receipts came from</h4>
+    </mat-card-header>
+    <app-table [dataSource]='receiptsCameFromDataSource' [columns]="columns"
+      [listDisplayedColumns]="listDisplayedColumns" (clickedButton)="getEventFromChildren($event)" [buttons]="buttonsForTable" #CameFrom></app-table>
   </mat-card>
 
-  <mat-card class="mb-3">
-    <app-table [dataSource]="receiptsInvolvedDataSource" [columns]="columns" [listDisplayedColumns]="listDisplayedColumns" #Involved ></app-table>
+  <mat-card class="mb-3" [hidden]="receiptsInvolvedDataSource.data.length === 0? true : false">
+    <mat-card-header>
+<h4>Receipts involved</h4>
+    </mat-card-header>
+    <app-table [dataSource]="receiptsInvolvedDataSource" [columns]="columns"
+      [listDisplayedColumns]="listDisplayedColumns" (clickedButton)="getEventFromChildren($event)" [buttons]="buttonsForTable" #Involved></app-table>
   </mat-card>
-</div> 

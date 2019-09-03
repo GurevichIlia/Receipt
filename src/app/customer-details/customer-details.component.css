@@ -29,3 +29,16 @@ mat-sidenav-content {
   justify-content: flex-end;
   margin-left: 0% !important
 }
+
+.matSidenavContent {
+  margin-right: 15px;
+}
+.sidenavToggle{
+  display: inherit;
+  z-index: 1000;
+  position: fixed
+}
+.sidenav{
+  width: 300px;
+  min-height: 700px
+}

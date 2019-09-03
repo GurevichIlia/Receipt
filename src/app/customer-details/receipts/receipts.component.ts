@@ -1,11 +1,11 @@
-import { CustomerInfoById, GetCustomerReceipts } from './../../models/customer-info-by-ID.model';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
-import { Subject } from 'rxjs';
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import { MatTableDataSource, MatDialog } from '@angular/material';
+import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { ReceiptsService } from './receipts.service';
 import { TableComponent } from 'src/app/shared/share-components/table/table.component';
-import { TableService } from './../../shared/share-services/table.service';
+import { FullCustomerDetailsById, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
+import { SendByEmailComponent } from 'src/app/shared/modals/send-by-email/send-by-email.component';
 @Component({
   selector: 'app-receipts',
   templateUrl: './receipts.component.html',
@@ -22,47 +22,63 @@ export class ReceiptsComponent implements OnInit, OnDestroy {
   receiptsCameFromDataSource = new MatTableDataSource<any>([]);
   receiptsInvolvedDataSource = new MatTableDataSource<any>([]);
   subscription$ = new Subject();
-  filterLables = ['UseAsCreditReceipt', 'ForCanclation', 'WhatForInThanksLet']
+  filterLables = ['UseAsCreditReceipt', 'ForCanclation', 'WhatForInThanksLet', 'RecieptTypeId'];
+  buttonsForTable: { icon: string, label: string }[];
+  customerEmailsList: CustomerEmails[];
   constructor(
     private receiptsService: ReceiptsService,
-    private tableService: TableService
-  ) {
+    private matDialog: MatDialog
 
-  }
+  ) { }
 
   ngOnInit() {
     this.getCustomerDetailsById();
   }
+
   getCustomerDetailsById() {
     this.receiptsService.getCustomerDetailsById()
       .pipe(
         filter(data => data !== null),
-        takeUntil(this.subscription$)).subscribe((data: CustomerInfoById) => {
-          this.setCustomerReceiptsDataSourceTable([...data.GetCustomerReciepts]);
+        takeUntil(this.subscription$))
+      .subscribe((data: FullCustomerDetailsById) => {
+        this.setDataToTable(data);
+        this.setCustomerEmails(data.CustomerEmails);
+      })
+  }
+  setDataToTable(data: FullCustomerDetailsById) {
+    this.receiptsService.setDataSourceTable(this.customerReceiptsDataSource, [...data.GetCustomerReciepts], this.customerReceiptsTableComponent);
 
-          this.receiptsCameFromDataSource.data = this.tableService.getDataForTable(data.GetCustomerReciepts_CameFrom);
-          this.receiptsCameFromDataSource.sort = this.receiptsCameFromTableComponent.sort;
+    this.receiptsService.setDataSourceTable(this.receiptsCameFromDataSource, [...data.GetCustomerReciepts_CameFrom], this.receiptsCameFromTableComponent);
 
-          this.receiptsInvolvedDataSource.data = this.tableService.getDataForTable(data.GetCustomerReciepts_Involved);
-          this.receiptsInvolvedDataSource.sort = this.receiptsInvolvedTableComponent.sort;
-          this.listDisplayedColumns = this.tableService.createTableColumns(data.GetCustomerReciepts, this.filterLables)
-          this.columns = this.tableService.getValueForColumns(this.listDisplayedColumns);
+    this.receiptsService.setDataSourceTable(this.receiptsInvolvedDataSource, [...data.GetCustomerReciepts_Involved], this.receiptsInvolvedTableComponent);
 
-        })
+    this.listDisplayedColumns = this.receiptsService.setDisplayedColumns(data.GetCustomerReciepts, this.filterLables)
+    this.columns = this.receiptsService.selColumns(this.listDisplayedColumns);
+    this.receiptsService.addDisplayedColumnToTable('Email', this.listDisplayedColumns);
+    this.buttonsForTable = [{ icon: 'email', label: 'Email' }, { icon: 'create', label: 'Create' }]
   }
-  setCustomerReceiptsDataSourceTable(tableData: GetCustomerReceipts[]) {
-    this.customerReceiptsDataSource.data = this.tableService.getDataForTable(tableData).map((data: GetCustomerReceipts) => this.receiptsService.changeDateFormat());
-    this.setSortForCustomerReceiptsTable();
-    this.setPaginationForCustomerReceiptsTable();
+
+  getEventFromChildren($event: { action: string, item: any }) {
+    console.log($event)
+    this.openModalSendByEmail(this.customerEmailsList, $event.item)
   }
-  setSortForCustomerReceiptsTable() {
-    this.customerReceiptsDataSource.sort = this.customerReceiptsTableComponent.sort;
-  }
-  setPaginationForCustomerReceiptsTable() {
-    this.customerReceiptsDataSource.paginator = this.customerReceiptsTableComponent.paginator
-  }
-  changeDateFormate(){
+  openModalSendByEmail(emailsList: CustomerEmails[] = [], receipt) {
+      const openedDialog = this.matDialog.open(SendByEmailComponent, { width: '350px', height: '270px', data: emailsList });
     
+    openedDialog.afterClosed()
+      .pipe(
+        filter(data => data !== (null || undefined)),
+        takeUntil(this.subscription$))
+      .subscribe((sendByEmail: boolean) => {
+        if (sendByEmail === true) {
+          console.log(sendByEmail, receipt);
+        } else {
+          console.log("cancel")
+        }
+      })
+  }
+  setCustomerEmails(emailsList: CustomerEmails[]) {
+    this.customerEmailsList = emailsList;
   }
   ngOnDestroy() {
     this.subscription$.next();

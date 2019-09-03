@@ -88,7 +88,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
     this.groups.patchValue(this.selectedGroups);
   }
   checkWindowSize() {
-    this.generalService.currentSizeOfWindow.subscribe(width => this.addClassOrderFirst());
+    this.generalService.currentSizeOfWindow$.subscribe(width => this.addClassOrderFirst());
   }
   getOrgName() {
     this.generalService.currentOrgName$.subscribe((orgName: string) => {

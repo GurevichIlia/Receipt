@@ -1,7 +1,6 @@
 import { MainInfoService } from './../main-info/main-info.service';
 import { FullCustomerDetailsById } from './../../models/fullCustomerDetailsById.model';
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-side-menu',

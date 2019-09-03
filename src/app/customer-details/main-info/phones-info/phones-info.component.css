@@ -5,3 +5,11 @@ input.mat-input-element {
 ::ng-deep .mat-select-disabled .mat-select-value {
   color: black
 }
+
+.phoneTypeWidth {
+  width: 120px
+}
+
+.inputMobileWidth {
+  width: 160px
+}

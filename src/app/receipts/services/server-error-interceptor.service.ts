@@ -24,6 +24,7 @@ export class ServerErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       retry(0),
       catchError((error: HttpErrorResponse) => {
+      
         if (error.status === 401) {
           this.authService.logout();
           this.modal.open(ModalSessionexpiredComponent, { width: '450px' });

@@ -13,6 +13,7 @@ export class PhonesInfoComponent {
   @Input() mainInfoForm: FormGroup
   @Output() newAction = new EventEmitter();
   editMode = false;
+  width = window.innerWidth;
   constructor() {
   }
   createAction(action: string, subject?: any) {

@@ -7,15 +7,9 @@ export class TableService {
 
   constructor() { }
 
-
   getDataForTable(tableData: any[], index?: number) {
-
     if (tableData) {
       const newTableData = [...tableData];
-      // const paymentsListData = [customerData.GetCustomerReciepts, customerData.GetCustomerReciepts_CameFrom, customerData.GetCustomerReciepts_Involved];
-      // this.changeDateFormat(customerData);
-      // this.dataSource.data = paymentsListData[0];
-      // this.dataSource.sort = this.customerPaymentsComponent.sort;
       return newTableData;
     }
   }
@@ -31,14 +25,7 @@ export class TableService {
     }
     return filteredlistOfShownColumns;
   }
-  private filterLables(dataForFilter: string, filterOptions: string[]) {
-    debugger
-    if (filterOptions) {
-      console.log(filterOptions.includes(dataForFilter))
-      return filterOptions.includes(dataForFilter) ? '' : dataForFilter
-    }
 
-  }
   /**Create rows for table */
   getValueForColumns(showenColumns: any[]) {
     const columns = [];

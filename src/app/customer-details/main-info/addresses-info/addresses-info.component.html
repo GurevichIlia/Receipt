@@ -1,10 +1,10 @@
 <form [formGroup]="mainInfoForm">
   <div class="row justify-content-start mb-3">
-    <h5 class="col-2">{{'Address' | translate }}
+    <h5 style="margin-right: 15px">{{'Address' | translate }}
     </h5>
-    <i style="cursor: pointer; float: left" (click)="createAction('addNewAddress')"
-      class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 material-icons">add</i>
-      <i *ngIf="editMode" style="cursor: pointer; float: left" (click)="createAction('saveAddress', addresses)" class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 material-icons">save</i>
+    <i style="cursor: pointer; float: left; margin-right: 10px" (click)="createAction('addNewAddress')"
+      class=" material-icons">add</i>
+      <i *ngIf="editMode" style="cursor: pointer; float: left; margin-right: 10px" (click)="createAction('saveAddress', addresses)" class="material-icons">save</i>
 
   </div>
   <div class="row mb-5 mr-3">

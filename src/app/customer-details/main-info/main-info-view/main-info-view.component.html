@@ -1,24 +1,22 @@
 <div class="row justify-content-start">
-  <h5 class="col-2 " style="text-align: right">Personal info
-    <i style="cursor: pointer; float: left" (click)="createAction('editPersonalInfo', personalInfo )"
-      class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 material-icons">create</i>
-    <i *ngIf="editMode" style="cursor: pointer; float: left" (click)="createAction('savePersonalInfo', personalInfo)"
-      class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 material-icons">save</i>
-
-  </h5>
+  <h5 style="margin-right: 10px" >Personal info</h5>
+  <i style="cursor: pointer; float: left; margin-right: 10px" (click)="createAction('editPersonalInfo', personalInfo )"
+    class=" material-icons">create</i>
+  <i *ngIf="editMode" style="cursor: pointer; float: left;margin-right: 10px" (click)="createAction('savePersonalInfo', personalInfo)"
+    class=" material-icons">save</i>
 
 </div>
 
 <hr class="mb-4">
 
 <form [formGroup]="personalInfo" class="row mb-4" style="justify-content: space-around">
-  <mat-form-field class="col-5">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <input formControlName="fname" matInput placeholder="First name">
   </mat-form-field>
-  <mat-form-field class="col-5">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <input formControlName="lname" matInput placeholder="Last name">
   </mat-form-field>
-  <mat-form-field class="col-5">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <input formControlName="BirthDate" matInput placeholder="{{'Birthday' | translate}}">
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <!-- <button matSuffix [matDatepickerToggle]="picker"></button> -->
@@ -31,7 +29,7 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field class="example-full-width col-5">
+  <mat-form-field class="example-full-width col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <input type="text" placeholder="{{'Title' | translate}}" aria-label="Number" matInput formControlName="Title"
       [matAutocomplete]="auto">
     <mat-autocomplete #auto="matAutocomplete">
@@ -42,27 +40,27 @@
     </mat-autocomplete>
   </mat-form-field>
 
-  <mat-form-field class="col-5">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <mat-select formControlName="Gender" placeholder="{{'Gender' | translate}}">
       <mat-option [value]="1">Male</mat-option>
       <mat-option [value]="2">Female</mat-option>
       <mat-option [value]="0">Undefined</mat-option>
     </mat-select>
   </mat-form-field>
-  <mat-form-field class="col-5">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <input formControlName="ID" matInput placeholder="T.Z">
   </mat-form-field>
 
-  <mat-form-field class="col-5">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <input formControlName="Company" matInput placeholder="Company">
   </mat-form-field>
-  <mat-form-field class="col-5">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <input formControlName="SpouseName" matInput placeholder="Spouse name">
   </mat-form-field>
-  <mat-form-field class="col-5">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
     <input formControlName="FileAs" matInput placeholder="File As">
   </mat-form-field>
-  <mat-checkbox class="col-5 text-right" formControlName="AfterSunsetnumber">
+  <mat-checkbox class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5 text-right" formControlName="AfterSunsetnumber">
     <strong>{{'After sunset' | translate}}</strong>
   </mat-checkbox>
 </form>

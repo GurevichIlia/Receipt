@@ -36,7 +36,7 @@ export class GeneralSrv {
   orgName = localStorage.getItem('OrgName');;
 
   sizeOfWindow = new Subject();
-  currentSizeOfWindow = this.sizeOfWindow.asObservable();
+  currentSizeOfWindow$ = this.sizeOfWindow.asObservable();
 
   _lastSelection: LastSelection = <LastSelection>{};
   lastSelect = new BehaviorSubject<LastSelection>(this._lastSelection);
@@ -83,7 +83,7 @@ export class GeneralSrv {
     });
     this.baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
 
-    this.getWindowWidth();
+    this.setWindowWidth();
   }
 
   switchLanguage(language: string) {
@@ -378,7 +378,7 @@ export class GeneralSrv {
     this.lastSelect.next(this.lastSelection);
     console.log('LAS SELECT', this.lastSelection);
   }
-  getWindowWidth() {
+  setWindowWidth() {
     this.sizeOfWindow.next(window.innerWidth);
   }
   checkLocalStorage(itemName: string) {

@@ -53,7 +53,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private generalService: GeneralSrv,
     private credirCardService: CreditCardService,
-    private creditCard: CreditCardService,
+    // private creditCard: CreditCardService,
     private spinner: NgxUiLoaderService,
     public dialogRef: MatDialogRef<CreditCardComponent>,
     private location: Location,

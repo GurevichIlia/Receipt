@@ -8,13 +8,13 @@ import { FullCustomerDetailsById } from '../models/fullCustomerDetailsById.model
   providedIn: 'root'
 })
 export class CustomerDetailsService {
-  customerDetailsById = new BehaviorSubject(null);
+  customerDetailsById = new BehaviorSubject<FullCustomerDetailsById>(null);
   customerDetailsById$ = this.customerDetailsById.asObservable();
-  
+
   constructor(
     private paymentsService: PaymentsService,
     private generalService: GeneralSrv
-  ) { console.log('CUSTOMER DETAILS SERVICE LOADED')}
+  ) { console.log('CUSTOMER DETAILS SERVICE LOADED') }
 
   getCustomerDetailsById(customerId: number): Observable<FullCustomerDetailsById> {
     return this.paymentsService.getCustomerDetailsById(customerId);
@@ -25,10 +25,13 @@ export class CustomerDetailsService {
   getCustomerDetailsByIdState() {
     return this.customerDetailsById.getValue();
   }
-  getCustomerDetailsByIdState$() {
+  getCustomerDetailsByIdState$(): Observable<FullCustomerDetailsById>  {
     return this.customerDetailsById$;
   }
   getGlobalData$() {
     return this.generalService.getGlobalData$();
+  }
+  getDisplayWidth() {
+    return this.generalService.currentSizeOfWindow$;
   }
 }

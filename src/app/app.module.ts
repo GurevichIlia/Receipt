@@ -71,7 +71,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
   ],
   // tslint:disable-next-line: max-line-length
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService ,multi: true }, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
   bootstrap: [AppComponent],
   entryComponents: [ModalSessionexpiredComponent, ConfirmPurchasesComponent]
 

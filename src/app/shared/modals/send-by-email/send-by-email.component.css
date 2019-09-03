@@ -1,0 +1,14 @@
+.arrowSize {
+  font-size: 40px;
+  cursor: pointer;
+}
+
+.labels {
+  text-align: center;
+}
+
+.mailsBlock {
+  min-height: 100px;
+  margin: auto;
+  padding-top: 20px;
+}
