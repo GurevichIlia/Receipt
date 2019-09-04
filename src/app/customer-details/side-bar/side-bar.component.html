@@ -1,0 +1,13 @@
+<div class="sideBlock">
+  <mat-card class="mat-card">
+    <mat-card-header class="cardHeader">
+      <div>
+        <app-customer-photo></app-customer-photo>
+        <customer-info [customerDetailsById]="customerDetailsById$ | async"></customer-info>
+      </div>
+    </mat-card-header>
+    <mat-card-content class="cardContent">
+      <app-side-menu (selectedRoute)="setCurrentMenuItem($event)"  class="sideMenu"></app-side-menu>
+    </mat-card-content>
+  </mat-card>
+</div>

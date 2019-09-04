@@ -5,7 +5,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { RouterModule, Routes } from '@angular/router';
 
 const receipts: Routes = [
-  { path: '', component: ReceiptsComponent }
+  {
+    path: '', component: ReceiptsComponent
+  }
 ]
 
 

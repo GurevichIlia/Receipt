@@ -1,8 +1,7 @@
 <mat-sidenav-container class="example-container" [hasBackdrop]="765 > displayWidth? true: false"
       (backdropClick)="sidenav.close()">
       <mat-sidenav class="sidenav" #sidenav mode="side" opened>
-            <app-side-menu (selectedRoute)="navigation($event)" [customerDetailsById]="customerDetailsById$ | async"
-                  class="sideMenu"></app-side-menu>
+                  <app-side-bar></app-side-bar>
       </mat-sidenav>
       <mat-sidenav-content class="matSidenavContent">
             <button style="background-color: whitesmoke" *ngIf="765 > displayWidth" class="sidenavToggle" (click)="sidenav.open()" mat-button>menu</button>

@@ -28,12 +28,21 @@ mat-card {
 
 .nestedmenu {
   margin-left: -50px;
-
+  font-size: 17px;
 }
 
 .nestedmenuBackColor {
   background-color: whitesmoke
 }
-.mat-card{
-  min-height: 828px;
+
+::ng-deep .mat-list-item-content {
+  justify-content: center !important
+}
+
+.itemMenuText {
+  font-size: 20px
+}
+.mainMenuItem {
+  justify-content: flex-end;
+  align-items: center;
 }

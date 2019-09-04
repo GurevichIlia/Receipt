@@ -5,10 +5,21 @@
 
 .labels {
   text-align: center;
+  width: 100%;
 }
 
 .mailsBlock {
   min-height: 100px;
-  margin: auto;
   padding-top: 20px;
+}
+
+.submit-button {
+  background-color: rgb(38, 87, 122);
+   color: 'white';
+
+}
+
+.cancel-button {
+  background-color: rgb(250, 174, 33);
+
 }

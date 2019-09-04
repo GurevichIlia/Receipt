@@ -4,24 +4,26 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { SharedModule } from '../shared/shared.module';
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
-import { SideMenuComponent } from './side-menu/side-menu.component';
-import { PaymentsComponent } from './payments/payments.component';
+import { SideBarComponent } from './side-bar/side-bar.component';
+import { CustomerPhotoComponent } from './side-bar/customer-photo/customer-photo.component';
+import { CustomerInfoComponent } from './side-bar/customer-info/customer-info.component';
+import { SideMenuComponent } from './side-bar/side-menu/side-menu.component';
 
 const customerRouter: Routes = [
   {
     path: '', component: CustomerDetailsComponent, children: [
-      { path: 'payments', component: PaymentsComponent },
+      { path: 'payments', loadChildren: './payments/payments.module#PaymentsModule' },
       { path: 'main-info', loadChildren: './main-info/main-info.module#MainInfoModule' },
-      { path: 'receipts', loadChildren: './receipts/receipts.module#ReceiptsModule' }
     ]
   }
 ];
 @NgModule({
   declarations: [
     CustomerDetailsComponent,
-    SideMenuComponent,
-    PaymentsComponent,
-
+    SideBarComponent,
+    CustomerPhotoComponent,
+    CustomerInfoComponent,
+    SideMenuComponent
   ],
   imports: [
     CommonModule,

@@ -267,7 +267,7 @@ export class MainInfoComponent implements OnInit {
     }
   }
   getChildMenuItem() {
-    this.mainInfoService.getCurrentMenuItem$().subscribe((data: string) => this.currentMenuItem = data);
+    this.mainInfoService.getCurrentChildMenuItem$().subscribe((data: string) => this.currentMenuItem = data);
   }
   ngOnDestroy() {
     this.subscription$.next();

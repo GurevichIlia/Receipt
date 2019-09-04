@@ -3,16 +3,15 @@ import { CustomerAddresses } from './../../models/customer-info-by-ID.model';
 import { CustomerPhones, CustomerEmails, MainDetails } from './../../models/fullCustomerDetailsById.model';
 import { CustomerDetailsService } from './../customer-details.service';
 import { Injectable } from '@angular/core';
-import { FormGroup, FormArray, FormControl, FormBuilder } from '@angular/forms';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { FormGroup, FormArray, FormBuilder } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainInfoService {
-  currentMenuItem = new BehaviorSubject<string>('personalInfo');
-  currentMenuItem$ = this.currentMenuItem.asObservable();
+
   constructor(
     private customerDetailsService: CustomerDetailsService,
     private fb: FormBuilder,
@@ -81,11 +80,8 @@ export class MainInfoService {
   changeDateFormat(date: string, format: string) {
     return this.generalSevice.changeDateFormat(date, format);
   }
-  setCurrentMenuItem(menuItem: string) {
-    this.currentMenuItem.next(menuItem);
-  }
-  getCurrentMenuItem$() {
-    return this.currentMenuItem$;
+  getCurrentChildMenuItem$() {
+    return this.customerDetailsService.getChildMenuItem$()
   }
 
 }

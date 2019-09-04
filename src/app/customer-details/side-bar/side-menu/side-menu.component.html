@@ -1,0 +1,54 @@
+<mat-list role="list">
+  <mat-list-item role="listitem"><button class="itemMenuText" (click)="mainInfoNestMenu = !mainInfoNestMenu;"
+      style="width: 200px" mat-button>
+      <span class="row mainMenuItem">
+        <span>Main info </span>
+        <mat-icon *ngIf="!mainInfoNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
+        <mat-icon *ngIf="mainInfoNestMenu" mat-icon>keyboard_arrow_down</mat-icon>
+      </span>
+    </button></mat-list-item>
+  <mat-list role="list" *ngIf="mainInfoNestMenu">
+    <mat-list-item role="listitem">
+      <button (click)="selectChildMenuItem('main-info','personalInfo')"
+        [ngClass]="{'nestedmenuBackColor': pickedMenu == 'personalInfo'}" style="width: 200px" mat-button><span
+          class="nestedmenu">Personal info</span> </button>
+    </mat-list-item>
+    <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('main-info','phones')"
+        [ngClass]="{'nestedmenuBackColor': pickedMenu == 'phones'}" style="width: 200px" mat-button><span
+          class="nestedmenu">{{'Phone' | translate}}</span> </button></mat-list-item>
+    <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('main-info','emails')"
+        [ngClass]="{'nestedmenuBackColor': pickedMenu == 'emails'}" style="width: 200px" mat-button><span
+          class="nestedmenu">{{'Email' | translate}}</span> </button></mat-list-item>
+    <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('main-info','addresses')"
+        [ngClass]="{'nestedmenuBackColor': pickedMenu == 'addresses'}" style="width: 200px" mat-button><span
+          class="nestedmenu">Address</span> </button></mat-list-item>
+  </mat-list>
+
+  <hr>
+  <mat-list-item role="listitem"><button (click)="paymentsNestMenu = !paymentsNestMenu;" style="width: 200px"
+      class="itemMenuText" mat-button>
+      <span class="row mainMenuItem">
+        <span>Payments</span>
+        <mat-icon *ngIf="!paymentsNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
+        <mat-icon *ngIf="paymentsNestMenu" mat-icon>keyboard_arrow_down</mat-icon>
+      </span>
+    </button>
+  </mat-list-item>
+  <mat-list role="list" *ngIf="paymentsNestMenu">
+    <mat-list-item role="listitem">
+      <button (click)="selectChildMenuItem('payments/receipts', 'payments/receipts' )"
+        [ngClass]="{'nestedmenuBackColor': pickedMenu == 'payments/receipts'}" style="width: 200px" mat-button><span
+          class="nestedmenu">Receipts</span> </button>
+    </mat-list-item>
+  </mat-list>
+  <hr>
+
+  <mat-list-item role="listitem"><button style="width: 200px" class="itemMenuText" mat-button>
+      <span class="row mainMenuItem">
+        <span>Item 1</span>
+        <mat-icon *ngIf="!paymentsNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
+
+      </span></button>
+  </mat-list-item>
+  <hr>
+</mat-list>

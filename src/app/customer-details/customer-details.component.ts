@@ -31,7 +31,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
     this.customerId = +this.activatedRoute.snapshot.paramMap.get('id');
     this.getCustomerDetailsById(this.customerId);
     this.getDisplayWidth();
-
+    this.navigation();
   }
   ngAfterViewInit() {
     setTimeout(() => this.checkDisplayWidth(window.innerWidth), 1);
@@ -48,9 +48,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
       })
     console.log('PROPERTIS', this.propertis)
   }
-  navigation(route: string) {
-    this.router.navigate([`home/customer-details/${this.customerId}/${route}`]);
-  }
+
   closeSidenav() {
     this.sidenav.close();
   }
@@ -74,6 +72,20 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   checkDisplayWidth(width: number) {
     this.displayWidth = width;
     width < 765 ? this.sidenav.close() : this.sidenav.open();
-
+  }
+  getCurrentMenuItem() {
+    return this.customerDetailsService.getCurrentMenuItem$();
+  }
+  navigateTo(route: string) {
+    this.router.navigate([`home/customer-details/${this.customerId}/${route}`]);
+  }
+  navigation() {
+    this.getCurrentMenuItem()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((data) => {
+        data ? this.navigateTo(data.route) : null;  
+      }
+      )
   }
 }
