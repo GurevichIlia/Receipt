@@ -51,7 +51,6 @@ const gridRouter: Routes = [
     FifthStepComponent,
     BankComponent,
     CreditCardComponent,
-    SearchComponent,
     PaymentsTableHeaderComponent,
     PaymentsHistoryComponent,
     PaymentsTableViewComponent,

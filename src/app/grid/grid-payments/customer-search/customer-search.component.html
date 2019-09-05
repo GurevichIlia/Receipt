@@ -1,4 +1,4 @@
 <div class="container">
-  <app-search [filteredOptions]="filteredOptions" [searchControl]="searchControl" (pickedCustomer)="getCustomerInfoById($event)" (newCustomer)="newCustomerIsClicked();"></app-search>
+  <app-search [filteredOptions]="filteredOptions$ | async" [searchControl]="searchControl" (pickedCustomer)="getCustomerInfoById($event)" (newCustomer)="newCustomerIsClicked();"></app-search>
   <app-customer-info [cities]="cities" [customerInfo]="customerInfo" [customerTitle]="customerTitle" [customerTypes]="customerTypes" (toNewPayment)="goToCreateNewPayment()"></app-customer-info>
 </div>

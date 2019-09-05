@@ -37,7 +37,7 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 })
 export class NewReceiptComponent implements OnInit, OnDestroy {
   customerInfo: CustomerInfoById;
-  myControl = new FormControl();
+  searchControl = new FormControl();
   filteredOptions: Observable<any[]>;
   CustomerSearchData: Observable<any[]>;
 
@@ -92,12 +92,12 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     }));
     // this.generalService.addSubscription(currentlyStep$);
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
-    this.receiptService.createNewEvent.subscribe(data => this.myControl.patchValue(''));
+    this.receiptService.createNewEvent.subscribe(data => this.searchControl.patchValue(''));
     this.spinner.stop();
   }
 
   filterOption() {
-    this.filteredOptions = this.myControl.valueChanges
+    this.filteredOptions = this.searchControl.valueChanges
       .pipe(
         map(value => this._filter(value)),
       );
@@ -148,7 +148,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   createNew() {
     this.receiptService.createNewEvent.next();
     this.receiptService.setStep(1);
-    this.myControl.patchValue('');
+    this.searchControl.patchValue('');
   }
   LoadSystemTables() {
     if (this.generalService.checkLocalStorage('cities')) {

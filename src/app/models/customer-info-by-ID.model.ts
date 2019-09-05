@@ -44,3 +44,4 @@ export class CustomerInfoById {
       GetCustomerReciepts_Involved: GetCustomerReceipts[]
       QuickGeneralGroupList: []
 }
+

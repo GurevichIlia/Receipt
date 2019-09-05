@@ -1,4 +1,3 @@
-<mat-card >
     <div class="row justify-content-center">
       <div class="col-12">
         <h2 class="text-center" translate>Create a new Receipt</h2>
@@ -13,7 +12,7 @@
               [formControl]="searchControl" [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
               <mat-option (click)="pickCustomer(user.CustomerId)"
-                *ngFor="let user of filteredOptions | async | slice:0:50; let i = index" [value]="user.FileAs1">
+                *ngFor="let user of filteredOptions | slice:0:50; let i = index" [value]="user.FileAs1">
                 {{user.FileAs1}}
               </mat-option>
             </mat-autocomplete>
@@ -22,10 +21,7 @@
       </div>
       <div class="col-xs-1 col-sm-1 col-md-3 col-lg-2 col-xl-2">
         <button mat-raised-button color="primary" class="mb-2 mr-3 ml-3"
-          style="background-color: 		#34DDD8; color: white"
+        style="background-color: rgb(38, 87, 122); color: white"
           (click)="newCustomerIsClicked()">{{'Create new' | translate}}</button>
       </div>
-      <!-- </div> -->
-
     </div>
-  </mat-card>

@@ -1,4 +1,3 @@
-import { PaymentsService } from './../../grid/payments.service';
 import { Component, OnInit, Input, OnChanges, OnDestroy, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormArray, Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
@@ -8,6 +7,8 @@ import { startWith, map, debounceTime } from 'rxjs/operators';
 
 import { ReceiptsService } from '../services/receipts.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { PaymentsService } from './../../grid/payments.service';
+
 
 import * as moment from 'moment';
 
@@ -487,7 +488,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.receiptService.customerEmails.next(this.checkEmptyEmail());
     this.receiptService.addGroupsToReceipt(this.addGroups());
     this.addCurrentAddress();
-    this.getCustomerCreditCardList();
+    this.setCustomerCreditCardList();
     // this.receiptService.newReceipt.customerInfo.groups = this.userInfoGroup.get('groups').value;
     // this.receiptService.newReceipt.PaymentType = this.payMath.value;
 
@@ -499,7 +500,6 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     // localStorage.setItem('paymenthMethod', paymentMethodId.value);
     console.log('form.value', this.userInfoGroup.value);
     console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
-
   }
   addCurrentAddress() {
     if (this.street.value === null) {
@@ -519,8 +519,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
   }
   submit() {
-        this.addCUstomerInfoToReceipt()
-    if (this.currentRoute === '/newreceipt') {
+    this.addCUstomerInfoToReceipt()
+    if (this.currentRoute === '/home/newreceipt') {
       this.receiptService.setStep(3);
     } else if (this.currentRoute === '/home/payments-grid/customer-search') {
       this.goToCreateNewPayment();
@@ -611,10 +611,14 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   goToCreateNewPayment() {
     this.toNewPayment.emit();
   }
-  getCustomerCreditCardList() {
+  setCustomerCreditCardList() {
     if (this.customerInfo !== undefined) {
       this.paymentsService.setListCustomerCreditCard(this.customerInfo.CustomerCreditCardTokens);
     }
+  }
+
+  getCustomerInfoById() {
+
   }
   ngOnDestroy() {
     this.subscriptions.unsubscribe();

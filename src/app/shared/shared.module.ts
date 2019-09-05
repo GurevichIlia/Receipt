@@ -1,4 +1,3 @@
-import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -13,17 +12,23 @@ import { MomentModule } from 'ngx-moment';
 import { ReceiptTypeFilterPipe } from './pipes/receipt-type-filter.pipe';
 import { TableComponent } from './share-components/table/table.component';
 import { SendByEmailComponent } from './modals/send-by-email/send-by-email.component';
+import { SearchComponent } from '../grid/grid-payments/customer-search/search/search.component';
+import { CustomerInfoViewComponent } from '../receipts/customer-info/customer-info-view/customer-info-view.component';
+import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
+
 
 @NgModule({
       declarations: [
             CustomerInfoComponent,
+            CustomerInfoViewComponent,
             PaymentsListComponent,
             CustomerPaymentsComponent,
             CreditCardComponent,
             ReceiptTypeFilterPipe,
             TableComponent,
-            SendByEmailComponent
-            ,
+            SendByEmailComponent,
+            SearchComponent,
+           
       ],
       imports: [
             CommonModule,
@@ -47,7 +52,9 @@ import { SendByEmailComponent } from './modals/send-by-email/send-by-email.compo
             PaymentsListComponent,
             CustomerPaymentsComponent,
             ReceiptTypeFilterPipe,
-            TableComponent
+            TableComponent,
+            SearchComponent,
+            CustomerInfoViewComponent
          
       ],
       entryComponents:[CreditCardComponent,SendByEmailComponent]

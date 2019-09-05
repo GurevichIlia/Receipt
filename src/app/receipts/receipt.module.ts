@@ -30,7 +30,7 @@ const receiptRoutes: Routes = [
             ModalFinalScreenComponent,
             DisableControlDirective,
             FilterProductsByCatPipe,
-      ],
+                  ],
       imports: [
             CommonModule,
             SharedModule,

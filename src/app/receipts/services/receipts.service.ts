@@ -1,3 +1,5 @@
+import { CustomerInfoService } from './../customer-info/customer-info.service';
+import { CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
 import { GeneralSrv } from './GeneralSrv.service';
 import { Addresses } from '../../models/addresses.model';
 import { Emails } from '../../models/emails.model';
@@ -78,6 +80,10 @@ export class ReceiptsService {
   currentCustomerEmails$ = this.customerEmails.asObservable();
   // orderInStoreIsSaved = new BehaviorSubject(false);
   // currentOrderInStoreIsSaved = this.orderInStoreIsSaved.asObservable();
+
+  customerInfoById = new Subject<CustomerInfoById>();
+  customerInfoById$ = this.customerInfoById.asObservable();
+
   unsavedData = true;
   fullAddress = new Subject();
   currentAddress = this.fullAddress.asObservable();
@@ -85,6 +91,7 @@ export class ReceiptsService {
   currentReceiptLine$ = this.receiptLines.asObservable();
   constructor(
     private dialog: MatDialog,
+    
   ) {
     console.log('RECEIPT SERVICE');
     this.paymentMethod.next(localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null);
@@ -322,5 +329,11 @@ export class ReceiptsService {
   }
   createNewClicked() {
     this.createNewEvent.next()
+  }
+  setCustomerInfoById(customerInfoById: CustomerInfoById) {
+    this.customerInfoById.next(customerInfoById);
+  }
+  getCustomerInfoById(): Observable<CustomerInfoById> {
+    return this.customerInfoById$;
   }
 }

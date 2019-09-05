@@ -33,12 +33,18 @@ mat-sidenav-content {
 .matSidenavContent {
   margin-right: 15px;
 }
-.sidenavToggle{
+
+.sidenavToggle {
   display: inherit;
   z-index: 1000;
   position: fixed
 }
-.sidenav{
+
+.sidenav {
   width: 300px;
   min-height: 700px
+}
+
+.contentDesktopMargin {
+  margin-left: 50px
 }

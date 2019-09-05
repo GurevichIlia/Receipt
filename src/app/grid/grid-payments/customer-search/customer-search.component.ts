@@ -21,7 +21,7 @@ import { NewPaymentService } from '../new-payment/new-payment.service';
 export class CustomerSearchComponent implements OnInit, OnDestroy {
   customerInfo: object;
   searchControl = new FormControl();
-  filteredOptions: Observable<any[]>;
+  filteredOptions$: Observable<any[]>;
   CustomerSearchData: Observable<any[]>;
 
   cCustomerSearchData: any[] = [];
@@ -64,7 +64,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.spinner.stop();
   }
   filterOption() {
-    this.filteredOptions = this.searchControl.valueChanges
+    this.filteredOptions$ = this.searchControl.valueChanges
       .pipe(
         map(value => this._filter(value)),
       );

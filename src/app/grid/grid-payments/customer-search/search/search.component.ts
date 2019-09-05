@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -10,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class SearchComponent implements OnInit {
   @Input() searchControl: FormControl;
-  @Input() filteredOptions: Observable<any[]>;
+  @Input() filteredOptions: any[];
   @Output() pickedCustomer: EventEmitter<number> = new EventEmitter();
   @Output() newCustomer: EventEmitter<number> = new EventEmitter();
 

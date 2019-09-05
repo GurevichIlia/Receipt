@@ -1,8 +1,9 @@
 <div *ngIf="step === 1 || step === 0" class="mb-1 example-headers-align">
-  <mat-card-title>{{'New receipt' | translate}} </mat-card-title>
   <mat-expansion-panel [expanded]="step === 1 || step === 0" (opened)="receiptService.setStep(1)" hideToggle>
     <mat-expansion-panel-header>
+        <mat-card-title>{{'New receipt' | translate}} </mat-card-title>
       <mat-panel-title>
+       
         <h6>{{'Customer Info' | translate}}</h6>
       </mat-panel-title>
       <mat-panel-description>
@@ -11,6 +12,7 @@
       </mat-panel-description>
     </mat-expansion-panel-header>
 
+    <app-customer-info-view [userInfoGroup]="userInfoGroup" ></app-customer-info-view>
 
     <form [formGroup]="userInfoGroup" (ngSubmit)="submit()" [style.fontSize]="'20px'">
 
@@ -41,23 +43,6 @@
 
         </mat-form-field>
       </div>
-      <!-- <mat-error class="mb-1" *ngIf="isVerified === false && paymentMethodId === 3">Please verify your credit card
-      </mat-error> -->
-
-      <!-- <mat-form-field *ngIf="!disabledPayMethod" class="ml-2">
-        <mat-select #PaymentMethod placeholder="{{'Payment method' | translate}}" [formControl]='payMath' required>
-          <mat-option [value]="payment.PayTypeId" *ngFor="let payment of paymentMethods"
-            (click)="checkPayType(PaymentMethod.value)">
-            {{currentLang === 'he'? payment.PaymentTypeOther : payment.PaymentTypeEng}}
-          </mat-option>
-        </mat-select> -->
-      <!-- <mat-error *ngIf="isVerified === false">Please verify your credit card.</mat-error> -->
-      <!-- </mat-form-field> -->
-
-      <!-- <button type="button" class="mb-1" (click)="creditCardModalOpen(3)"
-        *ngIf="paymentMethodId === 3 && isVerified === false" mat-raised-button color="warn">Verify Credit
-        card</button>
-        <mat-error *ngIf="isVerified === false">Please verify your credit card.</mat-error> -->
 
       <hr *ngIf="showMoreInfo">
       <div formGroupName="customerMainInfo">
@@ -69,9 +54,7 @@
                 {{currentLang === 'he'? customerType.TypeNameHeb : customerType.TypeNameEng}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <!-- <mat-form-field class="col-12">
-            <input formControlName="customerType" matInput placeholder="{{'Customer type' | translate}}">
-          </mat-form-field> -->
+
 
           <mat-form-field class="example-full-width col-12">
             <input type="text" placeholder="{{'Title' | translate}}" aria-label="Number" matInput
@@ -84,9 +67,6 @@
             </mat-autocomplete>
           </mat-form-field>
 
-          <!-- <mat-form-field class="col-12">
-            <input formControlName="title" matInput placeholder="{{'Title' | translate}}">
-          </mat-form-field> -->
 
           <mat-form-field class="col-12">
             <mat-select formControlName="gender" placeholder="{{'Gender' | translate}}">
@@ -95,8 +75,7 @@
               <mat-option [value]="0">Undefined</mat-option>
             </mat-select>
           </mat-form-field>
-          <!-- <input formControlName="gender" matInput placeholder="{{'Gender' | translate}}">
-      </mat-form-field> -->
+
 
           <mat-form-field class="col-12">
             <input formControlName="tZ" matInput placeholder="{{'T.Z' | translate}}">
@@ -117,9 +96,6 @@
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
 
-          <!-- <mat-form-field class="col-12">
-        <input formControlName="birthday" type="date" matInput placeholder="Birthday">
-      </mat-form-field> -->
 
           <mat-checkbox formControlName="afterSunset" class="col-12"><strong>{{'After sunset' | translate}}</strong>
           </mat-checkbox>
@@ -234,7 +210,7 @@
       </p>
 
       <mat-action-row>
-        <div *ngIf="currentRoute === '/newreceipt'">
+        <div *ngIf="currentRoute === '/home/newreceipt'">
           <button class="mr-1 ml-2" type="button" mat-raised-button
             [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}" (click)="openStore()"
             [disabled]="requiredField === true">
@@ -246,7 +222,7 @@
             {{'Next' | translate}}
           </button>
         </div>
-        <button *ngIf="currentRoute !== '/newreceipt'" type="submit" mat-raised-button color="primary"
+        <button *ngIf="currentRoute !== '/home/newreceipt'" type="submit" mat-raised-button color="primary"
           [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
           [disabled]="requiredField === true">
           {{'Next' | translate}}
@@ -254,5 +230,5 @@
       </mat-action-row>
     </form>
   </mat-expansion-panel>
-  <app-payments-list *ngIf="currentRoute === '/newreceipt'" [customerInfo]="customerInfo"></app-payments-list>
+  <app-payments-list *ngIf="currentRoute === '/home/newreceipt'" [customerInfo]="customerInfo"></app-payments-list>
 </div>
