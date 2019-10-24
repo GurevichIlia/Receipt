@@ -19,6 +19,8 @@ import { ReceiptType } from '../../models/receiptType.interface';
 import { Receiptlines } from '../../models/receiptlines.model';
 import { Group } from '../customer-info/customer-info.component';
 import { MatDialog } from '@angular/material';
+import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
+import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +35,9 @@ export class ReceiptsService {
   createNewEvent = new Subject<void>();
   amount = new BehaviorSubject(this.totalAmount);
   currentAmount$ = this.amount.asObservable();
+
+  fullReceiptData = new BehaviorSubject<ReceiptGLobalData>(null);
+  fullReceiptData$ = this.fullReceiptData.asObservable().pipe(filter(data => data !== null));
 
   paymentsNotEmpty = false;
   blockPaymentMethod = new BehaviorSubject(this.paymentsNotEmpty);
@@ -81,7 +86,7 @@ export class ReceiptsService {
   // orderInStoreIsSaved = new BehaviorSubject(false);
   // currentOrderInStoreIsSaved = this.orderInStoreIsSaved.asObservable();
 
-  customerInfoById = new Subject<CustomerInfoById>();
+  customerInfoById = new BehaviorSubject<CustomerInfoById>(null);
   customerInfoById$ = this.customerInfoById.asObservable();
 
   unsavedData = true;
@@ -91,7 +96,7 @@ export class ReceiptsService {
   currentReceiptLine$ = this.receiptLines.asObservable();
   constructor(
     private dialog: MatDialog,
-    
+
   ) {
     console.log('RECEIPT SERVICE');
     this.paymentMethod.next(localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null);
@@ -163,10 +168,6 @@ export class ReceiptsService {
   sendReceiptToServer() {
     // console.log(this.newReceipt);
   }
-  changeCustomerName(name: string) {
-    this.customerName.next(name);
-    this.currentFullName$.subscribe(data => console.log(data))
-  }
   changeTotalAmount(amount: number) {
     this.amount.next(amount);
   }
@@ -178,18 +179,31 @@ export class ReceiptsService {
   }
   getFullNewReceipt() {
     const receiptHeader = this.newReceipt.Receipt.ReceiptHeader;
-    const adress = this.newReceipt.customerInfo.addresses;
+    debugger
+    const address = this.newReceipt.customerInfo.addresses
     const newReceiptHeader: ReceiptHeader = this.newReceipt.Receipt.ReceiptHeader;
     const newReceiptCustomerMainInfo: Customermaininfo = this.newReceipt.customerInfo.customermaininfo;
-    newReceiptHeader.fname = newReceiptCustomerMainInfo.firstName;
-    newReceiptHeader.lname = newReceiptCustomerMainInfo.lastName;
+    newReceiptHeader.fname = newReceiptCustomerMainInfo.fname;
+    newReceiptHeader.lname = newReceiptCustomerMainInfo.lname;
     newReceiptHeader.Company = newReceiptCustomerMainInfo.company;
-    newReceiptHeader.FileAs = newReceiptCustomerMainInfo.firstName;
-    newReceiptHeader.CustomerCode = this.newReceipt.customerInfo.customermaininfo.tZ;
+    newReceiptHeader.FileAs = newReceiptCustomerMainInfo.fname;
+    newReceiptHeader.CustomerCode = this.newReceipt.customerInfo.customermaininfo.customerCode;
     newReceiptHeader.Titel = this.newReceipt.customerInfo.customermaininfo.title;
-    receiptHeader.Zip = adress.zip;
-    receiptHeader.Street = adress.street;
-    receiptHeader.CityName = adress.city;
+    if (address) {
+      receiptHeader.Zip = address.zip;
+    } else {
+      receiptHeader.Zip = '';
+    }
+    if (address) {
+      receiptHeader.CityName = address.cityName;
+    } else {
+      receiptHeader.CityName = '';
+    }
+    if (address) {
+      receiptHeader.Street = address.street;
+    } else {
+      receiptHeader.Street = '';
+    }
     console.log(this.newReceipt);
     return this.newReceipt;
   }
@@ -240,28 +254,28 @@ export class ReceiptsService {
   setProducts(products: Product[]) {
     this.newReceipt.Receipt.products = products;
   }
-  setCustomerMainfInfo(customerMainInfo: Customermaininfo) {
+  setCustomerMainfInfoToReceipt(customerMainInfo: Customermaininfo) {
     this.newReceipt.customerInfo.customermaininfo = customerMainInfo;
   }
-  setPhones(phones: Phones[]) {
+  setPhonesToReceipt(phones: Phones[]) {
     this.newReceipt.customerInfo.phones = phones;
   }
-  setEmails(emails: Emails[]) {
+  setEmailsToReceipt(emails: Emails[]) {
     this.newReceipt.customerInfo.emails = emails;
   }
-  setAdresses(addresses: Addresses) {
+  setAddressesToReceipt(addresses: Addresses) {
     this.newReceipt.customerInfo.addresses = addresses;
   }
   getReceiptLines() {
     return this.newReceipt.Receipt.recieptlines;
   }
   getFirstLastName() {
-    const custInfo = this.newReceipt.customerInfo.customermaininfo;
-    const fullName = `${custInfo.firstName} ${custInfo.lastName}`;
-    return fullName;
+    // const custInfo = this.newReceipt.customerInfo.customermaininfo;
+    // const fullName = `${custInfo.fname} ${custInfo.lname}`;
+    return this.customerName.getValue()
   }
   getTz() {
-    return this.newReceipt.customerInfo.customermaininfo.tZ;
+    return this.newReceipt.customerInfo.customermaininfo.customerCode;
   }
   getProducts() {
     return this.newReceipt.Receipt.products;
@@ -330,10 +344,33 @@ export class ReceiptsService {
   createNewClicked() {
     this.createNewEvent.next()
   }
+
   setCustomerInfoById(customerInfoById: CustomerInfoById) {
     this.customerInfoById.next(customerInfoById);
   }
-  getCustomerInfoById(): Observable<CustomerInfoById> {
+  getCustomerInfoById$(): Observable<CustomerInfoById> {
     return this.customerInfoById$;
+  }
+  getCustomerInfoById(): CustomerInfoById {
+    return this.customerInfoById.getValue();
+  }
+
+  setIsNewCustomer(value: boolean) {
+    this.newCustomer.next(value);
+  }
+
+  setGlobalReceiptData(fullReceiptData) {
+    this.fullReceiptData.next(fullReceiptData);
+  }
+  getGlobalReceiptData$(): Observable<ReceiptGLobalData> {
+    return this.fullReceiptData$;
+  }
+
+  setNewReceiptCustomerInfo(customerInfo: Customerinfo) {
+    this.newReceipt.customerInfo = customerInfo
+  }
+
+  setFullName(fullName: string) {
+    this.customerName.next(fullName);
   }
 }

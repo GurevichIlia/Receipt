@@ -172,7 +172,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!!Object.keys(data).length) {
           this.customerInfoById = data;
           this.setInputValue(this.fileAs, this.customerInfoById.customermaininfo.fileAs);
-          this.setInputValue(this.Tz, this.customerInfoById.customermaininfo.tZ);
+          this.setInputValue(this.Tz, this.customerInfoById.customermaininfo.customerCode);
           this.newPaymentService.setFoundedCustomerId(this.customerInfoById.customermaininfo.customerId);
           // this.getListCustomerCreditCard()
           this.getListCustomerCreditCard(this.newPaymentService.getfoundedCustomerId());

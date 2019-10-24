@@ -1,5 +1,5 @@
 <mat-list role="list">
-  <mat-list-item role="listitem"><button class="itemMenuText" (click)="mainInfoNestMenu = !mainInfoNestMenu;"
+  <mat-list-item role="listitem"><button class="itemMenuText" (click)="mainInfoNestMenu = !mainInfoNestMenu; startAnimation('bounceInDown')"
       style="width: 200px" mat-button>
       <span class="row mainMenuItem">
         <span>Main info </span>
@@ -8,7 +8,7 @@
       </span>
     </button></mat-list-item>
   <mat-list role="list" *ngIf="mainInfoNestMenu">
-    <mat-list-item role="listitem">
+    <mat-list-item role="listitem" >
       <button (click)="selectChildMenuItem('main-info','personalInfo')"
         [ngClass]="{'nestedmenuBackColor': pickedMenu == 'personalInfo'}" style="width: 200px" mat-button><span
           class="nestedmenu">Personal info</span> </button>

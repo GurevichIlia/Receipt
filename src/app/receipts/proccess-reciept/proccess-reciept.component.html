@@ -1,171 +1,173 @@
-<mat-expansion-panel *ngIf="step === 5" class="example-headers-align mb-1" [expanded]="step === 5"
-  (opened)="receiptService.setStep(5)" hideToggle>
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      <h6>{{'Proccess receipt' | translate}}</h6>
-    </mat-panel-title>
-    <mat-panel-description>
-      <h6>{{'Proccess receipt' | translate}}</h6>
-      <mat-icon>date_range</mat-icon>
-    </mat-panel-description>
-  </mat-expansion-panel-header>
-  <form [formGroup]="proccessReceipt" (ngSubmit)="addProccessReceiptToReceipt(proccessReceipt)"
-    [style.fontSize]="'20px'">
-    <div [ngClass]="changePosition()">
-      <div class="row">
-        <!-- <h5 class="col-12">{{'Customer Name' | translate}}: {{customerName}}</h5> -->
-
-        <!-- <div class="col-12">
-          <mat-form-field *ngIf="newCustomer === false">
-            <mat-select placeholder="{{'Name suggestion' | translate}}" formControlName="customerName">
-              <mat-option [value]="name" *ngFor="let name of listOfCustomersName; let i = index"
-                (click)="pickSuggestedName(name)">
-                {{name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <hr *ngIf="newCustomer === false">
-          <mat-form-field class="col-3">
-            <input matInput placeholder="{{'Customer Name' | translate}}" formControlName="customerName">
-          </mat-form-field>
-        </div> -->
-        <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
-          <mat-form-field class="example">
-            <input type="text" placeholder="{{'Name of the receipt' | translate}}" aria-label="Number"
-              [value]="receiptName.value" matInput formControlName="customerName" [matAutocomplete]="Auto" required>
-            <mat-autocomplete #Auto="matAutocomplete">
-              <mat-option *ngFor="let name of filteredlistOfCustomersName | async; let i = index" [value]="name">
-                {{name}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
+<div class="container">
+    <mat-expansion-panel *ngIf="step === 5" class="example-headers-align mb-1" [expanded]="step === 5"
+    (opened)="receiptService.setStep(5)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h6>{{'Proccess receipt' | translate}}</h6>
+      </mat-panel-title>
+      <mat-panel-description>
+        <h6>{{'Proccess receipt' | translate}}</h6>
+        <mat-icon>date_range</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <form [formGroup]="proccessReceipt" (ngSubmit)="addProccessReceiptToReceipt(proccessReceipt)"
+      [style.fontSize]="'20px'">
+      <div [ngClass]="changePosition()">
+        <div class="row">
+          <!-- <h5 class="col-12">{{'Customer Name' | translate}}: {{customerName}}</h5> -->
+  
+          <!-- <div class="col-12">
+            <mat-form-field *ngIf="newCustomer === false">
+              <mat-select placeholder="{{'Name suggestion' | translate}}" formControlName="customerName">
+                <mat-option [value]="name" *ngFor="let name of listOfCustomersName; let i = index"
+                  (click)="pickSuggestedName(name)">
+                  {{name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <hr *ngIf="newCustomer === false">
+            <mat-form-field class="col-3">
+              <input matInput placeholder="{{'Customer Name' | translate}}" formControlName="customerName">
+            </mat-form-field>
+          </div> -->
+          <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
+            <mat-form-field class="example">
+              <input type="text" placeholder="{{'Name of the receipt' | translate}}" aria-label="Number"
+                [value]="receiptName.value" matInput formControlName="customerName" [matAutocomplete]="Auto" required>
+              <mat-autocomplete #Auto="matAutocomplete">
+                <mat-option *ngFor="let name of filteredlistOfCustomersName | async; let i = index" [value]="name">
+                  {{name}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+  
+          <!-- <h5 class="col-12">{{'Name of the receipt' | translate}}: {{selectedReceiptName}}</h5> -->
+          <h5 class="col-12">{{'Total amount' | translate}}: {{totalAmount | currency : ' NIS ' : number : '1.2'}}</h5>
+          <mat-error *ngIf="amountError">{{'Amount less than the amount in the store' | translate }}:
+            {{currentlyStoreAmount | currency : ' NIS ' : number : '1.2'}}</mat-error>
         </div>
-
-        <!-- <h5 class="col-12">{{'Name of the receipt' | translate}}: {{selectedReceiptName}}</h5> -->
-        <h5 class="col-12">{{'Total amount' | translate}}: {{totalAmount | currency : ' NIS ' : number : '1.2'}}</h5>
-        <mat-error *ngIf="amountError">{{'Amount less than the amount in the store' | translate }}:
-          {{currentlyStoreAmount | currency : ' NIS ' : number : '1.2'}}</mat-error>
+        <hr>
+  
+        <div class="row">
+          <!-- <mat-form-field class="col-12">
+        <input matInput placeholder="Name of customer" formControlName="customerName"> 
+      </mat-form-field> -->
+  
+  
+          <!-- <div class="col-12" [ngClass]="changePosition()">
+            <mat-form-field>
+              <mat-select placeholder="{{'For' | translate}}" formControlName="receiptFor" required>
+                <mat-option [value]="receipt.id" *ngFor="let receipt of receiptForList">
+                  {{receipt.note}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div> -->
+          <div class="col-12" [ngClass]="changePosition()">
+            <mat-form-field class="example-full-width col-12">
+              <input type="text" placeholder="{{'For' | translate}}" aria-label="Number" matInput
+                [value]='receiptFor.value' formControlName="receiptFor" [matAutocomplete]="auto" required>
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let receipt of filteredOptions | async; let i = index" [value]="receipt.note">
+                  {{receipt.note}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+  
+  
+          <div class="col-12">
+            <mat-form-field class="col-12" required>
+              <input matInput placeholder="{{'Address' | translate}}" formControlName="addressOnTheReceipt">
+            </mat-form-field>
+  
+  
+            <mat-form-field class="col-12">
+              <mat-select placeholder="{{'Receipt print template' | translate}}" formControlName="receiptTemplate">
+                <mat-option *ngFor="let letter of currentlyLetters " [value]="letter.ThanksLetterId">
+                  {{letter.ThanksLetterName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error *ngIf="currentlyLetters.length === 0">אין מכתבי תודה! בחר סוג קבלה אחר או צור קשר עם תמיכת הלקוחות.
+            </mat-error>
+  
+            <mat-form-field class="col-12">
+              <textarea matInput placeholder="{{'Textarea' | translate}}" formControlName="textarea"></textarea>
+            </mat-form-field>
+            <hr>
+            <mat-radio-group #sendReceipt aria-labelledby="example-radio-group-label" class="example-radio-group"
+              formControlName="sendTo">
+              <mat-radio-button class="example-radio-button ml-3" [value]="'email'">
+                {{'Send to email' | translate}}
+              </mat-radio-button>
+              <mat-radio-button class="example-radio-button ml-3" [value]="'whatsApp'">
+                {{'Send to WhatsApp' | translate}}
+              </mat-radio-button>
+              <mat-radio-button class="example-radio-button ml-3" [value]="'dontSend'">
+                {{'Do not send' | translate}}
+              </mat-radio-button>
+            </mat-radio-group>
+            <mat-form-field class="col-8" *ngIf="sendReceiptTo === 'email'">
+              <input type="text" placeholder="{{'Email' | translate}}" aria-label="Number" matInput
+                formControlName="sendToEmail" [matAutocomplete]="Auto">
+              <mat-autocomplete #Auto="matAutocomplete">
+                <mat-option *ngFor="let email of customerEmails" [value]="email.email">
+                  {{email.email}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+  
+            <mat-form-field class="col-8" *ngIf="sendReceiptTo === 'whatsApp'">
+              <input matInput placeholder="{{'Mobile phone' | translate}}" formControlName="sendToPhone" >
+            </mat-form-field>
+            <hr>
+            <mat-radio-group #showOnScreen aria-labelledby="example-radio-group-label" class="example-radio-group"
+              formControlName="showOnScreen">
+              <mat-radio-button class="example-radio-button ml-3" [value]="true">
+                {{'Show receip on screen' | translate}}
+              </mat-radio-button>
+              <mat-radio-button class="example-radio-button ml-3" [value]="false">
+                {{'Do not show' | translate}}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+  
+        </div>
       </div>
-      <hr>
-
-      <div class="row">
-        <!-- <mat-form-field class="col-12">
-      <input matInput placeholder="Name of customer" formControlName="customerName"> 
-    </mat-form-field> -->
-
-
-        <!-- <div class="col-12" [ngClass]="changePosition()">
-          <mat-form-field>
-            <mat-select placeholder="{{'For' | translate}}" formControlName="receiptFor" required>
-              <mat-option [value]="receipt.id" *ngFor="let receipt of receiptForList">
-                {{receipt.note}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div> -->
-        <div class="col-12" [ngClass]="changePosition()">
-          <mat-form-field class="example-full-width col-12">
-            <input type="text" placeholder="{{'For' | translate}}" aria-label="Number" matInput
-              [value]='receiptFor.value' formControlName="receiptFor" [matAutocomplete]="auto" required>
-            <mat-autocomplete #auto="matAutocomplete">
-              <mat-option *ngFor="let receipt of filteredOptions | async; let i = index" [value]="receipt.note">
-                {{receipt.note}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
-
-
-        <div class="col-12">
-          <mat-form-field class="col-12" required>
-            <input matInput placeholder="{{'Address' | translate}}" formControlName="addressOnTheReceipt">
-          </mat-form-field>
-
-
-          <mat-form-field class="col-12">
-            <mat-select placeholder="{{'Receipt print template' | translate}}" formControlName="receiptTemplate">
-              <mat-option *ngFor="let letter of currentlyLetters " [value]="letter.ThanksLetterId">
-                {{letter.ThanksLetterName}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-error *ngIf="currentlyLetters.length === 0">אין מכתבי תודה! בחר סוג קבלה אחר או צור קשר עם תמיכת הלקוחות.
-          </mat-error>
-
-          <mat-form-field class="col-12">
-            <textarea matInput placeholder="{{'Textarea' | translate}}" formControlName="textarea"></textarea>
-          </mat-form-field>
-          <hr>
-          <mat-radio-group #sendReceipt aria-labelledby="example-radio-group-label" class="example-radio-group"
-            formControlName="sendTo">
-            <mat-radio-button class="example-radio-button ml-3" [value]="'email'">
-              {{'Send to email' | translate}}
-            </mat-radio-button>
-            <mat-radio-button class="example-radio-button ml-3" [value]="'whatsApp'">
-              {{'Send to WhatsApp' | translate}}
-            </mat-radio-button>
-            <mat-radio-button class="example-radio-button ml-3" [value]="'dontSend'">
-              {{'Do not send' | translate}}
-            </mat-radio-button>
-          </mat-radio-group>
-          <mat-form-field class="col-8" *ngIf="sendReceiptTo === 'email'">
-            <input type="text" placeholder="{{'Email' | translate}}" aria-label="Number" matInput
-              formControlName="sendToEmail" [matAutocomplete]="Auto">
-            <mat-autocomplete #Auto="matAutocomplete">
-              <mat-option *ngFor="let email of customerEmails" [value]="email.email">
-                {{email.email}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-
-          <mat-form-field class="col-8" *ngIf="sendReceiptTo === 'whatsApp'">
-            <input matInput placeholder="{{'Mobile phone' | translate}}" formControlName="sendToPhone" >
-          </mat-form-field>
-          <hr>
-          <mat-radio-group #showOnScreen aria-labelledby="example-radio-group-label" class="example-radio-group"
-            formControlName="showOnScreen">
-            <mat-radio-button class="example-radio-button ml-3" [value]="true">
-              {{'Show receip on screen' | translate}}
-            </mat-radio-button>
-            <mat-radio-button class="example-radio-button ml-3" [value]="false">
-              {{'Do not show' | translate}}
-            </mat-radio-button>
-          </mat-radio-group>
-        </div>
-
+    </form>
+    <mat-action-row>
+      <button mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" class="mr-1 ml-2"
+        (click)="receiptService.prevStep()">
+        {{'Previous' | translate}}
+      </button>
+      <button type="button" mat-raised-button
+        [ngStyle]="{'background-color': proccessReceipt.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': proccessReceipt.invalid === false ? 'white' : ''}"
+        [disabled]="proccessReceipt.invalid" (click)="addProccessReceiptToReceipt(proccessReceipt)">
+        {{'Finish' | translate}}
+      </button>
+    </mat-action-row>
+  </mat-expansion-panel>
+  
+  <mat-card class="text-center" *ngIf="step === 6">
+  
+    <h2>{{'Customer id' | translate}}: {{finalResolve?.cusomerid}}</h2>
+  
+    <h3 class="mb-4">{{'Receipt number' | translate }}: {{finalResolve?.recno}}</h3>
+    <div class="row justify-content-center">
+      <div class="mb-2">
+        <button type="button" mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" class="mr-2 ml-2"
+          (click)="showReceiptTemplate()">{{'Show receipt info' | translate }}</button>
       </div>
+  
+      <div>
+        <button type="button" mat-raised-button [ngStyle]="{'background-color': 'rgb(38, 87, 122)', 'color': 'white' }"
+          (click)="createNewReceipt()">{{'Create the new receipt' | translate}}</button>
+      </div>
+  
     </div>
-  </form>
-  <mat-action-row>
-    <button mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" class="mr-1 ml-2"
-      (click)="receiptService.prevStep()">
-      {{'Previous' | translate}}
-    </button>
-    <button type="button" mat-raised-button
-      [ngStyle]="{'background-color': proccessReceipt.invalid === false ? 'rgb(38, 87, 122)' : '' , 'color': proccessReceipt.invalid === false ? 'white' : ''}"
-      [disabled]="proccessReceipt.invalid" (click)="addProccessReceiptToReceipt(proccessReceipt)">
-      {{'Finish' | translate}}
-    </button>
-  </mat-action-row>
-</mat-expansion-panel>
-
-<mat-card class="text-center" *ngIf="step === 6">
-
-  <h2>{{'Customer id' | translate}}: {{finalResolve?.cusomerid}}</h2>
-
-  <h3 class="mb-4">{{'Receipt number' | translate }}: {{finalResolve?.recno}}</h3>
-  <div class="row justify-content-center">
-    <div class="mb-2">
-      <button type="button" mat-raised-button [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" class="mr-2 ml-2"
-        (click)="showReceiptTemplate()">{{'Show receipt info' | translate }}</button>
-    </div>
-
-    <div>
-      <button type="button" mat-raised-button [ngStyle]="{'background-color': 'rgb(38, 87, 122)', 'color': 'white' }"
-        (click)="createNewReceipt()">{{'Create the new receipt' | translate}}</button>
-    </div>
-
-  </div>
-
-
-</mat-card>
+  
+  
+  </mat-card>
+</div>

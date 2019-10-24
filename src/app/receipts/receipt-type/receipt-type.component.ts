@@ -7,14 +7,14 @@ import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { MatRadioChange, MatDialog } from '@angular/material';
 import { CreditCardComponent } from '../credit-card/credit-card.component';
 import { CreditCardService } from '../credit-card/credit-card.service';
-import { FormControl, Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { AuthenticationService } from 'src/app/receipts/services/authentication.service';
 import { Router } from '@angular/router';
 import { ReceiptType } from 'src/app/models/receiptType.interface';
 import { Subscription, Observable } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map} from 'rxjs/operators';
 import { CreditCardAccount } from 'src/app/models/credit-card-account.model';
-import { GlobalData } from 'src/app/models/globalData.model';
+import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
 
 @Component({
   selector: 'app-receipt-type',
@@ -127,12 +127,12 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     console.log(this.selectedReceiptType);
   }
   getPaymentTypes() {
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
+    this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
     }));
   }
   getCreditCardAccounts() {
-    this.customerCreditCardAccounts$ = this.generalService.currentReceiptData$.pipe(map((data: GlobalData) => data.Accounts));
+    this.customerCreditCardAccounts$ = this.receiptService.getGlobalReceiptData$().pipe(map((data: ReceiptGLobalData) => data.Accounts));
   }
   checkPayType(payType: number) {
     this.receiptService.paymentMethod.next(payType);
@@ -147,7 +147,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
   getReceiptsData() {
     this.subscriptions.add(this.generalService.getReceiptshData().subscribe(data => {
       console.log('Receipt Data', data);
-      this.generalService.fullReceiptData.next(data);
+      this.receiptService.setGlobalReceiptData(data);
       this.receiptTypes = data.ReceiptTypes as ReceiptType[];
       this.organisations = data.Orgs;
       this.filterRecType();
@@ -291,7 +291,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
     //   this._paymentMethodId = +localStorage.getItem('paymenthMethod');
     // }
     if (paymentMethodId === 3) {
-      this.dialog.open(CreditCardComponent, { width: '1150px', height: '540px', data: { fullName: this.receiptService.getFirstLastName(), tZ: this.receiptService.getTz(), creditCardAccounts: this.customerCreditCardAccounts$ } });
+      this.dialog.open(CreditCardComponent, { width: '1150px', height: '500px', disableClose: true, data: { fullName: this.receiptService.getFirstLastName(), tZ: this.receiptService.getTz(), creditCardAccounts: this.customerCreditCardAccounts$ } });
       // this.creditCardService.setFullNameForNewCreditCard(this.receiptService.getFirstLastName());
     } else {
       return;

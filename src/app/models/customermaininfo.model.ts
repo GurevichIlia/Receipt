@@ -1,12 +1,12 @@
 export class Customermaininfo {
       customerId: number;
-      firstName: string;
-      lastName: string;
+      fname: string;
+      lname: string;
       company: string;
       customerType?: string;
       title?: string;
       gender?: number;
-      tZ?: string;
+      customerCode?: string;
       spouseName?: string;
       fileAs?: string;
       birthday?: string;

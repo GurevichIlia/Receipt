@@ -14,11 +14,12 @@ const routes: Routes = [
       { path: 'newreceipt', loadChildren: './receipts/receipt.module#ReceiptModule' },
       { path: 'customer-details/:id', loadChildren: './customer-details/customer-details.module#CustomerDetailsModule' },
       { path: 'payments-grid', loadChildren: './grid/grid.module#GridModule', canActivate: [AuthGuard] },
+      { path: 'new-customer', loadChildren: './new-customer/new-customer.module#NewCustomerModule' },
     ]
   },
   { path: '**', redirectTo: '/home' },
-];
 
+]
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]

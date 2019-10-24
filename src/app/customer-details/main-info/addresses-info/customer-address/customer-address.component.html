@@ -1,0 +1,48 @@
+<div style="text-align: justify" class=" row mb-3 mr-3 ml-3">
+  <h5>{{addressGroup.value.cityName}}
+    {{addressGroup.value.street}}, {{addressGroup.value.zip}} </h5>
+
+  <i *ngIf="!editMode" style="cursor: pointer; margin-right: 20px" (click)="createAction('editAddress', i)"
+    class="material-icons">create</i>
+  <i *ngIf="editMode" style="cursor: pointer; margin-right: 20px" (click)="createAction('saveAddress', i)"
+    class="material-icons">save</i>
+  <i style="cursor: pointer; float: left" class=" material-icons" (click)="createAction('deleteAddress', i)">delete</i>
+
+
+
+
+
+</div>
+
+<form *ngIf="editMode" [formGroup]="addressGroup" style="text-align: justify; align-items: baseline" class="mb-2 row">
+  <mat-form-field class="col-xs-6 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+    <mat-select formControlName="addressTypeId" placeholder="{{'Address type' | translate}}">
+      <mat-option [value]="3">{{'Home' | translate}}</mat-option>
+      <mat-option [value]="1">{{'Work' | translate}}</mat-option>
+      <mat-option [value]="2">{{'Other' | translate}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="col-xs-6 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+    <input matInput formControlName="cityName" placeholder="City">
+  </mat-form-field>
+  <mat-form-field class="col-xs-12 col-sm-4 col-md-2 col-lg-2 col-xl-2">
+    <input matInput formControlName="zip" placeholder="Zip">
+  </mat-form-field>
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+    <input matInput formControlName="stateid" placeholder="State">
+  </mat-form-field>
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+    <input matInput formControlName="street" placeholder="Street">
+  </mat-form-field>
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+    <input matInput formControlName="street2" placeholder="Street 2">
+  </mat-form-field>
+
+  <mat-form-field class="col-xs-10 col-sm-10 col-md-6 col-lg-6 col-xl-6">
+    <textarea matInput formControlName="remark" type="text" placeholder="Remark"></textarea>
+  </mat-form-field>
+  <mat-checkbox class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2" formControlName="mainaddress">Main address
+  </mat-checkbox>
+</form>

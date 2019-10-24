@@ -62,17 +62,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
   goToSendMessage() {
     if (confirm('יש לך שינויים שלא נשמרו! אם תעזוב, השינויים שלך יאבדו')) {
-      this.router.navigate(['home/send-message'])
+      this.router.navigate(['home/send-message']);
     }
   }
   goToGrid() {
-    this.router.navigate(['home/payments-grid'])
+    this.router.navigate(['home/payments-grid']);
   }
   goToCustomerDetails() {
-    this.router.navigate([`home/customer-details/${1}`])
+    this.router.navigate([`home/customer-details/${1952}`]);
   }
   goToReceipt(){
-    this.router.navigate(['home/newreceipt'])
+    this.router.navigate(['home/newreceipt']);
+  }
+  createNewCustomer() {
+    this.router.navigate(['home/new-customer']);
   }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

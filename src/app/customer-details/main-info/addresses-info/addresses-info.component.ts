@@ -15,12 +15,7 @@ export class AddressesInfoComponent {
   constructor() { }
 
 
-  createAction(action: string, subject?: any) {
-    this.newAction.emit({ action, subject });
-    if (action === 'editAddress') {
-      this.editMode = true;
-    } else if (action === 'saveAddress') {
-      this.editMode = false;
-    }
+  createAction(event$: {action: string, subject?: any}) {
+    this.newAction.emit(event$);
   }
 }

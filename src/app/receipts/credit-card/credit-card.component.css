@@ -16,4 +16,6 @@
   width: 100px
 }
 
-
+::ng-deep .mat-dialog-container{
+  background-color: whitesmoke
+}

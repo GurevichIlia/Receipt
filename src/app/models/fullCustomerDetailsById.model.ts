@@ -25,6 +25,9 @@ export interface CustomerEmails {
       Priority: number;
       publish: number;
       tempid: number;
+      emailsex: number;
+      newslettere: number;
+      deleteRow: number;
 }
 export interface CustomerPhones {
       Area: string;
@@ -33,11 +36,16 @@ export interface CustomerPhones {
       CustomerId: number;
       Id: number;
       IsSms: number;
+      isSms: number;
       Phone: string;
       PhoneNumber: string;
+      phoneNumber: string;
       PhoneTypeId: number;
       Prefix: string;
       publish: number;
+      deleteRow: number;
+      phone: string;
+      area: string;
 }
 export interface MainDetails {
       ActiveStatus: number;

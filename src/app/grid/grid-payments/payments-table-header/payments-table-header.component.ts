@@ -30,8 +30,9 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.getGlobalData();
     this.createFilterForm();
+    this.getGlobalData();
+
   }
   getTablePaymentsData() {
     console.log('Filter options', this.filterFormValue.value)
@@ -65,7 +66,7 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
   getGlobalData() {
     // this.paymentsService.currentGlobalData$.pipe(takeUntil(this.subscription$)).subscribe(data => {
     this.globalData$ = this.paymentsService.currentGlobalData$;
-  }
+     }
   createFilterForm() {
     this.filterForm = this.fb.group({
       kevaTypeid: ['1'],

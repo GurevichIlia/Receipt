@@ -1,39 +1,48 @@
-import { Component, OnInit, Input, OnChanges, OnDestroy, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Customermaininfo } from './../../models/customermaininfo.model';
+import { Component, OnInit, Input, OnChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormArray, Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormArray, Validators, FormBuilder, FormGroup, FormControl, AbstractControl } from '@angular/forms';
 
-import { Observable, Subscription } from 'rxjs';
-import { startWith, map, debounceTime } from 'rxjs/operators';
+import { Observable, Subscription, Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 import { ReceiptsService } from '../services/receipts.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { PaymentsService } from './../../grid/payments.service';
 
-
 import * as moment from 'moment';
 
 import { CustomerType } from 'src/app/models/customerType.model';
-import { CustomerInfoById, GetCustomerReceipts } from 'src/app/models/customer-info-by-ID.model';
+import { GetCustomerReceipts, CustomerAddresses } from 'src/app/models/customer-info-by-ID.model';
+import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from './customer-info.service';
+import { MainDetails, CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
+import { CustomerTitle } from 'src/app/models/globalData.model';
+import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
+import { Phones } from 'src/app/models/phones.model';
+import { Emails } from 'src/app/models/emails.model';
+import { Addresses } from 'src/app/models/addresses.model';
+import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
 
 export interface Group {
   GroupId: number;
 };
-
 @Component({
   selector: 'app-customer-info',
   templateUrl: './customer-info.component.html',
   styleUrls: ['./customer-info.component.css']
 })
-export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
-  @Input() customerInfo: CustomerInfoById;
-  @Input() cities: any[];
-  @Input() customerTitle: { TitleEng: string, TitleHeb: string, TitleId: string }[];;
-  @Input() customerTypes: CustomerType[] = [];
+export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
+  cities: any[];
+  customerTitle: CustomerTitle[];;
+  customerTypes: CustomerType[];
   @Output() toNewPayment = new EventEmitter();
+  @Output() toNewCustomerDetails = new EventEmitter();
+  customerInfoById: CustomerInfoByIdForCustomerInfoComponent;
   step: number;
-  myControl = new FormControl();
-  filteredOptions$: Observable<any[]>;
-  filterCustTitle$: Observable<any[]>;
+  // cityAutoCompleteControl = new FormControl();
+  // titleAutoCompleteControl = new FormControl();
+  filteredCity$: Observable<any[]>;
+  filterCustTitle$: Observable<CustomerTitle[]>;
   paymentMethodId = null;
   userInfoGroup: FormGroup;
   groups: any[] = [];
@@ -51,19 +60,39 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
   isVerified = false;
   nextStepDisabled = true;
   currentLang: string;
-  foundCustomerEmails: object[] = [];
-  foundCustomerPhones: object[] = [];
+
 
   selectedGroups: Group[] = [];
   currentRoute: string;
   private subscriptions: Subscription = new Subscription();
   paymentsListData: GetCustomerReceipts;
+
+  globalReceiptData: ReceiptGLobalData;
+
+  customerPhones: CustomerPhones[];
+  customerEmails: CustomerEmails[];
+  customerAddress: CustomerAddresses[];
+  customerDetails: Customermaininfo[] | MainDetails[];
+
+  customerGroupList: CustomerGroupById[]
+
+  customer: {
+    customermaininfo: Customermaininfo;
+    phones: Phones[];
+    emails: Emails[];
+    addresses: Addresses;
+    groups: Group[];
+
+  }
+
+  subscription$ = new Subject();
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
     private fb: FormBuilder,
     private activatedRoute: Router,
-    private paymentsService: PaymentsService
+    private paymentsService: PaymentsService,
+    private customerInfoService: CustomerInfoService
   ) {
     // tslint:disable-next-line: max-line-length
     // this.payMath = new FormControl({ value: localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null, disabled: this.disabledPayMethod }, [Validators.required])
@@ -76,55 +105,66 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.userInfoGroup = this.fb.group({
       customerMainInfo: this.fb.group({
         customerId: [null],
-        firstName: [this.getItemsFromSessionStorage('firstName'), Validators.maxLength(20)],
-        lastName: [this.getItemsFromSessionStorage('lastName'), Validators.maxLength(20)],
+        fname: [this.getItemsFromSessionStorage('firstName'), Validators.maxLength(20)],
+        lname: [this.getItemsFromSessionStorage('lastName'), Validators.maxLength(20)],
         company: [this.getItemsFromSessionStorage('company'), Validators.maxLength(20)],
         // tslint:disable-next-line: max-line-length
         customerType: [this.setCustomerType()],
         title: [this.getItemsFromSessionStorage('title')],
         gender: [this.getItemsFromSessionStorage('gender')],
-        tZ: [this.getItemsFromSessionStorage('tZ')],
+        customerCode: [this.getItemsFromSessionStorage('tZ')],
         spouseName: [this.getItemsFromSessionStorage('spouseName')],
         fileAs: [this.getItemsFromSessionStorage('fileAs')],
         birthday: [moment(this.getItemsFromSessionStorage('birthday')).format('YYYY-MM-DD')],
-        afterSunset: [this.getItemsFromSessionStorage('afterSunset')],
+        afterSunset1: [this.getItemsFromSessionStorage('afterSunset')],
       }),
       phones: this.fb.array([
         this.fb.group({
-          PhoneTypeId: [2],
-          phone: ['']
+          phoneTypeId: [2],
+          phoneNumber: ['']
         })
       ]),
       emails: this.fb.array([
         this.fb.group({
-          emailname: [''],
+          emailName: [''],
           email: ['', Validators.email],
         })
       ]),
-      addresses: this.fb.group({
-        city: [''],
+      address: this.fb.group({
+        cityName: [''],
         street: [''],
+        street2: [''],
         zip: [''],
-        addresstypeid: ['']
+        addressTypeId: ['']
       }),
+
       groups: ['']
     });
 
   }
+  get phones() {
+    return this.userInfoGroup.get('phones') as FormArray;
+  }
+  get emails() {
+    return this.userInfoGroup.get('emails') as FormArray;
+  }
+  get address() {
+    return this.userInfoGroup.get('address') as FormGroup;
+  }
   get city() {
-    return this.userInfoGroup.get('addresses.city');
+    return this.userInfoGroup.get('addresses.cityName');
   }
   get street() {
     return this.userInfoGroup.get('addresses.street');
   }
-  get customerInfoGroup() {
-    return this.userInfoGroup.get('customerMainInfo');
+  get customerMainInfo() {
+    return this.userInfoGroup.get('customerMainInfo') as FormGroup;
   }
   get firstName() {
-    return this.userInfoGroup.controls.customerMainInfo.get('firstName');
+    return this.userInfoGroup.controls.customerMainInfo.get('fname');
   }
   get lastName() {
-    return this.userInfoGroup.controls.customerMainInfo.get('lastName');
+    return this.userInfoGroup.controls.customerMainInfo.get('lname');
   }
   get company() {
     return this.userInfoGroup.controls.customerMainInfo.get('company');
@@ -136,7 +176,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     return this.userInfoGroup.controls.customerMainInfo.get('title');
   }
   get tZ() {
-    return this.userInfoGroup.controls.customerMainInfo.get('tZ');
+    return this.userInfoGroup.controls.customerMainInfo.get('customerCode');
   }
   get gender() {
     return this.userInfoGroup.controls.customerMainInfo.get('gender');
@@ -151,7 +191,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     return this.userInfoGroup.controls.customerMainInfo.get('birthday');
   }
   get afterSunset() {
-    return this.userInfoGroup.controls.customerMainInfo.get('afterSunset');
+    return this.userInfoGroup.controls.customerMainInfo.get('afterSunset1');
   }
   get group() {
     return this.userInfoGroup.get('groups');
@@ -165,24 +205,26 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
     return custType;
   }
-  ngAfterViewInit() {
-    // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-    // Add 'implements AfterViewInit' to the class.
-
-  }
   ngOnChanges() {
-    if (this.customerInfo !== undefined) {
-      if (this.customerInfo['CustomerEmails'] !== []) {
-        this.foundCustomerEmails = this.customerInfo['CustomerEmails'];
-      }
-      if (this.customerInfo['CustomerMobilePhones'] !== []) {
-        this.foundCustomerPhones = this.customerInfo['CustomerMobilePhones'];
-      }
-    }
-    this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
+    // if (this.customerInfo !== undefined) {
+    //   // if (this.customerInfo['CustomerEmails'].length !== 0) {
+    //   this.customerEmails = this.customerInfo['CustomerEmails'];
+    //   // }
+    //   // if (this.customerInfo['CustomerMobilePhones'].length !== 0) {
+    //   this.customerPhones = this.customerInfo['CustomerMobilePhones'];
+    //   // }
+    //   // if (this.customerInfo['CustomerInfoForReceiept'].length !== 0) {
+    //   this.customerDetails = this.customerInfo['CustomerInfoForReceiept'];
+    //   // }
+    //   // if (this.customerInfo['CustomerAddresses'].length !== 0) {
+    //   this.customerAddresses = this.customerInfo['CustomerAddresses'];
+    //   // }
+    // }
 
-    console.log('CUSTOMER INFO GOT', this.customerInfo);
-    console.log(this.foundCustomerEmails, this.foundCustomerPhones);
+    // this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
+
+    // console.log('CUSTOMER INFO GOT', this.customerInfo);
+    // console.log(this.foundCustomerEmails, this.foundCustomerPhones);
 
     // this.creditCardService.currentlyCreditCardVerified.subscribe((isVerified: boolean) => {
     //   this.isVerified = isVerified;
@@ -191,48 +233,56 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     // });
   }
 
-  ngOnInit() {
-    this.getCurrentLanguage();
-    // console.log('this.payMath', this.payMath)
-    this.getCustomerTitle();
 
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
+
+
+  getCustomerTypes(data) {
+    this.customerTypes = data['GetCustomerTypes'];
+  }
+  getGlobalData() {
+    this.subscriptions.add(this.generalService.getGlobalData$().subscribe(data => {
       if (data) {
-        this.customerTypes = data['GetCustomerTypes'];
-
+        this.getCustomerTypes(data)
+        this.setCustomerTitleAutoComplete(data.CustomerTitle, this.title, 'TitleHeb')
       }
       console.log(this.customerTypes);
     }));
+  }
+  ngOnInit() {
+    this.getCurrentLanguage();
+    // console.log('this.payMath', this.payMath)
+
+    this.getGlobalData();
     this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
 
     this.getPaymentTypes();
     this.getPayMethFromLocalStorage();
 
     this.disabledNextStep();
-    this.customerTitleAutoCompl();
+    this.getCustomerInfoById();
 
+    this.getCities();
     this.subscriptions.add(this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
       .subscribe(data => {
-        this.setItemToSessionStorage('firstName', data.customerMainInfo.firstName);
-        this.setItemToSessionStorage('lastName', data.customerMainInfo.lastName);
+        this.setItemToSessionStorage('fname', data.customerMainInfo.fname);
+        this.setItemToSessionStorage('lname', data.customerMainInfo.lname);
         this.setItemToSessionStorage('company', data.customerMainInfo.company);
         this.setItemToSessionStorage('customerType', data.customerMainInfo.customerType);
         this.setItemToSessionStorage('title', data.customerMainInfo.title);
         this.setItemToSessionStorage('gender', data.customerMainInfo.gender);
-        this.setItemToSessionStorage('tZ', data.customerMainInfo.tZ);
+        this.setItemToSessionStorage('customerCode', data.customerMainInfo.customerCode);
         this.setItemToSessionStorage('spouseName', data.customerMainInfo.spouseName);
         this.setItemToSessionStorage('fileAs', data.customerMainInfo.fileAs);
-        this.setItemToSessionStorage('afterSunset', data.customerMainInfo.afterSunset);
+        this.setItemToSessionStorage('afterSunset1', data.customerMainInfo.afterSunset);
       }));
     // this.receiptService.blockPayMethod.subscribe((data: boolean) => {
     //   this.disabledPayMethod = data;
     //   console.log(this.disabledPayMethod)
     // });
-    this.refreshFormIfCleckCreateNewCustomer();
+    this.getCreateNewEvent();
     console.log(this.userInfoGroup.value)
     // this.filterOptionForCustomerSearch();
-
-    this.cityNameAutocompl();
+    this.cityAutocomplete(this.cities, this.address.controls.cityName, 'CityName');
     this.getCurrentRoute()
   }
   getCurrentRoute() {
@@ -240,45 +290,23 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.currentRoute = this.activatedRoute.url;
     this.generalService.partOfApplication.next(this.currentRoute);
   }
-  getCustomerTitle() {
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
-      if (data) {
-        this.customerTitle = data['CustomerTitle'];
-      }
-    }));
-  }
   getCurrentLanguage() {
     this.subscriptions.add(this.generalService.currentLang$.subscribe((lang: string) => {
       this.currentLang = lang;
     }));
   }
-  /**
-   * Autocomplete for city list in customer info.
-   */
-  cityNameAutocompl() {
-    this.filteredOptions$ = this.userInfoGroup.controls.addresses.get('city').valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      );
-  }
-  private _filter(value: string): string[] {
-    if (value == null) {
-      value = '';
-    }
-    const filterValue = value.toLowerCase();
-    return this.cities.filter(city => city['CityName'].toLowerCase().includes(filterValue));
-  }
-  updateCustomerInfo() {
-    if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
-      this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
 
-      this.showMoreInfo = false;
-    }
-  }
+  // updateCustomerInfo() {
+  //   if (typeof (this.customerInfo) != 'undefined' && this.customerInfo) {
+  //     this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
+
+  //     this.showMoreInfo = false;
+  //   }
+  // }
   disabledNextStep() {
     this.checkRequiredNameFields();
     this.subscriptions.add(this.userInfoGroup.controls.customerMainInfo.valueChanges
+      .pipe(takeUntil(this.subscription$))
       .subscribe(data => {
         this.checkRequiredNameFields();
       }));
@@ -299,158 +327,129 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       this.nextStepDisabled = true;
     }
   }
-  customerTitleAutoCompl() {
-    this.filterCustTitle$ = this.userInfoGroup.controls.customerMainInfo.get('title').valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this.filter(value))
-      );
-  }
-  private filter(value: string): { TitleEng: string, TitleHeb: string, TitleId: string }[] {
-    if (value == null) {
-      value = '';
-    }
-    const filterValue = value.toLowerCase();
-    return this.customerTitle.filter(title => title['TitleHeb'].toLowerCase().includes(filterValue));
 
-  }
-  resetForm() {
-    // this.userInfoGroup.reset('');
-  }
-  changeCustomerInfoIfCustomerIsFound(customer) {
-    if (customer !== undefined) {
-      const custInfo = customer.CustomerInfoForReceiept[0];
-      this.receiptService.newCustomer.next(false);
-      this.receiptService.setStep(1);
-      this.customerInfoTitle = `${custInfo.FileAs} ${custInfo.CustomerId}`;
+  changeCustomerInfoIfCustomerIsFound(customer: CustomerInfoByIdForCustomerInfoComponent) {
+    if (customer) {
+      this.refreshCustomerForm();
+
+      const custInfo = customer.customerMainInfo[0];
+      this.receiptService.setIsNewCustomer(false);
+      // this.receiptService.setStep(1);
+      this.customerInfoTitle = `${custInfo['FileAs']} ${custInfo['CustomerId']}`;
       console.log(this.customerInfoTitle);
-      this.updateCustomerMainInfo(custInfo);
+      this.setCustomerAddressFormControls();
+      this.setCustomerEmailFormControls();
+      this.setCustomerPhoneFormControls();
+      this.setCustomerMainInfo();
 
-      this.updateCustomerAddress(customer);
-      this.updateCustomerPhones();
+      // this.updateCustomerMainInfo(custInfo);
 
-      this.updateCustomerEmails(custInfo);
+      // this.updateCustomerAddress(customer);
+      // this.updateCustomerPhones();
+
+      // this.updateCustomerEmails(custInfo);
     }
     // this.disabledNextStep();
     //   console.log('work');
     // console.log('GROUPS', this.customerInfo.QuickGeneralGroupList);
   }
 
-  updateCustomerMainInfo(custInfo) {
-    this.userInfoGroup.controls.customerMainInfo.patchValue({
-      customerId: custInfo.CustomerId,
-      firstName: custInfo.fname,
-      lastName: custInfo.lname,
-      company: custInfo.Company,
-      customerType: custInfo.CustomerType,
-      title: custInfo.Title,
-      gender: custInfo.Gender,
-      tZ: custInfo.CustomerCode,
-      spouseName: custInfo.SpouseName,
-      fileAs: custInfo.FileAs,
-      birthday: moment(custInfo.BirthDate).format('DD/MM/YYYY'),
-      afterSunset: custInfo.AfterSunset1,
-    });
-  }
-  updateCustomerAddress(customer) {
-    if (customer.CustomerAddresses.length > 0) {
-      this.userInfoGroup.controls.addresses.patchValue({
-        city: customer.CustomerAddresses[0].CityName,
-        street: customer.CustomerAddresses[0].Street,
-        zip: customer.CustomerAddresses[0].Zip,
-        addresstypeid: customer.CustomerAddresses[0].AddressTypeId
+  // updateCustomerMainInfo(custInfo) {
+  //   this.userInfoGroup.controls.customerMainInfo.patchValue({
+  //     customerId: custInfo.CustomerId,
+  //     firstName: custInfo.fname,
+  //     lastName: custInfo.lname,
+  //     company: custInfo.Company,
+  //     customerType: custInfo.CustomerType,
+  //     title: custInfo.Title,
+  //     gender: custInfo.Gender,
+  //     tZ: custInfo.CustomerCode,
+  //     spouseName: custInfo.SpouseName,
+  //     fileAs: custInfo.FileAs,
+  //     birthday: moment(custInfo.BirthDate).format('DD/MM/YYYY'),
+  //     afterSunset: custInfo.AfterSunset1,
+  //   });
+  // }
+  // updateCustomerAddress(customer) {
+  //   if (customer.CustomerAddresses.length > 0) {
+  //     this.userInfoGroup.controls.addresses.patchValue({
+  //       city: customer.CustomerAddresses[0].CityName,
+  //       street: customer.CustomerAddresses[0].Street,
+  //       zip: customer.CustomerAddresses[0].Zip,
+  //       addresstypeid: customer.CustomerAddresses[0].AddressTypeId
 
-      });
-    } else {
-      this.userInfoGroup.controls.addresses.patchValue({
-        city: '',
-        street: '',
-        zip: '',
-        addresstypeid: ''
-      });
-    }
-  }
-  updateCustomerPhones() {
-    if (this.foundCustomerPhones.length > 0) {
-      this.phones.controls[0].patchValue({
-        PhoneTypeId: this.foundCustomerPhones[0]['PhoneTypeId'],
-        phone: this.foundCustomerPhones[0]['PhoneNumber'],
-      });
-      this.foundCustomerPhones = [];
-    } else {
-      this.phones.controls[0].patchValue({
-        PhoneTypeId: 2,
-        phone: ''
-      });
-    }
-  }
-  updateCustomerEmails(custInfo) {
-    if (this.foundCustomerEmails.length > 0) {
-      let i = 0;
-      for (const email of this.foundCustomerEmails) {
-        this.emails.controls[i].patchValue({
-          emailname: email['EmailName'],
-          email: email['Email'],
-        });
-        if (this.foundCustomerEmails.length > i + 1) {
-          this.addEmail();
-          i++;
-        } else {
-          break;
-        }
-      }
-      this.foundCustomerEmails = [];
-    } else {
-      this.emails.controls[0].patchValue({
-        emailname: custInfo.fname,
-        email: ''
-      });
-    }
-  }
-  refreshFormIfCleckCreateNewCustomer() {
+  //     });
+  //   } else {
+  //     this.userInfoGroup.controls.addresses.patchValue({
+  //       city: '',
+  //       street: '',
+  //       zip: '',
+  //       addresstypeid: ''
+  //     });
+  //   }
+  // }
+  // updateCustomerPhones() {
+  //   if (this.foundCustomerPhones.length > 0) {
+  //     this.phones.controls[0].patchValue({
+  //       PhoneTypeId: this.foundCustomerPhones[0]['PhoneTypeId'],
+  //       phone: this.foundCustomerPhones[0]['PhoneNumber'],
+  //     });
+  //     this.foundCustomerPhones = [];
+  //   } else {
+  //     this.phones.controls[0].patchValue({
+  //       PhoneTypeId: 2,
+  //       phone: ''
+  //     });
+  //   }
+  // }
+  // updateCustomerEmails(custInfo) {
+  //   if (this.foundCustomerEmails.length > 0) {
+  //     let i = 0;
+  //     for (const email of this.foundCustomerEmails) {
+  //       this.emails.controls[i].patchValue({
+  //         emailname: email['EmailName'],
+  //         email: email['Email'],
+  //       });
+  //       if (this.foundCustomerEmails.length > i + 1) {
+  //         this.addEmail();
+  //         i++;
+  //       } else {
+  //         break;
+  //       }
+  //     }
+  //     this.foundCustomerEmails = [];
+  //   } else {
+  //     this.emails.controls[0].patchValue({
+  //       emailname: custInfo.fname,
+  //       email: ''
+  //     });
+  //   }
+  // }
+  getCreateNewEvent() {
     this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
-      this.customerInfoTitle = '';
-      this.userInfoGroup.reset();
-      sessionStorage.clear();
-      this.showMoreInfo = false;
-      this.resetEmails();
-      this.resetPhones();
-      this.resetGroup();
-      this.refreshRequiredFormFields();
-      this.disabledNextStep();
+      this.refreshCustomerForm();
     }));
+  }
+  refreshCustomerForm() {
+    this.customerInfoTitle = '';
+    this.userInfoGroup.reset();
+    sessionStorage.clear();
+    this.showMoreInfo = false;
+    this.resetEmails();
+    this.resetPhones();
+    this.resetGroup();
+    // this.resetAddresses();
+    this.refreshRequiredFormFields();
+    this.disabledNextStep();
+
   }
   refreshRequiredFormFields() {
     this.userInfoGroup.patchValue({
       customerId: null,
-      firstName: '',
-      lastName: '',
+      fname: '',
+      lname: '',
       company: ''
     });
-  }
-  // ДИНАМИЧЕСКОЕ ДОБАВЛЕНИЕ ПОЛЕЙ ВВОДА
-
-  // phone: this.fb.array([
-  //   this.fb.control('')
-  // ])
-
-  get phones() {
-    return this.userInfoGroup.get('phones') as FormArray;
-  }
-  get emails() {
-    return this.userInfoGroup.get('emails') as FormArray;
-  }
-  addPhone() {
-    this.phones.push(this.fb.group({
-      PhoneTypeId: [2],
-      phone: ['']
-    }));
-  }
-  addEmail() {
-    this.emails.push(this.fb.group({
-      emailname: [''],
-      email: [''],
-    }));
   }
   deletePhone(i) {
     if (i === 0) {
@@ -466,31 +465,42 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       this.emails.removeAt(i);
     }
   }
-  addCUstomerInfoToReceipt() {
-    let birthday = moment(this.birthday.value).format('DD/MM/YYYY');
+  // deleteAddress(i) {
+  //   if (i === 0) {
+  //     return;
+  //   } else {
+  //     this.address.removeAt(i);
+  //   }
+  // }
+  changeBirthdayFormat(birthDay: AbstractControl) {
+    let birthday = moment(birthDay.value).format('DD/MM/YYYY');
     if (birthday === 'Invalid date') {
       birthday = '';
     }
-    this.setItemToSessionStorage('birthday', birthday);
+    return birthday;
+  }
+
+  addCUstomerInfoToReceipt() {
+
+
+
     // tslint:disable-next-line: max-line-length
-    if (this.firstName.value === null) {
-      this.firstName.patchValue('');
-    }
-    if (this.lastName.value === null) {
-      this.lastName.patchValue('');
-    }
-    this.receiptService.changeCustomerName(`${this.firstName.value} ${this.lastName.value}`);
-    this.receiptService.setCustomerMainfInfo(this.userInfoGroup.get('customerMainInfo').value);
-    this.receiptService.newReceipt.customerInfo.customermaininfo.birthday = birthday;
-    this.receiptService.setPhones(this.checkEmptyPhone());
-    this.receiptService.setEmails(this.checkEmptyEmail());
-    this.receiptService.setAdresses(this.userInfoGroup.get('addresses').value);
-    this.receiptService.customerEmails.next(this.checkEmptyEmail());
-    this.receiptService.addGroupsToReceipt(this.addGroups());
-    this.addCurrentAddress();
+
+    this.sendNewCustomerToNewReceipt();
+
+
+
+    this.receiptService.setFullName(`${this.firstName.value} ${this.lastName.value}`);
+    // this.receiptService.setCustomerMainfInfoToReceipt(this.userInfoGroup.get('customerMainInfo').value);
+    // this.receiptService.newReceipt.customerInfo.customermaininfo.birthday = birthday;
+    // this.receiptService.setPhonesToReceipt(this.deleteEmptyPhone(this.phones));
+    // this.receiptService.setEmailsToReceipt(this.deleteEmptyEmail(this.emails));
+    // // this.receiptService.setAdressesToReceipt(this.deleteEmptyAddress(this.addresses));
+    // this.receiptService.customerEmails.next(this.deleteEmptyEmail(this.emails));
+    // this.receiptService.addGroupsToReceipt(this.addGroups());
+    // this.addCurrentAddress(this.address);
     this.setCustomerCreditCardList();
     // this.receiptService.newReceipt.customerInfo.groups = this.userInfoGroup.get('groups').value;
-    // this.receiptService.newReceipt.PaymentType = this.payMath.value;
 
 
     // const customermaininfo = this.userInfoGroup.get('customerMainInfo').value;
@@ -501,33 +511,41 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     console.log('form.value', this.userInfoGroup.value);
     console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
   }
-  addCurrentAddress() {
-    if (this.street.value === null) {
-      this.street.patchValue('');
-    }
-    if (this.city.value === null) {
-      this.city.patchValue('');
-    }
-    if (this.city.value !== '' || this.street.value !== '') {
-      if (this.city.value !== '' && this.street.value !== '') {
-        this.receiptService.fullAddress.next(`${this.city.value}, ${this.street.value}`);
-      } else if (this.city.value !== '' || this.city.value !== null) {
-        this.receiptService.fullAddress.next(`${this.city.value}`);
-      } else if (this.street.value !== '' || this.street.value !== null) {
-        this.receiptService.fullAddress.next(`${this.street.value}`);
-      }
-    }
+  addCurrentAddress(currentAddress: FormGroup) {
+    this.customerInfoService.addCurrentAddress(currentAddress)
   }
   submit() {
-    this.addCUstomerInfoToReceipt()
-    if (this.currentRoute === '/home/newreceipt') {
-      this.receiptService.setStep(3);
-    } else if (this.currentRoute === '/home/payments-grid/customer-search') {
-      this.goToCreateNewPayment();
-      this.receiptService.createNewClicked();
+    const birthday = this.changeBirthdayFormat(this.birthday);
+    this.setItemToSessionStorage('birthday', birthday);
+
+    if (this.firstName.value === null) {
+      this.firstName.patchValue('');
     }
+    if (this.lastName.value === null) {
+      this.lastName.patchValue('');
+    }
+
+    this.setNewCustomer(this.customerMainInfo.value, this.phones.value, this.emails.value, this.address.value, this.getPickedGroups());
+    switch (this.currentRoute) {
+      case '/home/newreceipt':
+        this.addCUstomerInfoToReceipt()
+        this.receiptService.setStep(3);
+        break
+      case '/home/payments-grid/customer-search':
+        this.goToNewPaymentPage();
+        this.receiptService.createNewClicked();
+        break
+      case '/home/new-customer':
+        this.saveNewCustomer(this.getNewCustomer());
+        setTimeout(() => this.goToNewCustomerDetails(3076), 2000);
+        console.log('New Customer');
+        break
+    }
+    // const birthday = this.changeBirthdayFormat(this.birthday);
+    // this.setItemToSessionStorage('birthday', birthday);
+    // this.setNewCustomer(this.customerMainInfo.value, this.phones.value, this.emails.value, this.address.value, this.getPickedGroups());
   }
-  openStore() {
+  openShop() {
     this.addCUstomerInfoToReceipt()
     this.receiptService.setStep(2);
   }
@@ -558,29 +576,53 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
   }
   getPaymentTypes() {
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
+    this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
     }));
   }
 
-  checkEmptyPhone() {
-    let phones = this.phones.value.filter(phone => phone.phone !== '');
-    phones = phones.filter(phone => phone.phone !== null);
-    return phones;
+  deleteEmptyPhone(phones: FormArray) {
+    return this.customerInfoService.deleteEmptyFormField(phones, 'phoneNumber');
   }
-  checkEmptyEmail() {
-    let emails = this.emails.value.filter(email => email.email !== '');
-    emails = emails.filter(email => email.email !== null);
-    return emails;
+  deleteEmptyEmail(emails: FormArray) {
+    return this.customerInfoService.deleteEmptyFormField(emails, 'email');
   }
+  deleteEmptyAddress(addresses: FormArray) {
+    return this.customerInfoService.deleteEmptyFormField(addresses, 'cityName');
+  }
+
   resetPhones() {
-    for (let i = this.phones.value.length; i > 0; i--) {
-      this.deletePhone(i);
-    }
+    this.customerInfoService.resetFormArray(this.phones)
+    // for (let i = this.phones.value.length; i > 0; i--) {
+    //   this.deletePhone(i);
+    // }
   }
   resetEmails() {
-    for (let i = this.emails.value.length; i > 0; i--) {
-      this.deleteEmail(i);
+    this.customerInfoService.resetFormArray(this.emails)
+    // for (let i = this.emails.value.length; i > 0; i--) {
+    //   this.deleteEmail(i);
+    // }
+  }
+  // resetAddresses() {
+  //   this.customerInfoService.resetFormArray(this.addresses)
+  //   // for (let i = this.addresses.value.length; i > 0; i--) {
+  //   //   this.deleteAddress(i);
+  //   // }
+  // }
+  getEventsFromChildComponent($event: { action: string, index: number }) {
+    switch ($event.action) {
+      case 'toShop': this.openShop();
+        break
+      case 'toNextStep': this.submit();
+        break
+      case 'addEmail': this.addEmail();
+        break
+      case 'addPhone': this.addPhone();
+        break
+      case 'deleteEmail': this.deleteEmail($event.index);
+        break
+      case 'deletePhone': this.deletePhone($event.index);
+        break
     }
   }
   resetGroup() {
@@ -594,7 +636,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
       }
     }
   }
-  addGroups() {
+  getPickedGroups() {
     if (this.group.value.length > 0) {
       for (const selGroup of this.group.value) {
         const selectedGroup: Group = {
@@ -608,20 +650,93 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
   }
 
-  goToCreateNewPayment() {
+  goToNewPaymentPage() {
     this.toNewPayment.emit();
   }
+  goToNewCustomerDetails(id: number) {
+    this.toNewCustomerDetails.emit(id);
+  }
+  saveNewCustomer(newCustomer) {
+    console.log(newCustomer);
+  }
   setCustomerCreditCardList() {
-    if (this.customerInfo !== undefined) {
-      this.paymentsService.setListCustomerCreditCard(this.customerInfo.CustomerCreditCardTokens);
+    if (this.customerInfoById !== null) {
+      this.paymentsService.setListCustomerCreditCard(this.customerInfoById.customerCreditCardTokens);
     }
   }
-
+  addPhone() {
+    this.generalService.addPhoneInput(this.phones, this.fb);
+  }
+  addEmail() {
+    this.generalService.addEmailInput(this.emails, this.fb);
+  }
+  // addAddress() {
+  //   this.generalService.addAddressInput(this.addresses, this.fb);
+  // }
+  setCustomerPhoneFormControls() {
+    this.customerInfoService.patchInputValue(this.phones, this.customerPhones, this.generalService.getAddPhoneFunction(), this.fb);
+  }
+  setCustomerAddressFormControls() {
+    this.customerInfoService.patchInputValue(this.address, this.customerAddress)
+  }
+  setCustomerEmailFormControls() {
+    this.customerInfoService.patchInputValue(this.emails, this.customerEmails, this.generalService.getAddEmailFunction(), this.fb)
+  }
+  setCustomerMainInfo() {
+    this.customerInfoService.patchInputValue(this.customerMainInfo, this.customerDetails)
+  }
+  setCustomerTitleAutoComplete(filteredSubject: CustomerTitle[], formControl: AbstractControl, filterKey: string) {
+    this.filterCustTitle$ = this.generalService.formControlAutoComplete(filteredSubject, formControl, filterKey);
+  }
+  cityAutocomplete(filteredSubject: CustomerTitle[], formControl: AbstractControl, filterKey: string) {
+    this.filteredCity$ = this.generalService.formControlAutoComplete(filteredSubject, formControl, filterKey);
+  }
   getCustomerInfoById() {
+    this.customerInfoService.getCustomerInfoById$()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(customerInfo => {
+        this.customerInfoById = customerInfo;
+        console.log('CUSTOMER INFO GOT', customerInfo);
+        if (customerInfo) {
+          // if (this.customerInfo['CustomerEmails'].length !== 0) {
+          this.customerEmails = customerInfo['customerEmails'];
+          // }
+          // if (this.customerInfo['CustomerMobilePhones'].length !== 0) {
+          this.customerPhones = customerInfo['customerPhones'];
+          // }
+          // if (this.customerInfo['CustomerInfoForReceiept'].length !== 0) {
+          this.customerDetails = customerInfo['customerMainInfo'];
+          // }
+          // if (this.customerInfo['CustomerAddresses'].length !== 0) {
+          this.customerAddress = customerInfo['customerAddress'].filter(address => customerInfo['customerAddress'].indexOf(address) === 0);
+          // }
+          this.customerGroupList = customerInfo.customerGroupList;
+        }
 
+        this.changeCustomerInfoIfCustomerIsFound(customerInfo);
+      })
+  }
+  getCities() {
+    this.customerInfoService.getCities().pipe(
+      takeUntil(this.subscription$)).subscribe(cities => this.cities = cities);
+  }
+  setNewCustomer(customermaininfo: Customermaininfo, phones: Phones[], emails: Emails[], addresses: Addresses, groups: Group[]
+  ) {
+    this.customerInfoService.setNewCustomer(customermaininfo, phones, emails, addresses, groups)
+  }
+  getNewCustomer() {
+    return this.customerInfoService.getNewCustomer()
+  }
+  sendNewCustomerToNewReceipt() {
+    // debugger
+    this.receiptService.setNewReceiptCustomerInfo(this.getNewCustomer());
   }
   ngOnDestroy() {
+    this.customerInfoService.clearCustomerById();
     this.subscriptions.unsubscribe();
+    this.subscription$.next();
+    this.subscription$.complete();
     console.log('CUSTOMER INFO DESTROED');
   }
 }

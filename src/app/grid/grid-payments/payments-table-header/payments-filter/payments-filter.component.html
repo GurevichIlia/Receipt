@@ -36,8 +36,10 @@
         <mat-label>Activity Status</mat-label>
         <mat-select formControlName="KevaStatusid">
           <mat-option value="9999">All</mat-option>
-          <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus " [value]="group.KevaStatusId">
-            {{group.KevaStatusIdname}}</mat-option>
+          <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus"
+            [value]="group.KevaStatusId">
+            {{group.KevaStatusIdname}}
+          </mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -63,27 +65,30 @@
 
 <!-- </div> -->
 
-<div class="row mb-2" style="align-items: center; width: 100%; margin: inherit" [ngClass]="{'justify-content-center': 400 > windowWidth ? true : false}">
-    <div class=" mr-lg-3 mr-xl-3">
-  <button mat-stroked-button [matMenuTriggerFor]="menu" style="background-color: whitesmoke">New payment</button>
-  <mat-menu #menu="matMenu">
-    <button (click)="setPaymentType('1')" mat-menu-item>מס"ב - חיוב
-      לקוח</button>
-    <button (click)="setPaymentType('2')" mat-menu-item>מס"ב -
-      זיכוי לקוח</button>
-    <button (click)="setPaymentType('3')" mat-menu-item>כ.אשראי -
-      חיוב לקוח</button>
-  </mat-menu>
-</div>
-<div class="mr-1">
-  <button type="submit" mat-stroked-button (click)="kevaHistory()" style="background-color: whitesmoke"><strong>הסטוריית
-      שידורים</strong> </button>
-</div>
+<div class="row mb-2" style="align-items: center; width: 100%; margin: inherit"
+  [ngClass]="{'justify-content-center': 400 > windowWidth ? true : false}">
+  <div class=" mr-lg-3 mr-xl-3">
+    <button mat-stroked-button [matMenuTriggerFor]="menu" style="background-color:  rgb(38, 87, 122); color: white">New
+      payment</button>
+    <mat-menu #menu="matMenu">
+      <button (click)="setPaymentType('1')" mat-menu-item>מס"ב - חיוב
+        לקוח</button>
+      <button (click)="setPaymentType('2')" mat-menu-item>מס"ב -
+        זיכוי לקוח</button>
+      <button (click)="setPaymentType('3')" mat-menu-item>כ.אשראי -
+        חיוב לקוח</button>
+    </mat-menu>
+  </div>
+  <div class="mr-1">
+    <button type="submit" mat-stroked-button (click)="kevaHistory()"
+      style="background-color: rgb(250, 174, 33)"><strong>הסטוריית
+        שידורים</strong> </button>
+  </div>
 
-<div *ngIf="1575 > windowWidth" class="mr-2">
-  <mat-form-field class="searchMobileVers">
-    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
-  </mat-form-field>
-</div>
+  <div *ngIf="1575 > windowWidth" class="mr-2">
+    <mat-form-field class="searchMobileVers">
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+    </mat-form-field>
+  </div>
 
 </div>

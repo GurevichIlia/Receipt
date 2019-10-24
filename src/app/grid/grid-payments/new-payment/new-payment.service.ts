@@ -1,5 +1,4 @@
-import { KevaCharge } from './../../../models/kevaCharge.model';
-import { CreditCard } from 'angular-cc-library';
+import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
@@ -54,7 +53,6 @@ export class NewPaymentService {
   constructor(
     private generalService: GeneralSrv,
     private paymentsService: PaymentsService,
-    private receiptService: ReceiptsService
   ) {
 
   }
@@ -131,7 +129,7 @@ export class NewPaymentService {
       creditCardId = newKevaData.thirdStep.creditCard.credCard
     };
     this.newKeva = <NewKevaFull>{
-      customerInfo: <Customerinfo>this.receiptService.getCustomerInfo(),
+      customerInfo: <Customerinfo> this.getCustomerInfoForNewKeva(),
       HokType: newKevaData.firstStep.type,
       KevaDetails: <NewKevaDetails>{
         Customerid: this.getfoundedCustomerId(),
@@ -189,9 +187,13 @@ export class NewPaymentService {
       }
     };
 
-
-
   }
+  getCustomerInfoForNewKeva(){
+   return this.paymentsService.getCustomerInfoForNewKeva();
+  }
+  // setCustomerInfoForNewKeva(CustomerInfoForKeva: Customerinfo) {
+  //   this.newKeva.customerInfo = CustomerInfoForKeva;
+  // }
   searchProjectCatId(projectName: string, projectsList: Projects4Receipt[]) {
     let projectCat;
     projectsList.filter((project: Projects4Receipt) => project.ProjectName === projectName ? projectCat = project.ProjectCategoryId : '');

@@ -1,4 +1,4 @@
-<div  *ngIf="currentlyAuthStatus$ | async" style="height: 109px">
+<div *ngIf="currentlyAuthStatus$ | async" style="height: 107px">
 
   <mat-card [style.fontSize]="'20px'">
 
@@ -22,6 +22,9 @@
           <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
             (click)="goToCustomerDetails()">Customer details</button>
 
+          <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
+            (click)="createNewCustomer()">New customer</button>
+
           <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'he'"
             (click)="generalSrv.switchLanguage('en')">en</button>
           <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'en'"
@@ -42,7 +45,7 @@
       </div>
       <!-- LOGO -->
       <!-- REGULAR -->
-      <div class="text-right" *ngIf="!mobileVersion" >
+      <div class="text-right" *ngIf="!mobileVersion">
         <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
           (click)="goToReceipt()">{{'Create a receipt' | translate }}</button>
 
@@ -56,6 +59,9 @@
 
         <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
           (click)="goToCustomerDetails()">Customer details</button>
+
+        <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+          (click)="createNewCustomer()">New customer</button>
 
         <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
           (click)="generalSrv.switchLanguage('en')">en</button>

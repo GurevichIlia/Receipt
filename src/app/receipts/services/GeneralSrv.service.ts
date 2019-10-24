@@ -1,23 +1,24 @@
-import { GlobalData } from 'src/app/models/globalData.model';
-
+import { Customermaininfo } from './../../models/customermaininfo.model';
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
+
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
-import { map, switchMapTo, takeUntil } from 'rxjs/operators';
+import { map, switchMapTo, takeUntil, filter, startWith } from 'rxjs/operators';
 
 import { LastSelection } from '../../models/lastSelection.model';
-import { CreditCardVerify } from '../../models/credirCardVerify.model';
 import { AuthenticationService } from './authentication.service';
 import { NewReceipt } from '../../models/newReceipt.model';
 import { Guid } from 'guid-typescript';
 import { ReceiptsService } from './receipts.service';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { CustomerInfoById } from '../../models/customer-info-by-ID.model';
+import { CustomerInfoById, CustomerAddresses } from '../../models/customer-info-by-ID.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
+import { FormArray, FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
+import { CustomerPhones, CustomerEmails, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 
-
+import { GlobalData, CustomerTitle } from 'src/app/models/globalData.model';
+import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
 
 @Injectable({
   providedIn: 'root'
@@ -28,8 +29,7 @@ export class GeneralSrv {
   userGuid: string;
   baseUrl: string;
   // fullReceiptDataFromServer = <any>{};
-  fullReceiptData = new BehaviorSubject<GlobalData | ''>('');
-  currentReceiptData$ = this.fullReceiptData.asObservable();
+
   position;
   language = new BehaviorSubject('he');
   currentLang$ = this.language.asObservable();
@@ -53,6 +53,9 @@ export class GeneralSrv {
   globalData = new BehaviorSubject<GlobalData>(<GlobalData>{});
   /** Using this data in payments part of application */
   currentGlobalData$ = this.globalData.asObservable();
+
+  cities = new BehaviorSubject(null);
+  cities$ = this.cities.asObservable();
   subscription$ = new Subject();
   constructor(private http: HttpClient,
     private authen: AuthenticationService,
@@ -107,7 +110,7 @@ export class GeneralSrv {
     //   })
     // };
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerSearchData?urlAddr=${this.orgName}`,
-  )
+    )
       .pipe(map(response => response.Data));
   }
   /***  Get customer bt customerId */
@@ -208,15 +211,6 @@ export class GeneralSrv {
   public CallTestAfterLOgin(): Observable<any> {
     let apiUrl = `${this.baseUrl}'LandingPage/AfterLoginToSystem?urlAddr='${this.orgName}`;
 
-    // const headers = new HttpHeaders();
-    // console.log(this.authen.getToken());
-
-    // cons = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Bearer ' + this.authen.tokenNo
-    //   })
-    // };
 
     let OrganizationName;
 
@@ -233,15 +227,6 @@ export class GeneralSrv {
   public GetSystemTables(): Observable<any> {
     let apiUrl = `${this.baseUrl}LandingPage/GetSytemTablesData?urlAddr=${this.orgName}`;
 
-    // const headers = new HttpHeaders();
-    // console.log(this.authen.getToken());
-
-    // cons = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Bearer ' + this.authen.tokenNo
-    //   })
-    // };
 
     let OrganizationName;
 
@@ -262,18 +247,6 @@ export class GeneralSrv {
 
   public GetCustomerSearchData(): Observable<any> {
     let apiUrl = `${this.baseUrl}'Receipt/GetCustomerSearchData?urlAddr='${this.orgName}`;
-
-    // const headers = new HttpHeaders();
-    // console.log(this.authen.getToken());
-
-    // cons = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Bearer ' + this.authen.tokenNo
-    //   })
-    // };
-
-    //  debugger;
 
     let OrganizationName;
 
@@ -392,11 +365,12 @@ export class GeneralSrv {
   }
 
   getKevaGlbData(orgName: string): Observable<GlobalData> {
-    return this.http.get(`${this.baseUrl}keva/GetKevaGlbData?urlAddr=${orgName}`, )
+    console.log('GET GLOBAL KEVA REQUEST ')
+    return this.http.get(`${this.baseUrl}keva/GetKevaGlbData?urlAddr=${orgName}`)
       .pipe(map(data => data = data['Data'])).pipe(takeUntil(this.subscription$));
   }
   setGlobalDataState(state: GlobalData) {
-
+    console.log('GLOBAL DATA SET', state);
     this.globalData.next(state);
   }
   getGlobalDataState() {
@@ -404,5 +378,127 @@ export class GeneralSrv {
   }
   getGlobalData$() {
     return this.currentGlobalData$;
+  }
+
+  formControlAutoComplete(filteredSubject: any[], titleInput: AbstractControl, filterKey: string) {
+    if (filteredSubject) {
+      let filteredOptions$;
+      return filteredOptions$ = titleInput.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this.filter(value, filteredSubject, filterKey))
+        );
+    }
+  }
+  private filter(value: string, filteredSubject: any[], filterKey: string): CustomerTitle[] {
+    if (value == null) {
+      value = '';
+    }
+    const filterValue = value.toLowerCase();
+    return filteredSubject.filter((title: CustomerTitle) => title[filterKey].toLowerCase().includes(filterValue))
+  }
+
+  patchInputValue(inputsArray: FormArray | FormGroup, valueArray: CustomerPhones[] | CustomerEmails[] | CustomerAddresses[] | MainDetails[] | Customermaininfo[], addNewInputFunction?: Function, formBuilder?: FormBuilder) {
+    let controlsKeys;
+    if (valueArray) {
+      if (valueArray.length > 0) {
+        // если массив значений для инпутов не пустой, запуска. цикл для извлечения нужных значений.
+        for (let i = 0; i < valueArray.length; i++) {
+
+          if (inputsArray instanceof FormArray) {
+            //создаю массив с названиями ключей на основании пришедшего FormArray.
+            controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
+            // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
+            controlsKeys.forEach((key: string) => {
+              // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
+              const arrKey = (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
+              // обновляю массив FormArray c объектами в которых инпуты.
+              inputsArray.controls[i].patchValue({
+                [key]: valueArray[i][arrKey]
+              })
+            })
+          } else if (inputsArray instanceof FormGroup) {
+            //создаю массив с названиями ключей на основании пришедшего FormGroup.
+            controlsKeys = Object.keys(inputsArray.controls);
+            // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
+            controlsKeys.forEach(key => {
+              // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
+              const arrKey = (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
+              // добавляю значения в объектe FormGroup с инпутами
+              inputsArray.patchValue({
+                [key]: valueArray[i][arrKey]
+              })
+            })
+          }
+          if (valueArray.length > i + 1) {
+            // если в массиве значений для инпутов больше чем 1 объект, создаю еще один инпут.
+            addNewInputFunction(inputsArray, formBuilder)
+          } else {
+            break;
+          }
+        }
+      } else {
+        if (inputsArray instanceof FormArray) {
+          // если массив с значения для инпута пустой, дабвляю дефолтные значения(пустая строка).
+          controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
+          controlsKeys.forEach(key => {
+            inputsArray.controls[0].patchValue({
+              [key]: ''
+            })
+          })
+        } else if (inputsArray instanceof FormGroup) {
+          controlsKeys = Object.keys(inputsArray.controls);
+          controlsKeys.forEach(key => {
+            inputsArray.patchValue({
+              [key]: ''
+            })
+          })
+        }
+
+      }
+
+    }
+  }
+
+  addPhoneInput(array: FormArray, fb: FormBuilder) {
+    if (array.length < 10) {
+      array.push(fb.group({
+        phoneTypeId: [2],
+        phoneNumber: ['']
+      }));
+    }
+
+  }
+  addEmailInput(array: FormArray, fb: FormBuilder) {
+    if (array.length < 10) {
+      array.push(fb.group({
+        emailName: [''],
+        email: [''],
+      }));
+    }
+  }
+  addAddressInput(array: FormArray, fb: FormBuilder) {
+    if (array.length < 10) {
+      array.push(fb.group({
+        cityName: [''],
+        street: [''],
+        street2: [''],
+        zip: [''],
+        addressTypeId: ['']
+      }))
+    }
+  }
+
+  getAddEmailFunction() {
+    return this.addEmailInput;
+  }
+  getAddPhoneFunction() {
+    return this.addPhoneInput;
+  }
+  setCities(cities: any[]) {
+    this.cities.next(cities);
+  }
+  getCities$() {
+    return this.cities$;
   }
 }

@@ -138,10 +138,13 @@ export class PaymentsTableComponent implements OnInit {
       takeUntil(this.subscription$))
       .subscribe((data: any[]) => {
         console.log('GRID DATA', data)
-        this.dataSource.data = data;
-        this.dataSourceFilterData = data;// after use to filter by day
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        if (data) {
+          this.dataSource.data = data;
+          this.dataSourceFilterData = data;// after use to filter by day
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        }
+
       })
   }
   editPaymentRow(paymentRow) {

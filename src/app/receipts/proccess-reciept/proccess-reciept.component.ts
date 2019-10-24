@@ -100,7 +100,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     }));
     this.generalService.currentLang$.subscribe((lang: string) => this.currentLang = lang);
     this.createProcessReceiptForm();
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
+    this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.receiptsType = data['ReceiptTypes'];
 
     }));
@@ -250,14 +250,14 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     return this.receiptForList.filter(receipt => receipt['note'].toLowerCase().includes(filterValue));
   }
   getReceiptForList() {
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
+    this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.receiptForList = data['Receipt_For_List'];
       console.log(this.receiptForList);
     }));
   }
   getReceiptThanksLetters(receiptId) {
     const id = this.changeThankLetterForCredirType(receiptId);
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
+    this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.thanksLetters = data['ReceiptThanksLetter'];
 
       this.currentlyLetters = this.thanksLetters.filter(receipt => receipt.ReceiptId === id);
@@ -398,7 +398,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
     console.log('TAKE UNTILE WORK', this.receiptService.currentCustomerEmails$)
-    console.log('PROCCESS SUBSCRIBE On Destroy', this.generalService.currentReceiptData$);
+    console.log('PROCCESS SUBSCRIBE On Destroy', this.receiptService.getGlobalReceiptData$());
   }
 }
 

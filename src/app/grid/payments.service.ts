@@ -1,6 +1,7 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { CustomerInfoService } from './../receipts/customer-info/customer-info.service';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, filter } from 'rxjs/operators';
 import { Subject, BehaviorSubject, Observable, throwError } from 'rxjs';
 
 import { AuthenticationService } from '../receipts/services/authentication.service';
@@ -14,6 +15,7 @@ import { KevaChargeById } from '../models/kevaChargeById.model';
 import { UpdateKevaHistoryChargeStatus } from '../models/upadateKevaHistoryChargeStatus.model';
 import { NewKevaFull } from '../models/newKevaFull';
 import { KevaCharge } from './../models/kevaCharge.model';
+import { DataFromServer } from '../models/data-from-server.model';
 
 @Injectable({
   providedIn: 'root'
@@ -94,8 +96,8 @@ export class PaymentsService {
   constructor(
     private http: HttpClient,
     private auth: AuthenticationService,
-    private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
+    private customerInfoService: CustomerInfoService
     // private newPaymentService: NewPaymentService
 
   ) {
@@ -111,32 +113,43 @@ export class PaymentsService {
 
   getGridData(filterParams: { kevaTypeid: string, instituteid: string, KevaStatusid: string, KevaGroupid: string }, orgName: string): Observable<PaymentKeva[]> {
     return this.http.post(`${this.baseUrl}keva/GetKevaListData?urlAddr=${orgName}`, filterParams, this.httpOptions)
-      .pipe(map(data => data = data['Data']
-      ),
-        map(data => data.map((data: PaymentKeva) => {
-          // data.LastChargeDate = data.LastChargeDate === null ? '' : this.generalService.changeDateFormat(data.LastChargeDate, 'YYYY/MM/DD');
-          data.createDate = this.generalService.changeDateFormat(data.createDate, 'YYYY/MM/DD');
-          data.creditCardMonthAndYears = this.concatMonthAndYear(data.creditCardMonth, data.creditCardYear); // create new pair key/value;
-          data.KEVACancleDate = this.generalService.changeDateFormat(data.KEVACancleDate, 'YYYY/MM/DD');
-          data.KEVAEnd = this.generalService.changeDateFormat(data.KEVAEnd, 'YYYY/MM/DD');
-          data.KEVAJoinDate = this.generalService.changeDateFormat(data.KEVAJoinDate, 'YYYY/MM/DD');
-          data.KEVAStart = this.generalService.changeDateFormat(data.KEVAStart, 'YYYY/MM/DD');
-          return data;
-        })
+      .pipe(
+        map(data => data = data['Data']),
+        map(data => {
+          if (data) {
+            data.map((data: PaymentKeva) => {
+              // data.LastChargeDate = data.LastChargeDate === null ? '' : this.generalService.changeDateFormat(data.LastChargeDate, 'YYYY/MM/DD');
+              data.createDate = this.generalService.changeDateFormat(data.createDate, 'YYYY/MM/DD');
+              data.creditCardMonthAndYears = this.concatMonthAndYear(data.creditCardMonth, data.creditCardYear); // create new pair key/value;
+              data.KEVACancleDate = this.generalService.changeDateFormat(data.KEVACancleDate, 'YYYY/MM/DD');
+              data.KEVAEnd = this.generalService.changeDateFormat(data.KEVAEnd, 'YYYY/MM/DD');
+              data.KEVAJoinDate = this.generalService.changeDateFormat(data.KEVAJoinDate, 'YYYY/MM/DD');
+              data.KEVAStart = this.generalService.changeDateFormat(data.KEVAStart, 'YYYY/MM/DD');
+              return data;
+            })
+          } else {
+            return data;
+          }
+          return data
+        }
         ));
   }
+
   getKevaGlbData(orgName: string) {
     return this.http.get(`${this.baseUrl}keva/GetKevaGlbData?urlAddr=${orgName}`, this.httpOptions)
       .pipe(map(data => data = data['Data']));
   }
+
   getCustomersCreditCardListData(orgName: string) {
     return this.http.post(`${this.baseUrl}keva/GetCreditCardTokens?urlAddr=${orgName}`, '', this.httpOptions)
       .pipe(map(data => data = data['Data']), catchError(this.handleError));
   }
+
   getKevaCharges(orgName: string, instituteId: { instituteid: number }) {
     return this.http.post(`${this.baseUrl}keva/GetKevaCharges?urlAddr=${orgName}`, instituteId, this.httpOptions)
       .pipe(map(data => data = data['Data']), catchError(this.handleError));
   }
+
   getKevaChargesByChargeId(orgName: string, KevaChargeId?: string, customerid?: string): Observable<KevaChargeById[]> {
     const params = { KevaChargeId, customerid }
     return this.http.post(`${this.baseUrl}keva/GetKevaChargesByKevaChargeId?urlAddr=${orgName}`, params, this.httpOptions)
@@ -146,10 +159,14 @@ export class PaymentsService {
       }
       ), catchError(this.handleError));
   }
+
   getCustomerDetailsById(customerId: number) {
     return this.http.get(`${this.baseUrl}Customer/GetCustomerData?urlAddr=${this.generalService.getOrgName()}&customerid=${customerId}`, this.httpOptions)
-      .pipe(map(data => data = data['Data']));
+      .pipe(map(data => {
+       return data = data['Data']
+      }));
   }
+
   updateKevaHistoryChargeStatus(orgName: string, params: UpdateKevaHistoryChargeStatus
     //  {KevaHistoryid: string, customerid: string, Remark: string, ReturnResonId: string, Kevaid: string, RecieptNo: string, RecieptType: string}
   ) {
@@ -158,6 +175,7 @@ export class PaymentsService {
     return this.http.get(`${this.baseUrl}keva/UpadateKevaHistoryChargeStatus?urlAddr=${orgName}&KevaHistoryid=${updateParams.KevaHistoryid}&customerid=${updateParams.customerid}&Remark=${updateParams.Remark}&ReturnResonId=${updateParams.ReturnResonId}&Kevaid=${updateParams.Kevaid}&RecieptNo=${updateParams.RecieptNo}&RecieptType=${updateParams.RecieptType}`, this.httpOptions)
       .pipe(map(data => data = data['Data']), catchError(this.handleError));
   }
+
   saveNewKeva(orgName: string, newKeva: NewKevaFull) {
     console.log('SAVE NEW KEVA', newKeva);
     console.log('SAVE NEW KEVA STRING', JSON.stringify(newKeva));
@@ -184,21 +202,27 @@ export class PaymentsService {
       return `${monthValue}/${yearValue}`;
     }
   }
+
   setPaymentTablePage(tablePageState: { pageIndex: number, pageSize: number }) {
     this.paymentTablePage.next(tablePageState);
   }
+
   setListCustomerCreditCard(credCardList: CustomerCreditCard[]) {
     this.listCustomerCreditCard = credCardList;
   }
+
   getListCustomerCreditCard() {
     return this.listCustomerCreditCard;
   }
+
   setFilterValue(value: string) {
     this.filterValue.next(value);
   }
+
   setFilterValueByDay(value: string) {
     this.filterValueByDay.next(value);
   }
+
   setTablePaymentsDataToPaymentsService(paymentsTableData: PaymentKeva[]) {
     this.paymentsTableData.next(paymentsTableData);
   }
@@ -206,22 +230,28 @@ export class PaymentsService {
   setKevaCharges(kevaCharges: KevaCharge[]) {
     this.kevaChargesHistory.next(kevaCharges);
   }
+
   setGlobalDataState(state: GlobalData) {
     this.globalData.next(state);
   }
+
   getGlobalDataState() {
     return this.globalData.getValue();
   }
+
   getGlobalData$() {
     return this.currentGlobalData$;
   }
+
   clearPaymentsTableState() {
     this.paymentsTableData.next(<PaymentKeva[]>[]);
     this.currentPaymentsTableData$.subscribe(data => console.log('TABLE DATA AFTER CLEAR', data))
   }
+
   clearGlobalDataState() {
     this.globalData.next(<GlobalData>{})
   }
+
   // Error handling 
   handleError(error) {
     let errorMessage = '';
@@ -239,11 +269,17 @@ export class PaymentsService {
   refreshTablePageIndex() {
     this.paymentTablePage.next({ pageIndex: null, pageSize: null });
   }
+
   unsubscribe() {
     console.log('Payments service unsubscribe');
     this.subscription$.next();
     this.subscription$.complete();
   }
+
+  getCustomerInfoForNewKeva() {
+    return this.customerInfoService.getNewCustomer();
+  }
+
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.

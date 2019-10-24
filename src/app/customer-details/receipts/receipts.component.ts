@@ -1,11 +1,12 @@
-import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatTableDataSource, MatDialog } from '@angular/material';
-import { Subject, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { ReceiptsService } from './receipts.service';
 import { TableComponent } from 'src/app/shared/share-components/table/table.component';
 import { FullCustomerDetailsById, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
 import { SendByEmailComponent } from 'src/app/shared/modals/send-by-email/send-by-email.component';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-receipts',
   templateUrl: './receipts.component.html',
@@ -27,7 +28,8 @@ export class ReceiptsComponent implements OnInit, OnDestroy {
   customerEmailsList: CustomerEmails[];
   constructor(
     private receiptsService: ReceiptsService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private router: Router
 
   ) { }
 
@@ -41,18 +43,28 @@ export class ReceiptsComponent implements OnInit, OnDestroy {
         filter(data => data !== null),
         takeUntil(this.subscription$))
       .subscribe((data: FullCustomerDetailsById) => {
-        this.setDataToTable(data);
-        this.setCustomerEmails(data.CustomerEmails);
+        if (data) {
+          this.setDataToTable(data);
+          this.setCustomerEmails(data.CustomerEmails);
+        }
+
       })
   }
+
   setDataToTable(data: FullCustomerDetailsById) {
-    this.receiptsService.setDataSourceTable(this.customerReceiptsDataSource, [...data.GetCustomerReciepts], this.customerReceiptsTableComponent);
+    if (data.GetCustomerReciepts) {
+      this.receiptsService.setDataSourceTable(this.customerReceiptsDataSource, [...data.GetCustomerReciepts], this.customerReceiptsTableComponent);
+      this.listDisplayedColumns = this.receiptsService.setDisplayedColumns(data.GetCustomerReciepts, this.filterLables)
+    }
 
-    this.receiptsService.setDataSourceTable(this.receiptsCameFromDataSource, [...data.GetCustomerReciepts_CameFrom], this.receiptsCameFromTableComponent);
+    if (data.GetCustomerReciepts_CameFrom) {
+      this.receiptsService.setDataSourceTable(this.receiptsCameFromDataSource, [...data.GetCustomerReciepts_CameFrom], this.receiptsCameFromTableComponent);
+    }
 
-    this.receiptsService.setDataSourceTable(this.receiptsInvolvedDataSource, [...data.GetCustomerReciepts_Involved], this.receiptsInvolvedTableComponent);
+    if (data.GetCustomerReciepts_Involved) {
+      this.receiptsService.setDataSourceTable(this.receiptsInvolvedDataSource, [...data.GetCustomerReciepts_Involved], this.receiptsInvolvedTableComponent);
+    }
 
-    this.listDisplayedColumns = this.receiptsService.setDisplayedColumns(data.GetCustomerReciepts, this.filterLables)
     this.columns = this.receiptsService.selColumns(this.listDisplayedColumns);
     this.receiptsService.addDisplayedColumnToTable('Email', this.listDisplayedColumns);
     this.buttonsForTable = [{ icon: 'email', label: 'Email' }, { icon: 'create', label: 'Create' }]
@@ -62,9 +74,10 @@ export class ReceiptsComponent implements OnInit, OnDestroy {
     console.log($event)
     this.openModalSendByEmail(this.customerEmailsList, $event.item)
   }
+
   openModalSendByEmail(emailsList: CustomerEmails[] = [], receipt) {
-      const openedDialog = this.matDialog.open(SendByEmailComponent, { width: '350px', height: '270px', data: emailsList });
-    
+    const openedDialog = this.matDialog.open(SendByEmailComponent, { width: '350px', height: '270px', data: emailsList });
+
     openedDialog.afterClosed()
       .pipe(
         filter(data => data !== (null || undefined)),
@@ -77,9 +90,15 @@ export class ReceiptsComponent implements OnInit, OnDestroy {
         }
       })
   }
+
   setCustomerEmails(emailsList: CustomerEmails[]) {
     this.customerEmailsList = emailsList;
   }
+
+  goToCreateNewReceiptPage() {
+    this.receiptsService.goToCreateNewReceiptPage();
+  }
+
   ngOnDestroy() {
     this.subscription$.next();
     this.subscription$.complete();

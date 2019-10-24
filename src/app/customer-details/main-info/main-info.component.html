@@ -1,34 +1,31 @@
-<mat-card class="mainContent" [style.fontSize]="'20px'">
-      <mat-card-header>
-            <h3>Main info</h3>
+<div class="mainContent" [style.fontSize]="'20px'">
+      <!-- <mat-card-header> -->
+      <h3>Main info</h3>
+      <!-- </mat-card-header>
+      <mat-card-content> -->
+      <div class="row ">
+            <!-- PERSONAL INFO -->
+            <mat-card class="col-12 mb-4">
+                  <app-main-info-view (newAction)="getActionFromChildren($event)" [globalData]="globalData$ | async"
+                        [filteredCustomerTitles$]="filteredCustomerTitles$" [personalInfo]="personalInfo">
+                  </app-main-info-view>
+            </mat-card>
 
-      </mat-card-header>
-      <mat-card-content>
-            <hr>
-            <div class="row ">
-                  <!-- PERSONAL INFO -->
-                  <div *ngIf="currentMenuItem === 'personalInfo'" class="col-12 mb-4">
-                        <app-main-info-view (newAction)="getActionFromChildren($event)"
-                              [globalData]="globalData$ | async" [filteredCustomerTitles$]="filteredCustomerTitles$"
-                              [personalInfo]="personalInfo">
-                        </app-main-info-view>
-                  </div>
-
-                  <!-- PHONES-->
-                  <div *ngIf="currentMenuItem === 'phones'" class="col-12">
-                        <app-phones-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
-                              [phones]="phones"></app-phones-info>
-                  </div>
-                  <!-- EMAILS -->
-                  <div *ngIf="currentMenuItem === 'emails'" class="col-12">
-                        <app-emails-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
-                              [emails]="emails"></app-emails-info>
-                  </div>
-                  <!-- ADDRESSES -->
-                  <div *ngIf="currentMenuItem === 'addresses'" class="col-12">
-                        <app-addresses-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
-                              [addresses]="addresses"></app-addresses-info>
-                  </div>
-            </div>
-      </mat-card-content>
-</mat-card>
+            <!-- PHONES-->
+            <mat-card class="col-12 mb-4">
+                  <app-phones-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
+                        [phones]="phones"></app-phones-info>
+            </mat-card>
+            <!-- EMAILS -->
+            <mat-card class="col-12 mb-4">
+                  <app-emails-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
+                        [emails]="emails"></app-emails-info>
+            </mat-card>
+            <!-- ADDRESSES -->
+            <mat-card class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4">
+                  <app-addresses-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
+                        [addresses]="addresses"></app-addresses-info>
+            </mat-card>
+      </div>
+      <!-- </mat-card-content> -->
+</div>

@@ -1,3 +1,4 @@
+import { NewCustomerModule } from './new-customer/new-customer.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material';
@@ -31,8 +32,10 @@ import { appReducer } from './app.reducer';
 import { FooterComponent } from './footer/footer.component';
 import { TokenInterceptorService } from './receipts/services/token-interceptor.service';
 import { ConfirmPurchasesComponent } from './receipts/modals/confirm-purchases/confirm-purchases.component';
+import { NgxMaskModule } from 'ngx-mask'
 
-export let options: Partial<IConfig> | (() => Partial<IConfig>);
+
+// export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -47,17 +50,20 @@ export function HttpLoaderFactory(http: HttpClient) {
     HeaderComponent,
     HomeComponentComponent,
     FooterComponent,
-    ConfirmPurchasesComponent
+    ConfirmPurchasesComponent,
+
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     SharedModule,
+    NewCustomerModule,
     AppRoutingModule,
     HttpClientModule,
-
+    NgxMaskModule.forRoot(),
     CreditCardDirectivesModule,
     StoreModule.forRoot({ auth: appReducer }),
-    BrowserAnimationsModule, // required animations module
+    // required animations module
     ToastrModule.forRoot(), // ToastrModule added
 
     NgxUiLoaderModule, // import NgxUiLoaderModule
@@ -71,7 +77,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
   ],
   // tslint:disable-next-line: max-line-length
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService ,multi: true }, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
   bootstrap: [AppComponent],
   entryComponents: [ModalSessionexpiredComponent, ConfirmPurchasesComponent]
 

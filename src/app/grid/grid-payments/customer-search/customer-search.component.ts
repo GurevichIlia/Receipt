@@ -12,6 +12,7 @@ import { PaymentsService } from '../../payments.service';
 import { CustomerType } from 'src/app/models/customerType.model';
 import { Router } from '@angular/router';
 import { NewPaymentService } from '../new-payment/new-payment.service';
+import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 
 @Component({
   selector: 'app-customer-search',
@@ -43,13 +44,14 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     private spinner: NgxUiLoaderService,
     private paymentsService: PaymentsService,
     private router: Router,
-    private newPaymentService: NewPaymentService
+    private newPaymentService: NewPaymentService,
+    private customerInfoService: CustomerInfoService
   ) { }
 
   ngOnInit() {
     this.spinner.start();
     // this.switchLanguage('he');
-    this.LoadSystemTables();
+    this.getCities();
     this.GetCustomerSearchData1();
     this.filterOption();
     // this.generalService.getLastSelectionFromLocalStore();
@@ -103,10 +105,13 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   getCustomerInfoById(customerId: number) {
     this.spinner.start();
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
-      this.customerInfo = customer;
+      if (customer) {
+        this.customerInfoService.setCustomerInfoById(customer.CustomerEmails, customer.CustomerMobilePhones, customer.CustomerAddresses, customer.CustomerInfoForReceiept, customer.CustomerCreditCardTokens);
+        this.newPaymentService.setFoundedCustomerId(customerId);
+        console.log('FOUNDED CUSTOMER', customer);
+      }
       this.spinner.stop();
-      this.newPaymentService.setFoundedCustomerId(customerId);
-      console.log('FOUNDED CUSTOMER', customer);
+
     },
       error => console.log(error),
     ));
@@ -119,41 +124,11 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.receiptService.setStep(1);
     this.searchControl.patchValue('');
   }
-  LoadSystemTables() {
-    if (this.generalService.checkLocalStorage('cities')) {
-      this.cities = JSON.parse(this.generalService.checkLocalStorage('cities'));
-    } else {
-      this.subscriptions.add(this.generalService.GetSystemTables()
-        .subscribe(
-          response => {
-            console.log('LoadSystemTables', response);
-            // response = JSON.parse(response)
-            if (response.IsError == true) {
-              // this.disableAfterclick = false;
-              // this.presentAlert(response.ErrMsg);
-              alert('err');
-            } else {
-              // this.generalService.presentAlert("", "", "בוצע בהצלחה!");
-              // console.log(response.Data);
-              // console.log(JSON.parse(response.Data));
-              // this.AllsysTables = JSON.parse(response.Data);
-              // this.SelectRecType(1);
-              this.cities = response.Cities;
-              localStorage.setItem('cities', JSON.stringify(this.cities))
-              console.log('this.cities', this.cities)
-            }
-          },
-          error => {
-            console.log(error);
-            // this.generalService.presentAlert("Error", "an error accured", error.status);
-            // this.disableAfterclick = false;
-          },
-          () => {
-            console.log('CallCompleted');
-          }
-        ));
-    }
-
+  getCities() {
+    this.generalService.getCities$()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(cities => this.cities = cities);
   }
   getGlobalData() {
     this.paymentsService.currentGlobalData$.pipe(takeUntil(this.subscription$)).subscribe(data => {
@@ -167,9 +142,8 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.receiptService.createNewEvent.next();
   }
   goToCreateNewPayment() {
-    debugger
     this.router.navigate(['home/payments-grid/new-payment']);
-    this.newPaymentService.setCustomerInfo(this.receiptService.getCustomerInfo());
+    this.newPaymentService.setCustomerInfo(this.customerInfoService.getNewCustomer());
   }
   ngOnDestroy() {
     this.subscription$.next();

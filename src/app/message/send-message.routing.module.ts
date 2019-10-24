@@ -11,7 +11,7 @@ import { MessageComponent } from './message.component';
 
 export const sendMessageRoutes: Routes = [
       {
-            path: '', component: SendMessageComponent,
+            path: '', component: MessageComponent,
       },
 ]
 

@@ -8,7 +8,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
 })
 export class SideMenuComponent {
   pickedMenu: string;
-
+  @Input() animationState: string;
   @Output() selectedRoute = new EventEmitter();
 
   constructor() {
@@ -16,9 +16,17 @@ export class SideMenuComponent {
   }
   selectChildMenuItem(menuItem: string, childMenuItem: string) {
     this.navigateTo(menuItem, childMenuItem);
-      this.pickedMenu = menuItem;
+    this.pickedMenu = menuItem;
   }
+  
   navigateTo(route: string, childMenuItem: string) {
     this.selectedRoute.emit({ route, childMenuItem });
+  }
+
+  startAnimation(stateAnimate) {
+    console.log(stateAnimate);
+    if (!this.animationState) {
+      this.animationState = stateAnimate;
+    }
   }
 }

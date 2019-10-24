@@ -148,7 +148,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }));
   }
   getDataFromGeneralService() {
-    this.subscriptions.add(this.generalService.currentReceiptData$.subscribe(data => {
+    this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
       this.currencyTypes = data['GetCurrencyTypes'];
       this.donationTypes = data['DonationTypes'];

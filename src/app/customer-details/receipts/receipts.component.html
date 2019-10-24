@@ -1,7 +1,8 @@
 
   <mat-card class="mb-3" [hidden]="customerReceiptsDataSource.data.length === 0 ? true : false">
     <mat-card-header>
-<h4>Receipts</h4>
+<h4>Receipts</h4> 
+<button mat-button (click)="goToCreateNewReceiptPage()">New receipt</button>
     </mat-card-header>
     <app-table [dataSource]='customerReceiptsDataSource' [columns]="columns"
       [listDisplayedColumns]="listDisplayedColumns" (clickedButton)="getEventFromChildren($event)" [buttons]="buttonsForTable" #CustomerReceipts></app-table>

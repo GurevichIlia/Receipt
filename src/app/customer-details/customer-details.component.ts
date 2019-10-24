@@ -29,7 +29,9 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngOnInit() {
     this.customerId = +this.activatedRoute.snapshot.paramMap.get('id');
-    this.getCustomerDetailsById(this.customerId);
+    this.customerDetailsService.setCustomerId(this.customerId);
+    this.getCustomerDetailsByIdFromServer(this.customerId);
+
     this.getDisplayWidth();
     this.navigation();
   }
@@ -37,18 +39,21 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
     setTimeout(() => this.checkDisplayWidth(window.innerWidth), 1);
 
   }
-  getCustomerDetailsById(customerId: number) {
+  getCustomerDetailsByIdFromServer(customerId: number) {
     this.customerDetailsService.getCustomerDetailsById(customerId)
       .pipe(
         takeUntil(this.subscription$))
       .subscribe(data => {
-        console.log('CUSTOMER INFO', data)
-        this.customerDetailsService.setCustomerDetailsByIdState({ ...data });
-        this.customerDetailsById$ = this.customerDetailsService.getCustomerDetailsByIdState$();
+        if (data) {
+          console.log('CUSTOMER INFO', data);
+          this.customerDetailsService.setCustomerDetailsByIdState(data);
+          this.customerDetailsById$ = this.customerDetailsService.getCustomerDetailsByIdState$();
+        }
       })
-    console.log('PROPERTIS', this.propertis)
   }
-
+  setCustomerDetailsByIdState(customerDetailsById: Observable<FullCustomerDetailsById>) {
+    this.customerDetailsService.setCustomerDetailsByIdState(customerDetailsById);
+  }
   closeSidenav() {
     this.sidenav.close();
   }
@@ -84,7 +89,8 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
       .pipe(
         takeUntil(this.subscription$))
       .subscribe((data) => {
-        data ? this.navigateTo(data.route) : null;  
+        data ? this.navigateTo(data.route) : null;
+        console.log('ROUTE', data)
       }
       )
   }

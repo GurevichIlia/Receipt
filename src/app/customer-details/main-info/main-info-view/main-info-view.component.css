@@ -6,6 +6,15 @@ input.mat-input-element {
   color: black
 }
 
+textarea.mat-input-element {
+  color: black
+}
+
 ::ng-deep .mat-select-disabled .mat-select-value {
-      color: black  
+  color: black
+}
+
+.label {
+  margin-right: 45px;
+  margin-left: 50px;
 }

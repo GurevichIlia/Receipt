@@ -38,7 +38,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
         this.message.patchValue(`${message} {${postfix}} `);
       }
     })
-    this.spinner.start();
+  // this.spinner.start();
     this.checkWindowSize();
     this.addClassOrderFirst();
     this.createMessageForm();
@@ -46,7 +46,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
     this.getOrgName();
     this.getQuantityOfMessages();
     this.generalService.currentLang$.subscribe(lang => this.currentLang = lang);
-    this.spinner.stop();
+    // this.spinner.stop();
   }
   addClassOrderFirst() {
     this.orderFirst = window.innerWidth > 765 ? false : true;

@@ -1,32 +1,19 @@
-<form [formGroup]="mainInfoForm">
-  <div class="row justify-content-start">
+<form [formGroup]="mainInfoForm" style="font-size: 18px">
+  <div class="row justify-content-start mb-4">
     <h5 style="margin-right: 15px">{{'Phone' | translate}}
     </h5>
-    <i style="cursor: pointer; float: left; margin-right: 15px" (click)="createAction('addNewPhone')" class=" material-icons">add</i>
-    <i *ngIf="editMode" style="cursor: pointer; float: left; margin-right: 15px" (click)="createAction('savePhone', phones)" class="material-icons">save</i>
+    <i style="cursor: pointer; float: left; margin-right: 15px"
+      (click)="createAction({action:'addNewPhone', subject: null})" class=" material-icons">add</i>
+    <!-- <i *ngIf="editMode" style="cursor: pointer; float: left; margin-right: 15px"
+      (click)="createAction('savePhone', phones)" class="material-icons">save</i> -->
   </div>
-  <hr class="mb-4" >
   <div formArrayName="phones">
-    <div class="row mb-5">
-      <div *ngFor="let phone of phones.controls; let i=index"> 
-        <div [formGroupName]="i" style="text-align: justify" class="mb-2">
-          <mat-form-field class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4" [ngClass]="{'phoneTypeWidth': 500 > width }">
-            <mat-select placeholder="{{'Phone type' | translate}}" formControlName="PhoneTypeId">
-              <mat-option [value]="2">{{'Cell phone' | translate}}</mat-option>
-              <mat-option [value]="4">{{'Work phone' | translate}}</mat-option>
-              <mat-option [value]="1">{{'Home phone' | translate}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="col-xs-4 col-sm-4 col-md-5 col-lg-5col-xl-5 inputMobileWidth">
-            <input matInput formControlName="PhoneNumber" placeholder="{{'Mobile phone' | translate}}" type="text">
-          </mat-form-field>
-          <i  style="cursor: pointer" (click)="createAction('editPhone', i)" class=" material-icons">create</i>
-          <i *ngIf="phones.controls.length !== 1" style="cursor: pointer" (click)="createAction('deletePhone', i)" class="material-icons">delete</i>
-        </div>
-      </div>
-      <!-- <button  (click)="deletePhone(i)"
-              *ngIf="i !== 0" type="button" mat-stroked-button color="warn">{{'Delete' | translate}}</button> -->
-    </div>
+    <ul class=" mb-5">
+      <li *ngFor="let phone of phones.controls; let i=index">
+        <app-customer-phone (newAction)="createAction($event)" [i]="i" [phoneGroup]="phone"></app-customer-phone>
+        <hr>
+      </li>
+    </ul>
 
   </div>
 </form>

@@ -15,6 +15,8 @@ import { SendByEmailComponent } from './modals/send-by-email/send-by-email.compo
 import { SearchComponent } from '../grid/grid-payments/customer-search/search/search.component';
 import { CustomerInfoViewComponent } from '../receipts/customer-info/customer-info-view/customer-info-view.component';
 import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserModule } from '@angular/platform-browser';
 
 
 @NgModule({
@@ -39,12 +41,14 @@ import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.co
             NgxPageScrollCoreModule,
             NgxPageScrollModule,
             MomentModule,
+       
+
+      
       ],
       exports: [
             ReactiveFormsModule,
             FormsModule,
             MaterialModule,
-            CustomerInfoComponent,
             TranslateModule,
             MomentModule,
             NgxPageScrollCoreModule,
@@ -54,7 +58,9 @@ import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.co
             ReceiptTypeFilterPipe,
             TableComponent,
             SearchComponent,
-            CustomerInfoViewComponent
+            CustomerInfoComponent,
+            CustomerInfoViewComponent,
+
          
       ],
       entryComponents:[CreditCardComponent,SendByEmailComponent]

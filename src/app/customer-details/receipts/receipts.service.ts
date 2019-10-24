@@ -53,4 +53,7 @@ export class ReceiptsService {
   addDisplayedColumnToTable(newColumnLabel: string, existColumns: string[]) {
     existColumns.push(newColumnLabel);
   }
+  goToCreateNewReceiptPage() {
+   this.customerDetailsService.goToCreateNewReceiptPage();
+  }
 }
