@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { FullCustomerDetailsById } from 'src/app/models/fullCustomerDetailsById.model';
 import { GeneralSrv } from './../receipts/services/GeneralSrv.service';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { PaymentsService } from '../grid/payments.service';
 import { Router } from '@angular/router';
 import { CustomerInfoService } from '../receipts/customer-info/customer-info.service';
+import { Response } from '../models/response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -78,16 +79,24 @@ export class CustomerDetailsService {
     this.customerInfoService.setCustomerInfoById(customerInfo.CustomerEmails, customerInfo.GetCustomerPhones, customerInfo.CustomerAddresses, customerInfo.CustomerCard_MainDetails, customerInfo.CustomerCreditCardTokens)
   }
 
-  saveChangedCustomerData(newCustomerData: {} | []) {
+  saveChangedCustomerData(newCustomerData: {} | []){
     const orgName = this.generalService.getOrgName();
+    let params: HttpParams = new HttpParams().set('customerid', this.getCustomerId().toString());
     console.log('NEW CUSTOMER DATA', newCustomerData);
-    return this.http.post(`${this.baseUrl}Customer/SaveCustomerInfo?urlAddr=${orgName}&customerid=${this.getCustomerId()}`, newCustomerData);
+    return this.http.post(`${this.baseUrl}Customer/SaveCustomerInfo?urlAddr=${orgName}`, newCustomerData, {params});
   }
 
   setCustomerId(customerId: number) {
     this.currentCustomerId.next(customerId);
   }
+
   getCustomerId() {
-   return this.currentCustomerId.getValue();
+    return this.currentCustomerId.getValue();
   }
+
+  clearCurrentMenuItem() {
+    this.currentMenuItem.next(null);
+  }
+
+
 }

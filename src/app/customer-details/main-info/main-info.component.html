@@ -6,25 +6,23 @@
       <div class="row ">
             <!-- PERSONAL INFO -->
             <mat-card class="col-12 mb-4">
-                  <app-main-info-view (newAction)="getActionFromChildren($event)" [globalData]="globalData$ | async"
-                        [filteredCustomerTitles$]="filteredCustomerTitles$" [personalInfo]="personalInfo">
-                  </app-main-info-view>
+                  <app-main-info-view [mainInfoForm]="mainInfoForm"></app-main-info-view>
             </mat-card>
 
             <!-- PHONES-->
             <mat-card class="col-12 mb-4">
-                  <app-phones-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
-                        [phones]="phones"></app-phones-info>
+                  <app-phones-info [mainInfoForm]="mainInfoForm">
+                  </app-phones-info>
             </mat-card>
             <!-- EMAILS -->
             <mat-card class="col-12 mb-4">
-                  <app-emails-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
-                        [emails]="emails"></app-emails-info>
+                  <app-emails-info [mainInfoForm]="mainInfoForm">
+                  </app-emails-info>
             </mat-card>
             <!-- ADDRESSES -->
             <mat-card class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4">
-                  <app-addresses-info (newAction)="getActionFromChildren($event)" [mainInfoForm]="mainInfoForm"
-                        [addresses]="addresses"></app-addresses-info>
+                  <app-addresses-info [mainInfoForm]="mainInfoForm">
+                  </app-addresses-info>
             </mat-card>
       </div>
       <!-- </mat-card-content> -->

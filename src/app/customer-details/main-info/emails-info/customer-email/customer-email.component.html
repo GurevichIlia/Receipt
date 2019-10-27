@@ -1,29 +1,35 @@
-<div [formGroup]="emailGroup" style="text-align: justify" class="mb-2 row">
+<div [formGroup]="emailGroup" style="text-align: justify" class="mb-2 row " style="align-items: center">
   <mat-form-field class="col-xs-11 col-sm-10 col-md-2 col-lg-2 col-xl-2">
     <input matInput placeholder="{{'Email name' | translate}}" type="text" formControlName="emailName">
   </mat-form-field>
-  <mat-form-field class="col-xs-11 col-sm-10 col-md-3 col-lg-3 col-xl-3">
-    <input matInput placeholder="{{'Email' | translate}}" type="text" formControlName="email">
-  </mat-form-field>
+  <div class="col-sm-10 col-md-3 col-lg-3 col-xl-3" style="text-align: justify">
+    <span><strong>{{'Email' | translate}}</strong>:
+      {{emailGroup.controls.email.value}}</span>
+  </div>
+
   <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('saveEmail', i); editMode = false;"
     class=" material-icons">save</i>
   <i *ngIf="!editMode" style="cursor: pointer" (click)="createAction('editEmail', i); editMode = true;"
     class=" material-icons">create</i>
   <i style="cursor: pointer" (click)="createAction('deleteEmail', i)" class=" material-icons">delete</i>
 
-  <span *ngIf="editMode" class="col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xl-12 row">
-    <div class="col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xl-12 row">
-      <label class="col-sm-12 col-md-1 col-lg-1 col-xl-1">Gender</label>
-      <mat-radio-group formControlName="emailsex" class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <mat-radio-button class="mr-1 ml-1" [value]="true">Male</mat-radio-button>
+  <span *ngIf="editMode" class="col-sm-10 col-md-12 col-lg-12 col-xl-12 row" style="align-items: flex-end;">
+    <mat-form-field class="col-xs-11 col-sm-10 col-md-3 col-lg-3 col-xl-3">
+      <input matInput placeholder="{{'Email' | translate}}" type="text" formControlName="email">
+    </mat-form-field>
+    <div class="col-sm-12 col-md-2 col-lg-2 col-xl-2 row">
+      <label class="col-sm-12 col-md-12 col-lg-12 col-xl-12" style="text-align: justify"><strong>Gender</strong>
+        </label>
+      <mat-radio-group formControlName="emailsex" class="col-sm-12 col-md-2 col-lg-2 col-xl-2">
+        <mat-radio-button  [value]="true">Male</mat-radio-button>
         <mat-radio-button [value]="false">Female</mat-radio-button>
       </mat-radio-group>
     </div>
 
-    <div class="col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xl-12 row">
-      <label class="col-sm-12 col-md-1 col-lg-1 col-xl-1">Newsletter</label>
-      <mat-radio-group formControlName="newslettere" class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <mat-radio-button class="mr-1 ml-1" [value]="false">Yes</mat-radio-button>
+    <div class="col-sm-12 col-md-2 col-lg-2 col-xl-2 row">
+      <label class="col-sm-12 col-md-12 col-lg-12 col-xl-12" style="text-align: justify"><strong>Newsletter</strong> </label>
+      <mat-radio-group formControlName="newslettere" class="col-sm-12 col-md-2 col-lg-2 col-xl-2">
+        <mat-radio-button  [value]="false">Yes</mat-radio-button>
         <mat-radio-button [value]="true">No</mat-radio-button>
       </mat-radio-group>
     </div>

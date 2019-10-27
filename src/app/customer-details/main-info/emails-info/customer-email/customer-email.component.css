@@ -1,7 +1,9 @@
 input.mat-input-element {
-      color: black
-    }
-    
-    ::ng-deep .mat-select-disabled .mat-select-value {
-      color: black
-    }
+  color: black
+}
+
+::ng-deep .mat-select-disabled .mat-select-value {
+  color: black
+}
+
+

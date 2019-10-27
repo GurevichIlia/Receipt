@@ -21,8 +21,8 @@ export class CustomerEmailComponent implements OnInit{
     // console.log('EMAIL FORMGROUP', this.emailGroup);
     this.editMode = this.emailGroup.value.tempid === '' ? true : false;
   }
-  createAction(action: string, subject?: any) {
-    this.newAction.emit({ action, subject })
+  createAction(action: string, index?: any) {
+    this.newAction.emit({ action, index })
     if (action === 'editEmail') {
       this.editMode = true;
     } else if (action === 'saveEmail') {

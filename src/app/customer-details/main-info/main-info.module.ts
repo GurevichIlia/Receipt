@@ -11,6 +11,7 @@ import { CustomerPhoneComponent } from './phones-info/customer-phone/customer-ph
 import { NgxMaskModule } from 'ngx-mask';
 import { CustomerEmailComponent } from './emails-info/customer-email/customer-email.component';
 import { CustomerAddressComponent } from './addresses-info/customer-address/customer-address.component';
+import { DumbPresentationComponent } from './main-info-view/dumb-presentation/dumb-presentation.component';
 
 const mainInfoRoutes: Routes = [
   {
@@ -28,7 +29,8 @@ const mainInfoRoutes: Routes = [
     AddressesInfoComponent,
     CustomerPhoneComponent,
     CustomerEmailComponent,
-    CustomerAddressComponent
+    CustomerAddressComponent,
+    DumbPresentationComponent,
   ],
   imports: [
     SharedModule,

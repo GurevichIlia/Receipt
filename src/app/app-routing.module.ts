@@ -6,7 +6,7 @@ import { LoginComponent } from './login/login.component';
 import { LoginGuard } from './receipts/services/login.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', pathMatch: 'full', redirectTo: 'home',  },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   {
     path: 'home', component: HomeComponentComponent, canActivate: [AuthGuard], children: [
@@ -14,10 +14,10 @@ const routes: Routes = [
       { path: 'newreceipt', loadChildren: './receipts/receipt.module#ReceiptModule' },
       { path: 'customer-details/:id', loadChildren: './customer-details/customer-details.module#CustomerDetailsModule' },
       { path: 'payments-grid', loadChildren: './grid/grid.module#GridModule', canActivate: [AuthGuard] },
-      { path: 'new-customer', loadChildren: './new-customer/new-customer.module#NewCustomerModule' },
+      { path: 'new-customer', loadChildren: './new-customer/new-customer.module#NewCustomerModule', canActivate:[AuthGuard] },
     ]
   },
-  { path: '**', redirectTo: '/home' },
+  { path: '**', redirectTo: 'home' },
 
 ]
 @NgModule({

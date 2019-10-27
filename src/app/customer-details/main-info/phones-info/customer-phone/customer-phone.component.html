@@ -1,7 +1,7 @@
-<div [formGroup]="phoneGroup" style="text-align: justify" class="mb-2 row">
-  <div class="col-xs-11 col-sm-11 col-md-5 col-lg-5 col-xl-12">
-    <div class="row">
-      <mat-form-field class="col-xs-11 col-sm-11 col-md-2 col-lg-2col-xl-2"
+<div [formGroup]="phoneGroup" style="text-align: justify" class="row">
+  <div class="col-xs-11 col-sm-11 col-md-5 col-lg-5 col-xl-12 mb-3">
+    <div class="row " style="align-items: center">
+      <mat-form-field class="col-xs-11 col-sm-11 col-md-2 col-lg-2 col-xl-2"
         [ngClass]="{'phoneTypeWidth': 500 > width }">
         <mat-select placeholder="{{'Phone type' | translate}}" formControlName="phoneTypeId">
           <mat-option [value]="2">{{'Cell phone' | translate}}</mat-option>
@@ -9,10 +9,13 @@
           <mat-option [value]="1">{{'Home phone' | translate}}</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field class="col-xs-10 col-sm-10 col-md-3 col-lg-3 col-xl-3 inputMobileWidth">
+      <!-- <mat-form-field class="col-xs-10 col-sm-10 col-md-3 col-lg-3 col-xl-3 inputMobileWidth">
         <input matInput formControlName="phoneNumber" placeholder="{{'Mobile phone' | translate}}" type="text">
-      </mat-form-field>
-      <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('savePhone', i); editMode = false;"
+      </mat-form-field> -->
+      <div class="col-xs-10 col-sm-10 col-md-3 col-lg-3 col-xl-3 inputMobileWidth">
+      <span><strong>{{'Mobile phone' | translate}}</strong>: {{phoneGroup?.controls.area.value}}{{phoneGroup.controls.Phone.value}}</span>
+      </div>
+      <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('savePhone',  i); editMode = false;"
         class=" material-icons">save</i>
 
       <i *ngIf="!editMode" style="cursor: pointer" (click)="createAction('editPhone', i); editMode = true"

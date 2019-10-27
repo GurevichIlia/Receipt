@@ -1,5 +1,5 @@
 import { FormGroup } from '@angular/forms';
-import { Component, OnInit, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterContentInit, OnChanges, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterContentInit, OnChanges, AfterViewInit, AfterContentChecked, AfterViewChecked } from '@angular/core';
 
 @Component({
   selector: 'app-customer-phone',
@@ -7,7 +7,7 @@ import { Component, OnInit, Input, ChangeDetectionStrategy, Output, EventEmitter
   styleUrls: ['./customer-phone.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomerPhoneComponent implements OnInit, OnChanges, AfterViewInit, AfterContentInit {
+export class CustomerPhoneComponent implements OnInit {
   @Input() phoneGroup: FormGroup;
   @Input() i: number;
   @Output() newAction = new EventEmitter();
@@ -17,34 +17,18 @@ export class CustomerPhoneComponent implements OnInit, OnChanges, AfterViewInit,
 
   }
 
-  ngOnChanges() {
-    console.log('EDIT MODE', this.editMode);
-  }
-
   ngOnInit() {
     // console.log('CUSTOMER PHONE FORM GROUP', this.phoneGroup);
     // console.log(this.phoneGroup.controls.id.value);
-    // this.editMode = this.phoneGroup.value.id === '' ? true : false;
+    this.editMode = this.phoneGroup.value.id === '' ? true : false;
     // console.log(this.phoneGroup.value);
-    // console.log('EDIT MODE', this.editMode);
-    // this.editMode = this.phoneGroup.value.id === '' ? true : false;
+    console.log('EDIT MODE', this.editMode);
     this.phoneGroup.get('Prefix').value === '' ? this.phoneGroup.get('Prefix').patchValue('972') : this.phoneGroup.get('Prefix').value;
 
   }
 
-  ngAfterContentInit() {
-    console.log('CUSTOMER PHONE FORM GROUP', this.phoneGroup);
-    console.log(this.phoneGroup.controls.id.value);
-    this.editMode = this.phoneGroup.value.id === '' ? true : false;
-    console.log(this.phoneGroup.value);
-    console.log('EDIT MODE', this.editMode);
-  }
-
-  ngAfterViewInit() {
-
-  }
-  createAction(action: string, subject?: any) {
-    this.newAction.emit({ action, subject })
+  createAction(action: string, index?: number) {
+    this.newAction.emit({ action, index })
     if (action === 'editPhone') {
       this.editMode = true;
     } else if (action === 'savePhone') {

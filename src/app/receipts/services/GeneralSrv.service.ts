@@ -50,7 +50,7 @@ export class GeneralSrv {
   partOfApplication = new BehaviorSubject('');
   currentPartOfApplication$ = this.partOfApplication.asObservable();
 
-  globalData = new BehaviorSubject<GlobalData>(<GlobalData>{});
+  globalData = new BehaviorSubject<GlobalData>(null);
   /** Using this data in payments part of application */
   currentGlobalData$ = this.globalData.asObservable();
 

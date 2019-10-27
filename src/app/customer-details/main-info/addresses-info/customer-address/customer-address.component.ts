@@ -16,11 +16,11 @@ export class CustomerAddressComponent implements OnInit {
 
   ngOnInit() {
     this.editMode = this.addressGroup.value.addressId === '' ? true : false;
-    console.log('ADDRESS GROUP', this.addressGroup)
+    // console.log('ADDRESS GROUP', this.addressGroup)
   }
 
-  createAction(action: string, subject?: any) {
-    this.newAction.emit({ action, subject });
+  createAction(action: string, index?: number) {
+    this.newAction.emit({ action, index });
     if (action === 'editAddress') {
       this.editMode = true;
     } else if (action === 'saveAddress') {

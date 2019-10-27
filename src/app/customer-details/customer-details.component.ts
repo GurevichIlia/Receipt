@@ -1,4 +1,4 @@
-import { FullCustomerDetailsById } from './../models/fullCustomerDetailsById.model';
+import { FullCustomerDetailsById, CustomerPhones } from './../models/fullCustomerDetailsById.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomerDetailsService } from './customer-details.service';
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
@@ -43,7 +43,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
     this.customerDetailsService.getCustomerDetailsById(customerId)
       .pipe(
         takeUntil(this.subscription$))
-      .subscribe(data => {
+      .subscribe((data: FullCustomerDetailsById) => {
         if (data) {
           console.log('CUSTOMER INFO', data);
           this.customerDetailsService.setCustomerDetailsByIdState(data);
@@ -70,20 +70,20 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
         this.checkDisplayWidth(data);
       })
   }
-  ngOnDestroy() {
-    this.subscription$.next();
-    this.subscription$.complete();
-  }
+
   checkDisplayWidth(width: number) {
     this.displayWidth = width;
     width < 765 ? this.sidenav.close() : this.sidenav.open();
   }
+
   getCurrentMenuItem() {
     return this.customerDetailsService.getCurrentMenuItem$();
   }
+
   navigateTo(route: string) {
     this.router.navigate([`home/customer-details/${this.customerId}/${route}`]);
   }
+
   navigation() {
     this.getCurrentMenuItem()
       .pipe(
@@ -93,5 +93,11 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
         console.log('ROUTE', data)
       }
       )
+  }
+
+  ngOnDestroy() {
+    this.customerDetailsService.clearCurrentMenuItem();
+    this.subscription$.next();
+    this.subscription$.complete();
   }
 }

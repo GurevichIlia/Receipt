@@ -1,3 +1,4 @@
+import { BehaviorSubject, Observable } from 'rxjs';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { CustomerAddresses } from './../../models/customer-info-by-ID.model';
 import { CustomerPhones, CustomerEmails, MainDetails } from './../../models/fullCustomerDetailsById.model';
@@ -11,6 +12,8 @@ import { CustomerTitle } from 'src/app/models/globalData.model';
   providedIn: 'root'
 })
 export class MainInfoService {
+  // phoneInputsArray = new BehaviorSubject<FormArray>(null);
+  // phoneInputsArray$ = this.phoneInputsArray.asObservable();
 
   constructor(
     private customerDetailsService: CustomerDetailsService,
@@ -18,72 +21,73 @@ export class MainInfoService {
     private generalSevice: GeneralSrv
   ) { }
 
-  getMainInfo() {
+  getCustomerDetailsByIdState$() {
     return this.customerDetailsService.getCustomerDetailsByIdState$();
   }
   getGlobalData$() {
     return this.customerDetailsService.getGlobalData$();
   }
 
-  patchInputValue(inputsArray: FormArray | FormGroup, valueArray: CustomerPhones[] | CustomerEmails[] | CustomerAddresses[] | MainDetails[], addNewInputFunction?: Function, formBuilder?: FormBuilder) {
-    let controlsKeys;
+  
+  // patchInputValue(inputsArray: FormArray | FormGroup, valueArray: CustomerPhones[] | CustomerEmails[] | CustomerAddresses[] | MainDetails[], addNewInputFunction?: Function, formBuilder?: FormBuilder) {
+  //   let controlsKeys;
+  //   if (valueArray.length > 0) {
+  //     // если массив значений для инпутов не пустой, запуска. цикл для извлечения нужных значений.
+  //     for (let i = 0; i < valueArray.length; i++) {
 
-    if (valueArray.length > 0) {
-      // если массив значений для инпутов не пустой, запуска. цикл для извлечения нужных значений.
-      for (let i = 0; i < valueArray.length; i++) {
+  //       if (inputsArray instanceof FormArray) {
 
-        if (inputsArray instanceof FormArray) {
+  //         //создаю массив с названиями ключей на основании пришедшего FormArray.
+  //         controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
+  //         // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
+  //         controlsKeys.forEach((key: string) => {
+  //           // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
+  //           const arrKey = key.toLowerCase();
+  //           // (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
+  //           // обновляю массив FormArray c объектами в которых инпуты.
+  //           if (i < 10) {
+  //             inputsArray.controls[i].patchValue({
+  //               [key]: valueArray[i][arrKey],
+  //               deleteRow: 0,
+  //             })
+  //           }
+  //         })
+  //       } else if (inputsArray instanceof FormGroup) {
+  //         //создаю массив с названиями ключей на основании пришедшего FormGroup.
+  //         controlsKeys = Object.keys(inputsArray.controls);
+  //         // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
+  //         controlsKeys.forEach(key => {
+  //           // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
+  //           const arrKey = (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
+  //           // добавляю значения в объектe FormGroup с инпутами
+  //           if (i < 10) {
+  //             inputsArray.patchValue({
+  //               [key]: valueArray[i][arrKey]
+  //             })
+  //           } else {
+  //             return
+  //           }
 
-          //создаю массив с названиями ключей на основании пришедшего FormArray.
-          controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
-          // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
-          controlsKeys.forEach((key: string) => {
-            // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
-            const arrKey = key.toLowerCase();
-            // (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
-            // обновляю массив FormArray c объектами в которых инпуты.
-            if (i < 10) {
-              inputsArray.controls[i].patchValue({
-                [key]: valueArray[i][arrKey],
-                deleteRow: 0,
-              })
-            }
-          })
-        } else if (inputsArray instanceof FormGroup) {
-          //создаю массив с названиями ключей на основании пришедшего FormGroup.
-          controlsKeys = Object.keys(inputsArray.controls);
-          // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
-          controlsKeys.forEach(key => {
-            // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
-            const arrKey = (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
-            // добавляю значения в объектe FormGroup с инпутами
-            if (i < 10) {
-              inputsArray.patchValue({
-                [key]: valueArray[i][arrKey]
-              })
-            } else {
-              return
-            }
-
-          })
-        }
-        if (valueArray.length > i + 1) {
-          // если в массиве значений для инпутов больше чем 1 объект, создаю еще один инпут.
-          addNewInputFunction(inputsArray, formBuilder)
-        } else {
-          break;
-        }
-      }
-    } else {
-      // если массив с значения для инпута пустой, дабвляю дефолтные значения(пустая строка).
-      controlsKeys = Object.keys(inputsArray.controls);
-      controlsKeys.forEach(key => {
-        inputsArray.controls[0].patchValue({
-          [key]: ''
-        })
-      })
-    }
-  }
+  //         })
+  //       }
+  //       if (valueArray.length > i + 1) {
+  //         // если в массиве значений для инпутов больше чем 1 объект, создаю еще один инпут.
+  //         addNewInputFunction(inputsArray, formBuilder)
+  //       } else {
+  //         break;
+  //       }
+  //     }
+  //   } else {
+  //     // если массив с значения для инпута пустой, дабвляю дефолтные значения(пустая строка).
+  //     controlsKeys = Object.keys(inputsArray.controls);
+  //     controlsKeys.forEach(key => {
+  //       inputsArray.controls[0].patchValue({
+  //         [key]: ''
+  //       })
+  //     })
+  //   }
+  //   return inputsArray;
+  // }
 
   removeEmptyControl(array: FormArray, key: string) {
     for (let i = array.value.length - 1; i > 0; i--) {
@@ -165,4 +169,16 @@ export class MainInfoService {
   saveChangedCustomerData(newCustomerData) {
     return this.customerDetailsService.saveChangedCustomerData(newCustomerData);
   }
+
+  // setPhoneInputsArray(inputsArray: FormArray) {
+  //   this.phoneInputsArray.next(inputsArray)
+  // }
+
+  // getPhoneInputsArrayValue(): FormArray {
+  //   return this.phoneInputsArray.getValue();
+  // }
+
+  // getPhoneInputsArray$(): Observable<FormArray> {
+  //   return this.phoneInputsArray$;
+  // }
 }

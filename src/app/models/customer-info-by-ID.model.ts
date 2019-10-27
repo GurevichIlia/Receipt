@@ -13,7 +13,7 @@ export interface CustomerAddresses {
       Street: string;
       Street2: string;
       Zip: string;
-      Remark: string;
+      remark: string;
 }
 
 export interface GetCustomerReceipts {
