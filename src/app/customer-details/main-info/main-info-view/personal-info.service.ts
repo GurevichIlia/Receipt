@@ -59,6 +59,7 @@ export class PersonalInfoService {
       remark: customerPersonalInfo.Remark,
       contact: ''
     })
+    personalInfo.disable();
     console.log('PersonalInfo ARRAY FROM PersonalInfo SERVICE', personalInfo);
   }
 

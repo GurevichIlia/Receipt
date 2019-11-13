@@ -1,0 +1,11 @@
+  <h4>Continue with this customer?</h4>
+  <ul class="mb-3">
+    <li>{{data.customer[0].fname}} {{data.customer[0].lname}} {{data.customer[0].CustomerId}}</li>
+  </ul>
+
+  <div class="row " style="justify-content: space-evenly">
+    <button class="submit-button col-xl-5 " mat-raised-button
+      (click)="accept()">Confirm</button>
+    <button class="cancel-button col-xl-5" mat-raised-button (click)="close()">Other
+      customer</button>
+  </div>

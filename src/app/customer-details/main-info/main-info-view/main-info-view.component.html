@@ -1,1 +1,29 @@
-<app-dumb-presentation [globalData]="globalData$ | async" [filteredCustomerTitles]="filteredCustomerTitles$ | async" [personalInfo]="personalInfoControl" (newAction)="getAction($event)"></app-dumb-presentation>
+<mat-card  class="mb-4">
+  <div class="row mb-4 label">
+    <h3>Personal info</h3>
+    <i *ngIf="!editMode" style="cursor: pointer; float: left; margin-right: 10px"
+      (click)="editFormControl(personalInfoControl)" class=" material-icons">create</i>
+    <i *ngIf="editMode" style="cursor: pointer; float: left;margin-right: 10px"
+      (click)="savePersonalInfo(personalInfoControl)" class=" material-icons">save</i>
+
+  </div>
+  <app-dumb-presentation *ngIf="globalData$ | async; else loader" [globalData]="globalData$ | async"
+    [filteredCustomerTitles]="filteredCustomerTitles$ | async" [personalInfo]="personalInfoControl"
+    (newAction)="getAction($event)">
+    <ng-template [ngIf]="globalData$ | async" #btn>
+      <button class="col-sm-12 col-md-2 col-lg-2 col-xl-1" (click)="showFullComment()" mat-flat-button>Show
+        comment</button>
+    </ng-template>
+
+  </app-dumb-presentation>
+
+  <ng-template #loader>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+
+  </ng-template>
+
+  
+
+
+
+</mat-card>

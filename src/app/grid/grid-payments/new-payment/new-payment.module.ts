@@ -27,7 +27,7 @@ const newPaymentRoutes: Routes = [
     FourthStepComponent,
     FifthStepComponent,
     BankComponent,
-    CreditCardComponent
+    CreditCardComponent,
   ],
   imports: [
     SharedModule,

@@ -1,0 +1,37 @@
+<app-customer-search (foundCustomerDetails)="getCustomerDetails($event)">
+
+</app-customer-search>
+
+
+<div class="container mt-5">
+  <div class=" example-headers-align">
+    <mat-card class="mb-2">
+      <mat-card-header class="row">
+
+        <h6 class="col-sm-1 col-md-4 col-lg-4 col-xl-4 " style="text-align: justify">{{'Customer Info' | translate}}
+        </h6>
+        <h6 class="col-sm-1 col-md-4 col-lg-3 col-xl-3" style="text-align: center">
+          {{customerInfoTitle || 'Customer Name' | translate}}{{customerId}} </h6>
+        <span class="col-sm-1 col-md-4 col-lg-4 col-xl-4 ">
+          <mat-icon>account_circle</mat-icon>
+        </span>
+
+      </mat-card-header>
+      <app-customer-info-view
+       [requiredField]="requiredField" [currentRoute]="currentRoute"
+        [customerGroupList]="customerGroupList" [cities]="filteredCity$ | async"
+        [filterCustomerTitle]="filterCustTitle$ | async" [customerTypes]="customerTypes" [userInfoGroup]="userInfoGroup"
+        (openShopIsClicked)="openShop()" (newEventFromChild)="getEventsFromChildComponent($event)"
+        
+        >
+
+      </app-customer-info-view>
+    </mat-card>
+
+  </div>
+</div>
+
+
+<p>
+  customer-details-for-new-payment works!
+</p>

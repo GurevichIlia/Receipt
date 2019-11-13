@@ -1,10 +1,13 @@
-import { Customermaininfo } from './../../models/customermaininfo.model';
-import { Component, OnInit, Input, OnChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Customerinfo } from './../../models/customerInfo.model';
+import { CustomerInfoViewComponent } from './customer-info-view/customer-info-view.component';
+import { SuggestExistingCustomerComponent } from './../../shared/modals/suggest-existing-customer/suggest-existing-customer.component';
+
+import { Component, OnInit, OnDestroy, Output, EventEmitter, AfterViewInit, AfterContentInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormArray, Validators, FormBuilder, FormGroup, FormControl, AbstractControl } from '@angular/forms';
 
-import { Observable, Subscription, Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { Observable, Subscription, Subject, of, BehaviorSubject, from, fromEvent, timer } from 'rxjs';
+import { debounceTime, takeUntil, delay, mapTo, takeWhile, map, mergeAll, mergeMap, concatAll, concatMap, switchAll } from 'rxjs/operators';
 
 import { ReceiptsService } from '../services/receipts.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
@@ -13,15 +16,16 @@ import { PaymentsService } from './../../grid/payments.service';
 import * as moment from 'moment';
 
 import { CustomerType } from 'src/app/models/customerType.model';
-import { GetCustomerReceipts, CustomerAddresses } from 'src/app/models/customer-info-by-ID.model';
+import { GetCustomerReceipts } from 'src/app/models/customer-info-by-ID.model';
 import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from './customer-info.service';
-import { MainDetails, CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerTitle } from 'src/app/models/globalData.model';
 import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
 import { Phones } from 'src/app/models/phones.model';
 import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
 import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
+import { MatDialog } from '@angular/material';
+import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 
 export interface Group {
   GroupId: number;
@@ -31,7 +35,7 @@ export interface Group {
   templateUrl: './customer-info.component.html',
   styleUrls: ['./customer-info.component.css']
 })
-export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
+export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterContentInit, OnDestroy {
   cities: any[];
   customerTitle: CustomerTitle[];;
   customerTypes: CustomerType[];
@@ -69,15 +73,15 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
 
   globalReceiptData: ReceiptGLobalData;
 
-  customerPhones: CustomerPhones[];
-  customerEmails: CustomerEmails[];
-  customerAddress: CustomerAddresses[];
-  customerDetails: Customermaininfo[] | MainDetails[];
+  customerPhones: Phones[];
+  customerEmails: Emails[];
+  customerAddress: Addresses[];
+  customerDetails: CustomerMainInfo[];
 
-  customerGroupList: CustomerGroupById[]
+  customerGroupList$: Observable<CustomerGroupById[]>
 
   customer: {
-    customermaininfo: Customermaininfo;
+    customermaininfo: CustomerMainInfo;
     phones: Phones[];
     emails: Emails[];
     addresses: Addresses;
@@ -90,9 +94,10 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
     private fb: FormBuilder,
-    private activatedRoute: Router,
+    private route: Router,
     private paymentsService: PaymentsService,
-    private customerInfoService: CustomerInfoService
+    private customerInfoService: CustomerInfoService,
+    private matDialog: MatDialog
   ) {
     // tslint:disable-next-line: max-line-length
     // this.payMath = new FormControl({ value: localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null, disabled: this.disabledPayMethod }, [Validators.required])
@@ -130,14 +135,15 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
           email: ['', Validators.email],
         })
       ]),
-      address: this.fb.group({
-        cityName: [''],
-        street: [''],
-        street2: [''],
-        zip: [''],
-        addressTypeId: ['']
-      }),
-
+      addresses: this.fb.array([
+        this.fb.group({
+          cityName: [''],
+          street: [''],
+          street2: [''],
+          zip: [''],
+          addressTypeId: ['']
+        }),
+      ]),
       groups: ['']
     });
 
@@ -149,7 +155,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     return this.userInfoGroup.get('emails') as FormArray;
   }
   get address() {
-    return this.userInfoGroup.get('address') as FormGroup;
+    return this.userInfoGroup.get('addresses') as FormArray;
   }
   get city() {
     return this.userInfoGroup.get('addresses.cityName');
@@ -205,33 +211,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     }
     return custType;
   }
-  ngOnChanges() {
-    // if (this.customerInfo !== undefined) {
-    //   // if (this.customerInfo['CustomerEmails'].length !== 0) {
-    //   this.customerEmails = this.customerInfo['CustomerEmails'];
-    //   // }
-    //   // if (this.customerInfo['CustomerMobilePhones'].length !== 0) {
-    //   this.customerPhones = this.customerInfo['CustomerMobilePhones'];
-    //   // }
-    //   // if (this.customerInfo['CustomerInfoForReceiept'].length !== 0) {
-    //   this.customerDetails = this.customerInfo['CustomerInfoForReceiept'];
-    //   // }
-    //   // if (this.customerInfo['CustomerAddresses'].length !== 0) {
-    //   this.customerAddresses = this.customerInfo['CustomerAddresses'];
-    //   // }
-    // }
 
-    // this.changeCustomerInfoIfCustomerIsFound(this.customerInfo);
-
-    // console.log('CUSTOMER INFO GOT', this.customerInfo);
-    // console.log(this.foundCustomerEmails, this.foundCustomerPhones);
-
-    // this.creditCardService.currentlyCreditCardVerified.subscribe((isVerified: boolean) => {
-    //   this.isVerified = isVerified;
-    //   console.log('this.isVerified', this.isVerified);
-    //   this.disabledNextStep();
-    // });
-  }
 
 
 
@@ -240,41 +220,49 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     this.customerTypes = data['GetCustomerTypes'];
   }
   getGlobalData() {
-    this.subscriptions.add(this.generalService.getGlobalData$().subscribe(data => {
-      if (data) {
-        this.getCustomerTypes(data)
-        this.setCustomerTitleAutoComplete(data.CustomerTitle, this.title, 'TitleHeb')
-      }
-      console.log(this.customerTypes);
-    }));
+    this.subscriptions.add(this.generalService.getGlobalData$()
+      .pipe(
+        debounceTime(1),
+        takeUntil(this.subscription$)).subscribe(data => {
+          if (data) {
+            this.getCustomerTypes(data)
+            this.setCustomerTitleAutoComplete(data.CustomerTitle, this.title, 'TitleHeb')
+          }
+          console.log(this.customerTypes);
+        }));
   }
   ngOnInit() {
     this.getCurrentLanguage();
     // console.log('this.payMath', this.payMath)
 
     this.getGlobalData();
-    this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
+    this.receiptService.currentStep$
+      .pipe(
+        takeUntil(this.subscription$)).subscribe(step => this.step = step);
 
     this.getPaymentTypes();
     this.getPayMethFromLocalStorage();
 
     this.disabledNextStep();
-    this.getCustomerInfoById();
-
+    this.getCurrentCustomerInfoByIdForCustomerInfoComponent();
+    // this.suggestUseExistingCustomerDetails();
     this.getCities();
-    this.subscriptions.add(this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
-      .subscribe(data => {
-        this.setItemToSessionStorage('fname', data.customerMainInfo.fname);
-        this.setItemToSessionStorage('lname', data.customerMainInfo.lname);
-        this.setItemToSessionStorage('company', data.customerMainInfo.company);
-        this.setItemToSessionStorage('customerType', data.customerMainInfo.customerType);
-        this.setItemToSessionStorage('title', data.customerMainInfo.title);
-        this.setItemToSessionStorage('gender', data.customerMainInfo.gender);
-        this.setItemToSessionStorage('customerCode', data.customerMainInfo.customerCode);
-        this.setItemToSessionStorage('spouseName', data.customerMainInfo.spouseName);
-        this.setItemToSessionStorage('fileAs', data.customerMainInfo.fileAs);
-        this.setItemToSessionStorage('afterSunset1', data.customerMainInfo.afterSunset);
-      }));
+    this.getCustomerGroupList();
+    // setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
+    this.text();
+    // this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
+    //   .subscribe(data => {
+    //     this.setItemToSessionStorage('fname', data.customerMainInfo.fname);
+    //     this.setItemToSessionStorage('lname', data.customerMainInfo.lname);
+    //     this.setItemToSessionStorage('company', data.customerMainInfo.company);
+    //     this.setItemToSessionStorage('customerType', data.customerMainInfo.customerType);
+    //     this.setItemToSessionStorage('title', data.customerMainInfo.title);
+    //     this.setItemToSessionStorage('gender', data.customerMainInfo.gender);
+    //     this.setItemToSessionStorage('customerCode', data.customerMainInfo.customerCode);
+    //     this.setItemToSessionStorage('spouseName', data.customerMainInfo.spouseName);
+    //     this.setItemToSessionStorage('fileAs', data.customerMainInfo.fileAs);
+    //     this.setItemToSessionStorage('afterSunset1', data.customerMainInfo.afterSunset);
+    //   });
     // this.receiptService.blockPayMethod.subscribe((data: boolean) => {
     //   this.disabledPayMethod = data;
     //   console.log(this.disabledPayMethod)
@@ -282,18 +270,42 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     this.getCreateNewEvent();
     console.log(this.userInfoGroup.value)
     // this.filterOptionForCustomerSearch();
-    this.cityAutocomplete(this.cities, this.address.controls.cityName, 'CityName');
-    this.getCurrentRoute()
+
+    this.group.valueChanges.subscribe(value => {
+      console.log(value);
+    })
+
+    this.getCurrentRoute();
+    this.customerInfoService.getEventCUstomerIsFoundById$()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(() => {
+        this.changeCustomerInfoIfCustomerIsFound(this.customerInfoById);
+        console.log('EVENT CUSTOMER FOUND');
+      });
+
+  }
+
+  ngAfterViewInit(): void {
+    // this.suggestUseExistingCustomerDetails();
+  }
+
+  ngAfterContentInit() {
+    // this.suggestUseExistingCustomerDetails();
+
   }
   getCurrentRoute() {
-    console.log('Route', this.activatedRoute.url)
-    this.currentRoute = this.activatedRoute.url;
+    console.log('Route', this.route);
+    this.currentRoute = this.route.url;
     this.generalService.partOfApplication.next(this.currentRoute);
   }
   getCurrentLanguage() {
-    this.subscriptions.add(this.generalService.currentLang$.subscribe((lang: string) => {
-      this.currentLang = lang;
-    }));
+    this.subscriptions.add(this.generalService.currentLang$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((lang: string) => {
+        this.currentLang = lang;
+      }));
   }
 
   // updateCustomerInfo() {
@@ -306,7 +318,9 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
   disabledNextStep() {
     this.checkRequiredNameFields();
     this.subscriptions.add(this.userInfoGroup.controls.customerMainInfo.valueChanges
-      .pipe(takeUntil(this.subscription$))
+      .pipe(
+        debounceTime(1),
+        takeUntil(this.subscription$))
       .subscribe(data => {
         this.checkRequiredNameFields();
       }));
@@ -335,12 +349,16 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       const custInfo = customer.customerMainInfo[0];
       this.receiptService.setIsNewCustomer(false);
       // this.receiptService.setStep(1);
-      this.customerInfoTitle = `${custInfo['FileAs']} ${custInfo['CustomerId']}`;
+      this.customerInfoTitle = `${custInfo.fileAs} ${custInfo.customerId}`;
       console.log(this.customerInfoTitle);
-      this.setCustomerAddressFormControls();
-      this.setCustomerEmailFormControls();
-      this.setCustomerPhoneFormControls();
-      this.setCustomerMainInfo();
+      this.customerInfoService.updateValueInAddressInputsArray(this.address, customer.customerAddress);
+      // this.setCustomerAddressFormControls(this.address, customer.customerAddress, this.generalService.getAddAddressFunction(), this.fb);
+      this.customerInfoService.updateValueInEmailInputsArray(this.emails, customer.customerEmails)
+      // this.setCustomerEmailFormControls(this.emails, customer.customerEmails, this.generalService.getAddEmailFunction(), this.fb);
+      this.customerInfoService.updateValueInPhoneInputsArray(this.phones, customer.customerPhones)
+      // this.setCustomerPhoneFormControls(this.phones, customer.customerPhones, this.generalService.getAddPhoneFunction(), this.fb);
+
+      this.setCustomerMainInfo(this.customerMainInfo, [customer.customerMainInfo[0]]);
 
       // this.updateCustomerMainInfo(custInfo);
 
@@ -428,8 +446,10 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
   getCreateNewEvent() {
     this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
       this.refreshCustomerForm();
+      // this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
     }));
   }
+
   refreshCustomerForm() {
     this.customerInfoTitle = '';
     this.userInfoGroup.reset();
@@ -443,6 +463,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     this.disabledNextStep();
 
   }
+
   refreshRequiredFormFields() {
     this.userInfoGroup.patchValue({
       customerId: null,
@@ -451,6 +472,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       company: ''
     });
   }
+
   deletePhone(i) {
     if (i === 0) {
       return;
@@ -458,6 +480,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       this.phones.removeAt(i);
     }
   }
+
   deleteEmail(i) {
     if (i === 0) {
       return;
@@ -465,13 +488,16 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       this.emails.removeAt(i);
     }
   }
-  // deleteAddress(i) {
-  //   if (i === 0) {
-  //     return;
-  //   } else {
-  //     this.address.removeAt(i);
-  //   }
-  // }
+
+  deleteAddress(i) {
+    if (i === 0) {
+      return;
+    } else {
+      this.address.removeAt(i);
+    }
+  }
+
+
   changeBirthdayFormat(birthDay: AbstractControl) {
     let birthday = moment(birthDay.value).format('DD/MM/YYYY');
     if (birthday === 'Invalid date') {
@@ -486,7 +512,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
 
     // tslint:disable-next-line: max-line-length
 
-    this.sendNewCustomerToNewReceipt();
+    this.setCustomerInfoToNewReceipt();
 
 
 
@@ -500,14 +526,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
     // this.receiptService.addGroupsToReceipt(this.addGroups());
     // this.addCurrentAddress(this.address);
     this.setCustomerCreditCardList();
-    // this.receiptService.newReceipt.customerInfo.groups = this.userInfoGroup.get('groups').value;
 
-
-    // const customermaininfo = this.userInfoGroup.get('customerMainInfo').value;
-    // this.receiptService.customerMainInfoForCustomerInfo(customermaininfo)
-    // const paymentMethodId = this.payMath;
-    // this.receiptService.paymentMethod.next(paymentMethodId.value);
-    // localStorage.setItem('paymenthMethod', paymentMethodId.value);
     console.log('form.value', this.userInfoGroup.value);
     console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
   }
@@ -525,7 +544,8 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       this.lastName.patchValue('');
     }
 
-    this.setNewCustomer(this.customerMainInfo.value, this.phones.value, this.emails.value, this.address.value, this.getPickedGroups());
+    this.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.emails.value, this.phones.value, this.address.value, [this.customerMainInfo.value], this.getPickedGroups());
+    // this.customerInfoService.setCustomerInfoById(this.emails.value, this.phones.value, this.address.value, this.customerMainInfo.value, null, this.getPickedGroups());
     switch (this.currentRoute) {
       case '/home/newreceipt':
         this.addCUstomerInfoToReceipt()
@@ -533,10 +553,10 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
         break
       case '/home/payments-grid/customer-search':
         this.goToNewPaymentPage();
-        this.receiptService.createNewClicked();
+        // this.receiptService.createNewClicked();
         break
       case '/home/new-customer':
-        this.saveNewCustomer(this.getNewCustomer());
+        this.saveNewCustomer(this.userInfoGroup.value);
         setTimeout(() => this.goToNewCustomerDetails(3076), 2000);
         console.log('New Customer');
         break
@@ -619,9 +639,13 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
         break
       case 'addPhone': this.addPhone();
         break
+      case 'addAddress': this.addAddress();
+        break
       case 'deleteEmail': this.deleteEmail($event.index);
         break
       case 'deletePhone': this.deletePhone($event.index);
+        break
+      case 'deleteAddress': this.deleteAddress($event.index);
         break
     }
   }
@@ -636,6 +660,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
   }
+
   getPickedGroups() {
     if (this.group.value.length > 0) {
       for (const selGroup of this.group.value) {
@@ -644,6 +669,7 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
         };
         this.selectedGroups.push(selectedGroup);
       }
+      console.log(this.selectedGroups)
       return this.selectedGroups;
     } else {
       return [];
@@ -664,76 +690,224 @@ export class CustomerInfoComponent implements OnInit, OnChanges, OnDestroy {
       this.paymentsService.setListCustomerCreditCard(this.customerInfoById.customerCreditCardTokens);
     }
   }
+
   addPhone() {
     this.generalService.addPhoneInput(this.phones, this.fb);
   }
+
   addEmail() {
     this.generalService.addEmailInput(this.emails, this.fb);
   }
-  // addAddress() {
-  //   this.generalService.addAddressInput(this.addresses, this.fb);
+
+  addAddress() {
+    this.generalService.addAddressInput(this.address, this.fb);
+  }
+
+  // setCustomerPhoneFormControls(
+  //   inputsArray: FormArray | FormGroup,
+  //   valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
+  //   addNewInputFunction?: Function,
+  //   formBuilder?: FormBuilder) {
+  //   this.customerInfoService.patchInputValue(inputsArray, valueArray, addNewInputFunction, formBuilder);
   // }
-  setCustomerPhoneFormControls() {
-    this.customerInfoService.patchInputValue(this.phones, this.customerPhones, this.generalService.getAddPhoneFunction(), this.fb);
+
+  // setCustomerAddressFormControls(
+  //   inputsArray: FormArray | FormGroup,
+  //   valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
+  //   addNewInputFunction?: Function,
+  //   formBuilder?: FormBuilder
+  // ) {
+  //   this.customerInfoService.patchInputValue(inputsArray, valueArray, addNewInputFunction, formBuilder)
+  // }
+
+  // setCustomerEmailFormControls(
+  //   inputsArray: FormArray | FormGroup,
+  //   valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
+  //   addNewInputFunction?: Function,
+  //   formBuilder?: FormBuilder
+  // ) {
+  //   this.customerInfoService.patchInputValue(inputsArray, valueArray, addNewInputFunction, formBuilder)
+  // }
+
+  setCustomerMainInfo(
+    inputsArray: FormArray | FormGroup,
+    valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[]
+  ) {
+    this.customerInfoService.patchInputValue(inputsArray, valueArray)
   }
-  setCustomerAddressFormControls() {
-    this.customerInfoService.patchInputValue(this.address, this.customerAddress)
-  }
-  setCustomerEmailFormControls() {
-    this.customerInfoService.patchInputValue(this.emails, this.customerEmails, this.generalService.getAddEmailFunction(), this.fb)
-  }
-  setCustomerMainInfo() {
-    this.customerInfoService.patchInputValue(this.customerMainInfo, this.customerDetails)
-  }
+
   setCustomerTitleAutoComplete(filteredSubject: CustomerTitle[], formControl: AbstractControl, filterKey: string) {
     this.filterCustTitle$ = this.generalService.formControlAutoComplete(filteredSubject, formControl, filterKey);
   }
+
   cityAutocomplete(filteredSubject: CustomerTitle[], formControl: AbstractControl, filterKey: string) {
     this.filteredCity$ = this.generalService.formControlAutoComplete(filteredSubject, formControl, filterKey);
   }
-  getCustomerInfoById() {
-    this.customerInfoService.getCustomerInfoById$()
+
+  getCurrentCustomerInfoByIdForCustomerInfoComponent() {
+    this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent$()
       .pipe(
         takeUntil(this.subscription$))
-      .subscribe(customerInfo => {
-        this.customerInfoById = customerInfo;
-        console.log('CUSTOMER INFO GOT', customerInfo);
+      .subscribe((customerInfo: CustomerInfoByIdForCustomerInfoComponent) => {
+        console.log('CUSTOMER INFO GOT IN CUSTOMER INFO COMPONENT', customerInfo);
         if (customerInfo) {
-          // if (this.customerInfo['CustomerEmails'].length !== 0) {
-          this.customerEmails = customerInfo['customerEmails'];
-          // }
-          // if (this.customerInfo['CustomerMobilePhones'].length !== 0) {
-          this.customerPhones = customerInfo['customerPhones'];
-          // }
-          // if (this.customerInfo['CustomerInfoForReceiept'].length !== 0) {
-          this.customerDetails = customerInfo['customerMainInfo'];
-          // }
-          // if (this.customerInfo['CustomerAddresses'].length !== 0) {
-          this.customerAddress = customerInfo['customerAddress'].filter(address => customerInfo['customerAddress'].indexOf(address) === 0);
-          // }
-          this.customerGroupList = customerInfo.customerGroupList;
-        }
+          // debugger
+          this.customerInfoById = customerInfo;
+          // // if (this.customerInfo['CustomerEmails'].length !== 0) {
+          // this.customerEmails = customerInfo.customerEmails;
+          // // }
+          // // if (this.customerInfo['CustomerMobilePhones'].length !== 0) {
+          // this.customerPhones = customerInfo.customerPhones;
+          // // }
+          // // if (this.customerInfo['CustomerInfoForReceiept'].length !== 0) {
+          // this.customerDetails = customerInfo.customerMainInfo;
+          // // }
+          // // this.customerAddress = customerInfo['CustomerAddress'].filter(address => customerInfo['customerAddress'].indexOf(address) === 0);
+          // this.customerAddress = customerInfo.customerAddress;
 
-        this.changeCustomerInfoIfCustomerIsFound(customerInfo);
+          // // this.customerGroupList = customerInfo.QuickGeneralGroupList;
+
+          // this.group.patchValue(customerInfo.pickedGroups);
+          // console.log('PATCHED GROUPS CONTROL', this.group)
+          this.changeCustomerInfoIfCustomerIsFound(customerInfo);
+        } else {
+          setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
+
+        }
       })
   }
+
+  getCustomerGroupList() {
+    console.log('GROUP LIST', this.customerInfoService.getCustomerGroupList$())
+    this.customerGroupList$ = this.customerInfoService.getCustomerGroupList$();
+  }
+
   getCities() {
-    this.customerInfoService.getCities().pipe(
-      takeUntil(this.subscription$)).subscribe(cities => this.cities = cities);
+    this.customerInfoService.getCities$()
+      .pipe(
+        debounceTime(1),
+        takeUntil(this.subscription$))
+      .subscribe(cities => {
+        // this.cities = cities
+        this.cityAutocomplete(cities, this.address.controls[0].get('cityName'), 'CityName');
+      });
+
+
+
   }
-  setNewCustomer(customermaininfo: Customermaininfo, phones: Phones[], emails: Emails[], addresses: Addresses, groups: Group[]
+
+  setCurrentCustomerInfoByIdForCustomerInfoComponent(customerEmails: Emails[],
+    customerPhones: Phones[],
+    customerAddress: Addresses[],
+    customerMainInfo: CustomerMainInfo[],
+    pickedGroups?: Group[],
+    customerCreditCardTokens?: any[],
+
   ) {
-    this.customerInfoService.setNewCustomer(customermaininfo, phones, emails, addresses, groups)
+    this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent({ customerEmails, customerPhones, customerAddress, customerMainInfo, pickedGroups })
   }
-  getNewCustomer() {
-    return this.customerInfoService.getNewCustomer()
+
+  // getNewCustomer() {
+  //   return this.customerInfoService.getNewCustomer();
+  // }
+
+  setCustomerInfoToNewReceipt() {
+    const customerInfo: Customerinfo = Object.assign({}, this.userInfoGroup.value);
+    // Сервер выдает ошибку когда 
+    // пытаюсь отправить адреса как массив,
+    // поэтому пока посылаю как один объект
+    customerInfo.addresses = customerInfo.addresses[0];
+    customerInfo.groups = this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent().pickedGroups;
+
+    this.receiptService.setCustomerInfoToNewReceipt(customerInfo);
   }
-  sendNewCustomerToNewReceipt() {
-    // debugger
-    this.receiptService.setNewReceiptCustomerInfo(this.getNewCustomer());
+
+  getGlobalCustomerDetailsState() {
+    return this.customerInfoService.getGlobalCustomerDetailsState()
   }
+
+  suggestUseExistingCustomerDetails() {
+    if (this.getGlobalCustomerDetailsState() && this.generalService.getCurrentRoute() !== '/home/new-customer') {
+          const matDialog = this.matDialog.open(SuggestExistingCustomerComponent, { width: '450px', height: '200px', position: { top: 'top' }, disableClose: true, data: { customer: this.getGlobalCustomerDetailsState().CustomerCard_MainDetails } })
+          matDialog.afterClosed()
+            .pipe(
+              takeUntil(this.subscription$))
+            .subscribe((response: boolean) => {
+              if (response === true) {
+                // this.customerInfoService.setCustomerInfoById(customerInfo.CustomerEmails, customerInfo.GetCustomerPhones, customerInfo.CustomerAddresses, customerInfo.CustomerCard_MainDetails, null, customerInfo.CustomerGroupsGeneralSet)
+                this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.customerInfoService.getCustomerDetailsByIdTranformedForCUstomerInfoComponent());
+              } else if (response === false) {
+                this.receiptService.createNewClicked();
+                // this.customerInfoService.clearCustomerById();
+              }
+            }
+            );
+    } else if (this.generalService.getCurrentRoute() === '/home/new-customer') {
+      this.receiptService.createNewClicked()
+      console.log('No One CUSTOMER')
+    } else {
+      console.log('No One CUSTOMER')
+
+    }
+  }
+
+  text() {
+
+
+    // const observable = fromEvent(this.CustomerInfoViewComponent.firstName.nativeElement, 'click');
+    // const timer = new Observable(observer => {
+    //   // объявляем счетчик
+    //   let counter = 0;
+    //   setInterval(() => {
+    //     // передаем значение счетчика
+    //     // наблюдателю и увеличиваем его на единицу
+    //     observer.next(counter++);
+    //   }, 1000);
+    // });
+    // // просто логируем каждое значение
+    // timer.subscribe({ next: console.log });
+
+
+    // timer.subscribe({ next: console.log })
+    // const makeRequest = () => {
+    //   return timer(1000).pipe(
+    //     // takeWhile(number => number < 10),
+    //     mapTo('success')
+    //   )
+    // }
+
+    // timer(0, 1000).pipe(
+    //   mergeMap(() => makeRequest())
+    //   // mergeAll()
+    // )
+    // .subscribe({
+    //   next: console.log
+    // });
+
+    // timer(5000, 1000).subscribe(() => console.log('HELLO'))
+    // makeRequest().subscribe(value => console.log(value), error => console.log(error), () => console.log('COMpLETE'))
+    // поток, генерирующий 1 по прошествии одной секунды
+    // const firstInnerObservable = timer(1000).pipe(
+    //   mapTo(1)
+    // );
+    // // поток, генерирующий 2 по прошествии половины секунды
+    // const secondInnerObservable = timer(500).pipe(
+    //   mapTo(2)
+    // );
+    // of(
+    //   firstInnerObservable,
+    //   secondInnerObservable
+    // ).pipe(
+    //   // concatAll()
+    //   switchAll()
+    // ).subscribe({
+    //   next: console.log
+    // });
+
+  }
+
   ngOnDestroy() {
-    this.customerInfoService.clearCustomerById();
+    // this.customerInfoService.clearCustomerById();
     this.subscriptions.unsubscribe();
     this.subscription$.next();
     this.subscription$.complete();

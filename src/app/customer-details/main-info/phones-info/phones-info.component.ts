@@ -17,6 +17,7 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
   @Input() mainInfoForm: FormGroup
   customerPhones: CustomerPhones[];
   subscription$ = new Subject();
+  loading = true;
   constructor(
     // private mainInfoService: MainInfoService,
     private phonesService: PhonesService
@@ -36,7 +37,7 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
 
     const res = add(3)(6); // вернёт 9 и выведет в консоль 3+6=9
 
-    console.log(res);
+    console.log(this.phones);
     this.getCustomerPhones();
 
   }
@@ -52,6 +53,7 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
 
           this.createPhoneInputsArray(this.phones, this.customerPhones);
           this.connectAreaWithPhone();
+          this.loading = false;
         }
       });
   }
@@ -83,12 +85,14 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
   savePhone(array: FormArray, i) {
     const phone: Phone = array.controls[i].value;
     if (phone.Phone.trim().length >= 7) {
+      this.loading = true;
       this.phonesService.savePhoneOnServer(phone)
         .pipe(
           takeUntil(this.subscription$))
         .subscribe((response: Response) => {
           if (response.Data.error === 'false') {
             this.disableFormControl(array.controls[i]);
+            this.loading = false;
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);

@@ -1,0 +1,37 @@
+mat-dialog-container {
+  margin-top: 60px;
+}
+
+.buttonBox {
+  text-align: center;
+}
+
+button {
+  /* width: 160px; */
+  background-color: rgb(38, 87, 122);
+  color: white;
+}
+
+.btn {
+  background-color: rgb(38, 87, 122);
+
+}
+
+.cancel-button {
+      width: 135px;
+
+  background-color: rgb(250, 174, 33);
+  color: black;
+
+
+}
+
+.submit-button {
+  width: 135px;
+  background-color: rgb(38, 87, 122);
+  color: white;
+}
+
+li {
+  font-size: 20px;
+}

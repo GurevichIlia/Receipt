@@ -1,5 +1,5 @@
 import { FormGroup, FormArray } from '@angular/forms';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, ElementRef } from '@angular/core';
 import { CustomerType } from 'src/app/models/customerType.model';
 import { CustomerTitle } from 'src/app/models/globalData.model';
 import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
@@ -9,7 +9,7 @@ import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
   templateUrl: './customer-info-view.component.html',
   styleUrls: ['./customer-info-view.component.css']
 })
-export class CustomerInfoViewComponent implements OnInit {
+export class CustomerInfoViewComponent implements OnInit, OnChanges {
   @Input() userInfoGroup: FormGroup
   @Input() filterCustomerTitle: CustomerTitle[];
   @Input() customerTypes: CustomerType[];
@@ -20,17 +20,26 @@ export class CustomerInfoViewComponent implements OnInit {
   @Output() newEventFromChild = new EventEmitter();
   constructor() { }
 
+  ngOnChanges() {
+    console.log('CUSTOMER GROUP LIST', this.customerGroupList)
+  }
+
   ngOnInit() {
   }
+
   get phones() {
     return this.userInfoGroup.get('phones') as FormArray;
   }
+
   get emails() {
     return this.userInfoGroup.get('emails') as FormArray;
   }
+
   get addresses() {
     return this.userInfoGroup.get('addresses') as FormArray;
   }
+
+
   sendEventFromChild(action: string, index: number) {
     this.newEventFromChild.emit({ action, index });
   }

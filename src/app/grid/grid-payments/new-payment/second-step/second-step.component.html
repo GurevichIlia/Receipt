@@ -1,27 +1,27 @@
 <div class="row mb-5 fontSize" [formGroup]="secondStep">
   <div class="col-xs-12 col-sm-7 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="FileAs" formControlName="fileAs">
+      <input matInput placeholder="{{'FileAs'| translate}}" formControlName="fileAs">
     </mat-form-field>
   </div>
   <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="TZ" formControlName="ID">
+      <input matInput placeholder="{{'T.Z'| translate}}" formControlName="ID">
     </mat-form-field>
   </div>
   <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" style="direction:ltr">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Tel 1" formControlName="tel1">
+      <input matInput placeholder="{{'Phone'| translate}}" formControlName="tel1">
     </mat-form-field>
   </div>
   <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" style="direction:ltr">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Tel 2" formControlName="tel2">
+      <input matInput placeholder="{{'Phone'| translate}}" formControlName="tel2">
     </mat-form-field>
   </div>
   <div class="col-xs-12 col-sm-12 col-md-3 col-lg-6 col-xl-6">
     <mat-form-field class="example-full-width">
-      <textarea matInput placeholder="Leave a comment" formControlName="remark"></textarea>
+      <textarea matInput placeholder="{{'Comment'| translate}}" formControlName="remark"></textarea>
     </mat-form-field>
   </div>
 </div>

@@ -15,7 +15,7 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
   @Input() mainInfoForm: FormGroup;
   customerEmails: CustomerEmails[];
   subscription$ = new Subject();
-
+  loading = true;
   constructor(private emailService: EmailsService) { }
 
   ngOnInit() {
@@ -36,6 +36,8 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
           this.customerEmails = customerDetails.CustomerEmails;
 
           this.createEmailInputsArray(this.emails, this.customerEmails);
+          this.loading = false;
+
         }
       });
   }
@@ -65,12 +67,14 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
   saveEmail(array: FormArray, i) {
     const email: Email = array.controls[i].value;
     if (email.email !== '') {
+      this.loading = true;
       this.emailService.saveEmailOnServer(email)
         .pipe(
           takeUntil(this.subscription$))
         .subscribe((response: Response) => {
           if (response.Data.error === 'false') {
             this.disableFormControl(array.controls[i]);
+            this.loading = false;
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);
@@ -96,12 +100,14 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
     if (array.length === 1) {
       return;
     } else if (confirm('Would you like to delete this field?')) {
+      this.loading = true;
       this.emailService.deleteEmail(email)
         .pipe(
           takeUntil(this.subscription$))
         .subscribe((response: Response) => {
           if (response.Data.error === 'false') {
             array.removeAt(i);
+            this.loading = false;
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);

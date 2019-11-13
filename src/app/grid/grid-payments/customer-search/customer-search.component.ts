@@ -1,4 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MainDetails, CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
+import { FullCustomerDetailsById } from './../../../models/fullCustomerDetailsById.model';
+import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from './../../../models/customer-info-by-ID.model';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
 import { Observable, Subscription, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -12,7 +15,7 @@ import { PaymentsService } from '../../payments.service';
 import { CustomerType } from 'src/app/models/customerType.model';
 import { Router } from '@angular/router';
 import { NewPaymentService } from '../new-payment/new-payment.service';
-import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
+import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
 
 @Component({
   selector: 'app-customer-search',
@@ -20,6 +23,7 @@ import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-inf
   styleUrls: ['./customer-search.component.css']
 })
 export class CustomerSearchComponent implements OnInit, OnDestroy {
+  @Output() foundCustomerDetails = new EventEmitter();
   customerInfo: object;
   searchControl = new FormControl();
   filteredOptions$: Observable<any[]>;
@@ -106,9 +110,13 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.spinner.start();
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
       if (customer) {
-        this.customerInfoService.setCustomerInfoById(customer.CustomerEmails, customer.CustomerMobilePhones, customer.CustomerAddresses, customer.CustomerInfoForReceiept, customer.CustomerCreditCardTokens);
-        this.newPaymentService.setFoundedCustomerId(customerId);
-        console.log('FOUNDED CUSTOMER', customer);
+        // this.outputCustomerDetails(customer);
+        // this.customerInfoService.setCustomerInfoById(customer.CustomerEmails, customer.CustomerMobilePhones, customer.CustomerAddresses, customer.CustomerInfoForReceiept, customer.CustomerCreditCardTokens);
+        this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.transformCustomerDetailsForCustomerInfoComponent(customer));
+        this.customerInfoService.setCustomerGroupList(customer.QuickGeneralGroupList);
+
+        // this.newPaymentService.setFoundedCustomerId(customerId);
+        // console.log('FOUNDED CUSTOMER', customer);
       }
       this.spinner.stop();
 
@@ -138,14 +146,74 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
       }
     })
   }
+
   newCustomerIsClicked() {
     this.receiptService.createNewEvent.next();
   }
+
   goToCreateNewPayment() {
     this.router.navigate(['home/payments-grid/new-payment']);
-    this.newPaymentService.setCustomerInfo(this.customerInfoService.getNewCustomer());
+    this.newPaymentService.setCustomerInfoForNewKeva(this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent());
   }
+
+  outputCustomerDetails(customerDetails: CustomerInfoById) {
+    console.log('OUTPUT CUSTOMER', customerDetails)
+    this.foundCustomerDetails.emit(customerDetails);
+  }
+
+  transformCustomerDetailsForCustomerInfoComponent(customerDetails: CustomerInfoById) {
+    const newObject: CustomerInfoByIdForCustomerInfoComponent = {
+      customerEmails: customerDetails.CustomerEmails.map((email: CustomerEmails) => {
+        const changedEmail = {
+          emailName: email.EmailName,
+          email: email.Email
+        }
+        return changedEmail;
+      }),
+      customerPhones: customerDetails.CustomerMobilePhones.map((phone: CustomerPhones) => {
+        const changedPhone = {
+          phoneTypeId: phone.PhoneTypeId,
+          phoneNumber: phone.PhoneNumber
+        }
+        return changedPhone;
+      }),
+      customerAddress: customerDetails.CustomerAddresses.map((address: CustomerAddresses) => {
+        const changedAddress = {
+          cityName: address.CityName,
+          street: address.Street,
+          street2: address.Street2,
+          zip: address.Zip,
+          addressTypeId: address.AddressTypeId
+        }
+        return changedAddress;
+      }),
+      customerMainInfo: customerDetails.CustomerInfoForReceiept.map((mainInfo: CustomerInfoForReceiept) => {
+        const changedMainInfo = {
+          customerId: mainInfo.CustomerId,
+          fname: mainInfo.fname,
+          lname: mainInfo.lname,
+          company: mainInfo.Company,
+          customerType: mainInfo.CustomerType,
+          title: mainInfo.Title,
+          gender: mainInfo.Gender,
+          customerCode: mainInfo.CustomerCode,
+          spouseName: mainInfo.SpouseName,
+          fileAs: mainInfo.FileAs,
+          birthday: mainInfo.BirthDate,
+          afterSunset1: mainInfo.AfterSunset1
+        }
+        return changedMainInfo
+      }),
+    }
+    return newObject
+  }
+
   ngOnDestroy() {
+    // debugger
+    // console.log(this.router)
+    // if (this.generalService.currentRoute !== '/home/payments-grid/new-payment') {
+    //   this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
+    // }
     this.subscription$.next();
     this.subscription$.complete();
   }

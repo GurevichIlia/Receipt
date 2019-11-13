@@ -5,6 +5,8 @@
       "Create a receipt": "Create a receipt",
       "Send message": "Send message",
 
+      "Receipt": "Receipt",
+
       "OrganisationId": "Organisation id",
       "Name": "Username",
       "Password": "Password",
@@ -150,8 +152,8 @@
      "Show receipt info": "Show receipt info",
 
      "From number / Company name(English)": "From number / Company name(English)",
-     "Message": "Message"
-
+     "Message": "Message",
+     "Thanks letter": " Thanks letter"
     
       
 

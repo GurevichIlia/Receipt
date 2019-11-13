@@ -6,4 +6,9 @@ input.mat-input-element {
   color: black
 }
 
-
+.emailInputWidth {
+  width: 290px;
+}
+.emailTypeWidth{
+ width: fit-content; 
+}

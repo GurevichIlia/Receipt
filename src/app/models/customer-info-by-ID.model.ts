@@ -1,3 +1,5 @@
+import { CustomerPhones } from './fullCustomerDetailsById.model';
+import { CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
 export interface CustomerAddresses {
       AddressId: number;
       AddressTypeId: number;
@@ -31,13 +33,30 @@ export interface GetCustomerReceipts {
       WhatForInThanksLet: string;
 }
 
+export interface CustomerInfoForReceiept {
+      AfterSunset1: boolean;
+      BirthDate: string;
+      Company: string;
+      CustomerCode: string;
+      CustomerId: number;
+      CustomerType: number;
+      FileAs: string;
+      Gender: number;
+      MiddleName: string;
+      SpouseName: string;
+      Suffix: string;
+      Title: string;
+      fname: string;
+      lname: string;
+}
+
 export class CustomerInfoById {
       CustomerAddresses: CustomerAddresses[];
       CustomerCreditCardTokens: any[];
-      CustomerEmails: [];
+      CustomerEmails: CustomerEmails[];
       CustomerGroupsGeneralSet: []
-      CustomerInfoForReceiept: []
-      CustomerMobilePhones: []
+      CustomerInfoForReceiept: CustomerInfoForReceiept[]
+      CustomerMobilePhones: CustomerPhones[]
       CustomerNames4Receipt: []
       GetCustomerReciepts: GetCustomerReceipts[]
       GetCustomerReciepts_CameFrom: GetCustomerReceipts[]

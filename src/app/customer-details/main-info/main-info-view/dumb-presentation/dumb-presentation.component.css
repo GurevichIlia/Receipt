@@ -1,0 +1,15 @@
+.mainContent {
+      min-height: 700px;
+    }
+    
+    input.mat-input-element {
+      color: black
+    }
+    
+    textarea.mat-input-element {
+      color: black
+    }
+    
+    ::ng-deep .mat-select-disabled .mat-select-value {
+      color: black
+    }

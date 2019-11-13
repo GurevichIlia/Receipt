@@ -12,6 +12,7 @@ import { NgxMaskModule } from 'ngx-mask';
 import { CustomerEmailComponent } from './emails-info/customer-email/customer-email.component';
 import { CustomerAddressComponent } from './addresses-info/customer-address/customer-address.component';
 import { DumbPresentationComponent } from './main-info-view/dumb-presentation/dumb-presentation.component';
+import { CommentModalComponent } from './main-info-view/comment-modal/comment-modal.component';
 
 const mainInfoRoutes: Routes = [
   {
@@ -31,17 +32,18 @@ const mainInfoRoutes: Routes = [
     CustomerEmailComponent,
     CustomerAddressComponent,
     DumbPresentationComponent,
+    CommentModalComponent
   ],
   imports: [
     SharedModule,
     CommonModule,
     NgxMaskModule.forChild(),
-
     RouterModule.forChild(mainInfoRoutes)
   ],
   exports: [
     MainInfoComponent,
     MainInfoViewComponent
-  ]
+  ],
+  entryComponents: [CommentModalComponent]
 })
 export class MainInfoModule { }

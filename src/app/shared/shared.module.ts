@@ -17,6 +17,7 @@ import { CustomerInfoViewComponent } from '../receipts/customer-info/customer-in
 import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
+import { SuggestExistingCustomerComponent } from './modals/suggest-existing-customer/suggest-existing-customer.component';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { BrowserModule } from '@angular/platform-browser';
             TableComponent,
             SendByEmailComponent,
             SearchComponent,
-           
+            SuggestExistingCustomerComponent,
+
       ],
       imports: [
             CommonModule,
@@ -41,9 +43,9 @@ import { BrowserModule } from '@angular/platform-browser';
             NgxPageScrollCoreModule,
             NgxPageScrollModule,
             MomentModule,
-       
 
-      
+
+
       ],
       exports: [
             ReactiveFormsModule,
@@ -61,9 +63,9 @@ import { BrowserModule } from '@angular/platform-browser';
             CustomerInfoComponent,
             CustomerInfoViewComponent,
 
-         
+
       ],
-      entryComponents:[CreditCardComponent,SendByEmailComponent]
+      entryComponents: [CreditCardComponent, SendByEmailComponent, SuggestExistingCustomerComponent]
 })
 export class SharedModule {
 

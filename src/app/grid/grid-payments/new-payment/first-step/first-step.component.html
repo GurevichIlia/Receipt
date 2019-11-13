@@ -1,7 +1,7 @@
 <div class="row mb-5 fontSize" [formGroup]="firstStep">
   <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
-      <mat-label>Type</mat-label>
+      <mat-label>{{'Type'| translate}}</mat-label>
       <mat-select formControlName="type">
         <mat-option value="1"> מס"ב - חיוב לקוח</mat-option>
         <mat-option value="2"> מס"ב - זיכוי לקוח </mat-option>
@@ -11,7 +11,7 @@
   </div>
   <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
-      <mat-label>Status</mat-label>
+      <mat-label>{{'Status'| translate}}</mat-label>
       <mat-select formControlName="status">
         <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus " [value]="group.KevaStatusId">
           {{group.KevaStatusIdname}}
@@ -21,7 +21,7 @@
   </div>
   <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
     <mat-form-field class="example-full-width">
-      <mat-label>Groups</mat-label>
+      <mat-label>{{'Groups'| translate}}</mat-label>
       <mat-select formControlName="groups">
         <mat-option *ngFor="let group of (globalData$ | async)?.KevaGroups" [value]="group.GroupId">{{group.GroupName}}
         </mat-option>

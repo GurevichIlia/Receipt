@@ -1,4 +1,3 @@
-import { CustomerInfoService } from './../customer-info/customer-info.service';
 import { CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
 import { GeneralSrv } from './GeneralSrv.service';
 import { Addresses } from '../../models/addresses.model';
@@ -6,7 +5,6 @@ import { Emails } from '../../models/emails.model';
 import { Phones } from '../../models/phones.model';
 import { Product } from '../../models/products.model';
 import { ReceiptHeader } from '../../models/receiptHeader.model';
-import { Customermaininfo } from '../../models/customermaininfo.model';
 import { CreditCardVerify } from '../../models/credirCardVerify.model';
 import { NewReceipt } from '../../models/newReceipt.model';
 
@@ -21,6 +19,8 @@ import { Group } from '../customer-info/customer-info.component';
 import { MatDialog } from '@angular/material';
 import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
 import { filter } from 'rxjs/operators';
+import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
+import { GlobalMethodsService } from 'src/app/shared/global-methods/global-methods.service';
 
 @Injectable({
   providedIn: 'root'
@@ -94,10 +94,14 @@ export class ReceiptsService {
   currentAddress = this.fullAddress.asObservable();
   receiptLines = new BehaviorSubject(null);
   currentReceiptLine$ = this.receiptLines.asObservable();
+  changeDateFormatMethod: Function;
+ 
   constructor(
     private dialog: MatDialog,
-
+    private globalMethodsService: GlobalMethodsService
+    
   ) {
+    this.changeDateFormatMethod = this.globalMethodsService.changeDateFormat
     console.log('RECEIPT SERVICE');
     this.paymentMethod.next(localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null);
     this.newReceipt = {
@@ -171,24 +175,28 @@ export class ReceiptsService {
   changeTotalAmount(amount: number) {
     this.amount.next(amount);
   }
+
   get selReceiptType() {
     return this.selectedReceiptType;
   }
+
   setSelectedReceiptType(selectedReceiptType: ReceiptType) {
     this.selectedReceiptType = selectedReceiptType;
   }
+
   getFullNewReceipt() {
     const receiptHeader = this.newReceipt.Receipt.ReceiptHeader;
     debugger
     const address = this.newReceipt.customerInfo.addresses
     const newReceiptHeader: ReceiptHeader = this.newReceipt.Receipt.ReceiptHeader;
-    const newReceiptCustomerMainInfo: Customermaininfo = this.newReceipt.customerInfo.customermaininfo;
+    const newReceiptCustomerMainInfo: CustomerMainInfo = this.newReceipt.customerInfo.customerMainInfo;
     newReceiptHeader.fname = newReceiptCustomerMainInfo.fname;
     newReceiptHeader.lname = newReceiptCustomerMainInfo.lname;
     newReceiptHeader.Company = newReceiptCustomerMainInfo.company;
     newReceiptHeader.FileAs = newReceiptCustomerMainInfo.fname;
-    newReceiptHeader.CustomerCode = this.newReceipt.customerInfo.customermaininfo.customerCode;
-    newReceiptHeader.Titel = this.newReceipt.customerInfo.customermaininfo.title;
+    newReceiptHeader.CustomerCode = this.newReceipt.customerInfo.customerMainInfo.customerCode;
+    newReceiptHeader.Titel = this.newReceipt.customerInfo.customerMainInfo.title;
+    this.newReceipt.customerInfo.customerMainInfo.birthday = this.changeDateFormatMethod(this.newReceipt.customerInfo.customerMainInfo.birthday, 'DD/MM/YYYY')
     if (address) {
       receiptHeader.Zip = address.zip;
     } else {
@@ -208,13 +216,13 @@ export class ReceiptsService {
     return this.newReceipt;
   }
   clearNewReceipt() {
-    this.newReceipt = <NewReceipt>{};
+    this.newReceipt = null;
   }
   // get verifiedCredCard() {
   //   return this.verifiedCreditCardDetails;
   // }
-  // set customerMainInfoForCustomerInfo(customerMainInfo: Customermaininfo) {
-  //   this.newReceipt.customerInfo.customermaininfo = customerMainInfo;
+  // set customerMainInfoForCustomerInfo(customerMainInfo: CustomerMainInfo) {
+  //   this.newReceipt.customerInfo.customerMainInfo = customerMainInfo;
   // }
   // get customerMainInfoForCustomerInfo() {
   //   return this.newReceipt.;
@@ -254,8 +262,8 @@ export class ReceiptsService {
   setProducts(products: Product[]) {
     this.newReceipt.Receipt.products = products;
   }
-  setCustomerMainfInfoToReceipt(customerMainInfo: Customermaininfo) {
-    this.newReceipt.customerInfo.customermaininfo = customerMainInfo;
+  setCustomerMainfInfoToReceipt(customerMainInfo: CustomerMainInfo) {
+    this.newReceipt.customerInfo.customerMainInfo = customerMainInfo;
   }
   setPhonesToReceipt(phones: Phones[]) {
     this.newReceipt.customerInfo.phones = phones;
@@ -270,12 +278,12 @@ export class ReceiptsService {
     return this.newReceipt.Receipt.recieptlines;
   }
   getFirstLastName() {
-    // const custInfo = this.newReceipt.customerInfo.customermaininfo;
+    // const custInfo = this.newReceipt.customerInfo.customerMainInfo;
     // const fullName = `${custInfo.fname} ${custInfo.lname}`;
     return this.customerName.getValue()
   }
   getTz() {
-    return this.newReceipt.customerInfo.customermaininfo.customerCode;
+    return this.newReceipt.customerInfo.customerMainInfo.customerCode;
   }
   getProducts() {
     return this.newReceipt.Receipt.products;
@@ -366,11 +374,13 @@ export class ReceiptsService {
     return this.fullReceiptData$;
   }
 
-  setNewReceiptCustomerInfo(customerInfo: Customerinfo) {
+  setCustomerInfoToNewReceipt(customerInfo: Customerinfo) {
     this.newReceipt.customerInfo = customerInfo
   }
 
   setFullName(fullName: string) {
     this.customerName.next(fullName);
   }
+
+
 }

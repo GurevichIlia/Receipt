@@ -2,12 +2,12 @@
 <div class="row mb-5 fontSize" [formGroup]="fourthStep">
   <div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-xl-2">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Amount" formControlName="amount">
+      <input matInput placeholder="{{'Amount' | translate}}" formControlName="amount">
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-xl-2">
     <mat-form-field class="example-full-width">
-      <mat-label>currency</mat-label>
+      <mat-label>{{'Currency' | translate}}</mat-label>
       <mat-select formControlName="currency">
         <mat-option *ngFor="let group of (globalData$ | async)?.GetCurrencyTypes" [value]="group.CurrencyId">
           {{group.CurrencyId}}
@@ -17,7 +17,7 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>day</mat-label>
+      <mat-label>{{'Day' | translate}}</mat-label>
       <mat-select formControlName="day">
         <mat-option *ngFor="let day of days" [value]="day + 1">
           {{day + 1}}
@@ -27,7 +27,7 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>company</mat-label>
+      <mat-label>{{'Company' | translate}}</mat-label>
       <mat-select formControlName="company">
         <mat-option *ngFor="let inst of (globalData$ | async)?.institutes " [value]="inst.instituteId">
           {{inst.Mosad}}
@@ -42,53 +42,53 @@
   </div> -->
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput [matDatepicker]="startDate" formControlName="startDate" placeholder="Choose a date">
+      <input matInput [matDatepicker]="startDate" formControlName="startDate" placeholder="{{'Start Date' | translate}}">
       <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
       <mat-datepicker #startDate></mat-datepicker>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput [matDatepicker]="date1" formControlName="endDate" placeholder="Choose a date">
+      <input matInput [matDatepicker]="date1" formControlName="endDate" placeholder="{{'End Date' | translate}}">
       <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
       <mat-datepicker #date1></mat-datepicker>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput [matDatepicker]="date2" formControlName="KEVAJoinDate" placeholder="Choose a date">
+      <input matInput [matDatepicker]="date2" formControlName="KEVAJoinDate" placeholder="{{'KEVA Join Date' | translate}}">
       <mat-datepicker-toggle matSuffix [for]="date2"></mat-datepicker-toggle>
       <mat-datepicker #date2></mat-datepicker>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput [matDatepicker]="date3" formControlName="KEVACancleDate" placeholder="Choose a date">
+      <input matInput [matDatepicker]="date3" formControlName="KEVACancleDate" placeholder="{{'KEVA Cancel Date' | translate}}">
       <mat-datepicker-toggle matSuffix [for]="date3"></mat-datepicker-toggle>
       <mat-datepicker #date3></mat-datepicker>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input #monthToCharge matInput placeholder="month to charge" formControlName="monthToCharge">
+      <input #monthToCharge matInput placeholder="{{'Month to charge' | translate}} " formControlName="monthToCharge">
       <mat-hint>{{monthToCharge.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input #chargeMonth matInput placeholder="chatge m" formControlName="chargeMonth">
+      <input #chargeMonth matInput placeholder="{{'Charge month' | translate}}" formControlName="chargeMonth">
       <mat-hint>{{chargeMonth.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input #letToCharge matInput placeholder="left to charge" formControlName="leftToCharge">
+      <input #letToCharge matInput placeholder="{{'Left to charge' | translate}} " formControlName="leftToCharge">
       <mat-hint>{{letToCharge.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>tadirut</mat-label>
+      <mat-label>{{'Tadirut' | translate}}</mat-label>
       <mat-select formControlName="tadirut">
         <mat-option [value]="0">חודשי</mat-option>
         <mat-option [value]="1">רבעוני</mat-option>

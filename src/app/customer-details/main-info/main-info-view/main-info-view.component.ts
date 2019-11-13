@@ -1,3 +1,5 @@
+import { CommentModalComponent } from './comment-modal/comment-modal.component';
+import { MatDialog, MatDialogConfig } from '@angular/material';
 import { FullCustomerDetailsById, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerTitle } from 'src/app/models/customerTitle.model';
 import { GlobalData } from './../../../models/globalData.model';
@@ -19,7 +21,12 @@ export class MainInfoViewComponent implements OnInit {
   globalData$: Observable<GlobalData>;
   subscription$ = new Subject();
   personalInfo: MainDetails;
-  constructor(private personalInfoService: PersonalInfoService) { }
+  editMode = false;
+  loading = false;
+  constructor(
+    private personalInfoService: PersonalInfoService,
+    private matDialog: MatDialog
+  ) { }
 
   ngOnInit() {
     this.getPersonalInfo();
@@ -32,6 +39,10 @@ export class MainInfoViewComponent implements OnInit {
 
   get title() {
     return this.mainInfoForm.get('personalInfo.title');
+  }
+
+  get comment() {
+    return this.mainInfoForm.get('personalInfo.remark');
   }
 
   getPersonalInfo() {
@@ -67,28 +78,31 @@ export class MainInfoViewComponent implements OnInit {
     this.filteredCustomerTitles$ = this.personalInfoService.customerTitleAutocomplete(customerTitles, this.title, 'TitleHeb');
   }
 
-  filterCustomerTitle
+  // filterCustomerTitle
   // changeEditMode(controlName: string) {
   //   this.editMode = !this.editMode;
   //   this.disableControls(controlName, this.editMode)
   // }
-  getAction(event: { action: string, personalInfo: FormGroup }) {
-    switch (event.action) {
-      case 'editPersonalInfo': this.enableFormControl(event.personalInfo);
-        break
-      case 'savePersonalInfo': this.savePersonalInfo(event.personalInfo)
-        break
+  // getAction(action: string, personalInfo: FormGroup) {
+  //   debugger
+  //   switch (action) {
+  //     case 'editPersonalInfo': this.enableFormControl(personalInfo);
+  //       break
+  //     case 'savePersonalInfo': this.savePersonalInfo(personalInfo)
+  //       break
 
-    }
-  }
+  //   }
+  // }
 
   savePersonalInfo(personalInfo: FormGroup) {
+    debugger
     this.personalInfoService.savePersonalInfoOnServer(personalInfo.value)
       .pipe(
         takeUntil(this.subscription$))
       .subscribe((response: Response) => {
         if (response.Data.error === 'false') {
           this.disableFormControl(personalInfo);
+          this.editMode = false;
           console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
         } else if (response.Data.error === 'true') {
           console.log('RESPONSE ERROR', response.Data.res_description);
@@ -99,12 +113,26 @@ export class MainInfoViewComponent implements OnInit {
 
   }
 
+  editFormControl(control: AbstractControl) {
+    this.enableFormControl(control);
+    this.editMode = true;
+  }
+
   disableFormControl(control: AbstractControl) {
     control.disable();
   }
 
   enableFormControl(control: AbstractControl) {
     control.enable();
+  }
+
+  showFullComment() {
+    const commetModal = this.matDialog.open(CommentModalComponent, { width: '400px', height: '520px', data: { comment: this.comment.value } });
+
+    commetModal.afterClosed()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((modalResult: string) => modalResult ? this.comment.patchValue(modalResult) : null)
   }
 
   ngOnDestroy() {

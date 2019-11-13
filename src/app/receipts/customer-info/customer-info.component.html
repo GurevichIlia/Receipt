@@ -9,7 +9,7 @@
 
       </mat-card-header>
       <app-customer-info-view [requiredField]="requiredField" [currentRoute]="currentRoute"
-        [customerGroupList]="customerGroupList" [cities]="filteredCity$ | async"
+        [customerGroupList]="customerGroupList$ | async" [cities]="filteredCity$ | async"
         [filterCustomerTitle]="filterCustTitle$ | async" [customerTypes]="customerTypes" [userInfoGroup]="userInfoGroup"
         (openShopIsClicked)="openShop()" (newEventFromChild)="getEventsFromChildComponent($event)">
 
@@ -37,3 +37,5 @@
     </mat-expansion-panel> -->
   </div>
 </div>
+
+

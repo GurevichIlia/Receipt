@@ -1,5 +1,5 @@
 import { AddressesService, Address } from './addresses.service';
-import { Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { FormGroup, FormArray, AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -17,7 +17,7 @@ export class AddressesInfoComponent implements OnInit {
   @Input() mainInfoForm: FormGroup;
   customerAddresses: CustomerAddresses[];
   subscription$ = new Subject();
- 
+  loading = true;
   constructor(private addressService: AddressesService) { }
 
   get addresses() {
@@ -35,9 +35,9 @@ export class AddressesInfoComponent implements OnInit {
       .subscribe((customerDetails: FullCustomerDetailsById) => {
         console.log('GOT CUSTOMER DETAILS', customerDetails);
         if (customerDetails) {
-          this.customerAddresses= customerDetails.CustomerAddresses;
-
+          this.customerAddresses = customerDetails.CustomerAddresses;
           this.createAddressInputsArray(this.addresses, this.customerAddresses);
+          this.loading = false;
         }
       });
   }
@@ -67,11 +67,13 @@ export class AddressesInfoComponent implements OnInit {
   saveAddress(array: FormArray, i) {
     const address: Address = array.controls[i].value;
     if (address.street !== '') {
+      this.loading = true;
       this.addressService.saveAddressOnServer(address)
         .pipe(
           takeUntil(this.subscription$))
         .subscribe((response: Response) => {
           if (response.Data.error === 'false') {
+            this.loading = false;
             this.disableFormControl(array.controls[i]);
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
@@ -98,12 +100,14 @@ export class AddressesInfoComponent implements OnInit {
     if (array.length === 1) {
       return;
     } else if (confirm('Would you like to delete this field?')) {
+      this.loading = true;
       this.addressService.deleteAddress(address)
         .pipe(
           takeUntil(this.subscription$))
         .subscribe((response: Response) => {
           if (response.Data.error === 'false') {
             array.removeAt(i);
+            this.loading = false;
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);

@@ -1,12 +1,14 @@
+import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { FullCustomerDetailsById } from 'src/app/models/fullCustomerDetailsById.model';
+import { FullCustomerDetailsById, MainDetails, CustomerEmails, CustomerPhones } from 'src/app/models/fullCustomerDetailsById.model';
 import { GeneralSrv } from './../receipts/services/GeneralSrv.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { PaymentsService } from '../grid/payments.service';
 import { Router } from '@angular/router';
-import { CustomerInfoService } from '../receipts/customer-info/customer-info.service';
+import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from '../receipts/customer-info/customer-info.service';
 import { Response } from '../models/response.model';
+import { CustomerAddresses } from '../models/customer-info-by-ID.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +27,8 @@ export class CustomerDetailsService {
     private generalService: GeneralSrv,
     private router: Router,
     private customerInfoService: CustomerInfoService,
-    private http: HttpClient
+    private http: HttpClient,
+    private globalStateService: GlobalStateService
 
   ) { console.log('CUSTOMER DETAILS SERVICE LOADED') }
 
@@ -76,14 +79,17 @@ export class CustomerDetailsService {
   }
 
   setCustomerInfoForNewReceipt(customerInfo: FullCustomerDetailsById) {
-    this.customerInfoService.setCustomerInfoById(customerInfo.CustomerEmails, customerInfo.GetCustomerPhones, customerInfo.CustomerAddresses, customerInfo.CustomerCard_MainDetails, customerInfo.CustomerCreditCardTokens)
+    this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(
+      this.globalStateService.getCustomerDetailsByIdTranformedForCUstomerInfoComponent()
+    )
+    // this.customerInfoService.setCustomerGroupList(this.globalStateService.getCustomerDetailsByIdGlobalState().CustomerGroupsGeneralSet)
   }
 
-  saveChangedCustomerData(newCustomerData: {} | []){
+  saveChangedCustomerData(newCustomerData: {} | []) {
     const orgName = this.generalService.getOrgName();
     let params: HttpParams = new HttpParams().set('customerid', this.getCustomerId().toString());
     console.log('NEW CUSTOMER DATA', newCustomerData);
-    return this.http.post(`${this.baseUrl}Customer/SaveCustomerInfo?urlAddr=${orgName}`, newCustomerData, {params});
+    return this.http.post(`${this.baseUrl}Customer/SaveCustomerInfo?urlAddr=${orgName}`, newCustomerData, { params });
   }
 
   setCustomerId(customerId: number) {
@@ -97,6 +103,11 @@ export class CustomerDetailsService {
   clearCurrentMenuItem() {
     this.currentMenuItem.next(null);
   }
+
+  setGlobalCustomerDetails(customerDetails: FullCustomerDetailsById) {
+    this.globalStateService.setCustomerDetailsByIdGlobalState(customerDetails)
+  }
+
 
 
 }

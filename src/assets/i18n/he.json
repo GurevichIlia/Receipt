@@ -4,6 +4,8 @@
       "LogOut": "להתנתק",
       "Create a receipt": "ליצור קבלה",
       "Send message": "SMS שליחת",
+      "Receipt": "קבלה",
+
 
       "OrganisationId": "קוד ארגון",
       "Name": "שם משתמש",
@@ -135,7 +137,7 @@
       "Please select a thanks letter": "בחר מכתב תודה",
       "Amount less than the amount in the store": "סכום פחות מהסכום בחנות",
       
-
+     
 
 
       "Customer id": "מספר לקוח",
@@ -144,6 +146,7 @@
       "Show receipt info": "הצג פרטי קבלה",
 
       "From number / Company name(English)": "ממספר / שם החברה (English)",
-      "Message": "הודעה"
+      "Message": "הודעה",
+      "Thanks letter": " תודה מכתב"
 
   }

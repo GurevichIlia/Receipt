@@ -11,8 +11,8 @@
   <i style="cursor: pointer; float: left" class=" material-icons" (click)="createAction('deleteAddress', i)">delete</i>
 </div> -->
 
-<div class="row mb-3">
-  <div class="col-xs-10 col-sm-5 col-md-5 col-lg-5 col-xl-5  inputMobileWidth" style="text-align: justify">
+<div class="row mb-3" style="margin: 0px">
+  <div class="col-xs-10 col-sm-5 col-md-9 col-lg-9 col-xl-5  inputMobileWidth" style="text-align: justify">
     <h5><strong>{{'Address' | translate }}</strong>: {{addressGroup.value.cityName}}
       {{addressGroup.value.street}}, {{addressGroup.value.zip}} <span style="color: green;"
         *ngIf="addressGroup.value.mainaddress">(ר)</span></h5>
@@ -31,7 +31,7 @@
 
 
 <form *ngIf="editMode" [formGroup]="addressGroup" style="text-align: justify; align-items: baseline" class="mb-2 row">
-  <mat-form-field class="col-xs-6 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+  <mat-form-field class="col-xs-6 col-sm-12 col-md-2 col-lg-4 col-xl-2">
     <mat-select formControlName="addressTypeId" placeholder="{{'Address type' | translate}}">
       <mat-option [value]="3">{{'Home' | translate}}</mat-option>
       <mat-option [value]="1">{{'Work' | translate}}</mat-option>
@@ -39,16 +39,16 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field class="col-xs-6 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+  <mat-form-field class="col-xs-6 col-sm-12 col-md-2 col-lg-4 col-xl-2">
     <input matInput formControlName="cityName" placeholder="City">
   </mat-form-field>
-  <mat-form-field class="col-xs-12 col-sm-4 col-md-2 col-lg-2 col-xl-2">
+  <mat-form-field class="col-xs-12 col-sm-4 col-md-2 col-lg-4 col-xl-2">
     <input matInput formControlName="zip" placeholder="Zip">
   </mat-form-field>
-  <mat-form-field class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+  <mat-form-field class="col-xs-12 col-sm-12 col-md-2 col-lg-4 col-xl-2">
     <input matInput formControlName="stateid" placeholder="State">
   </mat-form-field>
-  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div>
+  <!-- <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div> -->
   <mat-form-field class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
     <input matInput formControlName="street" placeholder="Street">
   </mat-form-field>

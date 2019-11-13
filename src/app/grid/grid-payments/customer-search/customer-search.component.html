@@ -1,10 +1,10 @@
 <div class="container mt-5">
   <mat-card>
-      <h2 class="text-center" translate>Create a new payment</h2>
+    <h2 class="text-center" translate>Create a new payment</h2>
     <app-search [filteredOptions]="filteredOptions$ | async" [searchControl]="searchControl"
       (pickedCustomer)="getCustomerInfoById($event)" (newCustomer)="newCustomerIsClicked();"></app-search>
   </mat-card>
-  <app-customer-info (toNewPayment)="goToCreateNewPayment()"></app-customer-info>
 </div>
+<app-customer-info (toNewPayment)="goToCreateNewPayment()" ></app-customer-info>
 
 <!-- [cities]="cities" [customerInfo]="customerInfo" [customerTitle]="customerTitle" [customerTypes]="customerTypes" -->

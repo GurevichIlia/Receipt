@@ -1,9 +1,9 @@
-export class Customermaininfo {
+export class CustomerMainInfo {
       customerId: number;
       fname: string;
       lname: string;
       company: string;
-      customerType?: string;
+      customerType?: number;
       title?: string;
       gender?: number;
       customerCode?: string;

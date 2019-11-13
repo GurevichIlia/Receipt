@@ -1,20 +1,30 @@
-<form [formGroup]="mainInfoForm" style="font-size: 18px">
-  <div class="row justify-content-start mb-3">
-    <h3 style="margin-right: 15px">{{'Address' | translate }}
-    </h3>
-    <button class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content" (click)="getAction({action:'addNewAddress', subject: null})" >Add new</button>
-    <!-- <i style="cursor: pointer; float: left; margin-right: 10px" (click)="getAction({action:'addNewAddress', subject: null})"
-      class=" material-icons">add</i> -->
+<mat-card  class="mb-4">
+  <form [formGroup]="mainInfoForm" style="font-size: 18px">
+    <div class="row justify-content-start mb-3">
+      <h3 style="margin-right: 15px">{{'Address' | translate }}
+      </h3>
+      <button class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content"
+        (click)="getAction({action:'addNewAddress', subject: null})">Add new</button>
+      <!-- <i style="cursor: pointer; float: left; margin-right: 10px" (click)="getAction({action:'addNewAddress', subject: null})"
+        class=" material-icons">add</i> -->
 
-  </div>
-  <div class="mb-5">
-    <ul formArrayName="addresses">
-      <li *ngFor="let address of addresses.controls; let i=index">
+    </div>
+    <div class="mb-5">
+      <div formArrayName="addresses">
+        <div *ngFor="let address of addresses.controls; let i=index">
           <app-customer-address (newAction)="getAction($event)" [addressGroup]="address" [i]="i"></app-customer-address>
 
-      </li>
-    </ul>
+        </div>
+        <div style="text-align: justify">
 
-  </div>
+          <span *ngIf="addresses.controls.length === 0 && !loading">No one address</span>
 
-</form>
+        </div>
+        <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+      </div>
+
+    </div>
+
+  </form>
+</mat-card>

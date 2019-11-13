@@ -1,0 +1,32 @@
+.textarea {
+  height: 350px;
+  background-color: whitesmoke;
+
+}
+
+.formField {
+  width: 350px;
+  height: 350px;
+
+}
+
+.buttonBox {
+  text-align: center;
+}
+
+button {
+  width: 160px;
+  background-color: rgb(38, 87, 122);
+  color: white;
+}
+.submit-button {
+  background-color: rgb(38, 87, 122);
+   color: white;
+
+}
+
+.cancel-button {
+  background-color: rgb(250, 174, 33);
+  color: black;
+
+}

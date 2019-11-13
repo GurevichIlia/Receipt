@@ -1,3 +1,4 @@
+import { Response } from './../../../models/response.model';
 import { CustomerCreditCard } from './../../../models/customerCreditCard.model';
 import { CreditCardAccount } from './../../../models/credit-card-account.model';
 import { Customerinfo } from './../../../models/customerInfo.model';
@@ -17,6 +18,8 @@ import { NewPaymentService } from './new-payment.service';
 import { Location } from '@angular/common';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import * as moment from 'moment';
+
+
 
 
 @Component({
@@ -63,8 +66,8 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPaymentType();
     this.checkEditMode();
     this.checkIfPaymentTypeChanged();
-    
-    const component =  NewPaymentComponent
+
+    const component = NewPaymentComponent
     console.log('COMPONENT', component);
   }
   ngAfterViewInit() {
@@ -165,15 +168,16 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.expansionPanel.closeAll();
   }
   getCustomerInfoById() {
-    this.newPaymentService.currentCustomerInfo$
+    this.newPaymentService.getCustomerInfoForNewKeva$()
       .pipe(
+        filter(customerInfo => customerInfo !== null),
         takeUntil(this.subscription$))
       .subscribe((data: Customerinfo) => {
         if (!!Object.keys(data).length) {
           this.customerInfoById = data;
-          this.setInputValue(this.fileAs, this.customerInfoById.customermaininfo.fileAs);
-          this.setInputValue(this.Tz, this.customerInfoById.customermaininfo.customerCode);
-          this.newPaymentService.setFoundedCustomerId(this.customerInfoById.customermaininfo.customerId);
+          this.setInputValue(this.fileAs, this.customerInfoById.customerMainInfo.fileAs);
+          this.setInputValue(this.Tz, this.customerInfoById.customerMainInfo.customerCode);
+          this.newPaymentService.setFoundedCustomerId(this.customerInfoById.customerMainInfo.customerId);
           // this.getListCustomerCreditCard()
           this.getListCustomerCreditCard(this.newPaymentService.getfoundedCustomerId());
           console.log('Customer info', this.customerInfoById)
@@ -261,6 +265,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.listCustomerCreditCard$ = this.newPaymentService.currentCreditCardList$.pipe(map(data => data.filter(value => value.customerid === (customerId || null))))
   }
   goBack() {
+    // this.setCustomerInfoById(this.customerInfoById.emails, this.customerInfoById.phones, this.customerInfoById.addresses, this.customerInfoById.customermaininfo, '', this.customerInfoById.groups)
     this.location.back();
   }
   checkEditMode() {
@@ -325,28 +330,54 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
   }
+
   saveNewKeva() {
     this.setDataToNewPaymentKeva();
     this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
       .pipe(
-        takeUntil(this.subscription$)).subscribe(res => {
-          console.log('NEW KEVA RESPONSE', res);
-          this.newPaymentService.clearNewKeva();
-        })
+        takeUntil(this.subscription$))
+      .subscribe(res => {
+        console.log('NEW KEVA RESPONSE', res);
+        if (res) {
+          if (res['Data'].error === 'false') {
+            this.router.navigate(['/home/payments-grid/payments']);
+            this.paymentsService.updateKevaTable();
+          }
+        }
+        this.newPaymentService.clearNewKeva();
+      })
   }
+
   updateCustomerKeva() {
     this.setDataToNewPaymentKeva();
     this.newPaymentService.setEditKevaId(this.editiingKevaId);
     this.paymentsService.updateCUstomerKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
       .pipe(
-        takeUntil(this.subscription$)).subscribe(res => {
-          console.log('UPDATE KEVA RESPONSE', res);
-          this.newPaymentService.clearNewKeva();
-        })
+        takeUntil(this.subscription$))
+      .subscribe((res) => {
+        console.log('UPDATE KEVA RESPONSE', res);
+        if (res) {
+          if (res['Data'].error === 'false') {
+            this.router.navigate(['/home/payments-grid/payments']);
+            this.paymentsService.updateKevaTable();
+          }
+        }
+        this.newPaymentService.clearNewKeva();
+      })
   }
+  // setCustomerInfoById(customerEmails: CustomerEmails[], customerPhones: CustomerPhones[], customerAddress: CustomerAddresses[],
+  //   customerMainInfo: Customermaininfo[] | MainDetails[],
+  //   customerCreditCardTokens?: any[], customerGroupList?: CustomerGroupById[]
+  // ) {
+  //   this.newPaymentService.setCustomerInfoById(customerEmails, customerPhones, customerAddress,
+  //     customerMainInfo,
+  //     customerCreditCardTokens, customerGroupList)
+  // };
+
   addNewCardToListOfNewCreditCards(credCard: Creditcard) {
     this.listNewCreditCard.push(credCard);
   }
+
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed
     //Add 'implements OnDestroy' to the class.
@@ -356,6 +387,6 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newPaymentService.setEditMode(false);
     this.subscription$.next();
     this.subscription$.complete();
-    this.newPaymentService.setCustomerInfo(<Customerinfo>{})
+    // this.newPaymentService.setCustomerInfo(<Customerinfo>{})
   }
 }

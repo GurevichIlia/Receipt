@@ -46,12 +46,15 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
       .subscribe((data: FullCustomerDetailsById) => {
         if (data) {
           console.log('CUSTOMER INFO', data);
-          this.customerDetailsService.setCustomerDetailsByIdState(data);
+          this.setCustomerDetailsByIdState(data);
           this.customerDetailsById$ = this.customerDetailsService.getCustomerDetailsByIdState$();
+          // this.customerDetailsService.setCustomerInfoForNewReceipt(this.customerDetailsService.getCustomerDetailsByIdState());
         }
       })
   }
-  setCustomerDetailsByIdState(customerDetailsById: Observable<FullCustomerDetailsById>) {
+  setCustomerDetailsByIdState(customerDetailsById: FullCustomerDetailsById) {
+    debugger
+    this.customerDetailsService.setGlobalCustomerDetails(customerDetailsById);
     this.customerDetailsService.setCustomerDetailsByIdState(customerDetailsById);
   }
   closeSidenav() {

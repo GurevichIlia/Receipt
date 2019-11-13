@@ -1,3 +1,4 @@
+import { PaymentsTableHeaderService, LastFilterOption } from './payments-table-header.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,7 +7,7 @@ import { Subject, Observable } from 'rxjs';
 import { GlobalData } from 'src/app/models/globalData.model';
 import { PaymentsService } from '../../payments.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter, switchMap } from 'rxjs/operators';
 import { NewPaymentService } from '../new-payment/new-payment.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 
@@ -27,25 +28,39 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
     private generalService: GeneralSrv,
     private router: Router,
     private spinner: NgxUiLoaderService,
+    private paymentsHeaderService: PaymentsTableHeaderService
   ) { }
 
   ngOnInit() {
     this.createFilterForm();
     this.getGlobalData();
+    this.checkIfUpdateKevaTableWasClicked();
+  }
+
+
+  getTablePaymentsData() {
+    this.spinner.start();
+    // const lastFilterOption = this.paymentsHeaderService.getLastFilterOption();
+    // const filterOptions = lastFilterOption ? lastFilterOption : this.filterFormValue.value;
+    console.log('FILTER OPTION', this.filterFormValue.value);
+    this.paymentsService.getGridData(this.filterFormValue.value, this.generalService.orgName)
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(data => {
+        this.paymentsService.setTablePaymentsDataToPaymentsService(data);
+        console.log('DATA SOURCE', data);
+        this.paymentsHeaderService.setLastFilterOption(this.filterFormValue.value);
+        this.spinner.stop();
+      }, error => {
+        this.spinner.stop();
+        console.log(error)
+      })
+  }
+
+  setLastFilterOption() {
 
   }
-  getTablePaymentsData() {
-    console.log('Filter options', this.filterFormValue.value)
-    this.spinner.start();
-    this.paymentsService.getGridData(this.filterFormValue.value, this.generalService.orgName).pipe(takeUntil(this.subscription$)).subscribe(data => {
-      this.paymentsService.setTablePaymentsDataToPaymentsService(data);
-      console.log('DATA SOURCE', data);
-      this.spinner.stop();
-    }, error => {
-      this.spinner.stop();
-      console.log(error)
-    })
-  }
+
   setPaymentType(type: string) {
     switch (type) {
       case '1':
@@ -66,7 +81,7 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
   getGlobalData() {
     // this.paymentsService.currentGlobalData$.pipe(takeUntil(this.subscription$)).subscribe(data => {
     this.globalData$ = this.paymentsService.currentGlobalData$;
-     }
+  }
   createFilterForm() {
     this.filterForm = this.fb.group({
       kevaTypeid: ['1'],
@@ -74,12 +89,53 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
       KevaStatusid: [1],
       KevaGroupid: ['9999']
     })
+    // this.filterFormOptions = this.paymentsHeaderService.getLastFilterOption();
+    console.log('FILTER FORM VALUE', this.filterFormValue)
   }
+
   get filterFormValue() {
     return this.filterForm;
   }
+
+  set filterFormOptions(formValue: LastFilterOption) {
+    if (formValue) {
+      this.filterForm.patchValue({
+        kevaTypeid: formValue.kevaTypeid,
+        instituteid: formValue.instituteid,
+        KevaStatusid: formValue.KevaStatusid,
+        KevaGroupid: formValue.KevaGroupid
+      })
+    }
+    //  else {
+    //   this.filterForm.patchValue({
+    //     kevaTypeid: '1',
+    //     instituteid: 1,
+    //     KevaStatusid: 1,
+    //     KevaGroupid: '9999'
+    //   })
+    // }
+
+  }
   goToKevaCharges() {
     this.router.navigate(['home/payments-grid/keva-charges']);
+  }
+
+  checkIfUpdateKevaTableWasClicked() {
+    this.paymentsService.updateKevaTableClicked$
+      .pipe(
+        filter(event => event !== null),
+        takeUntil(this.subscription$))
+      .subscribe((event: boolean) => {
+        this.filterFormOptions = this.paymentsHeaderService.getLastFilterOption() ?
+          this.paymentsHeaderService.getLastFilterOption() : {
+            kevaTypeid: '1',
+            instituteid: 1,
+            KevaStatusid: 1,
+            KevaGroupid: '9999'
+          };
+        this.getTablePaymentsData();
+        console.log('TABLE UPDATED', event);
+      })
   }
 
   ngOnDestroy(): void {

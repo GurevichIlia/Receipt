@@ -1,16 +1,18 @@
-import { CustomerInfoService } from './../customer-info/customer-info.service';
+import { FullCustomerDetailsById } from './../../models/fullCustomerDetailsById.model';
+import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from './../customer-info/customer-info.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
 
 import { TranslateService } from '@ngx-translate/core';
-import { CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
+import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from 'src/app/models/customer-info-by-ID.model';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { Subscription } from 'rxjs';
 
-import { map, } from 'rxjs/operators';
+import { map, debounceTime, } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ReceiptsService } from '../services/receipts.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
 
 
 ///////////////////////// START CLASS
@@ -100,6 +102,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   filterOption() {
     this.filteredOptions = this.searchControl.valueChanges
       .pipe(
+        debounceTime(1),
         map(value => this._filter(value)),
       );
   }
@@ -136,27 +139,81 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   }
   getCustomerInfoById(customerId: number) {
     this.spinner.start();
-    this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
-      this.customerInfoService.setCustomerInfoById(
-        customer.CustomerEmails,
-        customer.CustomerMobilePhones,
-        customer.CustomerAddresses,
-        customer.CustomerInfoForReceiept,
-        customer.CustomerCreditCardTokens,
-        customer.QuickGeneralGroupList
-      );
-      this.customerInfo = customer;
-      this.spinner.stop();
-    },
-      error => {
-        console.log(error),
-          this.spinner.stop();
+    this.subscriptions.add(this.generalService.getCustomerInfoById(customerId)
+      .subscribe((customer: CustomerInfoById) => {
+
+
+        // this.customerInfoService.setCustomerInfoById(
+        //   customer.CustomerEmails,
+        //   customer.CustomerMobilePhones,
+        //   customer.CustomerAddresses,
+        //   customer.CustomerInfoForReceiept,
+        //   customer.CustomerCreditCardTokens,
+        //   customer.QuickGeneralGroupList
+        // );
+        this.customerInfoService.setCustomerGroupList(customer.QuickGeneralGroupList);
+        this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.transformCustomerDetailsForCustomerInfoComponent(customer))
+        this.customerInfo = customer;
+        this.spinner.stop();
+        this.customerInfoService.setEventCUstomerIsFoundById();
       },
-    ));
+        error => {
+          console.log(error),
+            this.spinner.stop();
+        },
+      ));
   }
   submit(form: NgForm) {
     console.log(form.value);
   }
+
+  transformCustomerDetailsForCustomerInfoComponent(customerDetails: CustomerInfoById) {
+    const newObject: CustomerInfoByIdForCustomerInfoComponent = {
+      customerEmails: customerDetails.CustomerEmails.map((email: CustomerEmails) => {
+        const changedEmail = {
+          emailName: email.EmailName,
+          email: email.Email
+        }
+        return changedEmail;
+      }),
+      customerPhones: customerDetails.CustomerMobilePhones.map((phone: CustomerPhones) => {
+        const changedPhone = {
+          phoneTypeId: phone.PhoneTypeId,
+          phoneNumber: phone.PhoneNumber
+        }
+        return changedPhone;
+      }),
+      customerAddress: customerDetails.CustomerAddresses.map((address: CustomerAddresses) => {
+        const changedAddress = {
+          cityName: address.CityName,
+          street: address.Street,
+          street2: address.Street2,
+          zip: address.Zip,
+          addressTypeId: address.AddressTypeId
+        }
+        return changedAddress;
+      }),
+      customerMainInfo: customerDetails.CustomerInfoForReceiept.map((mainInfo: CustomerInfoForReceiept) => {
+        const changedMainInfo = {
+          customerId: mainInfo.CustomerId,
+          fname: mainInfo.fname,
+          lname: mainInfo.lname,
+          company: mainInfo.Company,
+          customerType: mainInfo.CustomerType,
+          title: mainInfo.Title,
+          gender: mainInfo.Gender,
+          customerCode: mainInfo.CustomerCode,
+          spouseName: mainInfo.SpouseName,
+          fileAs: mainInfo.FileAs,
+          birthday: mainInfo.BirthDate,
+          afterSunset1: mainInfo.AfterSunset1
+        }
+        return changedMainInfo
+      }),
+    }
+    return newObject
+  }
+
   createNew() {
     this.receiptService.createNewEvent.next();
     this.receiptService.setStep(1);
@@ -173,6 +230,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.receiptService.createNewEvent.next();
     this.subscriptions.unsubscribe();
+    this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
     console.log('NEW RECEIPT SUBSCRIBE On Destroy', this.subscriptions);
 
   }

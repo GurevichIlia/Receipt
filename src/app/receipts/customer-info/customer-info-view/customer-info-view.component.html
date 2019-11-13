@@ -133,7 +133,8 @@
           <mat-form-field class="col-xs-4 col-sm-4 col-md-9 col-lg-9 col-xl-9">
             <input matInput placeholder="{{'Email' | translate}}" type="text" formControlName="email">
           </mat-form-field>
-          <i *ngIf="i !== 0" style="cursor: pointer" (click)="sendEventFromChild('deleteEmail', i)" class=" material-icons mr-5">delete</i>
+          <i *ngIf="i !== 0" style="cursor: pointer" (click)="sendEventFromChild('deleteEmail', i)"
+            class=" material-icons mr-5">delete</i>
           <!-- <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 mb-3" (click)="deleteEmail(i)"
             *ngIf="i !== 0" type="button" mat-stroked-button color="warn">{{'Delete' | translate}}</button> -->
         </div>
@@ -149,44 +150,47 @@
     <div class="row justify-content-start mb-3">
       <h4 style="margin-right: 15px">{{'Address' | translate}}
       </h4>
-      <!-- <i style="cursor: pointer; float: left; margin-right: 20px" class=" material-icons"
-        (click)="sendEventFromChild('addAddress')">add</i> -->
+      <i style="cursor: pointer; float: left; margin-right: 20px" class=" material-icons"
+        (click)="sendEventFromChild('addAddress')">add</i>
     </div>
 
-
-    <div formArrayName="address" style="text-align: -webkit-auto">
-      <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2">
-        <mat-select formControlName="addressTypeId" placeholder="{{'Address type' | translate}}">
-          <mat-option [value]="3">{{'Home' | translate}}</mat-option>
-          <mat-option [value]="1">{{'Work' | translate}}</mat-option>
-          <mat-option [value]="2">{{'Other' | translate}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2">
-        <input type="text" placeholder="{{'City' | translate}}" aria-label="Number" matInput formControlName="cityName"
-          [matAutocomplete]="auto">
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let city of cities | slice:0:10; let i = index"
-            [value]="city.CityName">
-            {{city.CityName}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+    <div formArrayName="addresses">
+      <div *ngFor="let address of addresses.controls; let i=index">
+        <div [formGroupName]="i" style="text-align: -webkit-auto">
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-2 col-xl-2">
+            <mat-select formControlName="addressTypeId" placeholder="{{'Address type' | translate}}">
+              <mat-option [value]="3">{{'Home' | translate}}</mat-option>
+              <mat-option [value]="1">{{'Work' | translate}}</mat-option>
+              <mat-option [value]="2">{{'Other' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
+            <input type="text" placeholder="{{'City' | translate}}" aria-label="Number" matInput
+              formControlName="cityName" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option *ngFor="let city of cities | slice:0:10; let i = index" [value]="city.CityName">
+                {{city.CityName}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
 
           <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
-        <input matInput placeholder="{{'Zip' | translate}}" formControlName='zip'>
-      </mat-form-field>
+            <input matInput placeholder="{{'Zip' | translate}}" formControlName='zip'>
+          </mat-form-field>
 
-      <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
-        <input matInput placeholder="{{'Street' | translate}}" formControlName='street'>
-      </mat-form-field>
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-5 col-xl-5">
+            <input matInput placeholder="{{'Street' | translate}}" formControlName='street'>
+          </mat-form-field>
 
-      <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
-        <input matInput placeholder="{{'Street' | translate}}" formControlName='street2'>
-      </mat-form-field>
+          <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-6 col-xl-6">
+            <input matInput placeholder="{{'Street' | translate}}" formControlName='street2'>
+          </mat-form-field>
+          <i *ngIf="i !== 0" style="cursor: pointer" (click)="sendEventFromChild('deleteAddress', i)"
+            class=" material-icons mr-5">delete</i>
+        </div>
 
+      </div>
     </div>
-
 
     <!-- <div class="mb-5 mr-3">
       <div formArrayName="addresses">
@@ -221,12 +225,12 @@
 
              <i *ngIf="i !== 0" style="cursor: pointer" (click)="sendEventFromChild('deleteAddress', i)"
               class=" material-icons mr-5">delete</i> -->
-          <!-- </div>
+    <!-- </div>
           <hr>
         </div>
       </div>
 
-    </div> --> 
+    </div> -->
 
 
     <!-- <div formArrayName="addresses" style="text-align: -webkit-auto">
@@ -263,7 +267,7 @@
     <div>
       <h4 *ngIf="customerInfo?.QuickGeneralGroupList.length > 0">{{'Groups' | translate}}</h4>
       <mat-selection-list formControlName="groups">
-        <mat-list-option *ngFor="let group of customerGroupList" [value]="group.GroupId">
+        <mat-list-option *ngFor="let group of customerGroupList" [value]="group.GroupId" >
           {{group.GroupName}}
         </mat-list-option>
       </mat-selection-list>
@@ -284,7 +288,7 @@
   </p>
 
   <mat-action-row>
-    <div *ngIf="currentRoute === '/home/newreceipt'">
+    <ng-container *ngIf="currentRoute === '/home/newreceipt'">
       <button class="mr-1 ml-2" type="button" mat-raised-button
         [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}"
         (click)="sendEventFromChild('toShop')" [disabled]="requiredField === true">
@@ -295,7 +299,7 @@
         [disabled]="requiredField === true">
         {{'Next' | translate}}
       </button>
-    </div>
+    </ng-container>
     <button *ngIf="currentRoute !== '/home/newreceipt'" type="submit" mat-raised-button color="primary"
       [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
       [disabled]="requiredField === true">

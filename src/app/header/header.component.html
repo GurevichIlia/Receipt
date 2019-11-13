@@ -11,7 +11,7 @@
         </button>
         <mat-menu #menu="matMenu">
           <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4 " [style.fontSize]="'16px'"
-            mat-menu-item routerLink="/newreceipt">{{'Create a receipt' | translate }}</button>
+            mat-menu-item (click)="goToReceipt()">{{'Create a receipt' | translate }}</button>
 
           <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'"
             mat-menu-item (click)="goToSendMessage()">{{'Send message' | translate}}</button>

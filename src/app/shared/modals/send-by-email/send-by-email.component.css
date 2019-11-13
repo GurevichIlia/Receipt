@@ -15,11 +15,11 @@
 
 .submit-button {
   background-color: rgb(38, 87, 122);
-   color: 'white';
+   color: white;
 
 }
 
 .cancel-button {
   background-color: rgb(250, 174, 33);
-
+  color: black;
 }

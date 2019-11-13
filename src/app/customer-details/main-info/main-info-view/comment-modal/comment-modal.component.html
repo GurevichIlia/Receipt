@@ -1,0 +1,13 @@
+<h4>Comment</h4>
+<div class="mb-4">
+  <mat-form-field class="formField ">
+    <textarea matInput [(ngModel)]="comment" class="textarea">
+          {{comment}}
+        </textarea>
+  </mat-form-field>
+</div>
+
+<div class="buttonBox">
+  <button style="margin-right: 30px" class="submit-button" mat-raised-button (click)="saveComment()">Confirm</button>
+  <button mat-raised-button class="cancel-button" (click)="closeModal()">Close</button>
+</div>

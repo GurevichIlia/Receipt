@@ -1,4 +1,4 @@
-import { Customermaininfo } from './../../models/customermaininfo.model';
+import { Router, NavigationEnd } from '@angular/router';
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -15,10 +15,12 @@ import * as moment from 'moment';
 import { CustomerInfoById, CustomerAddresses } from '../../models/customer-info-by-ID.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import { FormArray, FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
-import { CustomerPhones, CustomerEmails, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 
 import { GlobalData, CustomerTitle } from 'src/app/models/globalData.model';
-import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
+import { Phones } from 'src/app/models/phones.model';
+import { Emails } from 'src/app/models/emails.model';
+import { Addresses } from 'src/app/models/addresses.model';
+import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 
 @Injectable({
   providedIn: 'root'
@@ -57,12 +59,15 @@ export class GeneralSrv {
   cities = new BehaviorSubject(null);
   cities$ = this.cities.asObservable();
   subscription$ = new Subject();
+
+  currentRoute: string;
+  previousRoute: string;
   constructor(private http: HttpClient,
     private authen: AuthenticationService,
     private zone: NgZone,
     private receiptService: ReceiptsService,
     private translate: TranslateService,
-    private generalService: GeneralSrv
+    private router: Router
   ) {
     console.log('GENERAL SERVICE')
     this.switchLanguage('he');
@@ -354,12 +359,18 @@ export class GeneralSrv {
   setWindowWidth() {
     this.sizeOfWindow.next(window.innerWidth);
   }
+
   checkLocalStorage(itemName: string) {
     return localStorage.getItem(itemName);
   }
+
   changeDateFormat(date: string, format: string) {
-    return moment(date).format(format);
+    if (date) {
+      return moment(date).format(format);
+    }
+
   }
+
   getOrgName() {
     return this.orgName;
   }
@@ -369,10 +380,12 @@ export class GeneralSrv {
     return this.http.get(`${this.baseUrl}keva/GetKevaGlbData?urlAddr=${orgName}`)
       .pipe(map(data => data = data['Data'])).pipe(takeUntil(this.subscription$));
   }
+
   setGlobalDataState(state: GlobalData) {
     console.log('GLOBAL DATA SET', state);
     this.globalData.next(state);
   }
+
   getGlobalDataState() {
     return this.globalData.getValue();
   }
@@ -398,20 +411,27 @@ export class GeneralSrv {
     return filteredSubject.filter((title: CustomerTitle) => title[filterKey].toLowerCase().includes(filterValue))
   }
 
-  patchInputValue(inputsArray: FormArray | FormGroup, valueArray: CustomerPhones[] | CustomerEmails[] | CustomerAddresses[] | MainDetails[] | Customermaininfo[], addNewInputFunction?: Function, formBuilder?: FormBuilder) {
+  patchInputValue(
+   
+    inputsArray: FormArray | FormGroup,
+    valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
+    addNewInputFunction?: Function,
+    formBuilder?: FormBuilder) {
+      debugger
+    console.log('INPUTS ARRAY', inputsArray)
     let controlsKeys;
     if (valueArray) {
       if (valueArray.length > 0) {
         // если массив значений для инпутов не пустой, запуска. цикл для извлечения нужных значений.
         for (let i = 0; i < valueArray.length; i++) {
-
           if (inputsArray instanceof FormArray) {
             //создаю массив с названиями ключей на основании пришедшего FormArray.
             controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
             // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
             controlsKeys.forEach((key: string) => {
               // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
-              const arrKey = (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
+              const arrKey = key
+              //  (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
               // обновляю массив FormArray c объектами в которых инпуты.
               inputsArray.controls[i].patchValue({
                 [key]: valueArray[i][arrKey]
@@ -423,7 +443,8 @@ export class GeneralSrv {
             // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
             controlsKeys.forEach(key => {
               // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
-              const arrKey = (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
+              const arrKey = key;
+              //  (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
               // добавляю значения в объектe FormGroup с инпутами
               inputsArray.patchValue({
                 [key]: valueArray[i][arrKey]
@@ -469,6 +490,7 @@ export class GeneralSrv {
     }
 
   }
+
   addEmailInput(array: FormArray, fb: FormBuilder) {
     if (array.length < 10) {
       array.push(fb.group({
@@ -477,6 +499,7 @@ export class GeneralSrv {
       }));
     }
   }
+
   addAddressInput(array: FormArray, fb: FormBuilder) {
     if (array.length < 10) {
       array.push(fb.group({
@@ -492,13 +515,48 @@ export class GeneralSrv {
   getAddEmailFunction() {
     return this.addEmailInput;
   }
+
   getAddPhoneFunction() {
     return this.addPhoneInput;
+  }
+
+  getAddAddressFunction() {
+    return this.addAddressInput;
   }
   setCities(cities: any[]) {
     this.cities.next(cities);
   }
+
   getCities$() {
     return this.cities$;
   }
+
+  setCurrentRoute(route: string) {
+    this.currentRoute = route;
+  }
+
+  setPreviousRoute(route: string) {
+    this.previousRoute = route;
+  }
+
+  getCurrentRoute() {
+    return this.currentRoute;
+  }
+
+  getPreviousRoute() {
+    return this.previousRoute;
+  }
+  // getCurrentAndPreviousRoutes() {
+  //   this.currentRoute = this.router.url;
+  //   this.router.events.subscribe(event => {
+  //     if (event instanceof NavigationEnd) {
+  //       this.previousRoute = this.currentRoute;
+  //       this.currentRoute = event.url
+  //       console.log('ROUTE EVENT', event);
+  //     }
+
+  //   })
+  // }
+
+
 }

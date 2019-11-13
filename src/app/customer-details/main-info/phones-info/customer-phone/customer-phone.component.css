@@ -10,6 +10,16 @@ input.mat-input-element {
       width: 120px
     }
     
+    .mobileWidth {
+      width: 290px
+    }
     .inputMobileWidth {
-      width: 160px
+      width: 200px
+    }
+    .contryCodeWidth{
+      width: 120px
+    }
+    .phonetypeInputWidth {
+      width: fit-content; 
+
     }

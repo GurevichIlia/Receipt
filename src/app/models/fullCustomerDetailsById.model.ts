@@ -1,5 +1,7 @@
+import { CustomerAddresses } from './customer-info-by-ID.model';
+
 export interface FullCustomerDetailsById {
-      CustomerAddresses: [];
+      CustomerAddresses: CustomerAddresses[];
       CustomerCard_MainDetails: MainDetails[];
       CustomerCreditCardTokens: [];
       CustomerEmails: CustomerEmails[];

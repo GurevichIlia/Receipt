@@ -1,7 +1,7 @@
 <div class="row text-right align-items-center fontSize" [formGroup]="fifthStep">
   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>receipt</mat-label>
+      <mat-label>{{'Receipt' | translate}}</mat-label>
       <mat-select formControlName="receipt">
         <ng-container *ngFor="let recType of (globalData$ | async)?.ReceiptTypes">
           <mat-option *ngIf="recType.UseAsCreditReceipt === false && recType.ForCanclation === false"
@@ -17,7 +17,7 @@
   FOr = true CAncel = true useAs = false -->
   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>receipt</mat-label>
+      <mat-label>{{'Receipt' | translate}}</mat-label>
       <mat-select formControlName="receipt2">
         <ng-container *ngFor="let recType of (globalData$ | async)?.ReceiptTypes | paymentTypeFilter: paymentType">
           <mat-option [value]="recType.RecieptTypeId">
@@ -29,7 +29,7 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>goal</mat-label>
+      <mat-label>{{'Goal' | translate}}</mat-label>
       <mat-select formControlName="goal">
         <mat-option *ngFor="let donType of (globalData$ | async)?.DonationTypes" [value]="donType.DonationTypeId">
           {{donType.DonationTypeOther}}
@@ -39,7 +39,7 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>acc ..</mat-label>
+      <mat-label>{{'Account' | translate}}</mat-label>
       <mat-select formControlName="account">
         <mat-option *ngFor="let acc of (globalData$| async)?.Accounts " [value]="acc.AccountId">
           {{acc.AccountName}}
@@ -49,7 +49,7 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>project cat</mat-label>
+      <mat-label>{{'Projects categories' | translate}}</mat-label>
       <mat-select formControlName="projCat">
         <mat-option *ngFor="let cat of (globalData$ | async)?.ProjectsCategories" [value]="cat.ProjectCategoryId">
           {{cat.CategoryName}}
@@ -59,7 +59,7 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>project</mat-label>
+      <mat-label>{{'Projects' | translate}}</mat-label>
       <mat-select formControlName="project">
         <ng-container *ngFor="let project of (globalData$ | async)?.Projects4Receipts">
           <mat-option *ngIf="project.ProjectCategoryId === projectCat.value" [value]="project.ProjectId">
@@ -73,7 +73,7 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>Employee ID</mat-label>
+      <mat-label>{{'Employee ID' | translate}}</mat-label>
       <mat-select formControlName="employeeId">
         <mat-option *ngFor="let project of employeeList$ | async" [value]="project.employeeId">
           {{project.EmpName}}
@@ -83,7 +83,7 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>Thanks letter</mat-label>
+      <mat-label>{{'Thanks letter' | translate}}</mat-label>
       <mat-select formControlName="thanksLetter">
         <mat-option *ngFor="let project of (globalData$ | async)?.ReceiptThanksLetter" [value]="project.ThanksLetterId">
           {{project.ThanksLetterName}}
@@ -93,20 +93,20 @@
   </div>
   <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Address" formControlName="address">
+      <input matInput placeholder="{{'Address' | translate}}" formControlName="address">
     </mat-form-field>
   </div>
   <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="File As" formControlName="receiptName">
+      <input matInput placeholder="{{'FileAs' | translate}}" formControlName="receiptName">
     </mat-form-field>
   </div>
   <div class="col-6">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="email" formControlName="email">
+      <input matInput placeholder="{{'Email' | translate}}" formControlName="email">
     </mat-form-field>
   </div>
   <div class="col-6">
-    <mat-checkbox formControlName="kevaMakeRecieptByYear">Make reciept by year</mat-checkbox>
+    <mat-checkbox formControlName="kevaMakeRecieptByYear">{{'Make receipt by year' | translate}}</mat-checkbox>
   </div>
 </div>
