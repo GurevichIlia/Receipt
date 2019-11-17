@@ -41,7 +41,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.receiptService.currentReceiptLine$.pipe(takeUntil(this.subscription$)).subscribe(data => console.log('RECEIPT DATA CURRENT', data))
+    this.receiptService.currentReceiptLine$
+    .pipe(
+      takeUntil(this.subscription$))
+    .subscribe(data => console.log('RECEIPT DATA CURRENT', data))
   }
 
 

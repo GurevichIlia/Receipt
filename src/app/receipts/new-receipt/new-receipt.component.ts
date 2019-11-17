@@ -111,12 +111,13 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     return this.AllCustomerTables.filter(user => user['FileAs1'].toLowerCase().includes(filterValue));
 
   }
+
+
   GetCustomerSearchData1() {
     if (this.generalService.checkLocalStorage('customerSearchData')) {
       this.AllCustomerTables = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
     } else {
-      this.subscriptions.add(this.generalService
-        .getUsers()
+      this.subscriptions.add(this.generalService.getUsers()
         .pipe(
           map(response => {
             if (response.length === 0) {
@@ -137,6 +138,8 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
         ));
     }
   }
+
+
   getCustomerInfoById(customerId: number) {
     this.spinner.start();
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId)

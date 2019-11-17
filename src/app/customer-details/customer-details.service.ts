@@ -1,7 +1,8 @@
+import { FormControl } from '@angular/forms';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FullCustomerDetailsById, MainDetails, CustomerEmails, CustomerPhones } from 'src/app/models/fullCustomerDetailsById.model';
-import { GeneralSrv } from './../receipts/services/GeneralSrv.service';
+import { GeneralSrv, CustomerSearchData } from './../receipts/services/GeneralSrv.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { PaymentsService } from '../grid/payments.service';
@@ -9,12 +10,14 @@ import { Router } from '@angular/router';
 import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from '../receipts/customer-info/customer-info.service';
 import { Response } from '../models/response.model';
 import { CustomerAddresses } from '../models/customer-info-by-ID.model';
+import { debounceTime, map, filter, mergeMap, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerDetailsService {
   currentCustomerId = new BehaviorSubject<number>(null);
+  currentCustomerId$ = this.currentCustomerId.asObservable();
   customerDetailsById = new BehaviorSubject<FullCustomerDetailsById>(null);
   customerDetailsById$ = this.customerDetailsById.asObservable();
   currentMenuItem = new BehaviorSubject<{ route: string, childMenuItem: string }>(null);
@@ -100,6 +103,10 @@ export class CustomerDetailsService {
     return this.currentCustomerId.getValue();
   }
 
+  getCustomerId$() {
+    return this.currentCustomerId$;
+  }
+
   clearCurrentMenuItem() {
     this.currentMenuItem.next(null);
   }
@@ -107,6 +114,25 @@ export class CustomerDetailsService {
   setGlobalCustomerDetails(customerDetails: FullCustomerDetailsById) {
     this.globalStateService.setCustomerDetailsByIdGlobalState(customerDetails)
   }
+
+  customerListAutocomplete(searchControl: FormControl, customerList: Observable<CustomerSearchData[]>) {
+    const filteredOptions$ = searchControl.valueChanges
+      .pipe(
+        debounceTime(1),
+        switchMap(value => customerList
+          .pipe(
+            map(customers => customers
+              .filter(customer => customer.FileAs1.toLowerCase().includes(value))))
+        ),
+      );
+    return filteredOptions$
+  }
+
+  // private _filter(value: string, customerList: Observable<CustomerSearchData[]>): string[] {
+  //   const filterValue = value.toLowerCase();
+  //   return customerList.pipe(filter(user => user['FileAs1'].toLowerCase().includes(filterValue)));
+
+  // }
 
 
 

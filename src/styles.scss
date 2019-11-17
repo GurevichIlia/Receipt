@@ -10,10 +10,11 @@
 
 body {
   margin: 0;
-  font-family: Assistant, sans-serif;
-  
-  
-  
+  font-family: Assistant, sans-serif; 
+}
+
+.question .mat-dialog-container {
+  margin-top: 100px 
 }
 
 .basic-container {

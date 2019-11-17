@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['home/payments-grid']);
   }
   goToCustomerDetails() {
-    this.router.navigate([`home/customer-details/${1952}/main-info`]);
+    this.router.navigate([`home/customer-details/customer/main-info`]);
   }
   goToReceipt(){
     this.router.navigate(['home/newreceipt']);

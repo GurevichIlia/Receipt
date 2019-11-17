@@ -1,15 +1,18 @@
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { AskQuestionComponent } from './../../../shared/modals/ask-question/ask-question.component';
 import { NewPaymentService } from './../new-payment/new-payment.service';
 import { PaymentKeva } from './../../../models/paymentKeva.model';
 import { PaymentsService } from '../../payments.service';
 import { FormControl, FormBuilder, FormGroup } from '@angular/forms';
-import { Component, OnInit, ViewChild, AfterViewInit, ElementRef, AfterViewChecked, OnChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, startWith } from 'rxjs/operators';
+import { takeUntil, switchMap, filter } from 'rxjs/operators';
+import { MatDialog } from '@angular/material';
 
 
 
@@ -39,7 +42,9 @@ export class PaymentsTableComponent implements OnInit {
     private router: Router,
     private paymentsService: PaymentsService,
     private fb: FormBuilder,
-    private newPaymentService: NewPaymentService
+    private newPaymentService: NewPaymentService,
+    private matDialog: MatDialog,
+    private generalService: GeneralSrv
   ) { }
 
   ngOnInit() {
@@ -147,16 +152,42 @@ export class PaymentsTableComponent implements OnInit {
 
       })
   }
-  editPaymentRow(paymentRow) {
+  editPaymentRow(paymentRow: PaymentKeva) {
     this.newPaymentService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
     this.newPaymentService.setEditMode(true);
-    this.router.navigate(['home/payments-grid/new-payment'], paymentRow);
+    this.router.navigate(['home/payments-grid/new-payment']);
     console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
   }
-  deletePaymentRow(paymentRow) {
-    console.log('delete row', paymentRow)
 
+  deletePaymentRow(paymentRow: PaymentKeva) {
+    console.log('delete row', paymentRow)
+    const openedModal$ = this.matDialog.open(AskQuestionComponent,
+      {
+        height: '150', width: '350px', disableClose: true, position: { top: 'top' },
+        panelClass: 'question',
+        data: { questionText: 'Would you like to delete this payment', acceptButtonName: 'Accept', closeButtonName: 'Cancel' }
+      })
+      .afterClosed().pipe(filter(answer => answer === true));
+
+    const deleteRow$ = this.paymentsService.deleteCustomerKeva(this.generalService.getOrgName(), paymentRow.Customerid, paymentRow.Kevaid);
+
+    const deleteResponse$ = openedModal$.pipe(switchMap((answer: boolean) => {
+      console.log(answer)
+      return deleteRow$
+    }))
+
+    deleteResponse$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(response => {
+        debugger
+        if (response['Data'].error === 'false') {
+          this.paymentsService.updateKevaTable();
+          console.log('RESPONSE AFTER DELETE', response)
+        }
+        
+      }, error => console.log(error))
   }
   duplicatePaymentRow() {
 
@@ -165,10 +196,13 @@ export class PaymentsTableComponent implements OnInit {
     this.paymentsService.setPaymentTablePage({ pageIndex, pageSize });
   }
   getCurrentPaymentTablePageIndex() {
-    this.paymentsService.currentPaymentTablePage$.pipe(takeUntil(this.subscription$)).subscribe((pageOptions: { pageIndex: number, pageSize: number }) => {
-      this.paginator.pageIndex = pageOptions.pageIndex;
-      this.paginator.pageSize = pageOptions.pageSize;
-    });
+    this.paymentsService.currentPaymentTablePage$.
+      pipe(
+        takeUntil(this.subscription$))
+      .subscribe((pageOptions: { pageIndex: number, pageSize: number }) => {
+        this.paginator.pageIndex = pageOptions.pageIndex;
+        this.paginator.pageSize = pageOptions.pageSize;
+      });
   }
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.

@@ -1,16 +1,16 @@
 <mat-sidenav-container class="example-container" [hasBackdrop]="765 > displayWidth? true: false"
       (backdropClick)="sidenav.close()">
-      <mat-sidenav class="sidenav" #sidenav mode="side" opened>
+      <mat-sidenav class="sidenav" #sidenav mode="side" style="margin-top: 10px;" opened>
             <app-side-bar></app-side-bar>
       </mat-sidenav>
-      <mat-sidenav-content class="matSidenavContent" >
-            <button style="background-color: whitesmoke" *ngIf="765 > displayWidth" class="sidenavToggle"
+      <mat-sidenav-content #sideNavContent class="matSidenavContent" >
+            <button style="background-color: whitesmoke" *ngIf="sidenav.opened === false" class="sidenavToggle"
                   (click)="sidenav.open()" mat-button>menu</button>
             <div class="row mb-5 searchContent">
                   <div class="col-xs-12 col-sm-12 col-md-7 col-lg-8 col-xl-9" [ngClass]="{'contentDesktopMargin':  displayWidth > 765 }">
                         <mat-card style="height: 100px;margin-top: 10px">
-                              SEARCH
-                              <button type="button" mat-button (click)="test()">text</button>
+                              <app-search [showButton]="false" [filteredOptions]="filteredOptions$ | async" [searchControl]="searchControl"
+                              (pickedCustomer)="customerDetailsService.setCustomerId($event)"></app-search>
                         </mat-card>
                   </div>
             </div>

@@ -1,6 +1,7 @@
 table {
   width: 5000px;
-  text-align: right;
+  /* text-align: right; */
+  text-align: justify;
 }
 
 .elevation {

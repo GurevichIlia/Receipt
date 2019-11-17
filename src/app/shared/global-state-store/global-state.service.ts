@@ -3,15 +3,19 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { FullCustomerDetailsById, CustomerEmails, CustomerPhones, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
 import { CustomerAddresses } from 'src/app/models/customer-info-by-ID.model';
+import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalStateService {
-  customerDetailsById = new BehaviorSubject<FullCustomerDetailsById>(null);// Хранит данные о кастомере если где то запрашивалась инфа по id;
+  // Хранит данные о кастомере если где то запрашивалась инфа по id
+  customerDetailsById = new BehaviorSubject<FullCustomerDetailsById>(null);
   customerDetailsById$ = this.customerDetailsById.asObservable();
 
-
+  // Список кастомеров для поиска
+  customerList = new BehaviorSubject<CustomerSearchData[]>(null);
+  customerList$ = this.customerList.asObservable();
   constructor() { }
 
   setCustomerDetailsByIdGlobalState(value) {
@@ -23,7 +27,7 @@ export class GlobalStateService {
     return this.customerDetailsById.getValue();
   }
 
-  getCustomerDetailsByIdState$(): Observable<FullCustomerDetailsById> {
+  getCustomerDetailsByIdGlobalState$(): Observable<FullCustomerDetailsById> {
     return this.customerDetailsById$;
   }
 
@@ -76,5 +80,13 @@ export class GlobalStateService {
       }),
     }
     return newObject
+  }
+
+  setCustomerList(customerList: CustomerSearchData[]) {
+    this.customerList.next(customerList);
+  }
+
+  getCustomerList$() {
+    return this.customerList$;
   }
 }

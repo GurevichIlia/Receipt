@@ -125,13 +125,13 @@ export class PaymentsService {
           if (data) {
             debugger
             data.map((data: PaymentKeva) => {
-              // data.LastChargeDate = data.LastChargeDate === null ? '' : this.generalService.changeDateFormat(data.LastChargeDate, 'DD/MM/YYYY');
-              data.createDate = this.generalService.changeDateFormat(data.createDate, 'DD/MM/YYYY');
+              // data.LastChargeDate = data.LastChargeDate === null ? '' : this.generalService.changeDateFormat(data.LastChargeDate, 'YYYY/MM/DD');
+              // data.createDate = this.generalService.changeDateFormat(data.createDate, 'YYYY/MM/DD');
               data.creditCardMonthAndYears = this.concatMonthAndYear(data.creditCardMonth, data.creditCardYear); // create new pair key/value;
-              data.KEVACancleDate = this.generalService.changeDateFormat(data.KEVACancleDate, 'DD/MM/YYYY');
-              data.KEVAEnd = this.generalService.changeDateFormat(data.KEVAEnd, 'DD/MM/YYYY');
-              data.KEVAJoinDate = this.generalService.changeDateFormat(data.KEVAJoinDate, 'DD/MM/YYYY');
-              data.KEVAStart = this.generalService.changeDateFormat(data.KEVAStart, 'DD/MM/YYYY');
+              // data.KEVACancleDate = this.generalService.changeDateFormat(data.KEVACancleDate, 'YYYY/MM/DD');
+              // data.KEVAEnd = this.generalService.changeDateFormat(data.KEVAEnd, 'YYYY/MM/DD');
+              // data.KEVAJoinDate = this.generalService.changeDateFormat(data.KEVAJoinDate, 'YYYY/MM/DD');
+              // data.KEVAStart = this.generalService.changeDateFormat(data.KEVAStart, 'YYYY/MM/DD');
               return data;
             })
           } else {
@@ -201,12 +201,13 @@ export class PaymentsService {
         catchError(this.handleError));
   }
 
-  deleteCustomerKeva(orgName: string, customerid: string, kevaid: string) {
-    return this.http.post(`${this.baseUrl}keva/DeleteCustomerKevaInfo?urlAddr=${orgName}`, { customerid, kevaid }, this.httpOptions)
+  deleteCustomerKeva(orgName: string, customerid: number, kevaid: number) {
+    console.log(`customerid: ${customerid}, kevaid: ${kevaid}`)
+    return this.http.get(`${this.baseUrl}keva/DeleteCustomerKevaInfo?urlAddr=${orgName}&customerid=${customerid}&kevaid=${kevaid}`, this.httpOptions)
       .pipe(map(data => data),
         catchError(this.handleError));
   }
-
+  // &customerid=${customerid}&kevaid=${kevaid}
   concatMonthAndYear(monthValue: number, yearValue: number) {
     if (monthValue === null && yearValue === null) {
       return '';

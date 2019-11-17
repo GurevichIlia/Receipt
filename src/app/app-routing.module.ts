@@ -12,7 +12,7 @@ const routes: Routes = [
     path: 'home', component: HomeComponentComponent, canActivate: [AuthGuard], children: [
       { path: 'send-message', loadChildren: './message/send-message.routing.module#SendMessageRoutingModule', canActivate: [AuthGuard] },
       { path: 'newreceipt', loadChildren: './receipts/receipt.module#ReceiptModule' },
-      { path: 'customer-details/:id', loadChildren: './customer-details/customer-details.module#CustomerDetailsModule' },
+      { path: 'customer-details/customer', loadChildren: './customer-details/customer-details.module#CustomerDetailsModule' },
       { path: 'payments-grid', loadChildren: './grid/grid.module#GridModule', canActivate: [AuthGuard] },
       { path: 'new-customer', loadChildren: './new-customer/new-customer.module#NewCustomerModule', canActivate:[AuthGuard] },
     ]

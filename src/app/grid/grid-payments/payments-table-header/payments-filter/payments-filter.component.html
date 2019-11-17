@@ -36,8 +36,7 @@
         <mat-label>Activity Status</mat-label>
         <mat-select formControlName="KevaStatusid">
           <mat-option value="9999">All</mat-option>
-          <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus"
-            [value]="group.KevaStatusId">
+          <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus" [value]="group.KevaStatusId">
             {{group.KevaStatusIdname}}
           </mat-option>
         </mat-select>
@@ -83,6 +82,11 @@
     <button type="submit" mat-stroked-button (click)="kevaHistory()"
       style="background-color: rgb(250, 174, 33)"><strong>הסטוריית
         שידורים</strong> </button>
+  </div>
+
+  <div class="mr-1">
+    <button type="button" mat-stroked-button (click)="duplicateKeva()"
+      color="default"><strong>Duplicate the keva</strong> </button>
   </div>
 
   <div *ngIf="1575 > windowWidth" class="mr-2">

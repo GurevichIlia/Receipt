@@ -22,6 +22,17 @@ import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 
+export interface CustomerSearchData {
+  ActiveStatus: number;
+  CustomerId: number;
+  FileAs: string;
+  FileAs1: string;
+  SearchHide: boolean;
+  TypeNameHeb: string;
+  title: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -105,20 +116,17 @@ export class GeneralSrv {
   }
 
   /**
-     *  Get all customers
+     *  Get all customers for search
      */
-  public getUsers(): Observable<any> {
-    // cons = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Bearer ' + this.authen.tokenNo
-    //   })
-    // };
+  public getUsers(): Observable<CustomerSearchData[]> {
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerSearchData?urlAddr=${this.orgName}`,
     )
-      .pipe(map(response => response.Data));
+      .pipe(map(response => response.Data
+      
+      ));
   }
-  /***  Get customer bt customerId */
+
+  /***  Get customer by customerId */
   getCustomerInfoById(customerId: number): Observable<CustomerInfoById> {
     // cons = {
     //   headers: new HttpHeaders({
@@ -412,12 +420,12 @@ export class GeneralSrv {
   }
 
   patchInputValue(
-   
+
     inputsArray: FormArray | FormGroup,
     valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
     addNewInputFunction?: Function,
     formBuilder?: FormBuilder) {
-      debugger
+    debugger
     console.log('INPUTS ARRAY', inputsArray)
     let controlsKeys;
     if (valueArray) {

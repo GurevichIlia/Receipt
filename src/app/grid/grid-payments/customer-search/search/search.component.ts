@@ -7,13 +7,15 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./search.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit{
   @Input() searchControl: FormControl;
   @Input() filteredOptions: any[];
+  @Input() showButton = true;
   @Output() pickedCustomer: EventEmitter<number> = new EventEmitter();
   @Output() newCustomer: EventEmitter<number> = new EventEmitter();
 
   constructor() { }
+
 
   ngOnInit() {
   }

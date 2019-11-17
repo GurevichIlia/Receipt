@@ -1,24 +1,23 @@
 <div class="sideBlock">
   <mat-card class="mat-card">
-    <mat-card-header class="cardHeader">
       <div class="row">
         <div class="col-12">
-          <div class="row">
+          <div class="row justify-content-center">
             <app-customer-photo></app-customer-photo>
           </div>
         </div>
 
         <div class="col-12">
-          <div class="row">
+          <div class="row justify-content-center">
 
             <customer-info [customerDetailsById]="customerDetailsById$ | async"></customer-info>
           </div>
         </div>
 
       </div>
-    </mat-card-header>
     <mat-card-content class="cardContent">
-      <app-side-menu [animationState]="animationState" (selectedRoute)="setCurrentMenuItem($event)" class="sideMenu"></app-side-menu>
+      <app-side-menu [animationState]="animationState" (selectedRoute)="setCurrentMenuItem($event)" class="sideMenu">
+      </app-side-menu>
     </mat-card-content>
   </mat-card>
 </div>

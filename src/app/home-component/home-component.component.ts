@@ -1,9 +1,11 @@
+import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
+import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home-component',
@@ -15,13 +17,15 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
   constructor(
     private generalService: GeneralSrv,
     private router: Router,
-    private customerInfoService: CustomerInfoService
+    private customerInfoService: CustomerInfoService,
+    private globalStateService: GlobalStateService
   ) { }
 
   ngOnInit() {
     this.getGlobalData();
     this.getCities();
     this.getCurrentAndPreviousRoutes();
+    this.GetCustomerSearchData();
   }
 
   getGlobalData() {
@@ -79,7 +83,7 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
           // тогда стираем стейт с данными в сервисе для компонента CustomerInfoComponent.
           // если на создание Кева, то оставляем стейт до завершения создания Кева.
           if (this.generalService.getPreviousRoute() === '/home/payments-grid/customer-search' && this.generalService.getCurrentRoute() !== '/home/payments-grid/new-payment' ||
-          this.generalService.getCurrentRoute() !== '/home/payments-grid/customer-search' && this.generalService.getPreviousRoute() === '/home/payments-grid/new-payment'
+            this.generalService.getCurrentRoute() !== '/home/payments-grid/customer-search' && this.generalService.getPreviousRoute() === '/home/payments-grid/new-payment'
           ) {
             this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
 
@@ -89,6 +93,38 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
         }
 
       })
+  }
+
+  GetCustomerSearchData() {
+    debugger
+    let customerList: CustomerSearchData[] = [];
+    if (this.generalService.checkLocalStorage('customerSearchData')) {
+      customerList = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
+      this.globalStateService.setCustomerList(customerList);
+    } else {
+      this.generalService.getUsers()
+        .pipe(
+          map(response => {
+            if (response.length === 0) {
+              // this.authService.logout();
+              return response;
+            } else {
+              return response;
+            }
+          }),
+          // map(response => response)
+          takeUntil(this.subscription$))
+        .subscribe(
+          data => {
+            customerList = data;
+            customerList = customerList.filter(data => String(data['FileAs1']) != ' ');
+            this.globalStateService.setCustomerList(customerList)
+            localStorage.setItem('customerSearchData', JSON.stringify(customerList));
+            console.log('this.AllCustomerTables', customerList);
+          },
+        );
+
+    }
   }
 
   ngOnDestroy() {

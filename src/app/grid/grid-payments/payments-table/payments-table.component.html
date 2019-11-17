@@ -37,7 +37,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header}} </th>
       <td mat-cell *matCellDef="let row">
         <ng-container>
-          {{col.cell(row) === 'null'? '' : col.cell(row)}}
+          {{col.cell(row) === 'null'? '' : col.cell(row) | dateTransform : col.header}}
         </ng-container>
       </td>
     </ng-container>

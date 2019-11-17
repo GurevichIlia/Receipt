@@ -18,6 +18,8 @@ import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.co
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { SuggestExistingCustomerComponent } from './modals/suggest-existing-customer/suggest-existing-customer.component';
+import { AskQuestionComponent } from './modals/ask-question/ask-question.component';
+import { DateTransformPipe } from './pipes/date-transform.pipe';
 
 
 @NgModule({
@@ -32,6 +34,8 @@ import { SuggestExistingCustomerComponent } from './modals/suggest-existing-cust
             SendByEmailComponent,
             SearchComponent,
             SuggestExistingCustomerComponent,
+            AskQuestionComponent,
+            DateTransformPipe,
 
       ],
       imports: [
@@ -62,10 +66,11 @@ import { SuggestExistingCustomerComponent } from './modals/suggest-existing-cust
             SearchComponent,
             CustomerInfoComponent,
             CustomerInfoViewComponent,
+            DateTransformPipe
 
 
       ],
-      entryComponents: [CreditCardComponent, SendByEmailComponent, SuggestExistingCustomerComponent]
+      entryComponents: [CreditCardComponent, SendByEmailComponent, SuggestExistingCustomerComponent, AskQuestionComponent]
 })
 export class SharedModule {
 

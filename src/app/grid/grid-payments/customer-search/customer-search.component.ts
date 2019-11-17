@@ -69,6 +69,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.getGlobalData();
     this.spinner.stop();
   }
+
   filterOption() {
     this.filteredOptions$ = this.searchControl.valueChanges
       .pipe(
@@ -78,14 +79,15 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.AllCustomerTables.filter(user => user['FileAs1'].toLowerCase().includes(filterValue));
-
+  
   }
+
+
   GetCustomerSearchData1() {
     if (this.generalService.checkLocalStorage('customerSearchData')) {
       this.AllCustomerTables = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
     } else {
-      this.subscriptions.add(this.generalService
-        .getUsers()
+      this.subscriptions.add(this.generalService.getUsers()
         .pipe(
           map(response => {
             if (response.length === 0) {
@@ -100,12 +102,14 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
           data => {
             this.AllCustomerTables = data;
             this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
+            
             localStorage.setItem('customerSearchData', JSON.stringify(this.AllCustomerTables));
             console.log('this.AllCustomerTables', this.AllCustomerTables);
           },
         ));
     }
   }
+
   getCustomerInfoById(customerId: number) {
     this.spinner.start();
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
@@ -124,20 +128,24 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
       error => console.log(error),
     ));
   }
+
   submit(form: NgForm) {
     console.log(form.value);
   }
+
   createNew() {
     this.receiptService.createNewEvent.next();
     this.receiptService.setStep(1);
     this.searchControl.patchValue('');
   }
+
   getCities() {
     this.generalService.getCities$()
       .pipe(
         takeUntil(this.subscription$))
       .subscribe(cities => this.cities = cities);
   }
+
   getGlobalData() {
     this.paymentsService.currentGlobalData$.pipe(takeUntil(this.subscription$)).subscribe(data => {
       if (data) {

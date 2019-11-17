@@ -72,7 +72,7 @@ export class TestCComponent {
     return this.generalSrv.getUsers().pipe(
       map(response =>
         response.filter(option => {
-          return option.name.toLowerCase().indexOf(val.toLowerCase()) === 0;
+          // return option.name.toLowerCase().indexOf(val.toLowerCase()) === 0;
         })
       )
     );

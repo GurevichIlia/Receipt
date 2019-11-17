@@ -96,10 +96,10 @@ export class NewPaymentService {
       currency: newData.CurrencyId,
       day: newData.HokChargeDay,
       company: newData.instituteId,
-      startDate: this.generalService.changeDateFormat(newData.KEVAStart, 'DD/MM/YYYY'),
-      endDate: this.generalService.changeDateFormat(newData.KEVAEnd, 'DD/MM/YYYY'),
-      KEVAJoinDate: this.generalService.changeDateFormat(newData.KEVAJoinDate, 'DD/MM/YYYY'),
-      KEVACancleDate: this.generalService.changeDateFormat(newData.KEVACancleDate, 'DD/MM/YYYY'),
+      startDate: this.generalService.changeDateFormat(newData.KEVAStart, 'YYYY-MM-DD'),
+      endDate: this.generalService.changeDateFormat(newData.KEVAEnd, 'YYYY-MM-DD'),
+      KEVAJoinDate: this.generalService.changeDateFormat(newData.KEVAJoinDate, 'YYYY-MM-DD'),
+      KEVACancleDate: this.generalService.changeDateFormat(newData.KEVACancleDate,'YYYY-MM-DD'),
       monthToCharge: newData.TotalMonthtoCharge,
       chargeMonth: newData.TotalChargedMonth,
       leftToCharge: newData.TotalLeftToCharge,
@@ -215,7 +215,7 @@ export class NewPaymentService {
     this.paymentType.next(type);
   }
 
-  setEditingPayment(payment) {
+  setEditingPayment(payment: PaymentKeva | '') {
     this.editingPayment.next(payment);
   }
 

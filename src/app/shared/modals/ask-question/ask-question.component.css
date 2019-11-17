@@ -1,6 +1,3 @@
-::ng-deep  mat-dialog-container {
-  margin-top: 100px;
-}
 
 .buttonBox {
   text-align: center;
@@ -17,7 +14,7 @@ button {
 }
 
 .cancel-button {
-      width: 135px;
+  width: 135px;
 
   background-color: rgb(250, 174, 33);
   color: black;
@@ -31,6 +28,4 @@ button {
   color: white;
 }
 
-li {
-  font-size: 20px;
-}
+
