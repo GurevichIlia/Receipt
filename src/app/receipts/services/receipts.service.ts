@@ -95,11 +95,11 @@ export class ReceiptsService {
   receiptLines = new BehaviorSubject(null);
   currentReceiptLine$ = this.receiptLines.asObservable();
   changeDateFormatMethod: Function;
- 
+
   constructor(
     private dialog: MatDialog,
     private globalMethodsService: GlobalMethodsService
-    
+
   ) {
     this.changeDateFormatMethod = this.globalMethodsService.changeDateFormat
     console.log('RECEIPT SERVICE');
@@ -185,36 +185,33 @@ export class ReceiptsService {
   }
 
   getFullNewReceipt() {
-    const receiptHeader = this.newReceipt.Receipt.ReceiptHeader;
     debugger
-    const address = this.newReceipt.customerInfo.addresses
+    const addresses = this.newReceipt.customerInfo.addresses
     const newReceiptHeader: ReceiptHeader = this.newReceipt.Receipt.ReceiptHeader;
     const newReceiptCustomerMainInfo: CustomerMainInfo = this.newReceipt.customerInfo.customerMainInfo;
-    newReceiptHeader.fname = newReceiptCustomerMainInfo.fname;
-    newReceiptHeader.lname = newReceiptCustomerMainInfo.lname;
-    newReceiptHeader.Company = newReceiptCustomerMainInfo.company;
-    newReceiptHeader.FileAs = newReceiptCustomerMainInfo.fname;
-    newReceiptHeader.CustomerCode = this.newReceipt.customerInfo.customerMainInfo.customerCode;
-    newReceiptHeader.Titel = this.newReceipt.customerInfo.customerMainInfo.title;
+    
     this.newReceipt.customerInfo.customerMainInfo.birthday = this.changeDateFormatMethod(this.newReceipt.customerInfo.customerMainInfo.birthday, 'DD/MM/YYYY')
-    if (address) {
-      receiptHeader.Zip = address.zip;
+    this.addAddressInfoToReceiptHeader(addresses, newReceiptHeader);
+
+    // Проверяем, если есть ID то кастомер уже есть в базе
+    // мы используем только его айдишник и очищаем остальные поля.
+    if (newReceiptCustomerMainInfo.customerId) {
+      this.newReceipt.customerInfo.customerMainInfo = {
+        customerId: newReceiptCustomerMainInfo.customerId
+      }
+      this.newReceipt.customerInfo.emails = [];
+      this.newReceipt.customerInfo.phones = [];
+      this.newReceipt.customerInfo.addresses = [];
     } else {
-      receiptHeader.Zip = '';
+      // Если нет, то юзер новый и мы ничего не изменяем,
+      // используюем полную введенную информацию и
+      // добавляем его данные еще и в хедер в new receipt.
+      this.addCustomerInfoToReceiptHeader(newReceiptCustomerMainInfo, newReceiptHeader);
     }
-    if (address) {
-      receiptHeader.CityName = address.cityName;
-    } else {
-      receiptHeader.CityName = '';
-    }
-    if (address) {
-      receiptHeader.Street = address.street;
-    } else {
-      receiptHeader.Street = '';
-    }
-    console.log(this.newReceipt);
+
     return this.newReceipt;
   }
+
   clearNewReceipt() {
     this.newReceipt = null;
   }
@@ -271,7 +268,7 @@ export class ReceiptsService {
   setEmailsToReceipt(emails: Emails[]) {
     this.newReceipt.customerInfo.emails = emails;
   }
-  setAddressesToReceipt(addresses: Addresses) {
+  setAddressesToReceipt(addresses: Addresses[]) {
     this.newReceipt.customerInfo.addresses = addresses;
   }
   getReceiptLines() {
@@ -382,5 +379,26 @@ export class ReceiptsService {
     this.customerName.next(fullName);
   }
 
+  addAddressInfoToReceiptHeader(address: Addresses[], receiptHeader: ReceiptHeader) {
+    debugger
+    if (address) {
+      receiptHeader.Zip = address[0].zip;
+      receiptHeader.CityName = address[0].cityName;
+      receiptHeader.Street = address[0].street;
 
+    } else {
+      receiptHeader.Zip = '';
+      receiptHeader.CityName = '';
+      receiptHeader.Street = '';
+    }
+  }
+
+  addCustomerInfoToReceiptHeader(customerInfo: CustomerMainInfo, receiptHeader: ReceiptHeader) {
+    receiptHeader.fname = customerInfo.fname;
+    receiptHeader.lname = customerInfo.lname;
+    receiptHeader.Company = customerInfo.company;
+    receiptHeader.FileAs = customerInfo.fname;
+    receiptHeader.CustomerCode = customerInfo.customerCode;
+    receiptHeader.Titel = customerInfo.title;
+  }
 }

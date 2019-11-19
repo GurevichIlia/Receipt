@@ -84,4 +84,12 @@ export class EmailsService {
   enableFormControl(control: AbstractControl) {
     control.enable();
   }
+
+  updateCustomerInfo() {
+    this.mainInfoService.updateCustomerInfo();
+  }
+
+  isEmptyEmailControl(email: Email) {
+    return email.email;
+  }
 }

@@ -32,6 +32,14 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="duplicate">
+      <th mat-header-cell *matHeaderCellDef>
+        <span>duplicate</span>
+      </th>
+      <td (click)="duplicateCustomerKeva(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
+        <mat-icon>control_point_duplicate</mat-icon>
+      </td>
+    </ng-container>
 
     <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header}} </th>
@@ -44,7 +52,7 @@
 
 
     <tr mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true"></tr>
-    <tr (dblclick)="row.backColor = !row.backColor"
+    <tr (dblclick)="row.backColor = !row.backColor" class="element-row"
       [ngStyle]="{'background-color': row.backColor? 'rgb(231, 227, 227)' : 'white' }" mat-row
       *matRowDef="let row; columns: listDisplayedColumns;"></tr>
 

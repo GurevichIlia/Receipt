@@ -31,7 +31,7 @@
         <app-first-step [globalData$]="globalData$" [firstStep]="newPaymentForm.get('firstStep')">
         </app-first-step>
         <mat-action-row>
-          <button *ngIf="!editMode" type="button" mat-button color="primary"
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="primary"
             (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
@@ -43,9 +43,9 @@
         </mat-expansion-panel-header>
         <app-second-step [secondStep]="newPaymentForm.get('secondStep')"></app-second-step>
         <mat-action-row>
-          <button *ngIf="!editMode" type="button" mat-button color="warn" (click)="prevStep()">
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
             {{'Previous' | translate}}</button>
-          <button *ngIf="!editMode" type="button" mat-button color="primary"
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="primary"
             (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
@@ -62,9 +62,9 @@
           (addNewCardIsClicked)=" openModalForNewCreditCard()">
         </app-third-step>
         <mat-action-row>
-          <button *ngIf="!editMode" type="button" mat-button color="warn" (click)="prevStep()">
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
             {{'Previous' | translate}}</button>
-          <button *ngIf="!editMode" type="button" mat-button color="primary"
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="primary"
             (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
@@ -77,9 +77,9 @@
         <app-fourth-step [globalData$]="globalData$" [fourthStep]="newPaymentForm.get('fourthStep')">
         </app-fourth-step>
         <mat-action-row>
-          <button *ngIf="!editMode" type="button" mat-button color="warn" (click)="prevStep()">
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
             {{'Previous' | translate}}</button>
-          <button *ngIf="!editMode" type="button" mat-button color="primary"
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="primary"
             (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
@@ -92,21 +92,29 @@
         <app-fifth-step [projectCat]="projectCat" [paymentType]="paymentType.value" [employeeList$]="employeeList$"
           [globalData$]="globalData$" [fifthStep]="newPaymentForm.get('fifthStep')"></app-fifth-step>
         <mat-action-row>
-          <button *ngIf="!editMode" type="button" mat-button color="warn" (click)="prevStep()">
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
             {{'Previous' | translate}}</button>
-          <button *ngIf="!editMode" type="button" mat-button color="primary"
+          <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="primary"
             (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
       <!-- ROW FIVE -->
     </mat-accordion>
+
+
+
     <div class="row mt-3" style="justify-content: flex-end">
-      <div *ngIf="!editMode" class="col-2">
+      <div *ngIf="kevaMode === 'newKeva'" class="col-2">
         <button type="submit" class="example-full-width fontSize" mat-raised-button color="accent">Submit</button>
       </div>
-      <div *ngIf="editMode" class="col-2">
+      <div *ngIf="kevaMode === 'edit'" class="col-2">
         <button type="button" [disabled]="newPaymentForm.invalid" (click)="updateCustomerKeva()"
           class="example-full-width fontSize" mat-raised-button color="accent">Update</button>
+      </div>
+
+      <div *ngIf="kevaMode === 'duplicate'" class="col-2">
+        <button type="button" [disabled]="newPaymentForm.invalid" (click)="duplicateCustomerKeva()"
+          class="example-full-width fontSize" mat-raised-button color="accent">Duplicate</button>
       </div>
     </div>
   </form>

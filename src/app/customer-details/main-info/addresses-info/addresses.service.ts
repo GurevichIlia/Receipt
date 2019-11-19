@@ -99,4 +99,7 @@ export class AddressesService {
     control.enable();
   }
 
+  updateCustomerInfo(){
+    this.mainInfoService.updateCustomerInfo();
+  }
 }

@@ -185,6 +185,7 @@ export class PaymentsService {
   }
 
   saveNewKeva(orgName: string, newKeva: NewKevaFull) {
+    newKeva.customerInfo.addresses =  newKeva.customerInfo.addresses
     console.log('SAVE NEW KEVA', newKeva);
     console.log('SAVE NEW KEVA STRING', JSON.stringify(newKeva));
     return this.http.post(`${this.baseUrl}keva/SaveCustomerKevaInfo?urlAddr=${orgName}`, newKeva, this.httpOptions)

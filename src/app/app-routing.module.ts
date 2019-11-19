@@ -2,12 +2,11 @@ import { HomeComponentComponent } from './home-component/home-component.componen
 import { AuthGuard } from './receipts/services/auth.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
 import { LoginGuard } from './receipts/services/login.guard';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home',  },
-  { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
+  { path: 'login', loadChildren: './login/login.module#LoginModule', canActivate: [LoginGuard] },
   {
     path: 'home', component: HomeComponentComponent, canActivate: [AuthGuard], children: [
       { path: 'send-message', loadChildren: './message/send-message.routing.module#SendMessageRoutingModule', canActivate: [AuthGuard] },

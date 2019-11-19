@@ -1,4 +1,3 @@
-
 import { ChargesByChargeIdComponent } from './charges-byChargeId-modal/charges-by-charge-id.component';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { KevaCharge } from './../../../models/kevaCharge.model';
@@ -72,7 +71,8 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
         })
         return keva;
       }),
-        takeUntil(this.subscription$)).subscribe(data => {
+        takeUntil(this.subscription$))
+        .subscribe(data => {
           this.spinner.stop();
           this.getDataForPaymentsTable(data);
         }, error => {

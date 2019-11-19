@@ -9,19 +9,21 @@ import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
   styleUrls: ['./suggest-existing-customer.component.css']
 })
 export class SuggestExistingCustomerComponent implements OnInit {
+  customerInfo: MainDetails
   constructor(public matDialogRef: MatDialogRef<SuggestExistingCustomerComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { customer: CustomerMainInfo[] | MainDetails[] }
+    @Inject(MAT_DIALOG_DATA) public data: { customer: MainDetails[] }
   ) { }
 
   ngOnInit() {
-   this.data.customer[0];
+    this.customerInfo = this.data.customer[0];
+    console.log(this.customerInfo)
   }
 
-  close(){
+  close() {
     this.matDialogRef.close(false);
   }
 
-  accept(){
+  accept() {
     this.matDialogRef.close(true);
   }
 }

@@ -170,6 +170,9 @@ export class MainInfoService {
     return this.customerDetailsService.saveChangedCustomerData(newCustomerData);
   }
 
+  updateCustomerInfo(){
+    this.customerDetailsService.updateCustomerInfo();
+  }
   // setPhoneInputsArray(inputsArray: FormArray) {
   //   this.phoneInputsArray.next(inputsArray)
   // }

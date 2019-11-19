@@ -52,7 +52,7 @@ export class PaymentsTableComponent implements OnInit {
     this.getValueForColumns();
     this.selection.onChange.pipe(takeUntil(this.subscription$)).subscribe(data => {
       this.selectedCustomers = data.source.selected;
-      console.log(this.selectedCustomers)
+      console.log('SELECTED ROWS', data.source.selected)
     });
     this.getPaymentsTableData();
     this.filterPaymentTable();
@@ -77,6 +77,7 @@ export class PaymentsTableComponent implements OnInit {
     this.listDisplayedColumns.unshift('select');
     this.listDisplayedColumns.splice(1, 0, 'delete');
     this.listDisplayedColumns.splice(2, 0, 'edit');
+    this.listDisplayedColumns.splice(3, 0, 'duplicate');
 
   }
   /**Create rows for table */
@@ -142,6 +143,7 @@ export class PaymentsTableComponent implements OnInit {
     this.paymentsService.currentPaymentsTableData$.pipe(
       takeUntil(this.subscription$))
       .subscribe((data: any[]) => {
+        this.selection.clear();
         console.log('GRID DATA', data)
         if (data) {
           this.dataSource.data = data;
@@ -155,9 +157,17 @@ export class PaymentsTableComponent implements OnInit {
   editPaymentRow(paymentRow: PaymentKeva) {
     this.newPaymentService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
-    this.newPaymentService.setEditMode(true);
+    this.newPaymentService.setKevaMode('edit');
     this.router.navigate(['home/payments-grid/new-payment']);
     console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
+  }
+
+  duplicateCustomerKeva(customerKeva: PaymentKeva) {
+    this.newPaymentService.setDuplicatingKeva(customerKeva);
+    this.newPaymentService.setKevaMode('duplicate');
+
+    console.log('edit row', customerKeva);
+    this.router.navigate(['home/payments-grid/customer-search']);
   }
 
   deletePaymentRow(paymentRow: PaymentKeva) {
@@ -186,7 +196,7 @@ export class PaymentsTableComponent implements OnInit {
           this.paymentsService.updateKevaTable();
           console.log('RESPONSE AFTER DELETE', response)
         }
-        
+
       }, error => console.log(error))
   }
   duplicatePaymentRow() {

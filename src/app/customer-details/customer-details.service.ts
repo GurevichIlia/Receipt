@@ -1,16 +1,15 @@
 import { FormControl } from '@angular/forms';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { FullCustomerDetailsById, MainDetails, CustomerEmails, CustomerPhones } from 'src/app/models/fullCustomerDetailsById.model';
+import { FullCustomerDetailsById, } from 'src/app/models/fullCustomerDetailsById.model';
 import { GeneralSrv, CustomerSearchData } from './../receipts/services/GeneralSrv.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { PaymentsService } from '../grid/payments.service';
 import { Router } from '@angular/router';
-import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from '../receipts/customer-info/customer-info.service';
-import { Response } from '../models/response.model';
-import { CustomerAddresses } from '../models/customer-info-by-ID.model';
-import { debounceTime, map, filter, mergeMap, switchMap } from 'rxjs/operators';
+import { CustomerInfoService } from '../receipts/customer-info/customer-info.service';
+
+import { debounceTime, map, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +23,8 @@ export class CustomerDetailsService {
   currentMenuItem$ = this.currentMenuItem.asObservable();
   childMenuItem = new BehaviorSubject<string>('personalInfo');
   currentChildMenuItem$ = this.childMenuItem.asObservable();
+
+  updateCustomerInfo$ = new BehaviorSubject<boolean>(null);
   baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/';
   constructor(
     private paymentsService: PaymentsService,
@@ -35,8 +36,15 @@ export class CustomerDetailsService {
 
   ) { console.log('CUSTOMER DETAILS SERVICE LOADED') }
 
+  // getCustomerDetailsById(customerId: number): Observable<FullCustomerDetailsById> {
+  //   return this.paymentsService.getCustomerDetailsById(customerId);
+  // }
+
   getCustomerDetailsById(customerId: number): Observable<FullCustomerDetailsById> {
-    return this.paymentsService.getCustomerDetailsById(customerId);
+    return this.http.get(`${this.baseUrl}Customer/GetCustomerData?urlAddr=${this.generalService.getOrgName()}&customerid=${customerId}`)
+      .pipe(map(data => {
+        return data = data['Data']
+      }));
   }
 
   setCustomerDetailsByIdState(value) {
@@ -128,6 +136,9 @@ export class CustomerDetailsService {
     return filteredOptions$
   }
 
+  updateCustomerInfo() {
+    this.updateCustomerInfo$.next(true);
+  }
   // private _filter(value: string, customerList: Observable<CustomerSearchData[]>): string[] {
   //   const filterValue = value.toLowerCase();
   //   return customerList.pipe(filter(user => user['FileAs1'].toLowerCase().includes(filterValue)));

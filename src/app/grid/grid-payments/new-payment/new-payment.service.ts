@@ -30,14 +30,18 @@ export class NewPaymentService {
   customerInfoForNewKeva: BehaviorSubject<Customerinfo> = new BehaviorSubject(null);
   currentCustomerInfoForNewKeva$ = this.customerInfoForNewKeva.asObservable();
 
-  editingPayment = new BehaviorSubject<PaymentKeva | ''>('');
+  editingPayment = new BehaviorSubject<PaymentKeva>(null);
   currentEditingPayment$ = this.editingPayment.asObservable();
+
+  duplicatingKeva = new BehaviorSubject<PaymentKeva>(null);
+  currentDuplicatingKeva$ = this.duplicatingKeva.asObservable();
 
   customertCreditCardList = new BehaviorSubject<CreditCardList[]>([]);
   currentCreditCardList$ = this.customertCreditCardList.asObservable();
 
-  _editMode = new BehaviorSubject<boolean>(false);
-  editMode$ = this._editMode.asObservable();
+  kevaMode = new BehaviorSubject<string>('newKeva');
+  kevaMode$ = this.kevaMode.asObservable();
+
 
   baseUrl = ''
   newKeva: NewKevaFull;
@@ -99,7 +103,7 @@ export class NewPaymentService {
       startDate: this.generalService.changeDateFormat(newData.KEVAStart, 'YYYY-MM-DD'),
       endDate: this.generalService.changeDateFormat(newData.KEVAEnd, 'YYYY-MM-DD'),
       KEVAJoinDate: this.generalService.changeDateFormat(newData.KEVAJoinDate, 'YYYY-MM-DD'),
-      KEVACancleDate: this.generalService.changeDateFormat(newData.KEVACancleDate,'YYYY-MM-DD'),
+      KEVACancleDate: this.generalService.changeDateFormat(newData.KEVACancleDate, 'YYYY-MM-DD'),
       monthToCharge: newData.TotalMonthtoCharge,
       chargeMonth: newData.TotalChargedMonth,
       leftToCharge: newData.TotalLeftToCharge,
@@ -215,8 +219,12 @@ export class NewPaymentService {
     this.paymentType.next(type);
   }
 
-  setEditingPayment(payment: PaymentKeva | '') {
+  setEditingPayment(payment: PaymentKeva) {
     this.editingPayment.next(payment);
+  }
+
+  setDuplicatingKeva(keva: PaymentKeva) {
+    this.duplicatingKeva.next(keva);
   }
 
   setCustomerInfoForNewKeva(customerInfoFromInfoComponent: CustomerInfoByIdForCustomerInfoComponent) {
@@ -245,12 +253,12 @@ export class NewPaymentService {
     this.customertCreditCardList.next(creditCardList);
   }
 
-  setEditMode(value: boolean) {
-    this._editMode.next(value);
+  setKevaMode(value: string) {
+    this.kevaMode.next(value);
   }
 
-  getEditMode$() {
-    return this.editMode$;
+  getKevaMode$() {
+    return this.kevaMode$;
   }
 
   // setNewCreditCard(creditCard: Creditcard) {

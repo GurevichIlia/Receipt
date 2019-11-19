@@ -1,10 +1,10 @@
-<mat-card  class="mb-4">
+<mat-card class="mb-4">
   <form [formGroup]="mainInfoForm" style="font-size: 18px">
     <div class="row justify-content-start mb-3">
       <h3 style="margin-right: 15px">{{'Address' | translate }}
       </h3>
       <button class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content"
-        (click)="getAction({action:'addNewAddress', subject: null})">Add new</button>
+        (click)="getAction(newEvent = {action:'addNewAddress', index: null})">Add new</button>
       <!-- <i style="cursor: pointer; float: left; margin-right: 10px" (click)="getAction({action:'addNewAddress', subject: null})"
         class=" material-icons">add</i> -->
 

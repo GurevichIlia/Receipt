@@ -18,6 +18,7 @@ export class CustomerInfoViewComponent implements OnInit, OnChanges {
   @Input() requiredField: boolean;
   @Input() customerGroupList: CustomerGroupById[]
   @Output() newEventFromChild = new EventEmitter();
+  showMoreInfo = false;
   constructor() { }
 
   ngOnChanges() {
@@ -40,7 +41,7 @@ export class CustomerInfoViewComponent implements OnInit, OnChanges {
   }
 
 
-  sendEventFromChild(action: string, index: number) {
+  sendEventFromChild(action: string, index?: number) {
     this.newEventFromChild.emit({ action, index });
   }
 

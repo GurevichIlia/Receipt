@@ -7,9 +7,11 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SideMenuComponent {
-  pickedMenu: string;
   @Input() animationState: string;
   @Output() selectedRoute = new EventEmitter();
+  mainInfoNestMenu = false;
+  paymentsNestMenu = false;
+  pickedMenu: string;
 
   constructor() {
 

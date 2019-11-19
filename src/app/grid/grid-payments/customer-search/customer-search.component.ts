@@ -133,11 +133,6 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     console.log(form.value);
   }
 
-  createNew() {
-    this.receiptService.createNewEvent.next();
-    this.receiptService.setStep(1);
-    this.searchControl.patchValue('');
-  }
 
   getCities() {
     this.generalService.getCities$()
@@ -157,6 +152,8 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
 
   newCustomerIsClicked() {
     this.receiptService.createNewEvent.next();
+    this.searchControl.patchValue('');
+
   }
 
   goToCreateNewPayment() {

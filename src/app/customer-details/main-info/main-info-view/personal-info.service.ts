@@ -53,7 +53,8 @@ export class PersonalInfoService {
       customerType: customerPersonalInfo.CustomerType,
       title: customerPersonalInfo.Title,
       gender: customerPersonalInfo.Gender,
-      id: customerPersonalInfo.ID,
+      customerId: customerPersonalInfo.CustomerId,
+      tz: customerPersonalInfo.ID,
       spouseName: customerPersonalInfo.SpouseName,
       fileAs: customerPersonalInfo.FileAs,
       remark: customerPersonalInfo.Remark,
@@ -64,8 +65,10 @@ export class PersonalInfoService {
   }
 
 
-  savePersonalInfoOnServer(PersonalInfo: PersonalInfo) {
-    return this.mainInfoService.saveChangedCustomerData({ personalInfo: [PersonalInfo] });
+  savePersonalInfoOnServer(personalInfo: PersonalInfo) {
+    console.log('PERSONAL INFO', JSON.stringify({ personalInfo: personalInfo }));
+
+    return this.mainInfoService.saveChangedCustomerData({ personalInfo: personalInfo});
   }
 
   disableFormControl(control: AbstractControl) {
@@ -78,5 +81,9 @@ export class PersonalInfoService {
 
   changeDateFormat(date: string, format: string) {
     return this.mainInfoService.changeDateFormat(date, format);
+  }
+
+  updateCustomerInfo(){
+    this.mainInfoService.updateCustomerInfo();
   }
 }

@@ -4,7 +4,7 @@
       <h3 style="margin-right: 15px">{{'Phone' | translate}}
       </h3>
       <button class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content"
-        (click)="getAction({action:'addNewPhone', subject: null})">Add new</button>
+        (click)="getAction(newEvent = {action:'addNewPhone', index: null })">Add new</button>
 
       <!-- <i style="cursor: pointer; float: left; margin-right: 15px"
         (click)="makeAction({action:'addNewPhone', subject: null})" class=" material-icons">add</i> -->

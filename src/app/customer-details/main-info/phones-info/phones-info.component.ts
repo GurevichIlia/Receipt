@@ -18,6 +18,8 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
   customerPhones: CustomerPhones[];
   subscription$ = new Subject();
   loading = true;
+  newEvent: { action: string, index?: number };
+
   constructor(
     // private mainInfoService: MainInfoService,
     private phonesService: PhonesService
@@ -28,14 +30,6 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-    const add = x => y => {
-      const z = x + y;
-      console.log(x + '+' + y + '=' + z);
-      return z;
-    };
-
-    const res = add(3)(6); // вернёт 9 и выведет в консоль 3+6=9
 
     console.log(this.phones);
     this.getCustomerPhones();
@@ -93,6 +87,7 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
           if (response.Data.error === 'false') {
             this.disableFormControl(array.controls[i]);
             this.loading = false;
+            this.phonesService.updateCustomerInfo();
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);
@@ -117,6 +112,8 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
     const phone: Phone = array.controls[i].value;
     if (array.length === 1) {
       return;
+    } else if (!phone.id) {
+      array.removeAt(i);
     } else if (confirm('Would you like to delete this field?')) {
       this.phonesService.deletePhone(phone)
         .pipe(
@@ -124,6 +121,7 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
         .subscribe((response: Response) => {
           if (response.Data.error === 'false') {
             array.removeAt(i);
+            this.phonesService.updateCustomerInfo();
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);

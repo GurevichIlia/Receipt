@@ -103,6 +103,7 @@ export class MainInfoViewComponent implements OnInit {
         if (response.Data.error === 'false') {
           this.disableFormControl(personalInfo);
           this.editMode = false;
+          this.personalInfoService.updateCustomerInfo();
           console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
         } else if (response.Data.error === 'true') {
           console.log('RESPONSE ERROR', response.Data.res_description);

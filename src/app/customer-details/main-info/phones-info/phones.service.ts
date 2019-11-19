@@ -13,7 +13,8 @@ export interface Phone {
   isSms: number;
   deleteRow: number;
   comments: string;
-  area: string
+  area: string;
+  id: number;
 }
 
 @Injectable({
@@ -110,5 +111,9 @@ export class PhonesService {
     newPhone.area = '';
     console.log('EDITED PHONE', { phones: [newPhone] });
     return newPhone;
+  }
+
+  updateCustomerInfo(){
+    this.mainInfoService.updateCustomerInfo();
   }
 }

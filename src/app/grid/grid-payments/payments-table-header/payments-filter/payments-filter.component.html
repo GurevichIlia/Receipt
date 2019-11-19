@@ -84,11 +84,6 @@
         שידורים</strong> </button>
   </div>
 
-  <div class="mr-1">
-    <button type="button" mat-stroked-button (click)="duplicateKeva()"
-      color="default"><strong>Duplicate the keva</strong> </button>
-  </div>
-
   <div *ngIf="1575 > windowWidth" class="mr-2">
     <mat-form-field class="searchMobileVers">
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">

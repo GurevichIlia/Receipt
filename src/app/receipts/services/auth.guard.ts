@@ -4,31 +4,31 @@ import { CanActivate } from '@angular/router';
 
 import { AuthenticationService } from './authentication.service';
 
-import { Store } from '@ngrx/store';
-import * as fromApp from '../../app.reducer'
-import { take, takeUntil } from 'rxjs/operators';
+
+import { takeUntil, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
   currentAuthStatus: boolean;
-  subscription$ = new Subject();
-  constructor(private authServices: AuthenticationService,
+  constructor(
     private router: Router,
-    private store: Store<{ auth: fromApp.State }>
+    private authService: AuthenticationService
   ) { }
   canActivate(): boolean {
-    this.store.subscribe(status => {
-      if (status.auth.isLogged) {
-        this.currentAuthStatus = true;
-      } else {
-        this.router.navigate(['login']);
-        this.currentAuthStatus = false;
-      }
-    });
-
+    this.authService.currentlyAuthStatus$
+      .pipe(take(1))
+      .subscribe(status => {
+        if (status) {
+          this.currentAuthStatus = true;
+        } else {
+          this.router.navigate(['login']);
+          this.currentAuthStatus = false;
+        }
+      }, error => console.log(error));
     return this.currentAuthStatus;
   }
 
 }
+

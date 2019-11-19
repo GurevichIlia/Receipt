@@ -16,6 +16,7 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
   customerEmails: CustomerEmails[];
   subscription$ = new Subject();
   loading = true;
+  newEvent: { action: string, index?: number };
   constructor(private emailService: EmailsService) { }
 
   ngOnInit() {
@@ -48,7 +49,7 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
 
   getAction(event: { action: string, index?: number }) {
     switch (event.action) {
-      case 'addNewEmail': this.addEmailInput(this.emails, event.index);
+      case 'addNewEmail': this.addEmailInput(this.emails);
         break
       case 'deleteEmail': this.deleteEmail(this.emails, event.index);
         break
@@ -75,6 +76,7 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
           if (response.Data.error === 'false') {
             this.disableFormControl(array.controls[i]);
             this.loading = false;
+            this.emailService.updateCustomerInfo();
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);
@@ -85,20 +87,22 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
 
     } else {
       alert('Please enter correct email');
-      array.removeAt(i);
     }
 
 
   }
 
-  addEmailInput(array: FormArray, i) {
+  addEmailInput(array: FormArray) {
     this.emailService.addEmail(array);
   }
 
   deleteEmail(array: FormArray, i) {
+    debugger
     const email: Email = array.controls[i].value;
     if (array.length === 1) {
       return;
+    } else if (!email.tempid) {
+      array.removeAt(i);
     } else if (confirm('Would you like to delete this field?')) {
       this.loading = true;
       this.emailService.deleteEmail(email)
@@ -108,6 +112,7 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
           if (response.Data.error === 'false') {
             array.removeAt(i);
             this.loading = false;
+            this.emailService.updateCustomerInfo();
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);

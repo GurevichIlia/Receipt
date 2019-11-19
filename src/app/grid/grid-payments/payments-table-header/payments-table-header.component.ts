@@ -10,6 +10,7 @@ import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { takeUntil, filter, switchMap } from 'rxjs/operators';
 import { NewPaymentService } from '../new-payment/new-payment.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { PaymentKeva } from 'src/app/models/paymentKeva.model';
 
 
 @Component({
@@ -74,7 +75,7 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
         break;
     }
     this.newPaymentService.setPaymentType(type);
-    this.newPaymentService.setEditMode(false);
+    this.newPaymentService.setKevaMode('newKeva');
     this.router.navigate(['home/payments-grid/customer-search']);
 
   }

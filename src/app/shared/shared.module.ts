@@ -15,11 +15,11 @@ import { SendByEmailComponent } from './modals/send-by-email/send-by-email.compo
 import { SearchComponent } from '../grid/grid-payments/customer-search/search/search.component';
 import { CustomerInfoViewComponent } from '../receipts/customer-info/customer-info-view/customer-info-view.component';
 import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BrowserModule } from '@angular/platform-browser';
 import { SuggestExistingCustomerComponent } from './modals/suggest-existing-customer/suggest-existing-customer.component';
 import { AskQuestionComponent } from './modals/ask-question/ask-question.component';
 import { DateTransformPipe } from './pipes/date-transform.pipe';
+import { ModalSessionexpiredComponent } from '../receipts/modals/modal-sessionexpired/modal-sessionexpired.component';
+import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/confirm-purchases.component';
 
 
 @NgModule({
@@ -36,6 +36,8 @@ import { DateTransformPipe } from './pipes/date-transform.pipe';
             SuggestExistingCustomerComponent,
             AskQuestionComponent,
             DateTransformPipe,
+            ConfirmPurchasesComponent,
+            ModalSessionexpiredComponent
 
       ],
       imports: [
@@ -70,7 +72,7 @@ import { DateTransformPipe } from './pipes/date-transform.pipe';
 
 
       ],
-      entryComponents: [CreditCardComponent, SendByEmailComponent, SuggestExistingCustomerComponent, AskQuestionComponent]
+      entryComponents: [CreditCardComponent, SendByEmailComponent, SuggestExistingCustomerComponent, AskQuestionComponent, ModalSessionexpiredComponent, ConfirmPurchasesComponent]
 })
 export class SharedModule {
 

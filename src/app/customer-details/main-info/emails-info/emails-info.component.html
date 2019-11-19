@@ -4,7 +4,7 @@
       <h3 style="margin-right: 15px">{{'Email' | translate}}
       </h3>
       <button class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content"
-        (click)="getAction({action:'addNewEmail', subject: null})">Add new</button>
+        (click)="getAction(newEvent = {action:'addNewEmail', index: null})">Add new</button>
   
       <!-- <i style="cursor: pointer; float: left; margin-right: 10px" (click)="getAction({action:'addNewEmail', subject: null})"
         class=" material-icons">add</i> -->
@@ -17,7 +17,7 @@
       <div formArrayName="emails">
         <div *ngFor="let email of emails.controls; let i=index">
           <app-customer-email (newAction)="getAction($event)" 
-            [emailGroup]="email" [i]="i"></app-customer-email>
+            [emailGroup]="email" [i]="i" ></app-customer-email>
           <hr>
           <!-- <div [formGroupName]="i" style="text-align: justify" class="mb-2 row">
             <mat-form-field class="col-xs-11 col-sm-10 col-md-2 col-lg-2 col-xl-2">

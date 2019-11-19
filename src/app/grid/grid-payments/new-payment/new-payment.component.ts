@@ -33,7 +33,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   newPaymentForm: FormGroup;
   globalData$: Observable<GlobalData>;
   customerInfoById: Customerinfo;
-  editMode = false;
+  // editMode = false;
+  // duplicateMode = false;
+  kevaMode = 'newKeva'
   isEditFileAs = false;
   subscription$ = new Subject();
   creditCardAccounts$: Observable<CreditCardAccount[]>;
@@ -64,8 +66,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Proj cat', this.projectCat);
     this.getCustomerInfoById();
     this.getPaymentType();
-    this.checkEditMode();
+    this.checkKevaMode();
     this.checkIfPaymentTypeChanged();
+    this.getDuplicatingPayment();
 
     const component = NewPaymentComponent
     console.log('COMPONENT', component);
@@ -200,6 +203,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setInputValue(input, newValue);
     this.isEditFileAs = false;
   }
+
   getEditingPayment() {
     this.newPaymentService.currentEditingPayment$
       .pipe(
@@ -209,14 +213,34 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         if (data) {
           console.log('EDITING PAYMENT', data);
           this.openAllSteps();
+          this.kevaMode = 'edit';
           this.newPaymentService.updatePaymentFormForEditeMode(this.newPaymentForm, data)
           this.newPaymentService.setFoundedCustomerId(data.Customerid);
           this.editiingKevaId = data.Kevaid;
         } else {
-          this.setStep(1);
         }
       })
   }
+
+  getDuplicatingPayment() {
+    this.newPaymentService.currentDuplicatingKeva$
+      .pipe(
+        delay(0),
+        takeUntil(this.subscription$))
+      .subscribe((data: PaymentKeva) => {
+        debugger
+        if (data) {
+          console.log('DUPLICATE KEVA', data);
+          this.openAllSteps();
+          this.kevaMode = 'duplicate';
+          this.newPaymentService.updatePaymentFormForEditeMode(this.newPaymentForm, data)
+          this.newPaymentService.setFoundedCustomerId(data.Customerid);
+          this.editiingKevaId = data.Kevaid;
+        } else {
+        }
+      })
+  }
+
   getPaymentType() {
     this.newPaymentService.currentPaymentType$
       .pipe(
@@ -268,18 +292,20 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.setCustomerInfoById(this.customerInfoById.emails, this.customerInfoById.phones, this.customerInfoById.addresses, this.customerInfoById.customermaininfo, '', this.customerInfoById.groups)
     this.location.back();
   }
-  checkEditMode() {
-    this.newPaymentService.getEditMode$()
+  checkKevaMode() {
+    this.newPaymentService.getKevaMode$()
       .pipe(takeUntil(this.subscription$))
-      .subscribe((value: boolean) => this.editMode = value);
-    this.getEmployeeList();
-    console.log('EDIT MODE', this.editMode)
+      .subscribe((value: string) => {
+        this.kevaMode = value;
+        this.getEmployeeList();
+      });
+    console.log('EDIT MODE', this.kevaMode)
   }
   getNewCreditCard() {
     return this.newCreditCard;
   }
   getEmployeeList() {
-    if (this.editMode) {
+    if (this.kevaMode === 'edit') {
       this.employeeList$ = this.paymentsService.getGlobalData$().pipe(map(data => data.GetEmployeesAll));
     } else {
       this.employeeList$ = this.paymentsService.getGlobalData$().pipe(map(data => data.GetEmployees));
@@ -348,6 +374,23 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
+  // duplicateKeva() {
+  //   this.setDataToNewPaymentKeva();
+  //   this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
+  //     .pipe(
+  //       takeUntil(this.subscription$))
+  //     .subscribe(res => {
+  //       console.log('NEW KEVA RESPONSE', res);
+  //       if (res) {
+  //         if (res['Data'].error === 'false') {
+  //           this.router.navigate(['/home/payments-grid/payments']);
+  //           this.paymentsService.updateKevaTable();
+  //         }
+  //       }
+  //       this.newPaymentService.clearNewKeva();
+  //     })
+  // }
+
   updateCustomerKeva() {
     this.setDataToNewPaymentKeva();
     this.newPaymentService.setEditKevaId(this.editiingKevaId);
@@ -356,6 +399,23 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         takeUntil(this.subscription$))
       .subscribe((res) => {
         console.log('UPDATE KEVA RESPONSE', res);
+        if (res) {
+          if (res['Data'].error === 'false') {
+            this.router.navigate(['/home/payments-grid/payments']);
+            this.paymentsService.updateKevaTable();
+          }
+        }
+        this.newPaymentService.clearNewKeva();
+      })
+  }
+
+  duplicateCustomerKeva() {
+    this.setDataToNewPaymentKeva();
+    this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(res => {
+        console.log('NEW KEVA RESPONSE', res);
         if (res) {
           if (res['Data'].error === 'false') {
             this.router.navigate(['/home/payments-grid/payments']);
@@ -382,9 +442,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     //Called once, before the instance is destroyed
     //Add 'implements OnDestroy' to the class.
     this.setStep(0);
-    this.newPaymentService.setEditingPayment('');
+    this.newPaymentService.setEditingPayment(null);
     this.fileAs.patchValue('');
-    this.newPaymentService.setEditMode(false);
+    this.newPaymentService.setKevaMode('newKeva');
     this.subscription$.next();
     this.subscription$.complete();
     // this.newPaymentService.setCustomerInfo(<Customerinfo>{})

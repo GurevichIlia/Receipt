@@ -18,6 +18,8 @@ export class AddressesInfoComponent implements OnInit {
   customerAddresses: CustomerAddresses[];
   subscription$ = new Subject();
   loading = true;
+  newEvent: { action: string, index?: number };
+
   constructor(private addressService: AddressesService) { }
 
   get addresses() {
@@ -76,6 +78,7 @@ export class AddressesInfoComponent implements OnInit {
             this.loading = false;
             this.disableFormControl(array.controls[i]);
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+            this.addressService.updateCustomerInfo();
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
@@ -99,6 +102,8 @@ export class AddressesInfoComponent implements OnInit {
     const address: Address = array.controls[i].value;
     if (array.length === 1) {
       return;
+    } else if (!address.addressId) {
+      array.removeAt(i);
     } else if (confirm('Would you like to delete this field?')) {
       this.loading = true;
       this.addressService.deleteAddress(address)
@@ -108,6 +113,8 @@ export class AddressesInfoComponent implements OnInit {
           if (response.Data.error === 'false') {
             array.removeAt(i);
             this.loading = false;
+            this.addressService.updateCustomerInfo();
+
             console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
           } else if (response.Data.error === 'true') {
             console.log('RESPONSE ERROR', response.Data.res_description);

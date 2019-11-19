@@ -98,7 +98,8 @@ export class MainInfoComponent implements OnInit {
         customerType: [''],
         title: [''],
         gender: [''],
-        id: [''],
+        tz: [''],
+        customerId: [''],
         spouseName: [''],
         fileAs: [''],
         afterSunset1: [''],
@@ -316,23 +317,23 @@ export class MainInfoComponent implements OnInit {
       .subscribe((data: string) => this.currentMenuItem = data);
   }
 
-  saveChangedCustomerData(newCustomerData: {}) {
-    console.log('SENDING DATA TO SERVER', newCustomerData);
-    if (newCustomerData) {
-      this.mainInfoService.saveChangedCustomerData(newCustomerData)
-        .pipe(
-          takeUntil(this.subscription$))
-        .subscribe((response: Response) => {
-          // if (response.Data.error === 'false') {
-          //   console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
-          // } else if (response.Data.error === 'true') {
-          //   console.log('RESPONSE ERROR', response.Data.res_description);
-          //   console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
-          // }
-        },
-          error => console.log(error));
-    }
-  }
+  // saveChangedCustomerData(newCustomerData: {}) {
+  //   console.log('SENDING DATA TO SERVER', newCustomerData);
+  //   if (newCustomerData) {
+  //     this.mainInfoService.saveChangedCustomerData(newCustomerData)
+  //       .pipe(
+  //         takeUntil(this.subscription$))
+  //       .subscribe((response: Response) => {
+  //         // if (response.Data.error === 'false') {
+  //         //   console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+  //         // } else if (response.Data.error === 'true') {
+  //         //   console.log('RESPONSE ERROR', response.Data.res_description);
+  //         //   console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+  //         // }
+  //       },
+  //         error => console.log(error));
+  //   }
+  // }
 
   editPhone(phone: CustomerPhones) {
     const newPhone = Object.assign({}, phone);

@@ -1,4 +1,3 @@
-import { CustomerDetailsForNewPaymentComponent } from './grid-payments/new-payment/customer-details-for-new-payment/customer-details-for-new-payment.component';
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';

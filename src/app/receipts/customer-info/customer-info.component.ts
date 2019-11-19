@@ -88,7 +88,6 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     groups: Group[];
 
   }
-
   subscription$ = new Subject();
   constructor(
     private receiptService: ReceiptsService,
@@ -249,7 +248,6 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     this.getCities();
     this.getCustomerGroupList();
     // setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
-    this.text();
     // this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
     //   .subscribe(data => {
     //     this.setItemToSessionStorage('fname', data.customerMainInfo.fname);
@@ -345,11 +343,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   changeCustomerInfoIfCustomerIsFound(customer: CustomerInfoByIdForCustomerInfoComponent) {
     if (customer) {
       this.refreshCustomerForm();
-
       const custInfo = customer.customerMainInfo[0];
+
+
       this.receiptService.setIsNewCustomer(false);
       // this.receiptService.setStep(1);
-      this.customerInfoTitle = `${custInfo.fileAs} ${custInfo.customerId}`;
       console.log(this.customerInfoTitle);
       this.customerInfoService.updateValueInAddressInputsArray(this.address, customer.customerAddress);
       // this.setCustomerAddressFormControls(this.address, customer.customerAddress, this.generalService.getAddAddressFunction(), this.fb);
@@ -359,6 +357,13 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       // this.setCustomerPhoneFormControls(this.phones, customer.customerPhones, this.generalService.getAddPhoneFunction(), this.fb);
 
       this.setCustomerMainInfo(this.customerMainInfo, [customer.customerMainInfo[0]]);
+
+      if (custInfo.customerId) {
+        this.disableFormGroup(this.userInfoGroup);
+        this.customerInfoTitle = `${custInfo.fileAs} ${custInfo.customerId}`
+      } else {
+        this.customerInfoTitle = 'New customer'
+      }
 
       // this.updateCustomerMainInfo(custInfo);
 
@@ -446,6 +451,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   getCreateNewEvent() {
     this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
       this.refreshCustomerForm();
+      this.enableFormGroup(this.userInfoGroup)
       // this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
     }));
   }
@@ -458,7 +464,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     this.resetEmails();
     this.resetPhones();
     this.resetGroup();
-    // this.resetAddresses();
+    this.resetAddresses();
     this.refreshRequiredFormFields();
     this.disabledNextStep();
 
@@ -623,12 +629,12 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     //   this.deleteEmail(i);
     // }
   }
-  // resetAddresses() {
-  //   this.customerInfoService.resetFormArray(this.addresses)
-  //   // for (let i = this.addresses.value.length; i > 0; i--) {
-  //   //   this.deleteAddress(i);
-  //   // }
-  // }
+  resetAddresses() {
+    this.customerInfoService.resetFormArray(this.address)
+    //   // for (let i = this.addresses.value.length; i > 0; i--) {
+    //   //   this.deleteAddress(i);
+    //   // }
+  }
   getEventsFromChildComponent($event: { action: string, index: number }) {
     switch ($event.action) {
       case 'toShop': this.openShop();
@@ -751,24 +757,8 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       .subscribe((customerInfo: CustomerInfoByIdForCustomerInfoComponent) => {
         console.log('CUSTOMER INFO GOT IN CUSTOMER INFO COMPONENT', customerInfo);
         if (customerInfo) {
-          // debugger
           this.customerInfoById = customerInfo;
-          // // if (this.customerInfo['CustomerEmails'].length !== 0) {
-          // this.customerEmails = customerInfo.customerEmails;
-          // // }
-          // // if (this.customerInfo['CustomerMobilePhones'].length !== 0) {
-          // this.customerPhones = customerInfo.customerPhones;
-          // // }
-          // // if (this.customerInfo['CustomerInfoForReceiept'].length !== 0) {
-          // this.customerDetails = customerInfo.customerMainInfo;
-          // // }
-          // // this.customerAddress = customerInfo['CustomerAddress'].filter(address => customerInfo['customerAddress'].indexOf(address) === 0);
-          // this.customerAddress = customerInfo.customerAddress;
 
-          // // this.customerGroupList = customerInfo.QuickGeneralGroupList;
-
-          // this.group.patchValue(customerInfo.pickedGroups);
-          // console.log('PATCHED GROUPS CONTROL', this.group)
           this.changeCustomerInfoIfCustomerIsFound(customerInfo);
         } else {
           setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
@@ -816,7 +806,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     // Сервер выдает ошибку когда 
     // пытаюсь отправить адреса как массив,
     // поэтому пока посылаю как один объект
-    customerInfo.addresses = customerInfo.addresses[0];
+    customerInfo.addresses = customerInfo.addresses;
     customerInfo.groups = this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent().pickedGroups;
 
     this.receiptService.setCustomerInfoToNewReceipt(customerInfo);
@@ -828,20 +818,20 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
 
   suggestUseExistingCustomerDetails() {
     if (this.getGlobalCustomerDetailsState() && this.generalService.getCurrentRoute() !== '/home/new-customer') {
-          const matDialog = this.matDialog.open(SuggestExistingCustomerComponent, { width: '450px', height: '200px', position: { top: 'top' }, disableClose: true, data: { customer: this.getGlobalCustomerDetailsState().CustomerCard_MainDetails } })
-          matDialog.afterClosed()
-            .pipe(
-              takeUntil(this.subscription$))
-            .subscribe((response: boolean) => {
-              if (response === true) {
-                // this.customerInfoService.setCustomerInfoById(customerInfo.CustomerEmails, customerInfo.GetCustomerPhones, customerInfo.CustomerAddresses, customerInfo.CustomerCard_MainDetails, null, customerInfo.CustomerGroupsGeneralSet)
-                this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.customerInfoService.getCustomerDetailsByIdTranformedForCUstomerInfoComponent());
-              } else if (response === false) {
-                this.receiptService.createNewClicked();
-                // this.customerInfoService.clearCustomerById();
-              }
-            }
-            );
+      const matDialog = this.matDialog.open(SuggestExistingCustomerComponent, { width: '450px', height: '200px', position: { top: 'top' }, disableClose: true, data: { customer: this.getGlobalCustomerDetailsState().CustomerCard_MainDetails } })
+      matDialog.afterClosed()
+        .pipe(
+          takeUntil(this.subscription$))
+        .subscribe((response: boolean) => {
+          if (response === true) {
+            // this.customerInfoService.setCustomerInfoById(customerInfo.CustomerEmails, customerInfo.GetCustomerPhones, customerInfo.CustomerAddresses, customerInfo.CustomerCard_MainDetails, null, customerInfo.CustomerGroupsGeneralSet)
+            this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.customerInfoService.getCustomerDetailsByIdTranformedForCUstomerInfoComponent());
+          } else if (response === false) {
+            this.receiptService.createNewClicked();
+            // this.customerInfoService.clearCustomerById();
+          }
+        }
+        );
     } else if (this.generalService.getCurrentRoute() === '/home/new-customer') {
       this.receiptService.createNewClicked()
       console.log('No One CUSTOMER')
@@ -851,59 +841,12 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     }
   }
 
-  text() {
+  disableFormGroup(formGroup: FormGroup) {
+    formGroup.disable();
+  }
 
-
-    // const observable = fromEvent(this.CustomerInfoViewComponent.firstName.nativeElement, 'click');
-    // const timer = new Observable(observer => {
-    //   // объявляем счетчик
-    //   let counter = 0;
-    //   setInterval(() => {
-    //     // передаем значение счетчика
-    //     // наблюдателю и увеличиваем его на единицу
-    //     observer.next(counter++);
-    //   }, 1000);
-    // });
-    // // просто логируем каждое значение
-    // timer.subscribe({ next: console.log });
-
-
-    // timer.subscribe({ next: console.log })
-    // const makeRequest = () => {
-    //   return timer(1000).pipe(
-    //     // takeWhile(number => number < 10),
-    //     mapTo('success')
-    //   )
-    // }
-
-    // timer(0, 1000).pipe(
-    //   mergeMap(() => makeRequest())
-    //   // mergeAll()
-    // )
-    // .subscribe({
-    //   next: console.log
-    // });
-
-    // timer(5000, 1000).subscribe(() => console.log('HELLO'))
-    // makeRequest().subscribe(value => console.log(value), error => console.log(error), () => console.log('COMpLETE'))
-    // поток, генерирующий 1 по прошествии одной секунды
-    // const firstInnerObservable = timer(1000).pipe(
-    //   mapTo(1)
-    // );
-    // // поток, генерирующий 2 по прошествии половины секунды
-    // const secondInnerObservable = timer(500).pipe(
-    //   mapTo(2)
-    // );
-    // of(
-    //   firstInnerObservable,
-    //   secondInnerObservable
-    // ).pipe(
-    //   // concatAll()
-    //   switchAll()
-    // ).subscribe({
-    //   next: console.log
-    // });
-
+  enableFormGroup(formGroup: FormGroup) {
+    formGroup.enable();
   }
 
   ngOnDestroy() {

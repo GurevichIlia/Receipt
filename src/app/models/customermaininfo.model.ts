@@ -1,8 +1,8 @@
 export class CustomerMainInfo {
       customerId: number;
-      fname: string;
-      lname: string;
-      company: string;
+      fname?: string;
+      lname?: string;
+      company?: string;
       customerType?: number;
       title?: string;
       gender?: number;

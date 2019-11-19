@@ -5,8 +5,7 @@ import { Router, Route, ActivatedRoute } from '@angular/router';
 import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
 import { Subscription, Observable, Subject } from 'rxjs';
 import { takeUntil, map } from 'rxjs/operators';
-import { Store } from '@ngrx/store';
-import * as fromApp from '../app.reducer'
+
 
 @Component({
   selector: 'app-header',
@@ -25,7 +24,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
     private generalSrv: GeneralSrv,
     private activatedRoute: ActivatedRoute,
-    private store: Store<{ auth: fromApp.State }>,
     private paymentsService: PaymentsService
   ) { }
 
@@ -47,8 +45,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
   getAuthStatus() {
     // this.currentlyAuthStatus$ = this.auth.currentlyAuthStatus;
-    this.currentlyAuthStatus$ = this.store.pipe(map(state => state.auth.isLogged
-    ));
+    this.currentlyAuthStatus$ = this.auth.currentlyAuthStatus$
 
   }
   checkWidth() {

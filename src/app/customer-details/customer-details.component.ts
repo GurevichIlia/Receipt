@@ -25,6 +25,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   searchControl = new FormControl();
   filteredOptions$: Observable<CustomerSearchData[]>;
 
+  customerIsExist = false;
   constructor(
     private customerDetailsService: CustomerDetailsService,
     private activatedRoute: ActivatedRoute,
@@ -36,15 +37,15 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngOnInit() {
-    // this.customerId = +this.activatedRoute.snapshot.paramMap.get('id');
     this.customerId = 1952;
+
     this.filteredOptions$ = this.customerDetailsService.customerListAutocomplete(this.searchControl, this.globalStateService.getCustomerList$());
     this.customerDetailsService.setCustomerId(this.customerId);
     this.getCustomerDetailsByIdFromServer();
-
     this.getDisplayWidth();
     this.navigation();
-    console.log('MAY SIDE NAV', this.sidenav)
+    this.checkIfUpdateCustomerInfoWasClicked();
+    console.log('MAY SIDE NAV', this.sidenav);
   }
 
   ngAfterViewInit() {
@@ -67,6 +68,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   getCustomerDetailsByIdFromServer() {
+    debugger
     this.createCustomerDetailsStream$()
       .pipe(
         takeUntil(this.subscription$))
@@ -127,7 +129,21 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
       )
   }
 
+  setCustomerId(customerId: number) {
+    this.customerDetailsService.setCustomerId(customerId);
+  }
 
+  checkIfUpdateCustomerInfoWasClicked() {
+    this.customerDetailsService.updateCustomerInfo$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((updateClicked: boolean) => {
+        
+        if (updateClicked) {
+          this.getCustomerDetailsByIdFromServer();
+        }
+      })
+  }
 
   ngOnDestroy() {
     this.customerDetailsService.clearCurrentMenuItem();

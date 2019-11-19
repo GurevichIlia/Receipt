@@ -9,3 +9,10 @@ table {
   width: 100%;
   overflow: auto;
 }
+
+.element-row:hover {
+  cursor: pointer;
+  background-color: whitesmoke !important;
+}
+
+

@@ -18,6 +18,8 @@ export class DateTransformPipe implements PipeTransform {
         break;
       case 'תאריך ביטול': date = moment(date).format('DD/MM/YYYY');
         break;
+      case 'תאריך יצירה': date = moment(date).format('DD/MM/YYYY');
+        break;
     }
 
     return date;

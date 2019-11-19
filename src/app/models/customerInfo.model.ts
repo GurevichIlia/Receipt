@@ -8,6 +8,6 @@ export class Customerinfo {
       customerMainInfo: CustomerMainInfo;
       phones: Phones [];
       emails: Emails [];
-      addresses: Addresses;
+      addresses: Addresses[];
       groups: Group[];
 }
