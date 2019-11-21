@@ -1,11 +1,9 @@
-<div *ngIf="currentlyAuthStatus$ | async" style="height: 107px">
+  <nav *ngIf="currentlyAuthStatus$ | async" [style.fontSize]="'20px'">
 
-  <mat-card [style.fontSize]="'20px'">
-
-    <div class="row header mb-2">
+    <div class="row header">
       <!-- MOBILE -->
-      <div class="col-xs-1 col-sm-1 col-md-1 col-lg-12 col-xl-12 text-right"
-        [ngStyle]="{'width': mobileVersion ?  'inherit' : ''}" *ngIf="mobileVersion">
+      <div class="col-xs-1 col-sm-1 col-md-1 col-lg-12 col-xl-12 text-right  mobileMenuToggle"
+         *ngIf="mobileVersion">
         <button class="mr-2" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
           <mat-icon [style.fontSize]="'35px'">menu</mat-icon>
         </button>
@@ -38,14 +36,14 @@
       <!-- MOBILE -->
 
       <!-- LOGO -->
-      <div class="col-xs-1 col-sm-1 col-md-6col-lg-6col-xl-6 mb-2"
-        [ngStyle]="{'width': mobileVersion ?  'inherit' : ''}"
+      <div class="col-xs-1 col-sm-1 col-md-6 col-lg-6 col-xl-6"
+        [ngStyle]="{'width': mobileVersion ?  '200px' : ''}"
         [ngClass]="{'order-first': mobileVersion ? true : false}">
-        <img src="assets/images/amax180-1.jpg" alt="Amax-logo">
+        <img src="assets/images/jaffa300.jpg" alt="JaffaCRM-logo">
       </div>
       <!-- LOGO -->
       <!-- REGULAR -->
-      <div class="text-right" *ngIf="!mobileVersion">
+      <div class="text-right navMenu" *ngIf="!mobileVersion" >
         <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
           (click)="goToReceipt()">{{'Create a receipt' | translate }}</button>
 
@@ -76,5 +74,4 @@
       <!-- REGULAR -->
     </div>
 
-  </mat-card>
-</div>
+  </nav>

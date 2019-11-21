@@ -54,7 +54,7 @@ export class PersonalInfoService {
       title: customerPersonalInfo.Title,
       gender: customerPersonalInfo.Gender,
       customerId: customerPersonalInfo.CustomerId,
-      tz: customerPersonalInfo.ID,
+      tz: customerPersonalInfo.ID.trim(),
       spouseName: customerPersonalInfo.SpouseName,
       fileAs: customerPersonalInfo.FileAs,
       remark: customerPersonalInfo.Remark,

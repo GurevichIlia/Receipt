@@ -96,7 +96,6 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
   }
 
   GetCustomerSearchData() {
-    debugger
     let customerList: CustomerSearchData[] = [];
     if (this.generalService.checkLocalStorage('customerSearchData')) {
       customerList = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))

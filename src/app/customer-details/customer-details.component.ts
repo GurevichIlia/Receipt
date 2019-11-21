@@ -68,7 +68,6 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   getCustomerDetailsByIdFromServer() {
-    debugger
     this.createCustomerDetailsStream$()
       .pipe(
         takeUntil(this.subscription$))

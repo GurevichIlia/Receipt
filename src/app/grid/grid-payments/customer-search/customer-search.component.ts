@@ -158,6 +158,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
 
   goToCreateNewPayment() {
     this.router.navigate(['home/payments-grid/new-payment']);
+    const customerInfo = this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent();
     this.newPaymentService.setCustomerInfoForNewKeva(this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent());
   }
 

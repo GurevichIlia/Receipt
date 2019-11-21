@@ -91,6 +91,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.generalService.currentLang$.subscribe(lang => this.currentLang = lang));
     // this.generalService.addSubscription(currentLang$);
     this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => {
+      console.log('STEP', this.step)
       this.step = step;
     }));
     // this.generalService.addSubscription(currentlyStep$);
@@ -154,9 +155,13 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
         //   customer.CustomerCreditCardTokens,
         //   customer.QuickGeneralGroupList
         // );
+
         this.customerInfoService.setCustomerGroupList(customer.QuickGeneralGroupList);
         this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.transformCustomerDetailsForCustomerInfoComponent(customer))
         this.customerInfo = customer;
+        this.receiptService
+        this.receiptService
+
         this.spinner.stop();
         this.customerInfoService.setEventCUstomerIsFoundById();
       },

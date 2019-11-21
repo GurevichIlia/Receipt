@@ -58,7 +58,6 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
 
 
   getAction(event: { action: string, index?: number }) {
-    debugger
     switch (event.action) {
       case 'addNewPhone': this.addPhoneInput(this.phones, event.index);
         break

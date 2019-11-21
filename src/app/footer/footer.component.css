@@ -1,0 +1,12 @@
+footer {
+  display: block;
+  background-color: white;
+  text-align: -webkit-left;
+  margin: auto;
+}
+
+img {
+  width: 100px;
+  margin: 15px;
+
+}

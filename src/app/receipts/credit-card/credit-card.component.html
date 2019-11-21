@@ -80,7 +80,7 @@
               </div>
             </div>
 
-            <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
+            <mat-form-field *ngIf="receiptRoute" class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
               <mat-icon matPrefix>vpn_key</mat-icon>
               <input matInput placeholder="{{'CVV' | translate}}" id="cc-cvc" type="tel" formControlName="cvv"
                 autocomplete="off" ccCVC required>

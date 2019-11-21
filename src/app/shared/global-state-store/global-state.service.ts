@@ -19,7 +19,6 @@ export class GlobalStateService {
   constructor() { }
 
   setCustomerDetailsByIdGlobalState(value) {
-    debugger
     this.customerDetailsById.next(value);
   }
 

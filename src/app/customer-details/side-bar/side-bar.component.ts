@@ -36,7 +36,6 @@ export class SideBarComponent implements OnInit {
     this.sidebarService.setChildMenuItem(item);
   }
   setCurrentMenuItem(menuItem: { route: string, childMenuItem: string }) {
-    debugger
     this.sidebarService.setCurrentMenuItem(menuItem);
   }
 

@@ -63,23 +63,25 @@ export class CustomerInfoService {
     this.generalService.patchInputValue(inputsArray, valueArray, addNewInputFunction, formBuilder)
   }
 
-  addCurrentAddress(currentAddres: FormGroup) {
-    const address = currentAddres.value
-    if (address.street === null) {
-      address.street = '';
-    }
-    if (address.cityName === null) {
-      address.cityName = '';
-    }
-    if (address.cityName !== '' || address.street !== '') {
-      if (address.cityName.value !== '' && address.street !== '') {
-        this.receiptService.fullAddress.next(`${address.cityName}, ${address.street}`);
-      } else if (address.cityName !== '' || address.cityName !== null) {
-        this.receiptService.fullAddress.next(`${address.cityName}`);
-      } else if (address.street !== '' || address.street !== null) {
-        this.receiptService.fullAddress.next(`${address.street}`);
-      }
-    }
+  addCurrentAddress(currentAddres: Addresses[]) {
+    // const address = currentAddres.value
+    // if (address.street === null) {
+    //   address.street = '';
+    // }
+    // if (address.cityName === null) {
+    //   address.cityName = '';
+    // }
+    // if (address.cityName !== '' || address.street !== '') {
+    //   if (address.cityName.value !== '' && address.street !== '') {
+    //     this.receiptService.fullAddress.next(`${address.cityName}, ${address.street}`);
+    //   } else if (address.cityName !== '' || address.cityName !== null) {
+    //     this.receiptService.fullAddress.next(`${address.cityName}`);
+    //   } else if (address.street !== '' || address.street !== null) {
+    //     this.receiptService.fullAddress.next(`${address.street}`);
+    //   }
+    // }
+            this.receiptService.fullAddress.next(currentAddres);
+
   }
   resetFormArray(array: FormArray) {
     for (let i = array.value.length; i > 0; i--) {
@@ -98,6 +100,8 @@ export class CustomerInfoService {
   deleteEmptyFormField(array: FormArray, formField: string) {
     let checkedphones = array.value.filter(formGroup => formGroup[formField] !== '');
     checkedphones = checkedphones.filter(formGroup => formGroup[formField] !== null);
+    checkedphones = checkedphones.filter(formGroup => formGroup[formField].trim() !== null);
+
     return checkedphones;
   }
 

@@ -9,16 +9,10 @@ import { Observable } from 'rxjs';
   styleUrls: ['./fourth-step.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FourthStepComponent implements OnInit, OnChanges {
+export class FourthStepComponent {
   @Input() fourthStep: FormGroup;
   @Input() globalData$: Observable<GlobalData | ''>;
   days = Array.from(Array(31).keys());
   constructor() { }
-  ngOnChanges() {
-    
-  }
-  ngOnInit() {
-    this.globalData$.subscribe(data => console.log('FOurth STEP', data))
-  }
 
 }

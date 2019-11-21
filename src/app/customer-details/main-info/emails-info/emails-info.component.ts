@@ -97,7 +97,6 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
   }
 
   deleteEmail(array: FormArray, i) {
-    debugger
     const email: Email = array.controls[i].value;
     if (array.length === 1) {
       return;

@@ -1,0 +1,10 @@
+<mat-form-field class="example-full-width">
+  <input type="text" placeholder="{{placeHolder | translate}}" aria-label="Number" matInput formControlName="formControl"
+    [matAutocomplete]="auto">
+  <mat-autocomplete #auto="matAutocomplete">
+    <mat-option *ngFor="let item of array; let i = index"
+      [value]="item.cityName + ' ' + item.street + ' ' +  item.zip">
+      {{item.cityName}} {{item.street}} {{item.zip}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

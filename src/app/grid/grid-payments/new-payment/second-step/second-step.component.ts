@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { Phones } from 'src/app/models/phones.model';
 
 @Component({
   selector: 'app-second-step',
@@ -9,6 +10,7 @@ import { FormGroup } from '@angular/forms';
 })
 export class SecondStepComponent implements OnInit {
   @Input() secondStep: FormGroup;
+  @Input() customerPhones: Phones[];
   constructor() { }
 
   ngOnInit() {

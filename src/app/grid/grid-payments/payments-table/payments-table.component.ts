@@ -191,7 +191,6 @@ export class PaymentsTableComponent implements OnInit {
       .pipe(
         takeUntil(this.subscription$))
       .subscribe(response => {
-        debugger
         if (response['Data'].error === 'false') {
           this.paymentsService.updateKevaTable();
           console.log('RESPONSE AFTER DELETE', response)

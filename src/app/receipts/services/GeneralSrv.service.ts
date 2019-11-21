@@ -425,7 +425,6 @@ export class GeneralSrv {
     valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
     addNewInputFunction?: Function,
     formBuilder?: FormBuilder) {
-    debugger
     console.log('INPUTS ARRAY', inputsArray)
     let controlsKeys;
     if (valueArray) {

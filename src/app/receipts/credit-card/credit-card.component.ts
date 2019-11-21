@@ -46,6 +46,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   useCardReaderControl: FormControl;
   subscription$ = new Subject();
   receiptRoute: boolean;
+  isShowCvv: boolean;
   constructor(
     private toastr: ToastrService,
     private receiptService: ReceiptsService,
@@ -58,7 +59,6 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     public dialogRef: MatDialogRef<CreditCardComponent>,
     private location: Location,
     @Inject(MAT_DIALOG_DATA) public dialogData: { fullName: string, tZ: string, creditCardAccounts: Observable<CreditCardAccount[]> }
-
 
   ) {
     this.creditCardForm = this.fb.group({
@@ -112,6 +112,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
         this.onFocusCreditCardNumber();
       }
     }));
+
     // this.setFullName(this.receiptService.getFirstLastName());
     this.subscription.add(this.generalService.currentLang$.subscribe(lang => {
       if (lang === 'he') {
@@ -140,8 +141,14 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     this.getDataForModalDialog(this.dialogData);
     this.pickAccount(this.dialogData.creditCardAccounts);
     this.checkRoute();
+    this.checkShowCvv();
+  }
+  checkShowCvv() {
+    console.log('SHOW CVV');
+    this.isShowCvv = "/home/payments-grid/new-payment" === this.generalService.getCurrentRoute();
 
   }
+
   onFocusExpYear() {
     this.subscription.add(this.expMonth.valueChanges.subscribe((value: string) => {
       if (value.length === 2) {
@@ -161,10 +168,9 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     console.log(this.creditCardForm.controls.amount)
   }
   closeModal() {
-    this.dialogRef.close({action:'CANCEL'});
+    this.dialogRef.close({ action: 'CANCEL' });
   }
   submitCreditCard(form) {
-    debugger
     if (this.accountId.value === null || this.accountId.value === '' || this.accountId.value === undefined) {
       this.toastr.warning('', 'Please select the account', {
         positionClass: 'toast-top-center'
@@ -199,8 +205,8 @@ export class CreditCardComponent implements OnInit, OnDestroy {
           console.log(JSON.stringify(this.verifyCreditCard));
           this.spinner.start();
           if (this.creditCardForm.controls.amount.value === null) {
-            
-            this.sendDataToParentComponent( this.verifyCreditCard);
+
+            this.sendDataToParentComponent(this.verifyCreditCard);
             this.spinner.stop();
           } else {
             this.subscription.add(this.generalService.creditCardVerify(this.verifyCreditCard).subscribe(res => {

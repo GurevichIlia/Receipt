@@ -95,7 +95,6 @@ export class MainInfoViewComponent implements OnInit {
   // }
 
   savePersonalInfo(personalInfo: FormGroup) {
-    debugger
     this.personalInfoService.savePersonalInfoOnServer(personalInfo.value)
       .pipe(
         takeUntil(this.subscription$))

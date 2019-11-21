@@ -1,3 +1,5 @@
+import { Addresses } from './../../../models/addresses.model';
+import { Emails } from './../../../models/emails.model';
 import { Response } from './../../../models/response.model';
 import { CustomerCreditCard } from './../../../models/customerCreditCard.model';
 import { CreditCardAccount } from './../../../models/credit-card-account.model';
@@ -7,7 +9,7 @@ import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { MatAccordion, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { Subject, Observable, BehaviorSubject } from 'rxjs';
+import { Subject, Observable, BehaviorSubject, from, of } from 'rxjs';
 import { takeUntil, delay, map, filter } from 'rxjs/operators';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { PaymentKeva } from 'src/app/models/paymentKeva.model';
@@ -18,6 +20,8 @@ import { NewPaymentService } from './new-payment.service';
 import { Location } from '@angular/common';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import * as moment from 'moment';
+import { Email } from 'src/app/customer-details/main-info/emails-info/emails.service';
+import { Phones } from 'src/app/models/phones.model';
 
 
 
@@ -48,6 +52,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   editiingKevaId: number;
   // paymentTypes = new BehaviorSubject<string>('');
   // paymentTypes$: Observable<string> = this.paymentTypes.asObservable();
+  customerEmails$: Observable<Emails[]>;
+  customerAddresses$: Observable<Addresses[]>;
+  customerPhones$: Observable<Phones[]>;
   constructor(
     private _formBuilder: FormBuilder,
     private paymentsService: PaymentsService,
@@ -64,11 +71,11 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getGlobalData();
     this.newPaymentForm.valueChanges.pipe(takeUntil(this.subscription$)).subscribe(data => console.log(data));
     console.log('Proj cat', this.projectCat);
+    this.getDuplicatingKeva();
     this.getCustomerInfoById();
     this.getPaymentType();
     this.checkKevaMode();
     this.checkIfPaymentTypeChanged();
-    this.getDuplicatingPayment();
 
     const component = NewPaymentComponent
     console.log('COMPONENT', component);
@@ -90,14 +97,14 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newPaymentForm = this._formBuilder.group({
       firstStep: this._formBuilder.group({
         type: ['', Validators.required],
-        status: ['', Validators.required],
+        status: [1, Validators.required],
         groups: ['', Validators.required],
       }),
       secondStep: this._formBuilder.group({
         fileAs: ['', Validators.required],
         ID: ['', Validators.required],
         tel1: ['', Validators.required],
-        tel2: ['', Validators.required],
+        tel2: [''],
         remark: ['',]
       }),
       thirdStep: this._formBuilder.group({
@@ -112,17 +119,17 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
       fourthStep: this._formBuilder.group({
         amount: ['', Validators.required],
-        currency: ['', Validators.required],
+        currency: ['NIS', Validators.required],
         day: ['', Validators.required],
         company: ['', Validators.required],
         startDate: [moment(Date()).format('YYYY-MM-DD'), Validators.required],
         endDate: [moment(Date()).format('YYYY-MM-DD'), [Validators.required, Validators.required]],
         KEVAJoinDate: [moment(Date()).format('YYYY-MM-DD'), [Validators.required, Validators.required]],
         KEVACancleDate: [moment('1900-01-01').format('YYYY-MM-DD'), [Validators.required, Validators.required]],
-        monthToCharge: ['', [Validators.required, Validators.maxLength(4)]],
-        chargeMonth: ['', [Validators.required, Validators.maxLength(4)]],
-        leftToCharge: ['', [Validators.required, Validators.maxLength(4)]],
-        tadirut: ['', Validators.required]
+        monthToCharge: ['9999', [Validators.required, Validators.maxLength(4)]],
+        chargeMonth: [0, [Validators.required, Validators.maxLength(4)]],
+        leftToCharge: ['9999', [Validators.required, Validators.maxLength(4)]],
+        tadirut: [0, Validators.required]
       }),
       fifthStep: this._formBuilder.group({
         receipt: ['', Validators.required],// receipt ForCanclation: false
@@ -158,6 +165,15 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   get tel2() {
     return this.newPaymentForm.get('secondStep.tel2');
   }
+  get email() {
+    return this.newPaymentForm.get('fifthStep.email');
+  }
+  get address() {
+    return this.newPaymentForm.get('fifthStep.address');
+  }
+  get receiptName() {
+    return this.newPaymentForm.get('fifthStep.receiptName');
+  }
   getGlobalData() {
     this.globalData$ = this.paymentsService.getGlobalData$();
     this.creditCardAccounts$ = this.paymentsService.getGlobalData$().pipe(map(data => data.Accounts));
@@ -177,10 +193,13 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         takeUntil(this.subscription$))
       .subscribe((data: Customerinfo) => {
         if (!!Object.keys(data).length) {
-          this.customerInfoById = data;
-          this.setInputValue(this.fileAs, this.customerInfoById.customerMainInfo.fileAs);
-          this.setInputValue(this.Tz, this.customerInfoById.customerMainInfo.customerCode);
+          this.customerInfoById = { ...data };
+          this.customerEmails$ = of(this.customerInfoById.emails);
+          this.customerAddresses$ = of(this.customerInfoById.addresses);
+          this.customerPhones$ = of(this.customerInfoById.phones);
           this.newPaymentService.setFoundedCustomerId(this.customerInfoById.customerMainInfo.customerId);
+          this.updateFormControls();
+
           // this.getListCustomerCreditCard()
           this.getListCustomerCreditCard(this.newPaymentService.getfoundedCustomerId());
           console.log('Customer info', this.customerInfoById)
@@ -208,12 +227,13 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newPaymentService.currentEditingPayment$
       .pipe(
         delay(0),
+        filter(keva => keva !== null),
         takeUntil(this.subscription$))
       .subscribe((data: PaymentKeva) => {
         if (data) {
           console.log('EDITING PAYMENT', data);
           this.openAllSteps();
-          this.kevaMode = 'edit';
+          this.newPaymentService.setKevaMode('edit');
           this.newPaymentService.updatePaymentFormForEditeMode(this.newPaymentForm, data)
           this.newPaymentService.setFoundedCustomerId(data.Customerid);
           this.editiingKevaId = data.Kevaid;
@@ -222,20 +242,19 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
-  getDuplicatingPayment() {
+  getDuplicatingKeva() {
     this.newPaymentService.currentDuplicatingKeva$
       .pipe(
         delay(0),
+        filter(keva => keva !== null),
         takeUntil(this.subscription$))
       .subscribe((data: PaymentKeva) => {
-        debugger
         if (data) {
           console.log('DUPLICATE KEVA', data);
-          this.openAllSteps();
-          this.kevaMode = 'duplicate';
-          this.newPaymentService.updatePaymentFormForEditeMode(this.newPaymentForm, data)
-          this.newPaymentService.setFoundedCustomerId(data.Customerid);
-          this.editiingKevaId = data.Kevaid;
+          this.newPaymentService.setKevaMode('duplicate');
+          this.newPaymentService.updatePaymentFormForDuplicateMode(this.newPaymentForm, data, this.customerInfoById);
+          // this.editiingKevaId = data.Kevaid;
+          this.updateFormControls();
         } else {
         }
       })
@@ -297,6 +316,11 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.subscription$))
       .subscribe((value: string) => {
         this.kevaMode = value;
+        if (this.kevaMode === 'newKeva') {
+          this.setStep(1)
+        } else {
+          this.openAllSteps();
+        }
         this.getEmployeeList();
       });
     console.log('EDIT MODE', this.kevaMode)
@@ -374,6 +398,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
+
   // duplicateKeva() {
   //   this.setDataToNewPaymentKeva();
   //   this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
@@ -438,15 +463,36 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.listNewCreditCard.push(credCard);
   }
 
+  goToKevaTable() {
+    this.router.navigate(['/home/payments-grid/payments']);
+    this.newPaymentService.clearNewKeva();
+
+  }
+
+  updateFormControls() {
+    this.setInputValue(this.fileAs, this.customerInfoById.customerMainInfo.fileAs);
+    this.setInputValue(this.receiptName, this.customerInfoById.customerMainInfo.fileAs);
+    this.setInputValue(this.Tz, this.customerInfoById.customerMainInfo.customerCode);
+    this.setInputValue(this.tel1, this.customerInfoById.phones ? this.customerInfoById.phones[0].phoneNumber : '');
+    this.setInputValue(this.tel2, this.customerInfoById.phones.length > 1 ? this.customerInfoById.phones[1].phoneNumber : '');
+    this.setInputValue(this.email, this.customerInfoById.emails.length >= 1 ? this.customerInfoById.emails[0].email : '');
+    const customerAddress = this.customerInfoById.addresses[0];
+    this.setInputValue(this.address, `${customerAddress.cityName} ${customerAddress.street} ${customerAddress.zip}`)
+
+  }
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed
     //Add 'implements OnDestroy' to the class.
     this.setStep(0);
     this.newPaymentService.setEditingPayment(null);
+    this.newPaymentService.setDuplicatingKeva(null);
+    this.newPaymentService.clearCustomerInfoForNewKeva();
     this.fileAs.patchValue('');
     this.newPaymentService.setKevaMode('newKeva');
+    this.newPaymentForm.reset();
     this.subscription$.next();
     this.subscription$.complete();
+    console.log('NEW KEVA DESTROED')
     // this.newPaymentService.setCustomerInfo(<Customerinfo>{})
   }
 }

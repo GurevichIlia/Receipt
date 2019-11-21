@@ -1,3 +1,4 @@
+import { Addresses } from 'src/app/models/addresses.model';
 import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 import { CreditCardService } from './../credit-card/credit-card.service';
 import { LastSelection } from './../../models/lastSelection.model';
@@ -9,7 +10,7 @@ import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
 import { MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable, Subscription, Subject } from 'rxjs';
-import { startWith, map, takeUntil } from 'rxjs/operators';
+import { startWith, map, takeUntil, filter } from 'rxjs/operators';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { ReceiptHeader } from 'src/app/models/receiptHeader.model';
 import { ToastrService } from 'ngx-toastr';
@@ -50,6 +51,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
   amountError = false;
   finalResolve: FinalResolve;
   customerEmails: Emails[] = [];
+  customerAddresses: Addresses[] = [];
   unsubscribe$: Subject<boolean> = new Subject();
   proccessReceiptIsInvalid$: Observable<boolean>;
   private subscriptions: Subscription = new Subscription();
@@ -96,6 +98,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     // console.log('FILTER', this.nameFilter)
   }
   ngOnInit() {
+    console.log(this.customerInfo, 'CUSTOMER INFO TEST')
+
     this.subscriptions.add(this.receiptService.currentStep$.subscribe(step => this.step = step));
     this.subscriptions.add(this.receiptService.currentNewCustomer$.subscribe((customerStatus: boolean) => {
       this.newCustomer = customerStatus;
@@ -106,16 +110,15 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       this.receiptsType = data['ReceiptTypes'];
 
     }));
-    this.subscriptions.add(this.receiptService.currentAddress.subscribe(address => {
-      this.addressOnTheReceipt.patchValue(address);
-    }))
+    this.getCustomerAddressForReceipt();
+    this.getCustomerEmails();
     this.subscriptions.add(this.receiptService.currentFullName$.subscribe(name => {
       this.customerName = name;
       this.receiptName.patchValue(this.customerName);
     }));
 
     this.compareStoreAndTotalAmount();
-    this.getEmails()
+    // this.getEmails()
     this.proccessReceiptIsInvalid$ = this.proccessReceipt.statusChanges;
     // .subscribe(status => {
     //    = status
@@ -146,16 +149,21 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.filterOptionReceiptFor();
     this.filterOptionNameForReceipt();
   }
-  getEmails() {
-    this.receiptService.currentCustomerEmails$.pipe(takeUntil(this.unsubscribe$)).subscribe((emails: Emails[]) => {
-      this.customerEmails = emails;
-      if (this.customerEmails.length !== 0) {
-        this.sendToEmail.patchValue(this.customerEmails[0].email);
-      } else {
-        this.sendToEmail.patchValue('');
-      }
 
-    })
+  getCustomerEmails() {
+    this.receiptService.currentCustomerEmails$
+      .pipe(
+        filter(emails => emails !== null),
+        takeUntil(this.unsubscribe$))
+      .subscribe((emails: Emails[]) => {
+        this.customerEmails = emails;
+        if (this.customerEmails.length !== 0) {
+          this.sendToEmail.patchValue(this.customerEmails[0].email);
+        } else {
+          this.sendToEmail.patchValue('');
+        }
+
+      })
     // console.log('EMAILS OBSERVBLE', this.customerEmails$)
 
   }
@@ -239,6 +247,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       }
     }));
   }
+
   filterOptionReceiptFor() {
     this.filteredOptions = this.proccessReceipt.controls.receiptFor.valueChanges
       .pipe(
@@ -251,12 +260,14 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     const filterValue = value.toLowerCase();
     return this.receiptForList.filter(receipt => receipt['note'].toLowerCase().includes(filterValue));
   }
+
   getReceiptForList() {
     this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.receiptForList = data['Receipt_For_List'];
       console.log(this.receiptForList);
     }));
   }
+
   getReceiptThanksLetters(receiptId) {
     const id = this.changeThankLetterForCredirType(receiptId);
     this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
@@ -267,6 +278,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
       console.log('this.currentlyLetters', this.currentlyLetters)
     }));
   }
+
   changeThankLetterForCredirType(receiptId) {
     let id;
     for (const receipt of this.receiptsType) {
@@ -372,15 +384,18 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     }
 
   }
+
   pickSuggestedName(name: string) {
     this.proccessReceipt.get('customerName').patchValue(name);
   }
+
   getStoreCurrentlyAmount() {
     this.subscriptions.add(this.receiptService.currentStoreAmount$.subscribe(data => {
       this.currentlyStoreAmount = data;
       console.log(this.currentlyStoreAmount);
     }));
   }
+
   createNewReceipt() {
     this.proccessReceipt.reset();
     this.showOnScreen.patchValue(true);
@@ -389,10 +404,30 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.receiptService.setStep(1);
     this.sendTo.patchValue('email');
   }
+
   showReceiptTemplate() {
     window.open(this.finalResolve.link, '_blank');
     this.createNewReceipt();
   }
+
+
+
+  getCustomerAddressForReceipt() {
+    this.receiptService.currentAddress
+      .pipe(
+        takeUntil(this.unsubscribe$))
+      .subscribe(address => {
+        this.customerAddresses = address
+        if (this.customerAddresses.length >= 1) {
+          this.addressOnTheReceipt.patchValue(address[0].cityName + address[0].street + address[0].zip);
+        } else {
+          this.addressOnTheReceipt.patchValue('');
+        }
+      })
+
+
+  }
+
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.
     // Add 'implements OnDestroy' to the class.

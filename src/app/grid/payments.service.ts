@@ -123,7 +123,6 @@ export class PaymentsService {
         map(data => data = data['Data']),
         map(data => {
           if (data) {
-            debugger
             data.map((data: PaymentKeva) => {
               // data.LastChargeDate = data.LastChargeDate === null ? '' : this.generalService.changeDateFormat(data.LastChargeDate, 'YYYY/MM/DD');
               // data.createDate = this.generalService.changeDateFormat(data.createDate, 'YYYY/MM/DD');

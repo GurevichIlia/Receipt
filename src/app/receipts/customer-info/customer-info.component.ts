@@ -527,16 +527,16 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     // this.receiptService.newReceipt.customerInfo.customermaininfo.birthday = birthday;
     // this.receiptService.setPhonesToReceipt(this.deleteEmptyPhone(this.phones));
     // this.receiptService.setEmailsToReceipt(this.deleteEmptyEmail(this.emails));
-    // // this.receiptService.setAdressesToReceipt(this.deleteEmptyAddress(this.addresses));
-    // this.receiptService.customerEmails.next(this.deleteEmptyEmail(this.emails));
+    // this.receiptService.setAdressesToReceipt(this.deleteEmptyAddress(this.addresses.value));
+    this.receiptService.customerEmails.next(this.deleteEmptyEmail(this.emails));
     // this.receiptService.addGroupsToReceipt(this.addGroups());
-    // this.addCurrentAddress(this.address);
+    this.addCurrentAddress(this.deleteEmptyAddress(this.address));
     this.setCustomerCreditCardList();
 
     console.log('form.value', this.userInfoGroup.value);
     console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
   }
-  addCurrentAddress(currentAddress: FormGroup) {
+  addCurrentAddress(currentAddress: Addresses[]) {
     this.customerInfoService.addCurrentAddress(currentAddress)
   }
   submit() {

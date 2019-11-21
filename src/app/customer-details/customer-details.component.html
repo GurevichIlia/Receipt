@@ -3,7 +3,7 @@
       <mat-sidenav class="sidenav" #sidenav mode="side" style="margin-top: 10px;" opened>
             <app-side-bar></app-side-bar>
       </mat-sidenav>
-      <mat-sidenav-content #sideNavContent class="matSidenavContent">
+      <mat-sidenav-content #sideNavContent class="matSidenavContent" id="style-1">
             <button style="background-color: whitesmoke" *ngIf="sidenav.opened === false" class="sidenavToggle"
                   (click)="sidenav.open()" mat-button>menu</button>
             <div class="row mb-5 searchContent">

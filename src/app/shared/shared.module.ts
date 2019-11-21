@@ -20,6 +20,7 @@ import { AskQuestionComponent } from './modals/ask-question/ask-question.compone
 import { DateTransformPipe } from './pipes/date-transform.pipe';
 import { ModalSessionexpiredComponent } from '../receipts/modals/modal-sessionexpired/modal-sessionexpired.component';
 import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/confirm-purchases.component';
+import { AutocompleteComponent } from './share-components/autocomplete/autocomplete.component';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/
             AskQuestionComponent,
             DateTransformPipe,
             ConfirmPurchasesComponent,
-            ModalSessionexpiredComponent
+            ModalSessionexpiredComponent,
+            AutocompleteComponent
 
       ],
       imports: [
@@ -68,7 +70,8 @@ import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/
             SearchComponent,
             CustomerInfoComponent,
             CustomerInfoViewComponent,
-            DateTransformPipe
+            DateTransformPipe,
+            AutocompleteComponent
 
 
       ],

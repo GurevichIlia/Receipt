@@ -90,8 +90,9 @@ export class ReceiptsService {
   customerInfoById$ = this.customerInfoById.asObservable();
 
   unsavedData = true;
-  fullAddress = new Subject();
+  fullAddress = new Subject<Addresses[]>();
   currentAddress = this.fullAddress.asObservable();
+  
   receiptLines = new BehaviorSubject(null);
   currentReceiptLine$ = this.receiptLines.asObservable();
   changeDateFormatMethod: Function;
@@ -185,7 +186,6 @@ export class ReceiptsService {
   }
 
   getFullNewReceipt() {
-    debugger
     const addresses = this.newReceipt.customerInfo.addresses
     const newReceiptHeader: ReceiptHeader = this.newReceipt.Receipt.ReceiptHeader;
     const newReceiptCustomerMainInfo: CustomerMainInfo = this.newReceipt.customerInfo.customerMainInfo;
@@ -380,7 +380,6 @@ export class ReceiptsService {
   }
 
   addAddressInfoToReceiptHeader(address: Addresses[], receiptHeader: ReceiptHeader) {
-    debugger
     if (address) {
       receiptHeader.Zip = address[0].zip;
       receiptHeader.CityName = address[0].cityName;

@@ -93,8 +93,19 @@
   </div>
   <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="{{'Address' | translate}}" formControlName="address">
+      <input type="text" placeholder="{{'Address' | translate}}" aria-label="Number" matInput formControlName="address"
+        [matAutocomplete]="address">
+      <mat-autocomplete #address="matAutocomplete">
+        <mat-option *ngFor="let address of customerAddresses; let i = index"
+          [value]="address.cityName + ' ' + address.street + ' ' +  address.zip">
+          {{address.cityName}} {{address.street}} {{address.zip}}
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
+
+    <!-- <mat-form-field class="example-full-width">
+      <input matInput placeholder="{{'Address' | translate}}" formControlName="address">
+    </mat-form-field> -->
   </div>
   <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
@@ -102,9 +113,21 @@
     </mat-form-field>
   </div>
   <div class="col-6">
-    <mat-form-field class="example-full-width">
-      <input matInput placeholder="{{'Email' | translate}}" formControlName="email">
+
+    <mat-form-field class="example-full-width" style="direction: ltr;
+    ">
+      <input type="text" placeholder="{{'Email' | translate}}" aria-label="Number" matInput formControlName="email"
+        [matAutocomplete]="email">
+      <mat-autocomplete #email="matAutocomplete">
+        <mat-option *ngFor="let email of customerEmails; let i = index" [value]="email.email">
+          {{email.email}}
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
+
+    <!-- <mat-form-field class="example-full-width">
+      <input matInput placeholder="{{'Email' | translate}}" formControlName="email">
+    </mat-form-field> -->
   </div>
   <div class="col-6">
     <mat-checkbox formControlName="kevaMakeRecieptByYear">{{'Make receipt by year' | translate}}</mat-checkbox>

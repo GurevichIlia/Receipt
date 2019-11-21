@@ -119,12 +119,67 @@ export class NewPaymentService {
       employeeId: newData.EmployeeId,
       thanksLetter: newData.ThanksLetterId,
       receiptName: newData.FileAs,
-      address: newData.Address,
+      address: '',
       email: newData.email,
       checkbox: newData.KevaMakeRecieptByYear
     })
-
   }
+
+  updatePaymentFormForDuplicateMode(paymentForm: FormGroup, newData: PaymentKeva, customerInfo: Customerinfo) {
+    debugger
+
+    const test = newData.ID.trim();
+    paymentForm.get('firstStep').patchValue({
+      type: String(newData.HokType),
+      status: newData.KevaStatusId,
+      groups: newData.GroupId
+    });
+    paymentForm.get('secondStep').patchValue({
+      fileAs: '',
+      ID: newData.ID.trim(),
+      tel1: '',
+      tel2: '',
+      remark: ''
+    });
+    paymentForm.get('thirdStep.bank').patchValue({
+      codeBank: newData.BankCode.trim(),
+      snif: newData.SnifNo.trim(),
+      accNumber: newData.AccountNo.trim()
+    });
+    paymentForm.get('thirdStep.creditCard').patchValue({
+      credCard: newData.customercreditCardid
+    });
+    paymentForm.get('fourthStep').patchValue({
+      amount: newData.MountToCharge,
+      currency: newData.CurrencyId,
+      day: newData.HokChargeDay,
+      company: newData.instituteId,
+      startDate: this.generalService.changeDateFormat(newData.KEVAStart, 'YYYY-MM-DD'),
+      endDate: this.generalService.changeDateFormat(newData.KEVAEnd, 'YYYY-MM-DD'),
+      KEVAJoinDate: this.generalService.changeDateFormat(newData.KEVAJoinDate, 'YYYY-MM-DD'),
+      KEVACancleDate: this.generalService.changeDateFormat(newData.KEVACancleDate, 'YYYY-MM-DD'),
+      monthToCharge: newData.TotalMonthtoCharge,
+      chargeMonth: newData.TotalChargedMonth,
+      leftToCharge: newData.TotalLeftToCharge,
+      tadirut: newData.tadirut
+    });
+    paymentForm.get('fifthStep').patchValue({
+      receipt: newData.RecieptTypeId,// receipt ForCanclation: false
+      receipt2: newData.RecieptTypeIdREC,// receipt ForCanclation: true
+      goal: newData.HokDonationTypeId,
+      account: newData.AccountID,
+      projCat: this.searchProjectCatId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
+      project: this.searchProjectId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
+      employeeId: newData.EmployeeId,
+      thanksLetter: newData.ThanksLetterId,
+      receiptName: '',
+      address: newData.Address,
+      email: '',
+      checkbox: newData.KevaMakeRecieptByYear
+    })
+  }
+
+
 
   setNewPaymentKeva(newKevaData,
     //  creditCardData: Creditcard = this.newCreditCard
@@ -229,8 +284,7 @@ export class NewPaymentService {
 
   setCustomerInfoForNewKeva(customerInfoFromInfoComponent: CustomerInfoByIdForCustomerInfoComponent) {
     let customerInfo: Customerinfo = {
-
-      addresses: customerInfoFromInfoComponent.customerAddress[0],
+      addresses: customerInfoFromInfoComponent.customerAddress,
       customerMainInfo: customerInfoFromInfoComponent.customerMainInfo[0],
       emails: customerInfoFromInfoComponent.customerEmails,
       groups: customerInfoFromInfoComponent.pickedGroups,
@@ -241,11 +295,15 @@ export class NewPaymentService {
     console.log('CUSTOMER INFO FOR NEW KEVA', customerInfo)
   }
 
+  clearCustomerInfoForNewKeva() {
+    this.customerInfoForNewKeva.next(null);
+  }
   getCustomerInfoForNewKeva$() {
     return this.currentCustomerInfoForNewKeva$;
   }
 
   getCustomerInfoForNewKeva() {
+
     return this.customerInfoForNewKeva.getValue();
   }
 
@@ -290,7 +348,7 @@ export class NewPaymentService {
   }
 
   clearNewKeva() {
-    this.newKeva = <NewKevaFull>{};
+    this.newKeva = null;
     console.log('NEW KEVA AFTER CLEAR', this.newKeva);
   }
 

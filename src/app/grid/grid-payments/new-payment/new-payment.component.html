@@ -41,7 +41,8 @@
         <mat-expansion-panel-header>
           <h5> פרטים אושיים</h5>
         </mat-expansion-panel-header>
-        <app-second-step [secondStep]="newPaymentForm.get('secondStep')"></app-second-step>
+        <app-second-step [secondStep]="newPaymentForm.get('secondStep')" [customerPhones]="customerPhones$ | async">
+        </app-second-step>
         <mat-action-row>
           <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
             {{'Previous' | translate}}</button>
@@ -90,7 +91,8 @@
           <h5>מידע להפקת קבלות</h5>
         </mat-expansion-panel-header>
         <app-fifth-step [projectCat]="projectCat" [paymentType]="paymentType.value" [employeeList$]="employeeList$"
-          [globalData$]="globalData$" [fifthStep]="newPaymentForm.get('fifthStep')"></app-fifth-step>
+          [globalData$]="globalData$" [fifthStep]="newPaymentForm.get('fifthStep')"
+          [customerAddresses]="customerAddresses$ | async" [customerEmails]="customerEmails$ | async"></app-fifth-step>
         <mat-action-row>
           <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
             {{'Previous' | translate}}</button>
@@ -105,7 +107,7 @@
 
     <div class="row mt-3" style="justify-content: flex-end">
       <div *ngIf="kevaMode === 'newKeva'" class="col-2">
-        <button type="submit" class="example-full-width fontSize" mat-raised-button color="accent">Submit</button>
+        <button type="submit" [disabled]="newPaymentForm.invalid" class="example-full-width fontSize" mat-raised-button color="accent">Submit</button>
       </div>
       <div *ngIf="kevaMode === 'edit'" class="col-2">
         <button type="button" [disabled]="newPaymentForm.invalid" (click)="updateCustomerKeva()"
@@ -115,6 +117,10 @@
       <div *ngIf="kevaMode === 'duplicate'" class="col-2">
         <button type="button" [disabled]="newPaymentForm.invalid" (click)="duplicateCustomerKeva()"
           class="example-full-width fontSize" mat-raised-button color="accent">Duplicate</button>
+      </div>
+      <div class="col-2">
+        <button type="button"  (click)="goToKevaTable()"
+          class="example-full-width fontSize" mat-raised-button color="accent">Cancel</button>
       </div>
     </div>
   </form>

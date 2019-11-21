@@ -9,14 +9,12 @@ import { Observable } from 'rxjs';
   styleUrls: ['./first-step.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FirstStepComponent implements OnInit {
+export class FirstStepComponent {
   @Input() firstStep: FormGroup;
   @Input() globalData$: Observable<GlobalData>;
   constructor() { }
 
-  ngOnInit() {
-  console.log('GLOBAL DATA FIRST STEP', this.globalData$);
-  }
+
 
 
 }

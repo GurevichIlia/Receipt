@@ -1,5 +1,5 @@
-<mat-card>
-  <p>
-    footer works!
-  </p>
-</mat-card>
+<footer *ngIf="currentlyAuthStatus$ | async" class="row">
+  <div class="col-xs-1 col-sm-1 col-md-6 col-lg-6 col-xl-6" >
+    <img src="assets/images/amax180-1.jpg" alt="Amax-logo">
+  </div>
+</footer>
