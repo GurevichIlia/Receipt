@@ -18,7 +18,8 @@ export class FifthStepComponent implements OnInit, OnChanges {
   @Input() employeeList$: Observable<{ employeeId: number, EmpName: string }[]>;
   @Input() customerEmails: Emails[];
   @Input() customerAddresses: Addresses[];
-  
+  @Input() isSubmit: boolean;
+
   @Input() paymentType: string;
 
   // @Input() set paymentType$(paymentType$: Observable<string>) {

@@ -79,7 +79,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.AllCustomerTables.filter(user => user['FileAs1'].toLowerCase().includes(filterValue));
-  
+
   }
 
 
@@ -102,7 +102,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
           data => {
             this.AllCustomerTables = data;
             this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
-            
+
             localStorage.setItem('customerSearchData', JSON.stringify(this.AllCustomerTables));
             console.log('this.AllCustomerTables', this.AllCustomerTables);
           },
@@ -157,9 +157,26 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   }
 
   goToCreateNewPayment() {
-    this.router.navigate(['home/payments-grid/new-payment']);
-    const customerInfo = this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent();
-    this.newPaymentService.setCustomerInfoForNewKeva(this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent());
+  this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent$()
+      .pipe(
+        map(customerInfo => {
+          customerInfo.customerAddress.filter(address => {
+            debugger
+            for (let item in address) {
+              address[item] = address[item] === null ? '' : address[item];
+            }
+            return address
+          })
+          return customerInfo
+        }
+      ),
+        takeUntil(this.subscription$))
+      .subscribe(customerInfo => {
+        this.newPaymentService.setCustomerInfoForNewKeva(customerInfo);
+        this.router.navigate(['home/payments-grid/new-payment']);
+
+      })
+
   }
 
   outputCustomerDetails(customerDetails: CustomerInfoById) {

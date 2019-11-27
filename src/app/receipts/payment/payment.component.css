@@ -16,3 +16,7 @@
 td{
   word-break:break-all;
 }
+.nextButton{
+background-color: rgb(38, 87, 122);
+color: white;
+}

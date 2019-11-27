@@ -9,6 +9,8 @@ import { FormGroup } from '@angular/forms';
 })
 export class BankComponent implements OnInit {
   @Input() bank: FormGroup;
+  @Input() isSubmit: boolean;
+
   constructor() { }
 
   ngOnInit() {

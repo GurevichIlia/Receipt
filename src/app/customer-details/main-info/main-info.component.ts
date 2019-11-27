@@ -27,6 +27,7 @@ export class MainInfoComponent implements OnInit {
   filteredCustomerTitles$: Observable<CustomerTitle[]>;
   currentMenuItem = 'personalInfo';
   animationState: string;
+  displayWidth$: Observable<number>;
   constructor(
     private mainInfoService: MainInfoService,
     private fb: FormBuilder,
@@ -37,8 +38,15 @@ export class MainInfoComponent implements OnInit {
     // this.getCustomerDetailsByIdState$();
     // this.getGlobalData();
     this.getChildMenuItem();
+    this.getDisplayWidth();
   }
 
+  getDisplayWidth(){
+  this.displayWidth$ = this.mainInfoService.getDisplayWidth$()
+    // .pipe(
+    //   takeUntil(this.subscription$))
+    // .subscribe(displayWidth => console.log('DISPlAY WIDTH', displayWidth))
+  }
   // getGlobalData() {
   //   this.globalData$ = this.mainInfoService.getGlobalData$().pipe(map(data => {
   //     if (data) {

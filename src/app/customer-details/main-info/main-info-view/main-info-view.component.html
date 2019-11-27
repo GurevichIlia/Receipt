@@ -1,4 +1,4 @@
-<mat-card  class="mb-4">
+<mat-card class="mb-4">
   <div class="row mb-4 label">
     <h3>Personal info</h3>
     <i *ngIf="!editMode" style="cursor: pointer; float: left; margin-right: 10px"
@@ -11,8 +11,11 @@
     [filteredCustomerTitles]="filteredCustomerTitles$ | async" [personalInfo]="personalInfoControl"
     (newAction)="getAction($event)">
     <ng-template [ngIf]="globalData$ | async" #btn>
-      <button class="col-sm-12 col-md-2 col-lg-2 col-xl-1" (click)="showFullComment()" mat-flat-button>Show
-        comment</button>
+      <div class="ngContentButton">
+        <i style="cursor: pointer" (click)="showFullComment()" class="material-icons">zoom_in
+        </i>
+      </div>
+
     </ng-template>
 
   </app-dumb-presentation>
@@ -22,7 +25,7 @@
 
   </ng-template>
 
-  
+
 
 
 

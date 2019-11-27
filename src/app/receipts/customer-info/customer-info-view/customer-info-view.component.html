@@ -54,9 +54,9 @@
 
       <mat-form-field class="col-12">
         <mat-select formControlName="gender" placeholder="{{'Gender' | translate}}">
-          <mat-option [value]="1">Male</mat-option>
-          <mat-option [value]="2">Female</mat-option>
-          <mat-option [value]="0">Undefined</mat-option>
+          <mat-option [value]="1">{{ 'Male' | translate}}</mat-option>
+          <mat-option [value]="2">{{ 'Female' | translate}}</mat-option>
+          <mat-option [value]="0">{{ 'Undefined' | translate}}</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -90,25 +90,25 @@
     <div class="row justify-content-start mb-3">
       <h4 style="margin-right: 15px">{{'Phone' | translate}}
       </h4>
-      <i *ngIf="!userInfoGroup.disabled" style="cursor: pointer; float: left; margin-right: 20px" class=" material-icons"
-        (click)="sendEventFromChild('addPhone')">add</i>
+      <i *ngIf="!userInfoGroup.disabled" style="cursor: pointer; float: left; margin-right: 20px"
+        class=" material-icons" (click)="sendEventFromChild('addPhone')">add</i>
     </div>
     <div formArrayName="phones">
       <div *ngFor="let phone of phones.controls; let i=index">
         <div [formGroupName]="i" style="text-align: -webkit-auto">
-          <mat-form-field class="col-xs-1 col-sm-1 col-md-2 col-lg-2 col-xl-2" [style.fontSize]="'16px'">
+          <mat-form-field class="col-xs-1 col-sm-1 col-md-3 col-lg-3 col-xl-3" [style.fontSize]="'16px'">
             <mat-select formControlName="phoneTypeId" placeholder="{{'Phone type' | translate}}">
               <mat-option [value]="2">{{'Cell phone' | translate}}</mat-option>
               <mat-option [value]="4">{{'Work phone' | translate}}</mat-option>
               <mat-option [value]="1">{{'Home phone' | translate}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field class="col-xs-3 col-sm-3 col-md-9 col-lg-9 col-xl-9">
+          <mat-form-field class="col-xs-3 col-sm-3 col-md-8 col-lg-8 col-xl-8">
             <input matInput placeholder="{{'Mobile phone' | translate}}" type="text" formControlName="phoneNumber">
           </mat-form-field>
 
-          <i *ngIf="i !== 0 && !userInfoGroup.disabled" style="cursor: pointer" (click)="sendEventFromChild('deletePhone', i)"
-            class=" material-icons mr-5">delete</i>
+          <i *ngIf="i !== 0 && !userInfoGroup.disabled" style="cursor: pointer"
+            (click)="sendEventFromChild('deletePhone', i)" class=" material-icons mr-5">delete</i>
           <!-- <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 mb-3" (click)="deletePhone(i)"
             *ngIf="i !== 0" type="button" mat-stroked-button color="warn">{{'Delete' | translate}}</button>  -->
         </div>
@@ -121,20 +121,20 @@
     <div class="row justify-content-start mb-3">
       <h4 style="margin-right: 15px">{{'Email' | translate}}
       </h4>
-      <i *ngIf="!userInfoGroup.disabled" style="cursor: pointer; float: left; margin-right: 20px" class=" material-icons"
-        (click)="sendEventFromChild('addEmail')">add</i>
+      <i *ngIf="!userInfoGroup.disabled" style="cursor: pointer; float: left; margin-right: 20px"
+        class=" material-icons" (click)="sendEventFromChild('addEmail')">add</i>
     </div>
     <div formArrayName="emails">
       <div *ngFor="let email of emails.controls; let i=index">
         <div [formGroupName]="i" style="text-align: -webkit-auto">
-          <mat-form-field class="col-xs- col-sm- col-md- col-lg-2 col-xl-2" [style.fontSize]="'16px'">
+          <mat-form-field class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3" [style.fontSize]="'16px'">
             <input matInput placeholder="{{'Email name' | translate}}" type="text" formControlName="emailName">
           </mat-form-field>
-          <mat-form-field class="col-xs-4 col-sm-4 col-md-9 col-lg-9 col-xl-9">
+          <mat-form-field class="col-xs-4 col-sm-4 col-md-8 col-lg-8col-xl-8 emailDirection ">
             <input matInput placeholder="{{'Email' | translate}}" type="text" formControlName="email">
           </mat-form-field>
-          <i *ngIf="i !== 0 && !userInfoGroup.disabled" style="cursor: pointer" (click)="sendEventFromChild('deleteEmail', i)"
-            class=" material-icons mr-5">delete</i>
+          <i *ngIf="i !== 0 && !userInfoGroup.disabled" style="cursor: pointer"
+            (click)="sendEventFromChild('deleteEmail', i)" class=" material-icons mr-5">delete</i>
           <!-- <button class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 mb-3" (click)="deleteEmail(i)"
             *ngIf="i !== 0" type="button" mat-stroked-button color="warn">{{'Delete' | translate}}</button> -->
         </div>
@@ -150,8 +150,8 @@
     <div class="row justify-content-start mb-3">
       <h4 style="margin-right: 15px">{{'Address' | translate}}
       </h4>
-      <i *ngIf="!userInfoGroup.disabled" style="cursor: pointer; float: left; margin-right: 20px" class=" material-icons"
-        (click)="sendEventFromChild('addAddress')">add</i>
+      <i *ngIf="!userInfoGroup.disabled" style="cursor: pointer; float: left; margin-right: 20px"
+        class=" material-icons" (click)="sendEventFromChild('addAddress')">add</i>
     </div>
 
     <div formArrayName="addresses">
@@ -165,7 +165,7 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
-            <input type="text" placeholder="{{'City' | translate}}" aria-label="Number" matInput
+            <input type="text" placeholder="{{'Zip' | translate}}" aria-label="Number" matInput
               formControlName="cityName" [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
               <mat-option *ngFor="let city of cities | slice:0:10; let i = index" [value]="city.CityName">
@@ -183,10 +183,10 @@
           </mat-form-field>
 
           <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-6 col-xl-6">
-            <input matInput placeholder="{{'Street' | translate}}" formControlName='street2'>
+            <input matInput placeholder="השני זה שכונה / איזור" formControlName='street2'>
           </mat-form-field>
-          <i *ngIf="i !== 0 && !userInfoGroup.disabled" style="cursor: pointer" (click)="sendEventFromChild('deleteAddress', i)"
-            class=" material-icons mr-5">delete</i>
+          <i *ngIf="i !== 0 && !userInfoGroup.disabled" style="cursor: pointer"
+            (click)="sendEventFromChild('deleteAddress', i)" class=" material-icons mr-5">delete</i>
         </div>
 
       </div>
@@ -267,7 +267,7 @@
     <div>
       <h4 *ngIf="customerInfo?.QuickGeneralGroupList.length > 0">{{'Groups' | translate}}</h4>
       <mat-selection-list formControlName="groups">
-        <mat-list-option *ngFor="let group of customerGroupList" [value]="group.GroupId" >
+        <mat-list-option *ngFor="let group of customerGroupList" [value]="group.GroupId">
           {{group.GroupName}}
         </mat-list-option>
       </mat-selection-list>

@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
 import { MainInfoService } from '../main-info.service';
 import { CustomerTitle } from 'src/app/models/globalData.model';
 
+import * as moment from 'moment'
+
 export interface PersonalInfo {
   fname: string;
   lname: string;

@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 export class FourthStepComponent {
   @Input() fourthStep: FormGroup;
   @Input() globalData$: Observable<GlobalData | ''>;
+  @Input() isSubmit: boolean;
   days = Array.from(Array(31).keys());
   constructor() { }
 

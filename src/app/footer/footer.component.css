@@ -1,8 +1,8 @@
 footer {
   display: block;
   background-color: white;
-  text-align: -webkit-left;
   margin: auto;
+  direction: ltr;
 }
 
 img {

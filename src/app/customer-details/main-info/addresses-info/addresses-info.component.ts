@@ -1,7 +1,7 @@
 import { AddressesService, Address } from './addresses.service';
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { FormGroup, FormArray, AbstractControl } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FullCustomerDetailsById } from 'src/app/models/fullCustomerDetailsById.model';
 import { Response } from 'src/app/models/response.model';
@@ -15,6 +15,7 @@ import { CustomerAddresses } from 'src/app/models/customer-info-by-ID.model';
 })
 export class AddressesInfoComponent implements OnInit {
   @Input() mainInfoForm: FormGroup;
+  @Input() displayWidth$: Observable<number>;
   customerAddresses: CustomerAddresses[];
   subscription$ = new Subject();
   loading = true;

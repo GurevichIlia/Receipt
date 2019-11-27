@@ -1,3 +1,4 @@
+import { GlobalStateService } from './shared/global-state-store/global-state.service';
 import { GeneralSrv } from './receipts/services/GeneralSrv.service';
 import { Component, HostListener, OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
@@ -21,20 +22,21 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: AuthenticationService,
     private router: Router,
     private translate: TranslateService,
-    private generalService: GeneralSrv
+    private generalService: GeneralSrv,
+    private globalStateService: GlobalStateService
   ) {
-    translate.setDefaultLang('en');
+    // translate.setDefaultLang('en');
 
   }
 
   title = 'jaffaCrmAng';
-  @HostListener('window:beforeunload', ['$event'])
-  unloadNotification($event: any) {
+  // @HostListener('window:beforeunload', ['$event'])
+  // unloadNotification($event: any) {
 
-    if (this.receiptService.unsavedData) {
-      $event.returnValue = true;
-    }
-  }
+  //   if (this.receiptService.unsavedData) {
+  //     $event.returnValue = true;
+  //   }
+  // }
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.generalService.sizeOfWindow.next(event.currentTarget.innerWidth);
@@ -42,11 +44,25 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.receiptService.currentReceiptLine$
-    .pipe(
-      takeUntil(this.subscription$))
-    .subscribe(data => console.log('RECEIPT DATA CURRENT', data))
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(data => console.log('RECEIPT DATA CURRENT', data));
+
+    this.checkAuthStatus();
   }
 
+  checkAuthStatus() {
+    this.authService.currentlyAuthStatus$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(isLogged => {
+        console.log('CURRENT AUTH STATUS', isLogged);
+          console.log('CUSTOMER INFO AFTER LOG OUT', this.globalStateService.customerDetailsById.getValue());
+        
+
+
+      })
+  }
 
 
   ngOnDestroy() {

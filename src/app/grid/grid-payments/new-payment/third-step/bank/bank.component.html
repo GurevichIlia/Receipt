@@ -4,19 +4,19 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input #CodeBank matInput placeholder="{{'Bank' | translate}}" formControlName="codeBank" maxlength="2">
+      <input maxlength="30" #CodeBank inputError [input]="bank.controls.codeBank" [isSubmit]="isSubmit"  matInput placeholder="{{'Bank' | translate}}" formControlName="codeBank" maxlength="2">
       <mat-hint>{{CodeBank.value.length}}/2</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input #Snif matInput placeholder="{{'Branch' | translate}}" formControlName="snif" maxlength="3">
+      <input maxlength="30" #Snif inputError [input]="bank.controls.snif" [isSubmit]="isSubmit" matInput placeholder="{{'Branch' | translate}}" formControlName="snif" maxlength="3">
       <mat-hint>{{Snif.value.length}}/3</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input #AccNumber matInput placeholder="{{'Account' | translate}}" formControlName="accNumber" maxlength="11">
+      <input maxlength="30" #AccNumber inputError [input]="bank.controls.accNumber" [isSubmit]="isSubmit" matInput placeholder="{{'Account' | translate}}" formControlName="accNumber" maxlength="11">
       <mat-hint>{{AccNumber.value.length}}/11</mat-hint>
     </mat-form-field>
   </div>

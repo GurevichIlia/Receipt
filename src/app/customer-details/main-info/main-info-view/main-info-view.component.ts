@@ -51,7 +51,7 @@ export class MainInfoViewComponent implements OnInit {
         filter(data => data !== null),
         map((data: FullCustomerDetailsById) => {
           // if (data !== null) {
-          data.CustomerCard_MainDetails.map((details: MainDetails) => details.BirthDate = this.personalInfoService.changeDateFormat(details.BirthDate, 'DD-MM-YYYY'))
+          data.CustomerCard_MainDetails.map((details: MainDetails) => details.BirthDate = this.personalInfoService.changeDateFormat(details.BirthDate, 'YYYY-MM-DD'))
           return data;
           // }
         }),

@@ -1,3 +1,4 @@
+import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as moment from 'moment';
@@ -27,11 +28,11 @@ export class AuthenticationService {
     private receiptService: ReceiptsService,
     private creditCardService: CreditCardService,
     private router: Router,
+    private globalStateService: GlobalStateService
   ) {
     console.log('AUTH SERVICE LOADED');
     console.log('AUTH', this.isAuthenticated())
 
-     this.currentlyAuthStatus$.subscribe(isLogged => console.log('CURRENT AUTH STATUS', isLogged))
     if (localStorage.getItem('id_token')) {
       this.authenticationstate.next(true);
 
@@ -105,6 +106,8 @@ export class AuthenticationService {
     this.receiptService.setStep(1);
     this.authenticationstate.next(false);
     this.receiptService.amount.next(null);
+    this.globalStateService.clearCustomerInfoById();
+    this.globalStateService.clearCustomerList();
     this.creditCardService.credCardIsVerified.next(false);
     this.receiptService.createNewEvent.next();
   }

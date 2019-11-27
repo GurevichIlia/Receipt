@@ -5,3 +5,6 @@
 .fontSize {
   font-size: 16px
 }
+input{
+  direction: initial;
+}

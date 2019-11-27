@@ -9,6 +9,16 @@ input.mat-input-element {
 .emailInputWidth {
   width: 290px;
 }
-.emailTypeWidth{
- width: fit-content; 
+
+.emailTypeWidth {
+  width: fit-content;
+}
+
+.direction {
+  direction: ltr;
+}
+
+mat-radio-group {
+  display: flex;
+  flex-direction: column;
 }

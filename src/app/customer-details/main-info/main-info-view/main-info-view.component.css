@@ -25,3 +25,8 @@ button {
   margin: inherit;
   align-self: center;
 }
+
+.ngContentButton{
+  width: 25px;
+  height: 75px;
+}

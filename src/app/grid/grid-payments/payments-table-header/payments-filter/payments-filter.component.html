@@ -1,7 +1,7 @@
 <div class="container mt-3">
 </div>
-<div *ngIf="windowWidth > 1575" class="search" style="width: 250px">
-  <mat-form-field style="width: 250px">
+<div *ngIf="windowWidth > 1575" class="search" >
+  <mat-form-field >
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
   </mat-form-field>
 </div>

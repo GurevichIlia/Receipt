@@ -104,7 +104,10 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.subscriptions.add(this.receiptService.currentNewCustomer$.subscribe((customerStatus: boolean) => {
       this.newCustomer = customerStatus;
     }));
-    this.generalService.currentLang$.subscribe((lang: string) => this.currentLang = lang);
+    this.generalService.currentLang$
+    .pipe(
+      takeUntil(this.unsubscribe$))
+    .subscribe((lang: string) => this.currentLang = lang);
     this.createProcessReceiptForm();
     this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.receiptsType = data['ReceiptTypes'];
@@ -415,11 +418,19 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
   getCustomerAddressForReceipt() {
     this.receiptService.currentAddress
       .pipe(
+        map(addresses => addresses.map(address => {
+          debugger
+          for (let item in address) {
+            address[item] = address[item] === null ? '' : address[item];
+          }
+          return address
+        })),
         takeUntil(this.unsubscribe$))
       .subscribe(address => {
         this.customerAddresses = address
         if (this.customerAddresses.length >= 1) {
-          this.addressOnTheReceipt.patchValue(address[0].cityName + address[0].street + address[0].zip);
+          const selectedAddress = address[0].cityName + address[0].street + address[0].zip
+          this.addressOnTheReceipt.patchValue(selectedAddress);
         } else {
           this.addressOnTheReceipt.patchValue('');
         }

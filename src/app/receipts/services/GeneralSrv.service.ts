@@ -48,7 +48,7 @@ export class GeneralSrv {
   currentLang$ = this.language.asObservable();
   orgName = localStorage.getItem('OrgName');;
 
-  sizeOfWindow = new Subject();
+  sizeOfWindow = new BehaviorSubject<number>(window.innerWidth);
   currentSizeOfWindow$ = this.sizeOfWindow.asObservable();
 
   _lastSelection: LastSelection = <LastSelection>{};

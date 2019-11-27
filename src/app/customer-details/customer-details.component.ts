@@ -106,7 +106,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
 
   checkDisplayWidth(width: number) {
     this.displayWidth = width;
-    width < 765 ? this.sidenav.close() : this.sidenav.open();
+    width < 1024 ? this.sidenav.close() : this.sidenav.open();
   }
 
   getCurrentMenuItem() {

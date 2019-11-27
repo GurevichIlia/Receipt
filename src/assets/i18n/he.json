@@ -29,7 +29,7 @@
       "FileAs": "תייק בתור",
       "Birthday": "תאריך לידה",
       "After sunset": "לאחר השקיעה",
-      "Mobile phone": "טלפון נייד",
+      "Mobile phone": "מספר טלפון",
       "Phone type": "סוג טלפון",
       "Email": "דוא``ל",
       "City": "ישוב",
@@ -147,6 +147,15 @@
 
       "From number / Company name(English)": "ממספר / שם החברה (English)",
       "Message": "הודעה",
-      "Thanks letter": " תודה מכתב"
+      "Thanks letter": " תודה מכתב",
+
+
+      "Male": " זכר",
+      "Female": "נקבה",
+      "Undefined": "לא הוגדר"
+
+     
+
+
 
   }

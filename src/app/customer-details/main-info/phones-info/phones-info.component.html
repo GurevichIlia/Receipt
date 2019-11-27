@@ -15,12 +15,11 @@
       <app-customer-phone *ngFor="let phone of phones.controls; let i=index" (newAction)="getAction($event)" [i]="i"
         [phoneGroup]="phone">
       </app-customer-phone>
-      <hr>
+      
       <div style="text-align: justify">
         <span *ngIf="phones.controls.length === 0 && !loading">No one phone</span>
 
       </div>
-
       <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
     </div>
 

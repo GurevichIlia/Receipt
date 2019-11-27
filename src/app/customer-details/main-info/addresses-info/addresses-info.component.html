@@ -12,7 +12,7 @@
     <div class="mb-5">
       <div formArrayName="addresses">
         <div *ngFor="let address of addresses.controls; let i=index">
-          <app-customer-address (newAction)="getAction($event)" [addressGroup]="address" [i]="i"></app-customer-address>
+          <app-customer-address [displayWidth]="displayWidth$ | async" (newAction)="getAction($event)" [addressGroup]="address" [i]="i"></app-customer-address>
 
         </div>
         <div style="text-align: justify">

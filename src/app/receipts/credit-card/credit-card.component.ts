@@ -382,12 +382,14 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     if (this.location.path() === '/home/newreceipt') {
       this.receiptRoute = true;
       this.creditCardForm.get('amount').setValidators(Validators.required);
-      this.creditCardForm.get('numberOfPayments').setValidators(Validators.required)
+      this.creditCardForm.get('numberOfPayments').setValidators(Validators.required);
+      this.creditCardForm.get('cvv').setValidators(Validators.required);
       this.creditCardForm.updateValueAndValidity();
     } else {
       this.receiptRoute = false;
       this.creditCardForm.get('amount').clearValidators();
       this.creditCardForm.get('numberOfPayments').clearValidators();
+      this.creditCardForm.get('cvv').clearValidators();
       this.creditCardForm.updateValueAndValidity();
     }
   }

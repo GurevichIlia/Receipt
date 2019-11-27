@@ -10,6 +10,7 @@ import { Phones } from 'src/app/models/phones.model';
 })
 export class SecondStepComponent implements OnInit {
   @Input() secondStep: FormGroup;
+  @Input() isSubmit: boolean;
   @Input() customerPhones: Phones[];
   constructor() { }
 

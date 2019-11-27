@@ -10,22 +10,30 @@
     class="material-icons">save</i>
   <i style="cursor: pointer; float: left" class=" material-icons" (click)="createAction('deleteAddress', i)">delete</i>
 </div> -->
+<i *ngIf="editMode" style="cursor: pointer" (click)="createAction('saveAddress',  i); editMode = false;"
+  class=" material-icons">save</i>
 
-<div class="row mb-3" style="margin: 0px">
-  <div class="col-xs-10 col-sm-5 col-md-9 col-lg-9 col-xl-5  inputMobileWidth" style="text-align: justify">
-    <h5><strong>{{'Address' | translate }}</strong>: {{addressGroup.value.cityName}}
+<i *ngIf="!editMode" style="cursor: pointer" (click)="createAction('editAddress', i); editMode = true"
+  class=" material-icons">create</i>
+
+<i style="cursor: pointer" (click)="createAction('deleteAddress', i)" class="material-icons">delete</i>
+
+<div *ngIf="!editMode" class="row mb-3" style="margin: 0px">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 inputMobileWidth" style="text-align: justify">
+    <h5 [ngClass]="{'mobileFontSize': 400 > displayWidth}"><strong>{{'Address' | translate }}</strong>:
+      {{addressGroup.value.cityName}}
       {{addressGroup.value.street}}, {{addressGroup.value.zip}} <span style="color: green;"
         *ngIf="addressGroup.value.mainaddress">(ר)</span></h5>
 
   </div>
 
-  <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('saveAddress',  i); editMode = false;"
+  <!-- <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('saveAddress',  i); editMode = false;"
     class=" material-icons">save</i>
 
   <i *ngIf="!editMode" style="cursor: pointer" (click)="createAction('editAddress', i); editMode = true"
     class=" material-icons">create</i>
 
-  <i style="cursor: pointer" (click)="createAction('deleteAddress', i)" class="material-icons">delete</i>
+  <i style="cursor: pointer" (click)="createAction('deleteAddress', i)" class="material-icons">delete</i> -->
 
 </div>
 
@@ -40,20 +48,20 @@
   </mat-form-field>
 
   <mat-form-field class="col-xs-6 col-sm-12 col-md-2 col-lg-4 col-xl-2">
-    <input matInput formControlName="cityName" placeholder="City">
+    <input matInput formControlName="cityName" placeholder="{{'Zip' | translate}}">
   </mat-form-field>
   <mat-form-field class="col-xs-12 col-sm-4 col-md-2 col-lg-4 col-xl-2">
-    <input matInput formControlName="zip" placeholder="Zip">
+    <input matInput formControlName="zip" placeholder="{{'Zip' | translate}}">
   </mat-form-field>
   <mat-form-field class="col-xs-12 col-sm-12 col-md-2 col-lg-4 col-xl-2">
     <input matInput formControlName="stateid" placeholder="State">
   </mat-form-field>
   <!-- <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div> -->
   <mat-form-field class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
-    <input matInput formControlName="street" placeholder="Street">
+    <input matInput formControlName="street" placeholder="{{'Street' | translate}}">
   </mat-form-field>
   <mat-form-field class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
-    <input matInput formControlName="street2" placeholder="Street 2">
+    <input matInput formControlName="street2" placeholder="השני זה שכונה / איזור">
   </mat-form-field>
 
   <mat-form-field class="col-xs-10 col-sm-10 col-md-6 col-lg-6 col-xl-6">
@@ -62,3 +70,5 @@
   <mat-checkbox class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2" formControlName="mainaddress">Main address
   </mat-checkbox>
 </form>
+
+<hr>

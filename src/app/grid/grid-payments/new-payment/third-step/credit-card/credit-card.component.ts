@@ -12,13 +12,22 @@ import { Creditcard } from 'src/app/models/creditCard.model';
 })
 export class CreditCardComponent implements OnChanges {
   @Input() creditCard: FormControl;
-  @Input() listCustomerCreditCard$: Observable<CustomerCreditCard[]>;
+  @Input() listCustomerCreditCard: CustomerCreditCard[] = [];
   @Output() addNewCardIsClicked = new EventEmitter();
-  @Input() listNewCreditCard: Creditcard[];
+  @Input() listNewCreditCard: Creditcard[] = [];
+  @Input() isSubmit: boolean;
+
   constructor() { }
 
   ngOnChanges() {
-console.log('CREDIT CARD LIST', this.listCustomerCreditCard$)
+    console.log('CREDIT CARD LIST', this.listCustomerCreditCard);
+    console.log('CREDIT NEWCARD LIST', this.listNewCreditCard)
+
+  }
+
+  ngOnInit() {
+    console.log('CREDIT CARD LIST', this.listCustomerCreditCard);
+    console.log('CREDIT NEWCARD LIST', this.listNewCreditCard)
   }
   clickAddNewCard() {
     this.addNewCardIsClicked.emit();

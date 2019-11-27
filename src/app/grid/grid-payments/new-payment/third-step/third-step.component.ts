@@ -16,6 +16,8 @@ export class ThirdStepComponent {
   @Input() listCustomerCreditCard$: Observable<CustomerCreditCard[]>;
   @Output() addNewCardIsClicked = new EventEmitter();
   @Input() listNewCreditCard: Creditcard[];
+  @Input() isSubmit: boolean;
+
   constructor() { }
 
   clickAddNewCard() {

@@ -31,7 +31,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.checkWidth();
     // tslint:disable-next-line: max-line-length
     this.generalSrv.sizeOfWindow.pipe(takeUntil(this.unsubscribe$)).subscribe(windowWidth => {
-      this.mobileVersion = windowWidth > 800 ? false : true;
+      this.mobileVersion = windowWidth > 1100 ? false : true;
     });
     this.generalSrv.currentLang$.pipe(takeUntil(this.unsubscribe$)).subscribe(lang => this.currentLang = lang);
     this.getAuthStatus();

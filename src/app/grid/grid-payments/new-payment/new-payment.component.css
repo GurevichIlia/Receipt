@@ -5,3 +5,15 @@
 .fontSize {
   font-size: 16px
 }
+
+.btnBack {
+  background-color: rgb(250, 174, 33);
+  cursor: pointer;
+}
+
+.kevaTitle{
+  margin: inherit;
+  margin-bottom: 10px;
+  justify-content: space-between;
+ 
+}

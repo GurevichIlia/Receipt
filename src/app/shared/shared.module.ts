@@ -21,6 +21,7 @@ import { DateTransformPipe } from './pipes/date-transform.pipe';
 import { ModalSessionexpiredComponent } from '../receipts/modals/modal-sessionexpired/modal-sessionexpired.component';
 import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/confirm-purchases.component';
 import { AutocompleteComponent } from './share-components/autocomplete/autocomplete.component';
+import { HighlightErrorIfInvalidDirective } from './directives/highlight-error-if-invalid.directive';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { AutocompleteComponent } from './share-components/autocomplete/autocompl
             DateTransformPipe,
             ConfirmPurchasesComponent,
             ModalSessionexpiredComponent,
-            AutocompleteComponent
+            AutocompleteComponent,
+            HighlightErrorIfInvalidDirective
 
       ],
       imports: [
@@ -71,7 +73,8 @@ import { AutocompleteComponent } from './share-components/autocomplete/autocompl
             CustomerInfoComponent,
             CustomerInfoViewComponent,
             DateTransformPipe,
-            AutocompleteComponent
+            HighlightErrorIfInvalidDirective,
+            AutocompleteComponent,
 
 
       ],

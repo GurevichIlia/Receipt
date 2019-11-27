@@ -173,6 +173,10 @@ export class MainInfoService {
   updateCustomerInfo(){
     this.customerDetailsService.updateCustomerInfo();
   }
+
+  getDisplayWidth$(){
+   return this.customerDetailsService.getDisplayWidth();
+  }
   // setPhoneInputsArray(inputsArray: FormArray) {
   //   this.phoneInputsArray.next(inputsArray)
   // }

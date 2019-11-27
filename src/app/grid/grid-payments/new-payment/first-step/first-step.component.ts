@@ -7,11 +7,14 @@ import { Observable } from 'rxjs';
   selector: 'app-first-step',
   templateUrl: './first-step.component.html',
   styleUrls: ['./first-step.component.css'],
+  
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FirstStepComponent {
   @Input() firstStep: FormGroup;
   @Input() globalData$: Observable<GlobalData>;
+  @Input() isSubmit: boolean;
+
   constructor() { }
 
 

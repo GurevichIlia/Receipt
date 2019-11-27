@@ -45,6 +45,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
   payByCreditCard: FormGroup;
   creditCard: Creditcard;
   paymentOptionsGroup: FormGroup;
+  isSubmit = false;
   private subscriptions: Subscription = new Subscription();
   constructor(
     private receiptService: ReceiptsService,
@@ -292,7 +293,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     const associationId: number = this.paymentOptionsGroup.get('associationId').value;
     const paymentAmount = this.paymentOptionsGroup.get('paymentAmount').value;
     this.receiptService.setAssociationId(associationId);
-    if (paymentAmount > 0 && paymentAmount != '') {
+    if (paymentAmount > 0 && paymentAmount != '' && this.paymentOptionsGroup.valid) {
       if (this.paymentMethodId === 3) {
         this.addCreditCardPayToReceipt();
         this.setItemsToLocalStorage();
@@ -315,9 +316,10 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
         this.receiptService.nextStep();
       }
     } else {
-      this.toster.warning('Payment amount is invalid', '', {
+      this.toster.warning('Please fill in the required fields', '', {
         positionClass: 'toast-top-center'
       });
+      this.isSubmit = true;
     }
 
   }

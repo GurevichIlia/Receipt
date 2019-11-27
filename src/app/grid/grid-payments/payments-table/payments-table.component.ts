@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, switchMap, filter } from 'rxjs/operators';
 import { MatDialog } from '@angular/material';
+import { ToastrService } from 'ngx-toastr';
 
 
 
@@ -38,13 +39,16 @@ export class PaymentsTableComponent implements OnInit {
   globalData: object; // Основная дата из которой мы берем данные для фильтра и для создания новых платежей
   dataSourceFilterData: PaymentKeva[] = []
   subscription$ = new Subject();
+  currentLang: string;
   constructor(
     private router: Router,
     private paymentsService: PaymentsService,
     private fb: FormBuilder,
     private newPaymentService: NewPaymentService,
     private matDialog: MatDialog,
-    private generalService: GeneralSrv
+    private generalService: GeneralSrv,
+    private toaster: ToastrService
+
   ) { }
 
   ngOnInit() {
@@ -58,6 +62,10 @@ export class PaymentsTableComponent implements OnInit {
     this.filterPaymentTable();
     this.filterPaymentTableByday();
     this.getCurrentPaymentTablePageIndex();
+    this.generalService.currentLang$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((lang: string) => this.currentLang = lang);
   }
   filterPaymentTable() {
     this.paymentsService.currentFilterValue$.pipe(takeUntil(this.subscription$)).subscribe((data: string) => {
@@ -192,6 +200,10 @@ export class PaymentsTableComponent implements OnInit {
         takeUntil(this.subscription$))
       .subscribe(response => {
         if (response['Data'].error === 'false') {
+          const message = this.currentLang === 'he' ? 'נשמר בהצלחה' : 'Successfully';
+          this.toaster.success(`מספר קבע: ${response['Data'].kevaid}`, message, {
+            positionClass: 'toast-top-center'
+          });
           this.paymentsService.updateKevaTable();
           console.log('RESPONSE AFTER DELETE', response)
         }

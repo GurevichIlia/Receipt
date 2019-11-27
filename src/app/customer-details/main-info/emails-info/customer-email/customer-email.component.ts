@@ -12,7 +12,7 @@ export class CustomerEmailComponent implements OnInit{
   @Input() emailGroup: FormGroup;
   @Input() i: number;
   @Output() newAction = new EventEmitter();
- editMode = false;
+  editMode = false;
   width = window.innerWidth;
 
   constructor() { }

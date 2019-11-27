@@ -42,7 +42,7 @@ export class EmailsService {
             email: customerEmails[i].Email,
             tempid: customerEmails[i].tempid,
             emailsex: customerEmails[i].EmailSex,
-            newslettere: customerEmails[i].Newslettere,
+            newsletter: customerEmails[i].Newslettere,
             deleteRow: ''
           })
           emailInputsArray.controls[i].setValidators([Validators.required, Validators.email]);
@@ -62,7 +62,7 @@ export class EmailsService {
         email: ['', [Validators.email, Validators.required]],
         tempid: [''],
         emailsex: [''],
-        newslettere: [''],
+        newsletter: [''],
         deleteRow: ['']
       }))
     }

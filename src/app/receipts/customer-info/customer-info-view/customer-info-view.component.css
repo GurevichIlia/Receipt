@@ -5,3 +5,9 @@ input.mat-input-element {
 ::ng-deep .mat-select-disabled .mat-select-value {
   color: black
 }
+.emailDirection{
+  direction: ltr;
+}
+input{
+  direction: initial;
+}

@@ -2,13 +2,13 @@
 <div class="row mb-5 fontSize" [formGroup]="fourthStep">
   <div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-xl-2">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="{{'Amount' | translate}}" formControlName="amount">
+      <input maxlength="25" matInput inputError [input]="fourthStep.controls.amount" [isSubmit]="isSubmit"  placeholder="{{'Amount' | translate}}" formControlName="amount">
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-xl-2">
     <mat-form-field class="example-full-width">
       <mat-label>{{'Currency' | translate}}</mat-label>
-      <mat-select formControlName="currency">
+      <mat-select inputError [input]="fourthStep.controls.currency" [isSubmit]="isSubmit" formControlName="currency">
         <mat-option *ngFor="let group of (globalData$ | async)?.GetCurrencyTypes" [value]="group.CurrencyId">
           {{group.CurrencyId}}
         </mat-option>
@@ -17,8 +17,8 @@
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <mat-label>{{'Day' | translate}}</mat-label>
-      <mat-select formControlName="day">
+      <mat-label>יום חיוב</mat-label>
+      <mat-select inputError [input]="fourthStep.controls.day" [isSubmit]="isSubmit" formControlName="day">
         <mat-option *ngFor="let day of days" [value]="day + 1">
           {{day + 1}}
         </mat-option>
@@ -28,7 +28,7 @@
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>{{'Company' | translate}}</mat-label>
-      <mat-select formControlName="company">
+      <mat-select inputError [input]="fourthStep.controls.company" [isSubmit]="isSubmit" formControlName="company">
         <mat-option *ngFor="let inst of (globalData$ | async)?.institutes " [value]="inst.instituteId">
           {{inst.Mosad}}
         </mat-option>
@@ -37,59 +37,59 @@
   </div>
   <!-- <div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-xl-2">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="hashbon" formControlName="startDate">
+      <input maxlength="25" matInput placeholder="hashbon" formControlName="startDate">
     </mat-form-field>
   </div> -->
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput [matDatepicker]="startDate" formControlName="startDate" placeholder="{{'Start Date' | translate}}">
+      <input maxlength="25" inputError [input]="fourthStep.controls.startDate" [isSubmit]="isSubmit" matInput [matDatepicker]="startDate" formControlName="startDate" placeholder="{{'Start Date' | translate}}">
       <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
       <mat-datepicker #startDate></mat-datepicker>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput [matDatepicker]="date1" formControlName="endDate" placeholder="{{'End Date' | translate}}">
+      <input maxlength="25" inputError [input]="fourthStep.controls.endDate" [isSubmit]="isSubmit" matInput [matDatepicker]="date1" formControlName="endDate" placeholder="{{'End Date' | translate}}">
       <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
       <mat-datepicker #date1></mat-datepicker>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput [matDatepicker]="date2" formControlName="KEVAJoinDate" placeholder="{{'KEVA Join Date' | translate}}">
+      <input maxlength="25" inputError [input]="fourthStep.controls.KEVAJoinDate" [isSubmit]="isSubmit" matInput [matDatepicker]="date2" formControlName="KEVAJoinDate" placeholder="{{'KEVA Join Date' | translate}}">
       <mat-datepicker-toggle matSuffix [for]="date2"></mat-datepicker-toggle>
       <mat-datepicker #date2></mat-datepicker>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input matInput [matDatepicker]="date3" formControlName="KEVACancleDate" placeholder="{{'KEVA Cancel Date' | translate}}">
+      <input maxlength="25" inputError [input]="fourthStep.controls.KEVACancleDate" [isSubmit]="isSubmit" matInput [matDatepicker]="date3" formControlName="KEVACancleDate" placeholder="{{'KEVA Cancel Date' | translate}}">
       <mat-datepicker-toggle matSuffix [for]="date3"></mat-datepicker-toggle>
       <mat-datepicker #date3></mat-datepicker>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input #monthToCharge matInput placeholder="{{'Month to charge' | translate}} " formControlName="monthToCharge" maxlength="4">
+      <input maxlength="25" inputError [input]="fourthStep.controls.monthToCharge" [isSubmit]="isSubmit" #monthToCharge matInput placeholder="{{'Month to charge' | translate}} " formControlName="monthToCharge" maxlength="4">
       <mat-hint>{{monthToCharge.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input #chargeMonth matInput placeholder="{{'Charge month' | translate}}" formControlName="chargeMonth" maxlength="4">
+      <input maxlength="25" inputError [input]="fourthStep.controls.chargeMonth" [isSubmit]="isSubmit" #chargeMonth matInput placeholder="{{'Charge month' | translate}}" formControlName="chargeMonth" maxlength="4">
       <mat-hint>{{chargeMonth.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
-      <input #letToCharge matInput placeholder="{{'Left to charge' | translate}} " formControlName="leftToCharge" maxlength="4">
+      <input maxlength="25" inputError [input]="fourthStep.controls.leftToCharge" [isSubmit]="isSubmit" #letToCharge matInput placeholder="{{'Left to charge' | translate}} " formControlName="leftToCharge" maxlength="4">
       <mat-hint>{{letToCharge.value.length}}/4</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 mb-3">
     <mat-form-field class="example-full-width">
       <mat-label>{{'Tadirut' | translate}}</mat-label>
-      <mat-select formControlName="tadirut">
+      <mat-select inputError [input]="fourthStep.controls.tadirut" [isSubmit]="isSubmit" formControlName="tadirut">
         <mat-option [value]="0">חודשי</mat-option>
         <mat-option [value]="1">רבעוני</mat-option>
         <mat-option [value]="2">חצי שנתי</mat-option>

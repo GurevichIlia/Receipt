@@ -1,7 +1,14 @@
+<i *ngIf="editMode" style="cursor: pointer" (click)="createAction('savePhone',  i); editMode = false;"
+  class=" material-icons">save</i>
+
+<i *ngIf="!editMode" style="cursor: pointer" (click)="createAction('editPhone', i); editMode = true"
+  class=" material-icons">create</i>
+
+<i style="cursor: pointer" (click)="createAction('deletePhone', i)" class="material-icons">delete</i>
 <div [formGroup]="phoneGroup" style="text-align: justify" class="row">
-  <div class="col-xs-11 col-sm-11 col-md-12 col-lg-12 col-xl-12 mb-3">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-3">
     <div class="row " style="align-items: center">
-      <mat-form-field class="col-xs-11 col-sm-11 col-md-11 col-lg-3 col-xl-2"
+      <mat-form-field class="col-xs-12 col-sm-12 col-md-11 col-lg-3 col-xl-3"
         [ngClass]="{'phonetypeInputWidth': 500 > width }">
         <mat-select placeholder="{{'Phone type' | translate}}" formControlName="phoneTypeId">
           <mat-option [value]="2">{{'Cell phone' | translate}}</mat-option>
@@ -12,16 +19,17 @@
       <!-- <mat-form-field class="col-xs-10 col-sm-10 col-md-3 col-lg-3 col-xl-3 inputMobileWidth">
         <input matInput formControlName="phoneNumber" placeholder="{{'Mobile phone' | translate}}" type="text">
       </mat-form-field> -->
-      <div class="col-xs-10 col-sm-2 col-md-10 col-lg-7 col-xl-3" [ngClass]="{'mobileWidth': 500 > width }">
-      <span><strong>{{'Mobile phone' | translate}}</strong>: {{phoneGroup?.controls.area.value}}{{phoneGroup.controls.Phone.value}}</span>
+      <div *ngIf="!editMode" class="col-xs-12 col-sm-12 col-md-10 col-lg-7 col-xl-3" [ngClass]="{'mobileWidth': 500 > width }">
+        <span><strong>{{'Mobile phone' | translate}}</strong>:
+          {{phoneGroup?.controls.area.value}}{{phoneGroup.controls.Phone.value}}</span>
       </div>
-      <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('savePhone',  i); editMode = false;"
+      <!-- <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('savePhone',  i); editMode = false;"
         class=" material-icons">save</i>
 
       <i *ngIf="!editMode" style="cursor: pointer" (click)="createAction('editPhone', i); editMode = true"
         class=" material-icons">create</i>
 
-      <i style="cursor: pointer" (click)="createAction('deletePhone', i)" class="material-icons">delete</i>
+      <i style="cursor: pointer" (click)="createAction('deletePhone', i)" class="material-icons">delete</i> -->
     </div>
 
   </div>
@@ -30,11 +38,13 @@
     <div class="row align-items-baseline" style="margin: 0px">
 
 
-      <mat-form-field [ngClass]="{'inputMobileWidth': 500 > width }" class="col-sm-2 col-md-3 col-lg-3 col-xl-3" style="align-self: flex-end">
+      <mat-form-field [ngClass]="{'inputMobileWidth': 500 > width }" class="col-sm-2 col-md-3 col-lg-3 col-xl-3"
+        style="align-self: flex-end">
         <input #Phone matInput formControlName="Phone" type="text" placeholder="Phone">
       </mat-form-field>
 
-      <mat-form-field [ngClass]="{'contryCodeWidth': 500 > width }" class="col-sm-1 col-md-3 col-lg-3 col-xl-3" style="align-self: flex-end">
+      <mat-form-field [ngClass]="{'contryCodeWidth': 500 > width }" class="col-sm-1 col-md-3 col-lg-3 col-xl-3"
+        style="align-self: flex-end">
         <input matInput formControlName="Prefix" suffix="+" mask="000" type="text" placeholder="Country code">
       </mat-form-field>
 
@@ -49,8 +59,9 @@
         <textarea matInput formControlName="comments" type="text" placeholder="Comments"></textarea>
       </mat-form-field>
 
-  
+
 
     </div>
   </ng-container>
 </div>
+<hr>

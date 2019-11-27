@@ -1,16 +1,16 @@
+
 import { Addresses } from './../../../models/addresses.model';
 import { Emails } from './../../../models/emails.model';
-import { Response } from './../../../models/response.model';
 import { CustomerCreditCard } from './../../../models/customerCreditCard.model';
 import { CreditCardAccount } from './../../../models/credit-card-account.model';
 import { Customerinfo } from './../../../models/customerInfo.model';
 import { PaymentsService } from '../../payments.service';
 import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { MatAccordion, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Subject, Observable, BehaviorSubject, from, of } from 'rxjs';
-import { takeUntil, delay, map, filter } from 'rxjs/operators';
+import { takeUntil, delay, map, filter, distinctUntilChanged } from 'rxjs/operators';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { PaymentKeva } from 'src/app/models/paymentKeva.model';
 import { GlobalData } from 'src/app/models/globalData.model';
@@ -20,8 +20,8 @@ import { NewPaymentService } from './new-payment.service';
 import { Location } from '@angular/common';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import * as moment from 'moment';
-import { Email } from 'src/app/customer-details/main-info/emails-info/emails.service';
 import { Phones } from 'src/app/models/phones.model';
+import { ToastrService } from 'ngx-toastr';
 
 
 
@@ -55,6 +55,8 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   customerEmails$: Observable<Emails[]>;
   customerAddresses$: Observable<Addresses[]>;
   customerPhones$: Observable<Phones[]>;
+  currentLang: string;
+  isSubmit = false;
   constructor(
     private _formBuilder: FormBuilder,
     private paymentsService: PaymentsService,
@@ -63,7 +65,8 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private dialog: MatDialog,
     private creditCardService: CreditCardService,
     private newPaymentService: NewPaymentService,
-    private location: Location
+    private location: Location,
+    private toaster: ToastrService
   ) { }
 
   ngOnInit() {
@@ -76,7 +79,11 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPaymentType();
     this.checkKevaMode();
     this.checkIfPaymentTypeChanged();
-
+    this.creditCardValueChanges();
+    this.generalService.currentLang$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((lang: string) => this.currentLang = lang);
     const component = NewPaymentComponent
     console.log('COMPONENT', component);
   }
@@ -102,7 +109,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
       secondStep: this._formBuilder.group({
         fileAs: ['', Validators.required],
-        ID: ['', Validators.required],
+        ID: ['', [Validators.required, Validators.minLength(9)]],
         tel1: ['', Validators.required],
         tel2: [''],
         remark: ['',]
@@ -174,6 +181,10 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   get receiptName() {
     return this.newPaymentForm.get('fifthStep.receiptName');
   }
+
+  get creditCard() {
+    return this.newPaymentForm.get('thirdStep.creditCard');
+  }
   getGlobalData() {
     this.globalData$ = this.paymentsService.getGlobalData$();
     this.creditCardAccounts$ = this.paymentsService.getGlobalData$().pipe(map(data => data.Accounts));
@@ -198,7 +209,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
           this.customerAddresses$ = of(this.customerInfoById.addresses);
           this.customerPhones$ = of(this.customerInfoById.phones);
           this.newPaymentService.setFoundedCustomerId(this.customerInfoById.customerMainInfo.customerId);
-          this.updateFormControls();
+          this.newPaymentService.updateFormControls(this.newPaymentForm, this.customerInfoById);
 
           // this.getListCustomerCreditCard()
           this.getListCustomerCreditCard(this.newPaymentService.getfoundedCustomerId());
@@ -209,17 +220,13 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   toCustomerSearch() {
     this.router.navigate(['/payments-grid/customer-search'])
   }
-  setInputValue(input: AbstractControl, newValue: any) {
-    if (newValue === null) {
-      newValue = '';
-    }
-    input.patchValue(newValue);
-  }
+
   editFileAs() {
     this.isEditFileAs = true;
   }
+
   saveEditFileAs(input: AbstractControl, newValue: any) {
-    this.setInputValue(input, newValue);
+    this.newPaymentService.setInputValue(input, newValue);
     this.isEditFileAs = false;
   }
 
@@ -236,6 +243,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
           this.newPaymentService.setKevaMode('edit');
           this.newPaymentService.updatePaymentFormForEditeMode(this.newPaymentForm, data)
           this.newPaymentService.setFoundedCustomerId(data.Customerid);
+          this.getListCustomerCreditCard(data.Customerid);
           this.editiingKevaId = data.Kevaid;
         } else {
         }
@@ -253,8 +261,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log('DUPLICATE KEVA', data);
           this.newPaymentService.setKevaMode('duplicate');
           this.newPaymentService.updatePaymentFormForDuplicateMode(this.newPaymentForm, data, this.customerInfoById);
+          this.getListCustomerCreditCard(this.newPaymentService.getfoundedCustomerId());
           // this.editiingKevaId = data.Kevaid;
-          this.updateFormControls();
+          this.newPaymentService.updateFormControls(this.newPaymentForm, this.customerInfoById);
         } else {
         }
       })
@@ -268,16 +277,16 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         this.paymentType.patchValue(type);
         switch (type) {
           case '1':
-            this.setBankInputValidations();
+            this.newPaymentService.setBankInputValidations(this.newPaymentForm);
             break
           case '2':
-            this.setBankInputValidations();
+            this.newPaymentService.setBankInputValidations(this.newPaymentForm);
             break
           case '3':
-            this.setCreditCardIdValidation();
+            this.newPaymentService.setCreditCardIdValidation(this.newPaymentForm);
             break
           default:
-            this.setBankInputValidations();
+            this.newPaymentService.setBankInputValidations(this.newPaymentForm);
             this.paymentType.patchValue('1');
             break
         }
@@ -296,17 +305,28 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.newPaymentForm.get('thirdStep.creditCard').patchValue({
             credCard: credCard.newCredCard
-          })
+          });
+          this.updateAccount(credCard.newCredCard);
         }
       })
   }
+
+  updateAccount(credCard: Creditcard) {
+    if (credCard) {
+      this.newPaymentForm.get('fifthStep.account').patchValue(credCard.accountid);
+    }
+
+  }
+
   setDataToNewPaymentKeva() {
     const newKeva = this.newPaymentForm.value;
     this.newPaymentService.setNewPaymentKeva(newKeva)
   }
+
   getListCustomerCreditCard(customerId?: number | string) {
     this.listCustomerCreditCard$ = this.newPaymentService.currentCreditCardList$.pipe(map(data => data.filter(value => value.customerid === (customerId || null))))
   }
+
   goBack() {
     // this.setCustomerInfoById(this.customerInfoById.emails, this.customerInfoById.phones, this.customerInfoById.addresses, this.customerInfoById.customermaininfo, '', this.customerInfoById.groups)
     this.location.back();
@@ -335,30 +355,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.employeeList$ = this.paymentsService.getGlobalData$().pipe(map(data => data.GetEmployees));
     }
   }
-  setBankInputValidations() {
-    const bank = this.newPaymentForm.get('thirdStep.bank');
-    bank.get('codeBank').setValidators([Validators.required, Validators.maxLength(2)]);
-    bank.get('snif').setValidators([Validators.required, Validators.maxLength(3)]);
-    bank.get('accNumber').setValidators([Validators.required, Validators.maxLength(11)]);
-    bank.updateValueAndValidity();
-  }
-  clearBankInputValidators() {
-    const bank = this.newPaymentForm.get('thirdStep.bank');
-    for (const key in bank['controls']) {
-      bank.get(key).clearValidators();
-      bank.get(key).updateValueAndValidity();
-    }
-  }
-  setCreditCardIdValidation() {
-    const credCardId = this.newPaymentForm.get('thirdStep.creditCard.credCard');
-    credCardId.setValidators(Validators.required);
-    credCardId.updateValueAndValidity();
-  }
-  clearCreditCardIdValidation() {
-    const credCardId = this.newPaymentForm.get('thirdStep.creditCard.credCard');
-    credCardId.clearValidators();
-    credCardId.updateValueAndValidity();
-  }
+
   checkIfPaymentTypeChanged() {
     this.paymentType.valueChanges
       .pipe(
@@ -366,36 +363,50 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(paymentType => {
         switch (paymentType) {
           case '1':
-            this.setBankInputValidations();
-            this.clearCreditCardIdValidation();
+            this.newPaymentService.setBankInputValidations(this.newPaymentForm);
+            this.newPaymentService.clearCreditCardIdValidation(this.newPaymentForm);
             break
           case '2':
-            this.setBankInputValidations();
-            this.clearCreditCardIdValidation();
+            this.newPaymentService.setBankInputValidations(this.newPaymentForm);
+            this.newPaymentService.clearCreditCardIdValidation(this.newPaymentForm);
             break
           case '3':
-            this.setCreditCardIdValidation();
-            this.clearBankInputValidators();
+            this.newPaymentService.setCreditCardIdValidation(this.newPaymentForm);
+            this.newPaymentService.clearBankInputValidators(this.newPaymentForm);
             break
         }
       });
   }
 
   saveNewKeva() {
-    this.setDataToNewPaymentKeva();
-    this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
-      .pipe(
-        takeUntil(this.subscription$))
-      .subscribe(res => {
-        console.log('NEW KEVA RESPONSE', res);
-        if (res) {
-          if (res['Data'].error === 'false') {
-            this.router.navigate(['/home/payments-grid/payments']);
-            this.paymentsService.updateKevaTable();
+    if (this.newPaymentForm.valid) {
+      this.setDataToNewPaymentKeva();
+      this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
+        .pipe(
+          takeUntil(this.subscription$))
+        .subscribe(res => {
+          console.log('NEW KEVA RESPONSE', res);
+          if (res) {
+            if (res['Data'].error === 'false') {
+              const message = this.currentLang === 'he' ? 'נשמר בהצלחה' : 'Successfully';
+              const title = `מספר לקוח: ${res['Data'].cusomerid}, מספר קבע: ${res['Data'].kevaid}`
+              this.toaster.success(title, message, {
+                positionClass: 'toast-top-center'
+              });
+              this.router.navigate(['/home/payments-grid/payments']);
+              this.paymentsService.updateKevaTable();
+            }
           }
-        }
-        this.newPaymentService.clearNewKeva();
-      })
+          this.newPaymentService.clearNewKeva();
+        })
+    } else {
+      const message = 'Please fill in the required fields';
+      this.toaster.warning('', message, {
+        positionClass: 'toast-top-center'
+      });
+      this.isSubmit = true;
+      console.log(this.newPaymentForm.controls)
+    }
   }
 
 
@@ -417,38 +428,65 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   // }
 
   updateCustomerKeva() {
-    this.setDataToNewPaymentKeva();
-    this.newPaymentService.setEditKevaId(this.editiingKevaId);
-    this.paymentsService.updateCUstomerKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
-      .pipe(
-        takeUntil(this.subscription$))
-      .subscribe((res) => {
-        console.log('UPDATE KEVA RESPONSE', res);
-        if (res) {
-          if (res['Data'].error === 'false') {
-            this.router.navigate(['/home/payments-grid/payments']);
-            this.paymentsService.updateKevaTable();
+    if (this.newPaymentForm.valid) {
+      this.setDataToNewPaymentKeva();
+      this.newPaymentService.setEditKevaId(this.editiingKevaId);
+      this.paymentsService.updateCUstomerKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
+        .pipe(
+          takeUntil(this.subscription$))
+        .subscribe((res) => {
+          console.log('UPDATE KEVA RESPONSE', res);
+          if (res) {
+            if (res['Data'].error === 'false') {
+              const message = this.currentLang === 'he' ? 'עודכן בהצלחה' : 'Successfully';
+              const title = `מספר קבע: ${res['Data'].kevaid}`
+              this.toaster.success(title, message, {
+                positionClass: 'toast-top-center'
+              });
+              this.router.navigate(['/home/payments-grid/payments']);
+              this.paymentsService.updateKevaTable();
+            }
           }
-        }
-        this.newPaymentService.clearNewKeva();
-      })
+          this.newPaymentService.clearNewKeva();
+        })
+    } else {
+      const message = 'Please fill in the required fields';
+      this.toaster.warning('', message, {
+        positionClass: 'toast-top-center'
+      });
+      this.isSubmit = true;
+    }
+
   }
 
   duplicateCustomerKeva() {
-    this.setDataToNewPaymentKeva();
-    this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
-      .pipe(
-        takeUntil(this.subscription$))
-      .subscribe(res => {
-        console.log('NEW KEVA RESPONSE', res);
-        if (res) {
-          if (res['Data'].error === 'false') {
-            this.router.navigate(['/home/payments-grid/payments']);
-            this.paymentsService.updateKevaTable();
+    if (this.newPaymentForm.valid) {
+      this.setDataToNewPaymentKeva();
+      this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
+        .pipe(
+          takeUntil(this.subscription$))
+        .subscribe(res => {
+          console.log('NEW KEVA RESPONSE', res);
+          if (res) {
+            if (res['Data'].error === 'false') {
+              const message = this.currentLang === 'he' ? 'עודכן בהצלחה' : 'Successfully';
+              const title = `מספר לקוח: ${res['Data'].cusomerid}, מספר קבע: ${res['Data'].kevaid}`
+              this.toaster.success(title, message, {
+                positionClass: 'toast-top-center'
+              });
+              this.router.navigate(['/home/payments-grid/payments']);
+              this.paymentsService.updateKevaTable();
+            }
           }
-        }
-        this.newPaymentService.clearNewKeva();
-      })
+          this.newPaymentService.clearNewKeva();
+        })
+    } else {
+      const message = 'Please fill in the required fields';
+      this.toaster.warning('', message, {
+        positionClass: 'toast-top-center'
+      });
+      this.isSubmit = true;
+    }
   }
   // setCustomerInfoById(customerEmails: CustomerEmails[], customerPhones: CustomerPhones[], customerAddress: CustomerAddresses[],
   //   customerMainInfo: Customermaininfo[] | MainDetails[],
@@ -469,17 +507,22 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  updateFormControls() {
-    this.setInputValue(this.fileAs, this.customerInfoById.customerMainInfo.fileAs);
-    this.setInputValue(this.receiptName, this.customerInfoById.customerMainInfo.fileAs);
-    this.setInputValue(this.Tz, this.customerInfoById.customerMainInfo.customerCode);
-    this.setInputValue(this.tel1, this.customerInfoById.phones ? this.customerInfoById.phones[0].phoneNumber : '');
-    this.setInputValue(this.tel2, this.customerInfoById.phones.length > 1 ? this.customerInfoById.phones[1].phoneNumber : '');
-    this.setInputValue(this.email, this.customerInfoById.emails.length >= 1 ? this.customerInfoById.emails[0].email : '');
-    const customerAddress = this.customerInfoById.addresses[0];
-    this.setInputValue(this.address, `${customerAddress.cityName} ${customerAddress.street} ${customerAddress.zip}`)
-
+  creditCardValueChanges() {
+    this.creditCard.valueChanges
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((newCredCard: { credCard: Creditcard }) => {
+        debugger
+        if(newCredCard.credCard && typeof(newCredCard.credCard) !== 'number' ){
+          console.log('CURRENT CREDIT CARD', newCredCard.credCard.customername);
+          this.updateAccount(newCredCard.credCard);
+        }
+        
+      })
   }
+
+
+
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed
     //Add 'implements OnDestroy' to the class.

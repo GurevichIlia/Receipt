@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, from } from 'rxjs';
 import { FullCustomerDetailsById, CustomerEmails, CustomerPhones, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
 import { CustomerAddresses } from 'src/app/models/customer-info-by-ID.model';
@@ -88,4 +88,13 @@ export class GlobalStateService {
   getCustomerList$() {
     return this.customerList$;
   }
+
+  clearCustomerInfoById() {
+    this.customerDetailsById.next(null);
+  }
+
+  clearCustomerList() {
+    this.customerList.next(null);
+  }
+
 }

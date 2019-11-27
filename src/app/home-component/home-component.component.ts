@@ -126,6 +126,10 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  checkAuthStatus() {
+
+  }
   ngOnDestroy() {
     this.subscription$.next();
     this.subscription$.complete();

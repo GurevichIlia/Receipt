@@ -1,6 +1,6 @@
 import { CustomerInfoByIdForCustomerInfoComponent } from './../../../receipts/customer-info/customer-info.service';
 import { Injectable } from '@angular/core';
-import { FormGroup, AbstractControl } from '@angular/forms';
+import { FormGroup, AbstractControl, Validators } from '@angular/forms';
 
 import { GeneralSrv } from './../../../receipts/services/GeneralSrv.service';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -15,6 +15,7 @@ import { NewKevaDetails } from 'src/app/models/newKevaDetails.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import { NewKevaFull } from 'src/app/models/newKevaFull';
 import { CustomerTitle } from 'src/app/models/globalData.model';
+import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 
 
 @Injectable({
@@ -257,9 +258,13 @@ export class NewPaymentService {
   //   this.newKeva.customerInfo = CustomerInfoForKeva;
   // }
   searchProjectCatId(projectName: string, projectsList: Projects4Receipt[]) {
-    let projectCat;
-    projectsList.filter((project: Projects4Receipt) => project.ProjectName === projectName ? projectCat = project.ProjectCategoryId : '');
-    console.log('CAT', projectCat);
+    let projectCat = null;
+    debugger
+    if (projectName && projectsList) {
+      projectsList.filter((project: Projects4Receipt) => project.ProjectName === projectName ? projectCat = project.ProjectCategoryId : '');
+      console.log('CAT', projectCat);
+    }
+
     return projectCat;
   }
 
@@ -370,6 +375,69 @@ export class NewPaymentService {
 
   clearCustomerDetailsInCUstomerInfoService() {
     this.paymentsService.clearCustomerDetailsInCUstomerInfoService();
+  }
+
+  createFileAs(customerMainInfo: CustomerMainInfo) {
+    debugger
+    let fileAs: string = '';
+    if (customerMainInfo) {
+      if (customerMainInfo.fileAs) {
+        fileAs = customerMainInfo.fileAs;
+      } else {
+        fileAs = `${customerMainInfo.fname} ${customerMainInfo.lname} ${customerMainInfo.company}`
+      }
+    }
+    return fileAs;
+  }
+
+  setBankInputValidations(form: FormGroup) {
+    const bank = form.get('thirdStep.bank');
+    bank.get('codeBank').setValidators([Validators.required, Validators.maxLength(2)]);
+    bank.get('snif').setValidators([Validators.required, Validators.maxLength(3)]);
+    bank.get('accNumber').setValidators([Validators.required, Validators.maxLength(11)]);
+    bank.updateValueAndValidity();
+  }
+
+  clearBankInputValidators(form: FormGroup) {
+    const bank = form.get('thirdStep.bank');
+    for (const key in bank['controls']) {
+      bank.get(key).clearValidators();
+      bank.get(key).updateValueAndValidity();
+    }
+  }
+
+  setCreditCardIdValidation(form: FormGroup) {
+    const credCardId = form.get('thirdStep.creditCard.credCard');
+    credCardId.setValidators(Validators.required);
+    credCardId.updateValueAndValidity();
+  }
+
+  clearCreditCardIdValidation(form: FormGroup) {
+    const credCardId = form.get('thirdStep.creditCard.credCard');
+    credCardId.clearValidators();
+    credCardId.updateValueAndValidity();
+  }
+
+  updateFormControls(form: FormGroup, customerInfoById: Customerinfo ) {
+    this.setInputValue(form.get('secondStep.fileAs'), this.createFileAs(customerInfoById.customerMainInfo));
+    this.setInputValue(form.get('fifthStep.receiptName'), this.createFileAs(customerInfoById.customerMainInfo));
+    this.setInputValue(form.get('secondStep.ID'), customerInfoById.customerMainInfo.customerCode);
+    this.setInputValue(form.get('secondStep.tel1'), customerInfoById.phones ? customerInfoById.phones[0].phoneNumber : '');
+    this.setInputValue(form.get('secondStep.tel2'), customerInfoById.phones.length > 1 ? customerInfoById.phones[1].phoneNumber : '');
+    this.setInputValue(form.get('fifthStep.email'), customerInfoById.emails.length >= 1 ? customerInfoById.emails[0].email : '');
+    const customerAddress = customerInfoById.addresses[0];
+    this.setInputValue(form.get('fifthStep.address'), `${customerAddress.cityName} ${customerAddress.street} ${customerAddress.street2} ${customerAddress.zip}`);
+  }
+
+
+  setInputValue(input: AbstractControl, newValue: any) {
+    if (newValue === null) {
+      newValue = '';
+    }
+    if(input){
+      input.patchValue(newValue);
+    }
+    
   }
   // setCustomerInfoById(customerEmails: CustomerEmails[], customerPhones: CustomerPhones[], customerAddress: CustomerAddresses[],
   //   customerMainInfo: Customermaininfo[] | MainDetails[],

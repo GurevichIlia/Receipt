@@ -17,8 +17,8 @@ import { debounceTime, map, switchMap } from 'rxjs/operators';
 export class CustomerDetailsService {
   currentCustomerId = new BehaviorSubject<number>(null);
   currentCustomerId$ = this.currentCustomerId.asObservable();
-  customerDetailsById = new BehaviorSubject<FullCustomerDetailsById>(null);
-  customerDetailsById$ = this.customerDetailsById.asObservable();
+  // customerDetailsById = new BehaviorSubject<FullCustomerDetailsById>(null);
+  // customerDetailsById$ = this.customerDetailsById.asObservable();
   currentMenuItem = new BehaviorSubject<{ route: string, childMenuItem: string }>(null);
   currentMenuItem$ = this.currentMenuItem.asObservable();
   childMenuItem = new BehaviorSubject<string>('personalInfo');
@@ -47,17 +47,30 @@ export class CustomerDetailsService {
       }));
   }
 
+  // setCustomerDetailsByIdState(value) {
+  //   this.customerDetailsById.next(value);
+  // }
+
+  // getCustomerDetailsByIdState() {
+  //   return this.customerDetailsById.getValue();
+  // }
+
+  // getCustomerDetailsByIdState$(): Observable<FullCustomerDetailsById> {
+  //   return this.customerDetailsById$;
+  // }
+
   setCustomerDetailsByIdState(value) {
-    this.customerDetailsById.next(value);
+    this.globalStateService.setCustomerDetailsByIdGlobalState(value);
   }
 
   getCustomerDetailsByIdState() {
-    return this.customerDetailsById.getValue();
+    return this.globalStateService.getCustomerDetailsByIdGlobalState();
   }
 
   getCustomerDetailsByIdState$(): Observable<FullCustomerDetailsById> {
-    return this.customerDetailsById$;
+    return this.globalStateService.getCustomerDetailsByIdGlobalState$();
   }
+
 
   getGlobalData$() {
     return this.generalService.getGlobalData$();
@@ -85,7 +98,7 @@ export class CustomerDetailsService {
   }
 
   goToCreateNewReceiptPage() {
-    this.setCustomerInfoForNewReceipt(this.customerDetailsById.getValue());
+    this.setCustomerInfoForNewReceipt(this.getCustomerDetailsByIdState());
     this.router.navigate(['/home/newreceipt']);
   }
 
@@ -127,10 +140,10 @@ export class CustomerDetailsService {
     const filteredOptions$ = searchControl.valueChanges
       .pipe(
         debounceTime(1),
-        switchMap(value => customerList
+        switchMap((value: string) => customerList
           .pipe(
             map(customers => customers
-              .filter(customer => customer.FileAs1.toLowerCase().includes(value))))
+              .filter(customer => customer.FileAs1.toLowerCase().includes(value.toLowerCase()))))
         ),
       );
     return filteredOptions$
