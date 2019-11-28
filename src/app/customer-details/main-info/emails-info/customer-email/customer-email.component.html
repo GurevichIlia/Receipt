@@ -8,10 +8,9 @@
   <mat-form-field [ngClass]="{'emailTypeWidth': 500 > width }" class="col-xs-12 col-sm-12 col-md-12 col-lg-3 col-xl-3">
     <input matInput placeholder="{{'Email name' | translate}}" type="text" formControlName="emailName">
   </mat-form-field>
-  <div *ngIf="!editMode" [ngClass]="{'emailInputWidth': 500 > width }"
-    class="col-sm-12 col-md-12 col-lg-7 col-xl-3 email" style="text-align: justify">
-    <span><strong>{{'Email' | translate}}:</strong>
-      {{emailGroup.controls.email.value}}</span>
+  <div *ngIf="!editMode" [ngClass]="{'emailInputWidth': 500 > width }" 
+    class="col-sm-12 col-md-12 col-lg-7 col-xl-6 email" >
+    <span><strong>{{'Email' | translate}}: </strong></span><h5 style="direction: initial" class="mr-1 ml-1"> {{emailGroup.controls.email.value}}</h5>
   </div>
 
   <!-- <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('saveEmail', i); editMode = false;"
@@ -21,25 +20,30 @@
   <i style="cursor: pointer" (click)="createAction('deleteEmail', i)" class=" material-icons">delete</i> -->
 
   <ng-container *ngIf="editMode" class="col-sm-10 col-md-12 col-lg-12 col-xl-12 row" style="align-items: flex-end;">
-    <mat-form-field class="col-xs-11 col-sm-10 col-md-12 col-lg-4 col-xl-3">
-      <input matInput placeholder="{{'Email' | translate}}" type="text" formControlName="email">
+    <mat-form-field class="col-xs-11 col-sm-10 col-md-12 col-lg-4 col-xl-4">
+      <input class="emailInput" matInput placeholder="{{'Email' | translate}}" type="text"  formControlName="email">
     </mat-form-field>
-    <div class="col-sm-2 col-md-6 col-lg-2 col-xl-2 offset-xl-4">
-      <label id="gender-label" style="text-align: justify"><strong>Gender</strong>
-      </label>
-      <mat-radio-group aria-labelledby="gender-label" formControlName="emailsex">
-        <mat-radio-button [value]="true">Male</mat-radio-button>
-        <mat-radio-button [value]="false">Female</mat-radio-button>
-      </mat-radio-group>
+    <div class="col-sm-2 col-md-6 col-lg-12 col-xl-12 ">
+      <div class="row">
+        <div class="col-sm-2 col-md-6 col-lg-2 col-xl-2 options" >
+          <label id="gender-label" style="text-align: justify"><strong>Gender</strong>
+          </label>
+          <mat-radio-group aria-labelledby="gender-label" formControlName="emailsex">
+            <mat-radio-button [value]="true">{{'Male' | translate}}</mat-radio-button>
+            <mat-radio-button [value]="false">{{'Female' | translate}}</mat-radio-button>
+          </mat-radio-group>
+        </div>
+    
+        <div class="col-sm-2 col-md-6 col-lg-2 col-xl-2 options">
+          <label id="newsletter-label" style="text-align: justify"><strong>Newsletter</strong>
+          </label>
+          <mat-radio-group aria-labelledby="newsletter-label" formControlName="newsletter">
+            <mat-radio-button [value]="false">Yes</mat-radio-button>
+            <mat-radio-button [value]="true">No</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
     </div>
-
-    <div class="col-sm-2 col-md-6 col-lg-2 col-xl-2">
-      <label id="newsletter-label" style="text-align: justify"><strong>Newsletter</strong>
-      </label>
-      <mat-radio-group aria-labelledby="newsletter-label" formControlName="newsletter">
-        <mat-radio-button [value]="false">Yes</mat-radio-button>
-        <mat-radio-button [value]="true">No</mat-radio-button>
-      </mat-radio-group>
-    </div>
+    
   </ng-container>
 </div>

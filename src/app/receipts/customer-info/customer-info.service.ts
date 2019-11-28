@@ -214,7 +214,8 @@ export class CustomerInfoService {
         street: address.street,
         street2: address.street2,
         zip: address.zip,
-        addressTypeId: address.addressTypeId
+        addressTypeId: address.addressTypeId,
+        mainAddress: address.mainAddress
       })
       if (valueArray.length > inputsArray.controls.length) {
         this.addAddressInput(inputsArray, this.fb)
@@ -293,7 +294,8 @@ export class CustomerInfoService {
         street: [''],
         street2: [''],
         zip: [''],
-        addressTypeId: ['']
+        addressTypeId: [''],
+        mainAddress: ['']
       }))
     }
   }

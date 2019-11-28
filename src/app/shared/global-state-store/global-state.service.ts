@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { FullCustomerDetailsById, CustomerEmails, CustomerPhones, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
-import { CustomerAddresses } from 'src/app/models/customer-info-by-ID.model';
+import { CustomerAddresses, CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
 import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
 
 @Injectable({
@@ -34,7 +34,7 @@ export class GlobalStateService {
     return this.transformCustomerDetailsForCustomerInfoComponent(this.getCustomerDetailsByIdGlobalState())
   }
 
-  transformCustomerDetailsForCustomerInfoComponent(customerDetails: FullCustomerDetailsById) {
+  transformCustomerDetailsForCustomerInfoComponent(customerDetails: FullCustomerDetailsById ) {
     const newObject: CustomerInfoByIdForCustomerInfoComponent = {
       customerEmails: customerDetails.CustomerEmails.map((email: CustomerEmails) => {
         const changedEmail = {
@@ -56,7 +56,8 @@ export class GlobalStateService {
           street: address.Street,
           street2: address.Street2,
           zip: address.Zip,
-          addressTypeId: address.AddressTypeId
+          addressTypeId: address.AddressTypeId,
+          mainAddress: address.MainAddress
         }
         return changedAddress;
       }),

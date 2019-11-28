@@ -197,7 +197,8 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
           street: address.Street,
           street2: address.Street2,
           zip: address.Zip,
-          addressTypeId: address.AddressTypeId
+          addressTypeId: address.AddressTypeId,
+          mainAddress: address.MainAddress
         }
         return changedAddress;
       }),

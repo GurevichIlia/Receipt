@@ -92,15 +92,16 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-3">
+  <div class="col-xs-6 col-sm-6 col-md-3 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <input maxlength="30" inputError [input]="fifthStep.controls.address" [isSubmit]="isSubmit" type="text" placeholder="כתובת לקבלה"
-        aria-label="Number" matInput formControlName="address" [matAutocomplete]="address">
+      <input maxlength="30" inputError [input]="fifthStep.controls.address" [isSubmit]="isSubmit" type="text"
+        placeholder="כתובת לקבלה" aria-label="Number" matInput formControlName="address" [matAutocomplete]="address">
       <mat-autocomplete #address="matAutocomplete">
-          <mat-option *ngFor="let address of customerAddresses; let i = index"
-            [value]="address.cityName + ' ' + address.street + ' ' +  address.zip">
-            {{address.cityName}} {{address.street}} {{address.street2}} {{address.zip}}
-          </mat-option>
+        <mat-option *ngFor="let address of customerAddresses; let i = index"
+          [value]="address.cityName + ' ' + address.street + ' ' +  address.zip">
+          <span style="color: green;" *ngIf="address.mainAddress">(ר)</span>
+          {{address.cityName}} {{address.street}} {{address.street2}} {{address.zip}}
+        </mat-option>
       </mat-autocomplete>
     </mat-form-field>
 
@@ -122,9 +123,9 @@
         placeholder="{{'Email' | translate}}" aria-label="Number" matInput formControlName="email"
         [matAutocomplete]="email">
       <mat-autocomplete #email="matAutocomplete">
-          <mat-option *ngFor="let email of customerEmails; let i = index" [value]="email.email">
-            {{email.email}}
-          </mat-option>
+        <mat-option *ngFor="let email of customerEmails; let i = index" [value]="email.email">
+          {{email.email}}
+        </mat-option>
 
 
       </mat-autocomplete>

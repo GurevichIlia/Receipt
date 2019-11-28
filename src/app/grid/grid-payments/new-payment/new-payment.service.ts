@@ -127,9 +127,6 @@ export class NewPaymentService {
   }
 
   updatePaymentFormForDuplicateMode(paymentForm: FormGroup, newData: PaymentKeva, customerInfo: Customerinfo) {
-    debugger
-
-    const test = newData.ID.trim();
     paymentForm.get('firstStep').patchValue({
       type: String(newData.HokType),
       status: newData.KevaStatusId,
@@ -259,7 +256,6 @@ export class NewPaymentService {
   // }
   searchProjectCatId(projectName: string, projectsList: Projects4Receipt[]) {
     let projectCat = null;
-    debugger
     if (projectName && projectsList) {
       projectsList.filter((project: Projects4Receipt) => project.ProjectName === projectName ? projectCat = project.ProjectCategoryId : '');
       console.log('CAT', projectCat);
@@ -378,7 +374,6 @@ export class NewPaymentService {
   }
 
   createFileAs(customerMainInfo: CustomerMainInfo) {
-    debugger
     let fileAs: string = '';
     if (customerMainInfo) {
       if (customerMainInfo.fileAs) {
@@ -418,15 +413,22 @@ export class NewPaymentService {
     credCardId.updateValueAndValidity();
   }
 
-  updateFormControls(form: FormGroup, customerInfoById: Customerinfo ) {
+  updateFormControls(form: FormGroup, customerInfoById: Customerinfo) {
     this.setInputValue(form.get('secondStep.fileAs'), this.createFileAs(customerInfoById.customerMainInfo));
     this.setInputValue(form.get('fifthStep.receiptName'), this.createFileAs(customerInfoById.customerMainInfo));
     this.setInputValue(form.get('secondStep.ID'), customerInfoById.customerMainInfo.customerCode);
     this.setInputValue(form.get('secondStep.tel1'), customerInfoById.phones ? customerInfoById.phones[0].phoneNumber : '');
     this.setInputValue(form.get('secondStep.tel2'), customerInfoById.phones.length > 1 ? customerInfoById.phones[1].phoneNumber : '');
     this.setInputValue(form.get('fifthStep.email'), customerInfoById.emails.length >= 1 ? customerInfoById.emails[0].email : '');
+
+    // Фильтруем адреса чтобы показать только главный
+    // и в дальнейшем вывести его при создании платежа
+    customerInfoById.addresses = customerInfoById.addresses.filter(address => address.mainAddress === true);
     const customerAddress = customerInfoById.addresses[0];
-    this.setInputValue(form.get('fifthStep.address'), `${customerAddress.cityName} ${customerAddress.street} ${customerAddress.street2} ${customerAddress.zip}`);
+    if (customerAddress) {
+      this.setInputValue(form.get('fifthStep.address'), `${customerAddress.cityName} ${customerAddress.street} ${customerAddress.street2} ${customerAddress.zip}`);
+
+    }
   }
 
 
@@ -434,10 +436,10 @@ export class NewPaymentService {
     if (newValue === null) {
       newValue = '';
     }
-    if(input){
+    if (input) {
       input.patchValue(newValue);
     }
-    
+
   }
   // setCustomerInfoById(customerEmails: CustomerEmails[], customerPhones: CustomerPhones[], customerAddress: CustomerAddresses[],
   //   customerMainInfo: Customermaininfo[] | MainDetails[],

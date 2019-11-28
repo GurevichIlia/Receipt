@@ -45,7 +45,8 @@
     </mat-select>
   </mat-form-field>
   <mat-form-field class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
-    <input formControlName="tz" matInput placeholder="{{'T.Z' | translate}}">
+    <input #Tz formControlName="tz" matInput placeholder="{{'T.Z' | translate}}">
+    <mat-hint style="font-size: 12px ">{{Tz.value.length}}/9</mat-hint> 
   </mat-form-field>
 
   <mat-form-field class="col-sm-12 col-md-12 col-lg-12 col-xl-3">

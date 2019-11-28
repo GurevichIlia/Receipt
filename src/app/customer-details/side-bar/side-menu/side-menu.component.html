@@ -1,13 +1,13 @@
 <mat-list role="list">
-  <mat-list-item role="listitem"><button class="itemMenuText" (click)="mainInfoNestMenu = !mainInfoNestMenu; startAnimation('bounceInDown')"
+  <mat-list-item role="listitem"><button class="itemMenuText" (click)="selectChildMenuItem('main-info','personalInfo')"
       style="width: 200px" mat-button>
       <span class="row mainMenuItem">
         <span>Main info </span>
-        <mat-icon *ngIf="!mainInfoNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
-        <mat-icon *ngIf="mainInfoNestMenu" mat-icon>keyboard_arrow_down</mat-icon>
+        <!-- <mat-icon *ngIf="!mainInfoNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
+        <mat-icon *ngIf="mainInfoNestMenu" mat-icon>keyboard_arrow_down</mat-icon> -->
       </span>
     </button></mat-list-item>
-  <mat-list role="list" *ngIf="mainInfoNestMenu">
+  <!-- <mat-list role="list" *ngIf="mainInfoNestMenu">
     <mat-list-item role="listitem" >
       <button (click)="selectChildMenuItem('main-info','personalInfo')"
         [ngClass]="{'nestedmenuBackColor': pickedMenu == 'personalInfo'}" style="width: 200px" mat-button><span
@@ -22,7 +22,7 @@
     <mat-list-item role="listitem"> <button (click)="selectChildMenuItem('main-info','addresses')"
         [ngClass]="{'nestedmenuBackColor': pickedMenu == 'addresses'}" style="width: 200px" mat-button><span
           class="nestedmenu">Address</span> </button></mat-list-item>
-  </mat-list>
+  </mat-list> -->
 
   <hr>
   <mat-list-item role="listitem"><button (click)="paymentsNestMenu = !paymentsNestMenu;" style="width: 200px"

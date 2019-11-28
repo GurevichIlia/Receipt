@@ -1,3 +1,4 @@
+import { FullCustomerDetailsById } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerEmails } from './../../../models/fullCustomerDetailsById.model';
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormArray, Validators, AbstractControl } from '@angular/forms';
@@ -58,14 +59,35 @@ export class EmailsService {
   addEmail(array: FormArray) {
     if (array.length < 10) {
       array.push(this.fb.group({
-        emailName: [''],
+        emailName: [this.createEmailName(this.getCustomerInfo())],
         email: ['', [Validators.email, Validators.required]],
         tempid: [''],
-        emailsex: [''],
-        newsletter: [''],
+        emailsex: [true],
+        newsletter: [false],
         deleteRow: ['']
       }))
     }
+  }
+
+  getGender(array: FormArray) {
+
+  }
+
+  getNewsletter(array: FormArray){
+
+  }
+
+  createEmailName(customerInfo: FullCustomerDetailsById) {
+    const customerMainDetails = customerInfo.CustomerCard_MainDetails[0];
+    let emailName = '';
+    if (customerMainDetails) {
+      emailName = customerMainDetails.FileAs ? customerMainDetails.FileAs : `${customerMainDetails.fname} ${customerMainDetails.lname} ${customerMainDetails.Company} `
+    }
+    return emailName
+  }
+
+  getCustomerInfo() {
+    return this.mainInfoService.getCustomerDetailsByIdState()
   }
 
   deleteEmail(email: Email) {

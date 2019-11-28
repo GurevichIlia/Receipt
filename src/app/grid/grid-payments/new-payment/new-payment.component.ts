@@ -301,6 +301,10 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('FROM CREDIT CARD MODAL', credCard);
         // this.newPaymentService.setNewCreditCard({ ...credCard.newCredCard });
         if (credCard.newCredCard) {
+          const message = this.currentLang === 'he' ? 'נשמר בהצלחה' : 'Successfully';
+          this.toaster.success('', message, {
+            positionClass: 'toast-top-center'
+          }); 
           this.addNewCardToListOfNewCreditCards(credCard.newCredCard);
 
           this.newPaymentForm.get('thirdStep.creditCard').patchValue({
@@ -512,7 +516,6 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(
         takeUntil(this.subscription$))
       .subscribe((newCredCard: { credCard: Creditcard }) => {
-        debugger
         if(newCredCard.credCard && typeof(newCredCard.credCard) !== 'number' ){
           console.log('CURRENT CREDIT CARD', newCredCard.credCard.customername);
           this.updateAccount(newCredCard.credCard);

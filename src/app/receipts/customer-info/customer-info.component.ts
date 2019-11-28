@@ -140,7 +140,8 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
           street: [''],
           street2: [''],
           zip: [''],
-          addressTypeId: ['']
+          addressTypeId: [''],
+          mainAddress: ['']
         }),
       ]),
       groups: ['']

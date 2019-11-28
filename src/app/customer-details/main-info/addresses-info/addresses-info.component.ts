@@ -75,17 +75,27 @@ export class AddressesInfoComponent implements OnInit {
         .pipe(
           takeUntil(this.subscription$))
         .subscribe((response: Response) => {
-          if (response.Data.error === 'false') {
-            this.loading = false;
-            this.disableFormControl(array.controls[i]);
-            console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
-            this.addressService.updateCustomerInfo();
-          } else if (response.Data.error === 'true') {
-            console.log('RESPONSE ERROR', response.Data.res_description);
-            console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+          if (!response.IsError) {
+            if (response.Data.error === 'false') {
+
+              this.disableFormControl(array.controls[i]);
+              console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+              this.addressService.updateCustomerInfo();
+            } else if (response.Data.error === 'true') {
+
+              console.log('RESPONSE ERROR', response.Data.res_description);
+              console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+            }
+          } else {
+
+            console.log('SAVE ADDRESS ERROR', response.ErrMsg)
           }
+          this.loading = false;
         },
-          error => console.log(error));
+          error => {
+            console.log(error)
+            this.loading = false;
+          });
 
     } else {
       alert('Please enter correct address');
@@ -111,18 +121,27 @@ export class AddressesInfoComponent implements OnInit {
         .pipe(
           takeUntil(this.subscription$))
         .subscribe((response: Response) => {
-          if (response.Data.error === 'false') {
-            array.removeAt(i);
-            this.loading = false;
-            this.addressService.updateCustomerInfo();
+          if (!response.IsError) {
+            if (response.Data.error === 'false') {
+              array.removeAt(i);
+              this.loading = false;
+              this.addressService.updateCustomerInfo();
 
-            console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
-          } else if (response.Data.error === 'true') {
-            console.log('RESPONSE ERROR', response.Data.res_description);
-            console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+              console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+            } else if (response.Data.error === 'true') {
+              console.log('RESPONSE ERROR', response.Data.res_description);
+              console.log('RESPONSE AFTER SAVE CHANGED DATA', response);
+            }
+          } else {
+
+            console.log('SAVE ADDRESS ERROR', response.ErrMsg)
           }
+          this.loading = false;
         },
-          error => console.log(error));
+          error => {
+            console.log(error)
+            this.loading = false;
+          });
     }
   }
 

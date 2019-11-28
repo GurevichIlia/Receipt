@@ -22,3 +22,17 @@ mat-radio-group {
   display: flex;
   flex-direction: column;
 }
+
+.options {
+  width: 100px;
+  text-align: justify;
+}
+
+.emailInput {
+  direction: initial;
+}
+
+.email {
+  text-align: justify;
+  display: flex;
+}

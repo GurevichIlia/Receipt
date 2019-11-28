@@ -24,11 +24,16 @@ export class MainInfoService {
   getCustomerDetailsByIdState$() {
     return this.customerDetailsService.getCustomerDetailsByIdState$();
   }
+
+  getCustomerDetailsByIdState(){
+    return this.customerDetailsService.getCustomerDetailsByIdState();
+  }
+
   getGlobalData$() {
     return this.customerDetailsService.getGlobalData$();
   }
 
-  
+
   // patchInputValue(inputsArray: FormArray | FormGroup, valueArray: CustomerPhones[] | CustomerEmails[] | CustomerAddresses[] | MainDetails[], addNewInputFunction?: Function, formBuilder?: FormBuilder) {
   //   let controlsKeys;
   //   if (valueArray.length > 0) {
@@ -170,12 +175,12 @@ export class MainInfoService {
     return this.customerDetailsService.saveChangedCustomerData(newCustomerData);
   }
 
-  updateCustomerInfo(){
+  updateCustomerInfo() {
     this.customerDetailsService.updateCustomerInfo();
   }
 
-  getDisplayWidth$(){
-   return this.customerDetailsService.getDisplayWidth();
+  getDisplayWidth$() {
+    return this.customerDetailsService.getDisplayWidth();
   }
   // setPhoneInputsArray(inputsArray: FormArray) {
   //   this.phoneInputsArray.next(inputsArray)
