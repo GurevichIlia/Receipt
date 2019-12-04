@@ -1,8 +1,9 @@
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { AddressesService, Address } from './addresses.service';
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { FormGroup, FormArray, AbstractControl } from '@angular/forms';
 import { Subject, Observable } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter, tap } from 'rxjs/operators';
 import { FullCustomerDetailsById } from 'src/app/models/fullCustomerDetailsById.model';
 import { Response } from 'src/app/models/response.model';
 import { CustomerAddresses } from 'src/app/models/customer-info-by-ID.model';
@@ -20,8 +21,11 @@ export class AddressesInfoComponent implements OnInit {
   subscription$ = new Subject();
   loading = true;
   newEvent: { action: string, index?: number };
-
-  constructor(private addressService: AddressesService) { }
+  cities$: Observable<any[]>
+  constructor(
+    private addressService: AddressesService,
+    private generalService: GeneralSrv
+  ) { }
 
   get addresses() {
     return this.mainInfoForm.get('addresses') as FormArray;
@@ -29,6 +33,12 @@ export class AddressesInfoComponent implements OnInit {
 
   ngOnInit() {
     this.getCustomerAddresses();
+    this.getCities();
+  }
+
+  getCities() {
+    this.cities$ = this.generalService.getCities$();
+  
   }
 
   getCustomerAddresses() {
@@ -59,6 +69,8 @@ export class AddressesInfoComponent implements OnInit {
         break
       case 'editAddress': this.editAddress(this.addresses, event.index);
         break
+      case 'filter': this.editAddress(this.addresses, event.index);
+        break
     }
 
   }
@@ -69,7 +81,7 @@ export class AddressesInfoComponent implements OnInit {
 
   saveAddress(array: FormArray, i) {
     const address: Address = array.controls[i].value;
-    if (address.street !== '') {
+    if (array.controls[i].valid) {
       this.loading = true;
       this.addressService.saveAddressOnServer(address)
         .pipe(
@@ -111,10 +123,10 @@ export class AddressesInfoComponent implements OnInit {
 
   deleteAddress(array: FormArray, i) {
     const address: Address = array.controls[i].value;
-    if (array.length === 1) {
-      return;
-    } else if (!address.addressId) {
+    if (!address.addressId) {
       array.removeAt(i);
+    } else if (array.length === 1) {
+      return;
     } else if (confirm('Would you like to delete this field?')) {
       this.loading = true;
       this.addressService.deleteAddress(address)
@@ -152,6 +164,7 @@ export class AddressesInfoComponent implements OnInit {
   enableFormControl(control: AbstractControl) {
     control.enable();
   }
+
 
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.

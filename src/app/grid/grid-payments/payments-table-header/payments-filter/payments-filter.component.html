@@ -2,7 +2,7 @@
 </div>
 <div *ngIf="windowWidth > 1575" class="search" >
   <mat-form-field >
-    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{'Search' | translate }}">
   </mat-form-field>
 </div>
 <div class="container">
@@ -10,11 +10,11 @@
 
     <div class="row justify-content-center align-items-baseline">
       <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
-        <input matInput (keyup)="applyFilterByDay($event.target.value)" placeholder="Search by day">
+        <input matInput (keyup)="applyFilterByDay($event.target.value)" placeholder="{{'Search by day' | translate }}">
       </mat-form-field>
 
       <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
-        <mat-label>Clearing firm</mat-label>
+        <mat-label>{{'Clearing firm' | translate}}</mat-label>
         <mat-select formControlName="instituteid">
           <mat-option *ngFor="let group of (globalData$ | async)?.institutes" [value]="group.instituteId">
             {{group.Mosad}}
@@ -23,7 +23,7 @@
       </mat-form-field>
 
       <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
-        <mat-label>Standing bank</mat-label>
+        <mat-label>{{'Standing bank' | translate}}</mat-label>
         <mat-select formControlName="kevaTypeid">
           <mat-option value="1"> מס"ב - חיוב לקוח</mat-option>
           <mat-option value="2"> מס"ב - זיכוי לקוח </mat-option>
@@ -33,7 +33,7 @@
 
 
       <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
-        <mat-label>Activity Status</mat-label>
+        <mat-label>{{'Activity status' | translate}}</mat-label>
         <mat-select formControlName="KevaStatusid">
           <mat-option value="9999">All</mat-option>
           <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus" [value]="group.KevaStatusId">
@@ -43,7 +43,7 @@
       </mat-form-field>
 
       <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
-        <mat-label>Group</mat-label>
+        <mat-label>{{'Groups' | translate}}</mat-label>
         <mat-select formControlName="KevaGroupid">
           <mat-option value="9999">All groups</mat-option>
           <mat-option *ngFor="let group of (globalData$ | async)?.KevaGroups" [value]="group.GroupId">
@@ -54,7 +54,7 @@
 
       <div class="col-xs-6 col-sm-5 col-md-2 col-lg-2 col-xl-2 mb-2">
         <button type="submit" mat-raised-button
-          style="background-color: rgb(38, 87, 122); color: white; width: 100%">Show</button>
+          style="background-color: rgb(38, 87, 122); color: white; width: 100%">{{'Show' | translate}}</button>
       </div>
     </div>
   </form>
@@ -67,8 +67,8 @@
 <div class="row mb-2" style="align-items: center; width: 100%; margin: inherit"
   [ngClass]="{'justify-content-center': 400 > windowWidth ? true : false}">
   <div class=" mr-lg-3 mr-xl-3">
-    <button mat-stroked-button [matMenuTriggerFor]="menu" style="background-color:  rgb(38, 87, 122); color: white">New
-      payment</button>
+    <button mat-stroked-button [matMenuTriggerFor]="menu" style="background-color:  rgb(38, 87, 122); color: white">{{'New
+      payment' | translate}}</button>
     <mat-menu #menu="matMenu">
       <button (click)="setPaymentType('1')" mat-menu-item>מס"ב - חיוב
         לקוח</button>
@@ -86,7 +86,7 @@
 
   <div *ngIf="1575 > windowWidth" class="mr-2">
     <mat-form-field class="searchMobileVers">
-      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{'Search' | translate }}">
     </mat-form-field>
   </div>
 

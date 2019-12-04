@@ -5,13 +5,13 @@
 </div>
 <div class="container" style="direction: rtl">
 
-  <div style="height: 100px">
+  <div style="height: 100px; text-align: initial">
 
     <h5>
-      Keva charge name : {{dialogData.chargeById.KEVANAME}}
+      {{'Keva name' | translate}} : {{dialogData.chargeById.KEVANAME}}
     </h5>
     <h5>
-      Keva charge id : {{dialogData.chargeById.Kevaid}}
+      {{'KevaChargeId' | translate}} : {{dialogData.chargeById.id}}
     </h5>
   </div>
 
@@ -19,7 +19,7 @@
     <div class="row align-items-baseline">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
         <mat-form-field class="maxWidth">
-          <mat-label>Options</mat-label>
+          <mat-label>{{'Options' | translate}}</mat-label>
           <mat-select formControlName="reasonId">
             <mat-option [value]="reason.ReturnResonId" *ngFor="let reason of reasons$ | async">
               {{reason.ReturnResonname}}
@@ -29,7 +29,7 @@
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
         <mat-form-field class="textarea maxWidth">
-          <textarea style="height: 70px" formControlName="reasonRemark" matInput placeholder="Reason"></textarea>
+          <textarea style="height: 70px" formControlName="reasonRemark" matInput placeholder="{{'Reason' | translate}}"></textarea>
         </mat-form-field>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">

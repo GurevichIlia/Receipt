@@ -1,7 +1,6 @@
-import { MainDetails, CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
-import { FullCustomerDetailsById } from './../../../models/fullCustomerDetailsById.model';
+import { CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from './../../../models/customer-info-by-ID.model';
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
 import { Observable, Subscription, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -39,12 +38,12 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   customerTitle: { TitleEng: string, TitleHeb: string, TitleId: string }[] = []
   customerTypes: CustomerType[] = [];
   subscription$ = new Subject();
+  title = 'Create a new keva'
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
-    private translate: TranslateService,
     private spinner: NgxUiLoaderService,
     private paymentsService: PaymentsService,
     private router: Router,
@@ -68,6 +67,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.getGlobalData();
     this.spinner.stop();
+    this.checkKevaMode();
   }
 
   filterOption() {
@@ -82,6 +82,21 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
 
   }
 
+  checkKevaMode() {
+    this.newPaymentService.kevaMode$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((kevaMode: string) => {
+        if (kevaMode) {
+          if (kevaMode === 'duplicate') {
+            this.title = 'Duplicate the keva'
+          } else if (kevaMode === 'newKeva') {
+            this.title = 'Create a new keva'
+          }
+        }
+      })
+
+  }
 
   GetCustomerSearchData1() {
     if (this.generalService.checkLocalStorage('customerSearchData')) {
@@ -151,17 +166,16 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   }
 
   newCustomerIsClicked() {
-    this.receiptService.createNewEvent.next();
+    this.customerInfoService.createNewClicked();
     this.searchControl.patchValue('');
 
   }
 
   goToCreateNewPayment() {
-  this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent$()
+    this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent$()
       .pipe(
         map(customerInfo => {
           customerInfo.customerAddress.filter(address => {
-            debugger
             for (let item in address) {
               address[item] = address[item] === null ? '' : address[item];
             }
@@ -169,7 +183,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
           })
           return customerInfo
         }
-      ),
+        ),
         takeUntil(this.subscription$))
       .subscribe(customerInfo => {
         this.newPaymentService.setCustomerInfoForNewKeva(customerInfo);

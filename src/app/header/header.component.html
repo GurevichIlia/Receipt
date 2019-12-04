@@ -18,10 +18,10 @@
             (click)="goToGrid()">הוראת קבע</button>
 
           <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
-            (click)="goToCustomerDetails()">Customer details</button>
+            (click)="goToCustomerDetails()">{{'Customer details' | translate}}</button>
 
           <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
-            (click)="createNewCustomer()">New customer</button>
+            (click)="createNewCustomer()">{{'New customer' | translate}}</button>
 
           <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'he'"
             (click)="generalSrv.switchLanguage('en')">en</button>
@@ -45,7 +45,7 @@
       <!-- REGULAR -->
       <div class="text-right navMenu" *ngIf="!mobileVersion" >
         <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
-          (click)="goToReceipt()">{{'Create a receipt' | translate }}</button>
+          (click)="goToReceipt()">{{'New receipt' | translate }}</button>
 
 
         <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
@@ -56,10 +56,10 @@
 
 
         <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
-          (click)="goToCustomerDetails()">Customer details</button>
+          (click)="goToCustomerDetails()">{{'Customer details' | translate}}</button>
 
         <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
-          (click)="createNewCustomer()">New customer</button>
+          (click)="createNewCustomer()">{{'New customer' | translate}}</button>
 
         <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
           (click)="generalSrv.switchLanguage('en')">en</button>

@@ -55,8 +55,8 @@ export class AddressesService {
             stateid: customerAddresss[i].StateId,
             deleteRow: ''
           })
-          addressInputsArray.controls[i].setValidators(Validators.required);
-          addressInputsArray.controls[i].updateValueAndValidity();
+          // addressInputsArray.controls[i].setValidators(Validators.required);
+          // addressInputsArray.controls[i].updateValueAndValidity();
           console.log(addressInputsArray.value)
         }
       }

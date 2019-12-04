@@ -9,6 +9,7 @@
 .btnBack {
   background-color: rgb(250, 174, 33);
   cursor: pointer;
+  height: 35px;
 }
 
 .kevaTitle{

@@ -9,8 +9,10 @@
             <div class="row mb-5 searchContent">
                   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-9"
                         [ngClass]="{'contentDesktopMargin':  displayWidth > 1024 }">
-                        <mat-card style="height: 100px;margin-top: 10px">
-                              <app-search [showButton]="false" [filteredOptions]="filteredOptions$ | async"
+                        <mat-card style="height: 100px;margin-top: 10px" class="row">
+                              <h3 >{{'Customer details' | translate}}</h3>
+
+                              <app-search  [showButton]="false" [filteredOptions]="filteredOptions$ | async"
                                     [searchControl]="searchControl" (pickedCustomer)="setCustomerId($event)">
                               </app-search>
                         </mat-card>
@@ -18,13 +20,20 @@
             </div>
 
             <div class="row mainContent">
-                  <div 
-                        [ngClass]="{'contentDesktopMargin': displayWidth > 1024}"
+                  <div [ngClass]="{'contentDesktopMargin': displayWidth > 1024}"
                         class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-9">
 
-                        <router-outlet></router-outlet>
+                        <ng-container *ngIf="customerDetailsById$ | async; else pickCustomer">
+                              <router-outlet></router-outlet>
+
+                        </ng-container>
+
+                        <ng-template #pickCustomer>
+                              <h5>Please select the customer</h5>
+                        </ng-template>
                   </div>
-              
+
+
             </div>
       </mat-sidenav-content>
 </mat-sidenav-container>

@@ -60,7 +60,7 @@
             <mat-form-field class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-12  focused">
               <mat-icon matPrefix>credit_card</mat-icon>
               <input (keydown.enter)="useCardReader()" #creditCard matInput placeholder="{{'Card number' | translate}}"
-                id="cc-number" mask="0000-0000-0000-0000" formControlName="creditCard" required type="tel" autocomplete="cc-number" ccNumber>
+                 mask="0000-0000-0000-0000-00" formControlName="creditCard" required type="tel" >
             </mat-form-field>
             <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-6">
               <div class="row" style="align-items: baseline; justify-content: center">

@@ -1,3 +1,4 @@
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { FullCustomerDetailsById, CustomerPhones } from './../models/fullCustomerDetailsById.model';
@@ -30,7 +31,8 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
     private customerDetailsService: CustomerDetailsService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private globalStateService: GlobalStateService
+    private globalStateService: GlobalStateService,
+    private loader: NgxUiLoaderService
 
   ) {
 
@@ -38,7 +40,6 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngOnInit() {
     this.customerId = 1952;
-
     this.filteredOptions$ = this.customerDetailsService.customerListAutocomplete(this.searchControl, this.globalStateService.getCustomerList$());
     this.customerDetailsService.setCustomerId(this.customerId);
     this.getCustomerDetailsByIdFromServer();
@@ -78,8 +79,14 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
           this.customerDetailsById$ = this.customerDetailsService.getCustomerDetailsByIdState$();
           // this.customerDetailsService.setCustomerInfoForNewReceipt(this.customerDetailsService.getCustomerDetailsByIdState());
         }
+        this.loader.stop();
+      },
+      error => {
+        console.log(error);
+        this.loader.stop();
       })
   }
+
   setCustomerDetailsByIdState(customerDetailsById: FullCustomerDetailsById) {
     this.customerDetailsService.setGlobalCustomerDetails(customerDetailsById);
     this.customerDetailsService.setCustomerDetailsByIdState(customerDetailsById);
@@ -129,6 +136,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   setCustomerId(customerId: number) {
+    this.loader.start();
     this.customerDetailsService.setCustomerId(customerId);
   }
 

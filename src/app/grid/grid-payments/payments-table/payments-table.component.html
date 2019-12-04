@@ -17,7 +17,7 @@
     </ng-container>
     <ng-container matColumnDef="edit">
       <th mat-header-cell *matHeaderCellDef>
-        <span>edit</span>
+        <span>{{'Edit' | translate}}</span>
       </th>
       <td (click)="editPaymentRow(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
         <mat-icon>create</mat-icon>
@@ -25,7 +25,7 @@
     </ng-container>
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef>
-        <span>delete</span>
+        <span>{{'Delete' | translate}}</span>
       </th>
       <td (click)="deletePaymentRow(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
         <mat-icon>delete</mat-icon>
@@ -34,7 +34,7 @@
 
     <ng-container matColumnDef="duplicate">
       <th mat-header-cell *matHeaderCellDef>
-        <span>duplicate</span>
+        <span>{{'Duplicate' | translate}}</span>
       </th>
       <td (click)="duplicateCustomerKeva(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
         <mat-icon>control_point_duplicate</mat-icon>

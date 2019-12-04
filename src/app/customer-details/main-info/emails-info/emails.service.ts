@@ -46,8 +46,8 @@ export class EmailsService {
             newsletter: customerEmails[i].Newslettere,
             deleteRow: ''
           })
-          emailInputsArray.controls[i].setValidators([Validators.required, Validators.email]);
-          emailInputsArray.controls[i].updateValueAndValidity();
+          // emailInputsArray.controls[i].setValidators([Validators.required, Validators.email]);
+          // emailInputsArray.controls[i].updateValueAndValidity();
           console.log(emailInputsArray.value)
         }
       }
@@ -60,7 +60,7 @@ export class EmailsService {
     if (array.length < 10) {
       array.push(this.fb.group({
         emailName: [this.createEmailName(this.getCustomerInfo())],
-        email: ['', [Validators.email, Validators.required]],
+        email: ['', [Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")]],
         tempid: [''],
         emailsex: [true],
         newsletter: [false],

@@ -62,7 +62,8 @@
 
 
       <mat-form-field class="col-12">
-        <input formControlName="customerCode" matInput placeholder="{{'T.Z' | translate}}">
+        <input max="9" formControlName="customerCode" #Tz matInput placeholder="{{'T.Z' | translate}}">
+        <mat-hint>{{Tz.value.length}}/9</mat-hint>
       </mat-form-field>
 
       <mat-form-field class="col-12">
@@ -164,19 +165,28 @@
               <mat-option [value]="2">{{'Other' | translate}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
-            <input type="text" placeholder="{{'Zip' | translate}}" aria-label="Number" matInput
+          <!-- <mat-form-field class=" col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
+            <input type="text" placeholder="{{'City' | translate}}" aria-label="Number" matInput
               formControlName="cityName" [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
               <mat-option *ngFor="let city of cities | slice:0:10; let i = index" [value]="city.CityName">
                 {{city.CityName}}
               </mat-option>
             </mat-autocomplete>
-          </mat-form-field>
+          </mat-form-field> -->
+          <!-- <div class=" col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3"> -->
+            <app-autocomplete (formControlValue)="sendEventFromChild($event)" [arrayForFilter$]="cities$" [autoFormControl]="addresses.controls[i].controls.cityName" [placeHolder]="'City'"
+              [filterKeyWord]="'CityName'"></app-autocomplete>
+
+          <!-- </div> -->
 
           <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3">
             <input matInput placeholder="{{'Zip' | translate}}" formControlName='zip'>
           </mat-form-field>
+
+          <mat-checkbox class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2" formControlName="mainAddress">
+            {{'Main address' | translate}}
+          </mat-checkbox>
 
           <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-5 col-xl-5">
             <input matInput placeholder="{{'Street' | translate}}" formControlName='street'>
@@ -185,6 +195,7 @@
           <mat-form-field class="col-xs-12 col-sm-12 col-md-9 col-lg-6 col-xl-6">
             <input matInput placeholder="השני זה שכונה / איזור" formControlName='street2'>
           </mat-form-field>
+
           <i *ngIf="i !== 0 && !userInfoGroup.disabled" style="cursor: pointer"
             (click)="sendEventFromChild('deleteAddress', i)" class=" material-icons mr-5">delete</i>
         </div>

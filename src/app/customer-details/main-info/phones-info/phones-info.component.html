@@ -3,8 +3,8 @@
     <div class="row justify-content-start mb-4">
       <h3 style="margin-right: 15px">{{'Phone' | translate}}
       </h3>
-      <button class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content"
-        (click)="getAction(newEvent = {action:'addNewPhone', index: null })">Add new</button>
+      <button *ngIf="!loading" class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content"
+        (click)="getAction(newEvent = {action:'addNewPhone', index: null })">{{'Add new' | translate}}</button>
 
       <!-- <i style="cursor: pointer; float: left; margin-right: 15px"
         (click)="makeAction({action:'addNewPhone', subject: null})" class=" material-icons">add</i> -->
@@ -17,7 +17,7 @@
       </app-customer-phone>
       
       <div style="text-align: justify">
-        <span *ngIf="phones.controls.length === 0 && !loading">No one phone</span>
+        <span *ngIf="phones.controls.length === 0 && !loading">{{'No one phone' | translate}}</span>
 
       </div>
       <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>

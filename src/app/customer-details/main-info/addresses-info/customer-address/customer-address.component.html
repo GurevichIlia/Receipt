@@ -47,14 +47,21 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field class="col-xs-6 col-sm-12 col-md-2 col-lg-4 col-xl-2">
-    <input matInput formControlName="cityName" placeholder="{{'Zip' | translate}}">
-  </mat-form-field>
+  <!-- <div class="col-xs-6 col-sm-12 col-md-2 col-lg-4 col-xl-2">
+    <app-autocomplete [placeHolder]="'City'" [array]="cities$ | async" (formControlValue)="getControlValue($event)">
+    </app-autocomplete> -->
+    <!-- <input matInput formControlName="cityName" placeholder="{{'City' | translate}}"> -->
+  <!-- </div> -->
+
+  <app-autocomplete  [arrayForFilter$]="cities$"
+    [autoFormControl]="addressGroup.controls.cityName" [placeHolder]="'City'" [filterKeyWord]="'CityName'">
+  </app-autocomplete>
+
   <mat-form-field class="col-xs-12 col-sm-4 col-md-2 col-lg-4 col-xl-2">
     <input matInput formControlName="zip" placeholder="{{'Zip' | translate}}">
   </mat-form-field>
   <mat-form-field class="col-xs-12 col-sm-12 col-md-2 col-lg-4 col-xl-2">
-    <input matInput formControlName="stateid" placeholder="State">
+    <input matInput formControlName="stateid" placeholder="{{'State' | translate}}">
   </mat-form-field>
   <!-- <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4"></div> -->
   <mat-form-field class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
@@ -65,9 +72,10 @@
   </mat-form-field>
 
   <mat-form-field class="col-xs-10 col-sm-10 col-md-6 col-lg-6 col-xl-6">
-    <textarea matInput formControlName="remark" type="text" placeholder="Remark"></textarea>
+    <textarea matInput formControlName="remark" type="text" placeholder="{{'Remark' | translate}}"></textarea>
   </mat-form-field>
-  <mat-checkbox class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2" formControlName="mainaddress">Main address
+  <mat-checkbox class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2" formControlName="mainaddress">
+    {{'Main address' | translate}}
   </mat-checkbox>
 </form>
 

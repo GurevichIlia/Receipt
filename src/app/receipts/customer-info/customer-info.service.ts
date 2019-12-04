@@ -1,3 +1,4 @@
+import { NewCustomerService } from './../../new-customer/new-customer.service';
 import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { BehaviorSubject, Subject, from } from 'rxjs';
@@ -33,6 +34,7 @@ export class CustomerInfoService {
   customerGroupList$ = this.customerGroupList.asObservable();
   // currentCustomerDetailsForCustomerInfoComponent = new BehaviorSubject<CustomerInfoByIdForCustomerInfoComponent>(null);
   // currentCustomerDetailsForCustomerInfoComponent$ = this.currentCustomerDetailsForCustomerInfoComponent.asObservable();
+  createNewEvent$ = new Subject<void>();
 
   cities = <any>[];
   eventCustomerIsFoundById = new Subject<void>();
@@ -49,7 +51,8 @@ export class CustomerInfoService {
     private generalService: GeneralSrv,
     private router: Router,
     private globalStateService: GlobalStateService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private newCustomerService: NewCustomerService
   ) {
 
   }
@@ -80,7 +83,7 @@ export class CustomerInfoService {
     //     this.receiptService.fullAddress.next(`${address.street}`);
     //   }
     // }
-            this.receiptService.fullAddress.next(currentAddres);
+    this.receiptService.fullAddress.next(currentAddres);
 
   }
   resetFormArray(array: FormArray) {
@@ -218,7 +221,7 @@ export class CustomerInfoService {
         mainAddress: address.mainAddress
       })
       if (valueArray.length > inputsArray.controls.length) {
-        this.addAddressInput(inputsArray, this.fb)
+        this.generalService.addAddressInput(inputsArray, this.fb)
       }
     })
     inputsArray.controls.map(controls => {
@@ -239,7 +242,7 @@ export class CustomerInfoService {
         emailName: email.emailName,
         email: email.email,
       })
-      valueArray.length > inputsArray.controls.length ? this.addEmailInput(inputsArray, this.fb) : null;
+      valueArray.length > inputsArray.controls.length ? this.generalService.addEmailInput(inputsArray, this.fb) : null;
     })
     inputsArray.controls.map(controls => {
       if (!controls.value.email && !controls.value.emailName) {
@@ -259,7 +262,7 @@ export class CustomerInfoService {
         phoneTypeId: phone.phoneTypeId,
         phoneNumber: phone.phoneNumber
       })
-      valueArray.length > inputsArray.controls.length ? this.addPhoneInput(inputsArray, this.fb) : null;
+      valueArray.length > inputsArray.controls.length ? this.generalService.addPhoneInput(inputsArray, this.fb) : null;
     })
     inputsArray.controls.map(controls => {
       if (!controls.value.phone && !controls.value.phoneNumber) {
@@ -269,34 +272,42 @@ export class CustomerInfoService {
   }
 
 
-  addPhoneInput(array: FormArray, fb: FormBuilder) {
-    if (array.length < 10) {
-      array.push(fb.group({
-        phoneTypeId: [2],
-        phoneNumber: ['']
-      }));
-    }
+  // addPhoneInput(array: FormArray, fb: FormBuilder) {
+  //   if (array.length < 10) {
+  //     array.push(fb.group({
+  //       phoneTypeId: ['2'],
+  //       phoneNumber: ['']
+  //     }));
+  //   }
+  // }
+
+  // addEmailInput(array: FormArray, fb: FormBuilder) {
+  //   if (array.length < 10) {
+  //     array.push(fb.group({
+  //       emailName: [''],
+  //       email: ['', Validators.email],
+  //     }));
+  //   }
+  // }
+
+  // addAddressInput(array: FormArray, fb: FormBuilder) {
+  //   if (array.length < 10) {
+  //     array.push(fb.group({
+  //       cityName: [''],
+  //       street: [''],
+  //       street2: [''],
+  //       zip: [''],
+  //       addressTypeId: [''],
+  //       mainAddress: ['']
+  //     }))
+  //   }
+  // }
+
+  saveNewCustomer(newCustomer: CustomerInfoByIdForCustomerInfoComponent) {
+    this.newCustomerService.saveNewCustomer(newCustomer);
   }
 
-  addEmailInput(array: FormArray, fb: FormBuilder) {
-    if (array.length < 10) {
-      array.push(fb.group({
-        emailName: [''],
-        email: ['', Validators.email],
-      }));
-    }
-  }
-
-  addAddressInput(array: FormArray, fb: FormBuilder) {
-    if (array.length < 10) {
-      array.push(fb.group({
-        cityName: [''],
-        street: [''],
-        street2: [''],
-        zip: [''],
-        addressTypeId: [''],
-        mainAddress: ['']
-      }))
-    }
+   createNewClicked() {
+    this.createNewEvent$.next()
   }
 }

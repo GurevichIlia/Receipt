@@ -67,7 +67,7 @@ export class GeneralSrv {
   /** Using this data in payments part of application */
   currentGlobalData$ = this.globalData.asObservable();
 
-  cities = new BehaviorSubject(null);
+  cities = new BehaviorSubject<any[]>(null);
   cities$ = this.cities.asObservable();
   subscription$ = new Subject();
 
@@ -411,12 +411,13 @@ export class GeneralSrv {
         );
     }
   }
-  private filter(value: string, filteredSubject: any[], filterKey: string): CustomerTitle[] {
+  private filter(value: string, filteredSubject: any[], filterKey: string) {
+
     if (value == null) {
       value = '';
     }
     const filterValue = value.toLowerCase();
-    return filteredSubject.filter((title: CustomerTitle) => title[filterKey].toLowerCase().includes(filterValue))
+    return filteredSubject.filter((title: any) => title[filterKey].toLowerCase().includes(filterValue))
   }
 
   patchInputValue(
@@ -514,7 +515,8 @@ export class GeneralSrv {
         street: [''],
         street2: [''],
         zip: [''],
-        addressTypeId: ['']
+        addressTypeId: [''],
+        mainAddress: ['']
       }))
     }
   }

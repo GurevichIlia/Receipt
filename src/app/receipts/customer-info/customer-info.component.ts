@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { FormArray, Validators, FormBuilder, FormGroup, FormControl, AbstractControl } from '@angular/forms';
 
 import { Observable, Subscription, Subject, of, BehaviorSubject, from, fromEvent, timer } from 'rxjs';
-import { debounceTime, takeUntil, delay, mapTo, takeWhile, map, mergeAll, mergeMap, concatAll, concatMap, switchAll } from 'rxjs/operators';
+import { debounceTime, takeUntil, delay, mapTo, takeWhile, map, mergeAll, mergeMap, concatAll, concatMap, switchAll, switchMap } from 'rxjs/operators';
 
 import { ReceiptsService } from '../services/receipts.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
@@ -36,11 +36,11 @@ export interface Group {
   styleUrls: ['./customer-info.component.css']
 })
 export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterContentInit, OnDestroy {
-  cities: any[];
+  cities$: Observable<any[]>;
   customerTitle: CustomerTitle[];;
   customerTypes: CustomerType[];
   @Output() toNewPayment = new EventEmitter();
-  @Output() toNewCustomerDetails = new EventEmitter();
+  @Output() onSave = new EventEmitter<CustomerInfoByIdForCustomerInfoComponent>();
   customerInfoById: CustomerInfoByIdForCustomerInfoComponent;
   step: number;
   // cityAutoCompleteControl = new FormControl();
@@ -141,7 +141,18 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
           street2: [''],
           zip: [''],
           addressTypeId: [''],
-          mainAddress: ['']
+          mainAddress: [''],
+
+
+        }),
+        this.fb.group({
+          cityName: [''],
+          street: [''],
+          street2: [''],
+          zip: [''],
+          addressTypeId: [''],
+          mainAddress: [''],
+
         }),
       ]),
       groups: ['']
@@ -248,6 +259,10 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     // this.suggestUseExistingCustomerDetails();
     this.getCities();
     this.getCustomerGroupList();
+
+
+    this.getCreateNewEvent();
+
     // setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
     // this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
     //   .subscribe(data => {
@@ -266,7 +281,6 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     //   this.disabledPayMethod = data;
     //   console.log(this.disabledPayMethod)
     // });
-    this.getCreateNewEvent();
     console.log(this.userInfoGroup.value)
     // this.filterOptionForCustomerSearch();
 
@@ -282,7 +296,6 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         this.changeCustomerInfoIfCustomerIsFound(this.customerInfoById);
         console.log('EVENT CUSTOMER FOUND');
       });
-
   }
 
   ngAfterViewInit(): void {
@@ -450,7 +463,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   //   }
   // }
   getCreateNewEvent() {
-    this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
+    this.subscriptions.add(this.customerInfoService.createNewEvent$.subscribe(() => {
       this.refreshCustomerForm();
       this.enableFormGroup(this.userInfoGroup)
       // this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
@@ -564,8 +577,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         break
       case '/home/new-customer':
         this.saveNewCustomer(this.userInfoGroup.value);
-        setTimeout(() => this.goToNewCustomerDetails(3076), 2000);
-        console.log('New Customer');
+        // setTimeout(() => this.goToNewCustomerDetails(3076), 2000);
         break
     }
     // const birthday = this.changeBirthdayFormat(this.birthday);
@@ -686,12 +698,15 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   goToNewPaymentPage() {
     this.toNewPayment.emit();
   }
-  goToNewCustomerDetails(id: number) {
-    this.toNewCustomerDetails.emit(id);
+
+  // goToNewCustomerDetails(id: number) {
+  //   this.toNewCustomerDetails.emit(id);
+  // }
+
+  saveNewCustomer(newCustomer: CustomerInfoByIdForCustomerInfoComponent) {
+    this.onSave.emit(newCustomer);
   }
-  saveNewCustomer(newCustomer) {
-    console.log(newCustomer);
-  }
+
   setCustomerCreditCardList() {
     if (this.customerInfoById !== null) {
       this.paymentsService.setListCustomerCreditCard(this.customerInfoById.customerCreditCardTokens);
@@ -749,6 +764,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
 
   cityAutocomplete(filteredSubject: CustomerTitle[], formControl: AbstractControl, filterKey: string) {
     this.filteredCity$ = this.generalService.formControlAutoComplete(filteredSubject, formControl, filterKey);
+   return this.filteredCity$;
   }
 
   getCurrentCustomerInfoByIdForCustomerInfoComponent() {
@@ -779,8 +795,18 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         debounceTime(1),
         takeUntil(this.subscription$))
       .subscribe(cities => {
-        // this.cities = cities
-        this.cityAutocomplete(cities, this.address.controls[0].get('cityName'), 'CityName');
+        this.cities$ = of([...cities])
+        // for (let address of this.address.controls) {
+        //   debugger
+        //   address.get('cityName').valueChanges.pipe(switchMap(value => {
+        //     return this.cityAutocomplete([...cities], value, 'CityName')
+        //   }
+        //   ))
+
+        // }
+        // this.cityAutocomplete([...cities], this.address.controls[0].get('cityName'), 'CityName');
+        // this.cityAutocomplete([...cities], this.address.controls[1].get('cityName'), 'CityName');
+
       });
 
 
@@ -828,13 +854,13 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
             // this.customerInfoService.setCustomerInfoById(customerInfo.CustomerEmails, customerInfo.GetCustomerPhones, customerInfo.CustomerAddresses, customerInfo.CustomerCard_MainDetails, null, customerInfo.CustomerGroupsGeneralSet)
             this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.customerInfoService.getCustomerDetailsByIdTranformedForCUstomerInfoComponent());
           } else if (response === false) {
-            this.receiptService.createNewClicked();
+            this.customerInfoService.createNewClicked();
             // this.customerInfoService.clearCustomerById();
           }
         }
         );
     } else if (this.generalService.getCurrentRoute() === '/home/new-customer') {
-      this.receiptService.createNewClicked()
+      // this.customerInfoService.createNewClicked()
       console.log('No One CUSTOMER')
     } else {
       console.log('No One CUSTOMER')

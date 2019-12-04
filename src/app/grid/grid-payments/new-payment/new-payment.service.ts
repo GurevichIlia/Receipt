@@ -82,7 +82,7 @@ export class NewPaymentService {
       groups: newData.GroupId
     });
     paymentForm.get('secondStep').patchValue({
-      fileAs: newData.FileAs,
+      fileAs: newData.KEVANAME,
       ID: newData.ID.trim(),
       tel1: newData.Phone1,
       tel2: newData.Phone2,
@@ -119,8 +119,8 @@ export class NewPaymentService {
       project: this.searchProjectId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
       employeeId: newData.EmployeeId,
       thanksLetter: newData.ThanksLetterId,
-      receiptName: newData.FileAs,
-      address: '',
+      receiptName: newData.NameOnTheReciept,
+      address: newData.Address,
       email: newData.email,
       checkbox: newData.KevaMakeRecieptByYear
     })

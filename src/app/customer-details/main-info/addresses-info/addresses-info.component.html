@@ -3,8 +3,8 @@
     <div class="row justify-content-start mb-3">
       <h3 style="margin-right: 15px">{{'Address' | translate }}
       </h3>
-      <button class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content"
-        (click)="getAction(newEvent = {action:'addNewAddress', index: null})">Add new</button>
+      <button *ngIf="!loading" class="mr-2" mat-flat-button style="background-color:  rgb(38, 87, 122); color: white;height: min-content"
+        (click)="getAction(newEvent = {action:'addNewAddress', index: null})">{{'Add new' | translate }}</button>
       <!-- <i style="cursor: pointer; float: left; margin-right: 10px" (click)="getAction({action:'addNewAddress', subject: null})"
         class=" material-icons">add</i> -->
 
@@ -12,12 +12,12 @@
     <div class="mb-5">
       <div formArrayName="addresses">
         <div *ngFor="let address of addresses.controls; let i=index">
-          <app-customer-address [displayWidth]="displayWidth$ | async" (newAction)="getAction($event)" [addressGroup]="address" [i]="i"></app-customer-address>
+          <app-customer-address [displayWidth]="displayWidth$ | async" [cities$]="cities$" (newAction)="getAction($event)" (controlValue)="getCityControlValue($event)"  [addressGroup]="address" [i]="i"></app-customer-address>
 
         </div>
         <div style="text-align: justify">
 
-          <span *ngIf="addresses.controls.length === 0 && !loading">No one address</span>
+          <span *ngIf="addresses.controls.length === 0 && !loading">{{'No one address' | translate }}</span>
 
         </div>
         <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>

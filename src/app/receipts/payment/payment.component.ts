@@ -1,3 +1,4 @@
+import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 import { CreditCardService } from './../credit-card/credit-card.service';
 import { Component, OnInit, ViewChild, AfterViewInit, DoCheck, OnDestroy } from '@angular/core';
 import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
@@ -53,7 +54,8 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     private dialog: MatDialog,
     private credirCardService: CreditCardService,
     private fb: FormBuilder,
-    private toster: ToastrService
+    private toster: ToastrService,
+    private customerInfoService: CustomerInfoService
   ) {
     this.dueDate = moment().format('YYYY-MM-DD');
     // this.payment = {
@@ -142,7 +144,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, DoCheck, OnDestr
     }));
   }
   refreshFormFieldsIfPushedCreateNew() {
-    this.subscriptions.add(this.receiptService.createNewEvent.subscribe(() => {
+    this.subscriptions.add(this.customerInfoService.createNewEvent$.subscribe(() => {
       this.refreshCheckForm();
       this.paymentAmount.patchValue('');
       this.paymentAmount.markAsUntouched();

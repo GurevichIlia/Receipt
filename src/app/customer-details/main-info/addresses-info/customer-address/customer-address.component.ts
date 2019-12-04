@@ -13,6 +13,8 @@ export class CustomerAddressComponent implements OnInit {
   @Input() i: number;
   @Input() displayWidth: Observable<number>;
   @Output() newAction = new EventEmitter();
+  @Input() cities$: Observable<any[]>;
+
   editMode = false;
   width = window.innerWidth;
   constructor() { }

@@ -26,7 +26,7 @@
     <div class="col-sm-2 col-md-6 col-lg-12 col-xl-12 ">
       <div class="row">
         <div class="col-sm-2 col-md-6 col-lg-2 col-xl-2 options" >
-          <label id="gender-label" style="text-align: justify"><strong>Gender</strong>
+          <label id="gender-label" style="text-align: justify"><strong>{{'Gender' | translate}}</strong>
           </label>
           <mat-radio-group aria-labelledby="gender-label" formControlName="emailsex">
             <mat-radio-button [value]="true">{{'Male' | translate}}</mat-radio-button>
@@ -35,11 +35,11 @@
         </div>
     
         <div class="col-sm-2 col-md-6 col-lg-2 col-xl-2 options">
-          <label id="newsletter-label" style="text-align: justify"><strong>Newsletter</strong>
+          <label id="newsletter-label" style="text-align: justify"><strong>{{'Newsletter' | translate}}</strong>
           </label>
           <mat-radio-group aria-labelledby="newsletter-label" formControlName="newsletter">
-            <mat-radio-button [value]="false">Yes</mat-radio-button>
-            <mat-radio-button [value]="true">No</mat-radio-button>
+            <mat-radio-button [value]="false">{{'Yes' | translate}}</mat-radio-button>
+            <mat-radio-button [value]="true">{{'No' | translate}}</mat-radio-button>
           </mat-radio-group>
         </div>
       </div>

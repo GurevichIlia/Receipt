@@ -47,7 +47,7 @@ export class ReceiptsService {
     return this.tableService.createTableColumns(dataForGetLables, filterOptions)
 
   }
-  selColumns(displayedColumns: string[]) {
+  setColumns(displayedColumns: string[]) {
     return this.tableService.getValueForColumns(displayedColumns);
   }
   addDisplayedColumnToTable(newColumnLabel: string, existColumns: string[]) {

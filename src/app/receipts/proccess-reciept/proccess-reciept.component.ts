@@ -369,7 +369,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
           this.generalService.setItemToLastSelection('receiptFor', this.receiptFor.value);
           this.generalService.setItemToLastSelection('receiptTemplate', this.receiptTemplate.value);
           this.generalService.saveLastSelection();
-          this.receiptService.createNewEvent.next();
+          this.customerInfoService.createNewClicked();
           this.creditCardService.credCardIsVerified.next(false);
           this.receiptService.nextStep();
           this.finalResolve = res;
@@ -403,7 +403,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.proccessReceipt.reset();
     this.showOnScreen.patchValue(true);
     this.receiptService.refreshNewReceipt();
-    this.receiptService.createNewEvent.next();
+    this.customerInfoService.createNewClicked();
     this.receiptService.setStep(1);
     this.sendTo.patchValue('email');
   }

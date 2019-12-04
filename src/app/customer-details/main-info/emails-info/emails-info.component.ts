@@ -2,7 +2,7 @@ import { EmailsService, Email } from './emails.service';
 import { Component, OnInit, ChangeDetectionStrategy, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormArray, AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
 import { FullCustomerDetailsById, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
 import { Response } from 'src/app/models/response.model';
 
@@ -21,6 +21,13 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getCustomerEmails();
+    this.mainInfoForm.get('emails').statusChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(emails => {
+        this.mainInfoForm.get('emails').updateValueAndValidity()
+          console.log('EMAILS', emails);
+
+      })
   }
 
   get emails() {
@@ -67,7 +74,8 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
 
   saveEmail(array: FormArray, i) {
     const email: Email = array.controls[i].value;
-    if (email.email !== '') {
+    debugger
+    if (array.controls[i].valid) {
       this.loading = true;
       this.emailService.saveEmailOnServer(email)
         .pipe(
@@ -98,10 +106,10 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
 
   deleteEmail(array: FormArray, i) {
     const email: Email = array.controls[i].value;
-    if (array.length === 1) {
-      return;
-    } else if (!email.tempid) {
+    if (!email.tempid) {
       array.removeAt(i);
+    } else if (array.length === 1) {
+      return;
     } else if (confirm('Would you like to delete this field?')) {
       this.loading = true;
       this.emailService.deleteEmail(email)

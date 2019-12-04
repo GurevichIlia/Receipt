@@ -516,7 +516,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(
         takeUntil(this.subscription$))
       .subscribe((newCredCard: { credCard: Creditcard }) => {
-        if(newCredCard.credCard && typeof(newCredCard.credCard) !== 'number' ){
+         if(newCredCard.credCard && typeof(newCredCard.credCard) !== 'number' ){
           console.log('CURRENT CREDIT CARD', newCredCard.credCard.customername);
           this.updateAccount(newCredCard.credCard);
         }

@@ -77,7 +77,7 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
 
   savePhone(array: FormArray, i) {
     const phone: Phone = array.controls[i].value;
-    if (phone.Phone.trim().length >= 7) {
+    if (array.controls[i].valid) {
       this.loading = true;
       this.phonesService.savePhoneOnServer(phone)
         .pipe(
@@ -109,10 +109,10 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
 
   deletePhone(array: FormArray, i) {
     const phone: Phone = array.controls[i].value;
-    if (array.length === 1) {
-      return;
-    } else if (!phone.id) {
+    if (!phone.id) {
       array.removeAt(i);
+    } else if (array.length === 1) {
+      return;
     } else if (confirm('Would you like to delete this field?')) {
       this.phonesService.deletePhone(phone)
         .pipe(

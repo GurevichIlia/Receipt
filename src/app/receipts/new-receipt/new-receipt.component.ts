@@ -96,7 +96,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     }));
     // this.generalService.addSubscription(currentlyStep$);
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
-    this.receiptService.createNewEvent.subscribe(data => this.searchControl.patchValue(''));
+    this.customerInfoService.createNewEvent$.subscribe(data => this.searchControl.patchValue(''));
     // this.spinner.stop();
   }
 
@@ -224,7 +224,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   }
 
   createNew() {
-    this.receiptService.createNewEvent.next();
+    this.customerInfoService.createNewClicked();
     this.receiptService.setStep(1);
     this.searchControl.patchValue('');
   }
@@ -237,7 +237,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   // }
   ngOnDestroy() {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
-    this.receiptService.createNewEvent.next();
+    this.customerInfoService.createNewClicked();
     this.subscriptions.unsubscribe();
     this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
     console.log('NEW RECEIPT SUBSCRIBE On Destroy', this.subscriptions);

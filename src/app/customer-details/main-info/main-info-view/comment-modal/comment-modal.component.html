@@ -1,4 +1,4 @@
-<h4>Comment</h4>
+<h4>{{"Comment" | translate}}</h4>
 <div class="mb-4">
   <mat-form-field class="formField ">
     <textarea matInput [(ngModel)]="comment" class="textarea">
@@ -8,6 +8,6 @@
 </div>
 
 <div class="buttonBox">
-  <button style="margin-right: 30px" class="submit-button" mat-raised-button (click)="saveComment()">Confirm</button>
-  <button mat-raised-button class="cancel-button" (click)="closeModal()">Close</button>
+  <button style="margin-right: 30px" class="submit-button" mat-raised-button (click)="saveComment()">{{"Confirm" | translate}}</button>
+  <button mat-raised-button class="cancel-button" (click)="closeModal()">{{"Cancel" | translate}}</button>
 </div>

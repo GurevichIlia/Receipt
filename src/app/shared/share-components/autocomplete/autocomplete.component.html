@@ -1,10 +1,9 @@
-<mat-form-field class="example-full-width">
-  <input type="text" placeholder="{{placeHolder | translate}}" aria-label="Number" matInput formControlName="formControl"
-    [matAutocomplete]="auto">
+<mat-form-field>
+  <input type="text" placeholder="{{placeHolder | translate}}" aria-label="Number" (keyup)="filterArray()" matInput
+    [formControl]="autoFormControl" [matAutocomplete]="auto">
   <mat-autocomplete #auto="matAutocomplete">
-    <mat-option *ngFor="let item of array; let i = index"
-      [value]="item.cityName + ' ' + item.street + ' ' +  item.zip">
-      {{item.cityName}} {{item.street}} {{item.zip}}
+    <mat-option *ngFor="let item of filtredList | slice:0:10; let i = index" [value]="item[filterKeyWord]">
+      {{item[filterKeyWord]}}
     </mat-option>
   </mat-autocomplete>
 </mat-form-field>

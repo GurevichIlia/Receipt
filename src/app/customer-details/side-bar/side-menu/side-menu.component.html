@@ -2,7 +2,7 @@
   <mat-list-item role="listitem"><button class="itemMenuText" (click)="selectChildMenuItem('main-info','personalInfo')"
       style="width: 200px" mat-button>
       <span class="row mainMenuItem">
-        <span>Main info </span>
+        <span>{{'Main info' | translate}}</span>
         <!-- <mat-icon *ngIf="!mainInfoNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
         <mat-icon *ngIf="mainInfoNestMenu" mat-icon>keyboard_arrow_down</mat-icon> -->
       </span>
@@ -28,7 +28,7 @@
   <mat-list-item role="listitem"><button (click)="paymentsNestMenu = !paymentsNestMenu;" style="width: 200px"
       class="itemMenuText" mat-button>
       <span class="row mainMenuItem">
-        <span>Payments</span>
+        <span>{{'Payments' | translate}}</span>
         <mat-icon *ngIf="!paymentsNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
         <mat-icon *ngIf="paymentsNestMenu" mat-icon>keyboard_arrow_down</mat-icon>
       </span>
@@ -38,17 +38,17 @@
     <mat-list-item role="listitem">
       <button (click)="selectChildMenuItem('payments/receipts', 'payments/receipts' )"
         [ngClass]="{'nestedmenuBackColor': pickedMenu == 'payments/receipts'}" style="width: 200px" mat-button><span
-          class="nestedmenu">Receipts</span> </button>
+          class="nestedmenu">{{'Receipts' | translate}}</span> </button>
     </mat-list-item>
   </mat-list>
   <hr>
 
-  <mat-list-item role="listitem"><button style="width: 200px" class="itemMenuText" mat-button>
+  <!-- <mat-list-item role="listitem"><button style="width: 200px" class="itemMenuText" mat-button>
       <span class="row mainMenuItem">
         <span>Item 1</span>
         <mat-icon *ngIf="!paymentsNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
 
       </span></button>
-  </mat-list-item>
-  <hr>
+  </mat-list-item> -->
+  <!-- <hr> -->
 </mat-list>

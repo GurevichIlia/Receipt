@@ -1,6 +1,6 @@
 <mat-card class="mb-4">
   <div class="row mb-4 label">
-    <h3>Personal info</h3>
+    <h3>{{'Personal info' | translate}}</h3>
     <i *ngIf="!editMode" style="cursor: pointer; float: left; margin-right: 10px"
       (click)="editFormControl(personalInfoControl)" class=" material-icons">create</i>
     <i *ngIf="editMode" style="cursor: pointer; float: left;margin-right: 10px"

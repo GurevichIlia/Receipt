@@ -9,7 +9,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, switchMap, filter } from 'rxjs/operators';
 import { MatDialog } from '@angular/material';

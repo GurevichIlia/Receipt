@@ -77,6 +77,10 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
       Object.keys(data[0]).map(data => this.displayedColumns.push({ value: data, label: data }))
       this.listDisplayedColumns = this.displayedColumns.map(c => {
         return c.value
+      }).filter(column => {
+        if (column !== 'ReturnResonId') {
+          return column;
+        }
       })
       this.listDisplayedColumns.unshift('details')
       this.getValueForColumns(this.displayedColumns);

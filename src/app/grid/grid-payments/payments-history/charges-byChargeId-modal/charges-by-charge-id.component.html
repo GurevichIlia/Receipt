@@ -1,5 +1,5 @@
 <div class="row">
-  <h4>Some title</h4>
+  <h4>{{'Charge details table' | translate}}</h4>
 
   <button class="closeBtn" (click)="closeModal()" mat-button ><i class="material-icons">
       close
@@ -15,17 +15,17 @@
       <table mat-table [dataSource]="dataSource" matSort>
         <ng-container matColumnDef="details">
           <th mat-header-cell *matHeaderCellDef>
-            <span>edit</span>
+            <span>{{'Edit' | translate}}</span>
           </th>
           <td (click)="openChargeEditModal(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
             <mat-icon>edit</mat-icon>
           </td>
         </ng-container>
         <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header}} </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header | translate}} </th>
           <td mat-cell *matCellDef="let row">
             <ng-container>
-              {{col.cell(row) === 'null'? '' : col.cell(row)}}
+              {{col.cell(row) === 'null'? '' : col.cell(row) | dateTransform: col.header }}
             </ng-container>
           </td>
         </ng-container>

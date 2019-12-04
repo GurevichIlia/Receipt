@@ -36,3 +36,7 @@ mat-radio-group {
   text-align: justify;
   display: flex;
 }
+
+input{
+  direction: initial;
+}

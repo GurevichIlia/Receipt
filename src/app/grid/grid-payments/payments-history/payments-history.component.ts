@@ -72,13 +72,13 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
         return keva;
       }),
         takeUntil(this.subscription$))
-        .subscribe(data => {
-          this.spinner.stop();
-          this.getDataForPaymentsTable(data);
-        }, error => {
-          this.spinner.stop();
-          alert('Something went wrong')
-        });
+      .subscribe(data => {
+        this.spinner.stop();
+        this.getDataForPaymentsTable(data);
+      }, error => {
+        this.spinner.stop();
+        alert('Something went wrong')
+      });
   }
   getDataForPaymentsTable(kevaCharge: KevaCharge[], index?: number) {
     if (kevaCharge) {
@@ -98,6 +98,10 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
       Object.keys(data[0]).map(data => this.displayedColumns.push({ value: data, label: data }))
       this.listDisplayedColumns = this.displayedColumns.map(c => {
         return c.value
+      }).filter(column => {
+        if (column !== 'employeeIdEnd' && column !== 'employeeIdStart' && column !== 'instituteId') {
+          return column;
+        }
       })
       this.listDisplayedColumns.unshift('details')
       this.getValueForColumns(this.displayedColumns);

@@ -1,3 +1,4 @@
+import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
@@ -28,7 +29,8 @@ export class AuthenticationService {
     private receiptService: ReceiptsService,
     private creditCardService: CreditCardService,
     private router: Router,
-    private globalStateService: GlobalStateService
+    private globalStateService: GlobalStateService,
+    // private customerInfoService: CustomerInfoService
   ) {
     console.log('AUTH SERVICE LOADED');
     console.log('AUTH', this.isAuthenticated())
@@ -109,7 +111,7 @@ export class AuthenticationService {
     this.globalStateService.clearCustomerInfoById();
     this.globalStateService.clearCustomerList();
     this.creditCardService.credCardIsVerified.next(false);
-    this.receiptService.createNewEvent.next();
+    // this.customerInfoService.createNewClicked();
   }
 }
 

@@ -19,9 +19,14 @@
       <!-- <mat-form-field class="col-xs-10 col-sm-10 col-md-3 col-lg-3 col-xl-3 inputMobileWidth">
         <input matInput formControlName="phoneNumber" placeholder="{{'Mobile phone' | translate}}" type="text">
       </mat-form-field> -->
-      <div *ngIf="!editMode" class="col-xs-12 col-sm-12 col-md-10 col-lg-7 col-xl-3" [ngClass]="{'mobileWidth': 500 > width }">
-        <span><strong>{{'Mobile phone' | translate}}</strong>:
-          {{phoneGroup?.controls.area.value}}{{phoneGroup.controls.Phone.value}}</span>
+      <div *ngIf="!editMode" class="col-xs-12 col-sm-12 col-md-10 col-lg-7 col-xl-3"
+        [ngClass]="{'mobileWidth': 500 > width }">
+        <div class="phone">
+          <span><strong>{{'Mobile phone' | translate}}</strong>:
+          </span>
+          <h5>{{phoneGroup?.controls.area.value}}{{phoneGroup.controls.Phone.value}}</h5>
+        </div>
+
       </div>
       <!-- <i *ngIf="editMode" style="cursor: pointer" (click)="createAction('savePhone',  i); editMode = false;"
         class=" material-icons">save</i>
@@ -40,23 +45,23 @@
 
       <mat-form-field [ngClass]="{'inputMobileWidth': 500 > width }" class="col-sm-2 col-md-3 col-lg-3 col-xl-3"
         style="align-self: flex-end">
-        <input #Phone matInput formControlName="Phone" type="text" placeholder="Phone">
+        <input #Phone matInput formControlName="Phone" type="text" placeholder="{{'Phone' | translate}}">
       </mat-form-field>
 
       <mat-form-field [ngClass]="{'contryCodeWidth': 500 > width }" class="col-sm-1 col-md-3 col-lg-3 col-xl-3"
         style="align-self: flex-end">
-        <input matInput formControlName="Prefix" suffix="+" mask="000" type="text" placeholder="Country code">
+        <input matInput formControlName="Prefix" suffix="+" mask="000" type="text" placeholder="{{'Country code' | translate}}">
       </mat-form-field>
 
       <div class="col-sm-2 col-md-2 col-lg-2 col-xl-2 row">
-        <mat-checkbox class="col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xl-12" formControlName="isSms">isSms
+        <mat-checkbox class="col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xl-12" formControlName="isSms">{{'isSms' | translate}}
         </mat-checkbox>
-        <mat-checkbox class="col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xl-12" formControlName="publish">Publish
+        <mat-checkbox class="col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xl-12" formControlName="publish">{{'Publish' | translate}}
         </mat-checkbox>
       </div>
 
       <mat-form-field class="col-xs-10 col-sm-10 col-md-6 col-lg-6 col-xl-6">
-        <textarea matInput formControlName="comments" type="text" placeholder="Comments"></textarea>
+        <textarea matInput formControlName="comments" type="text" placeholder="{{'Comment' | translate}}"></textarea>
       </mat-form-field>
 
 

@@ -13,3 +13,7 @@
     ::ng-deep .mat-select-disabled .mat-select-value {
       color: black
     }
+
+    input{
+      direction: initial;
+    }

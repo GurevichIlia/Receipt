@@ -1,25 +1,27 @@
 <div class="container mt-5">
 
   <mat-card class="mb-3">
-    <h2 class="text-center" translate>הוראת קבע </h2>
+    <h2 class="text-center" translate> {{'Create a new keva' | translate}}</h2>
   </mat-card>
 
-  <form  [formGroup]="newPaymentForm" (ngSubmit)="saveNewKeva()">
+  <form [formGroup]="newPaymentForm" (ngSubmit)="saveNewKeva()">
     <div class="row kevaTitle">
 
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 text-right" >
-        <h5 *ngIf="!isEditFileAs && fileAs.value !== ''"> {{fileAs.value}} <span (click)="editFileAs()" style="cursor: pointer" mat-cell>
+      <div *ngIf="!isEditFileAs && fileAs.value !== ''" class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 text-right">
+        <h5> {{fileAs.value}} <span (click)="editFileAs()" style="cursor: pointer" mat-cell>
             <mat-icon>create</mat-icon>
           </span> </h5>
       </div>
-      <div class="col-xs-6 col-sm-5 col-md-8 col-lg-8 col-xl-8" *ngIf="isEditFileAs" style="text-align: -webkit-auto;">
-        <mat-form-field class="col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
-          <input #FileAs [(value)]="fileAs.value" matInput placeholder="File as"
-            (blur)="saveEditFileAs(fileAs, FileAs.value)" (keydown.enter)="saveEditFileAs(fileAs, FileAs.value)">
-        </mat-form-field>
-      </div>
-      <button type="button" mat-raised-button (click)="goBack()" class="btnBack">
-        {{'Previous' | translate}} <mat-icon>arrow_back</mat-icon>
+
+      <mat-form-field class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-right" *ngIf="isEditFileAs"
+        style="text-align: -webkit-auto;">
+        <input #FileAs [(value)]="fileAs.value" matInput placeholder="File as"
+          (blur)="saveEditFileAs(fileAs, FileAs.value)" (keydown.enter)="saveEditFileAs(fileAs, FileAs.value)">
+      </mat-form-field>
+
+      <button type="button" mat-raised-button (click)="goBack()" class="btnBack col-sm-1 col-md-1 col-lg-1 col-xl-1">
+        {{'Previous' | translate}} 
+        <!-- <mat-icon>arrow_back</mat-icon> -->
       </button>
     </div>
     <mat-accordion #accordion="matAccordion" class="mb-5" multi="true">
@@ -28,7 +30,7 @@
         <mat-expansion-panel-header>
           <h5> הוראת קבע </h5>
         </mat-expansion-panel-header>
-        <app-first-step [isSubmit]="isSubmit"  [globalData$]="globalData$" [firstStep]="newPaymentForm.get('firstStep')">
+        <app-first-step [isSubmit]="isSubmit" [globalData$]="globalData$" [firstStep]="newPaymentForm.get('firstStep')">
         </app-first-step>
         <mat-action-row>
           <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="primary"
@@ -41,7 +43,8 @@
         <mat-expansion-panel-header>
           <h5> פרטים אישיים</h5>
         </mat-expansion-panel-header>
-        <app-second-step [isSubmit]="isSubmit" [secondStep]="newPaymentForm.get('secondStep')" [customerPhones]="customerPhones$ | async">
+        <app-second-step [isSubmit]="isSubmit" [secondStep]="newPaymentForm.get('secondStep')"
+          [customerPhones]="customerPhones$ | async">
         </app-second-step>
         <mat-action-row>
           <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
@@ -58,7 +61,7 @@
           <h5 *ngIf="paymentType.value === '3'">כרטיס אשראי</h5> -->
           <h5>אמצעי חיוב</h5>
         </mat-expansion-panel-header>
-        <app-third-step [isSubmit]="isSubmit"  [paymentType]="paymentType" [listNewCreditCard]="listNewCreditCard"
+        <app-third-step [isSubmit]="isSubmit" [paymentType]="paymentType" [listNewCreditCard]="listNewCreditCard"
           [listCustomerCreditCard$]="listCustomerCreditCard$" [thirdStep]="newPaymentForm.get('thirdStep')"
           (addNewCardIsClicked)=" openModalForNewCreditCard()">
         </app-third-step>
@@ -75,7 +78,8 @@
         <mat-expansion-panel-header>
           <h5>פרטי החיוב</h5>
         </mat-expansion-panel-header>
-        <app-fourth-step [isSubmit]="isSubmit"  [globalData$]="globalData$" [fourthStep]="newPaymentForm.get('fourthStep')">
+        <app-fourth-step [isSubmit]="isSubmit" [globalData$]="globalData$"
+          [fourthStep]="newPaymentForm.get('fourthStep')">
         </app-fourth-step>
         <mat-action-row>
           <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
@@ -90,8 +94,8 @@
         <mat-expansion-panel-header>
           <h5>מידע לבניית קבלה</h5>
         </mat-expansion-panel-header>
-        <app-fifth-step [isSubmit]="isSubmit"  [projectCat]="projectCat" [paymentType]="paymentType.value" [employeeList$]="employeeList$"
-          [globalData$]="globalData$" [fifthStep]="newPaymentForm.get('fifthStep')"
+        <app-fifth-step [isSubmit]="isSubmit" [projectCat]="projectCat" [paymentType]="paymentType.value"
+          [employeeList$]="employeeList$" [globalData$]="globalData$" [fifthStep]="newPaymentForm.get('fifthStep')"
           [customerAddresses]="customerAddresses$ | async" [customerEmails]="customerEmails$ | async"></app-fifth-step>
         <mat-action-row>
           <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
@@ -107,20 +111,21 @@
 
     <div class="row mt-3" style="justify-content: flex-end">
       <div *ngIf="kevaMode === 'newKeva'" class="col-2">
-        <button type="submit"  class="example-full-width fontSize" mat-raised-button color="accent">Submit</button>
+        <button type="submit" class="example-full-width fontSize" mat-raised-button
+          color="accent">{{'Submit' | translate}}</button>
       </div>
       <div *ngIf="kevaMode === 'edit'" class="col-2">
-        <button type="button"  (click)="updateCustomerKeva()"
-          class="example-full-width fontSize" mat-raised-button color="accent">Update</button>
+        <button type="button" (click)="updateCustomerKeva()" class="example-full-width fontSize" mat-raised-button
+          color="accent">{{'Update' | translate}}</button>
       </div>
 
       <div *ngIf="kevaMode === 'duplicate'" class="col-2">
-        <button type="button"  (click)="duplicateCustomerKeva()"
-          class="example-full-width fontSize" mat-raised-button color="accent">Duplicate</button>
+        <button type="button" (click)="duplicateCustomerKeva()" class="example-full-width fontSize" mat-raised-button
+          color="accent">{{'Duplicate' | translate}}</button>
       </div>
       <div class="col-2">
-        <button type="button"  (click)="goToKevaTable()"
-          class="example-full-width fontSize" mat-raised-button color="accent">{{'Cancel' | translate}}</button>
+        <button type="button" (click)="goToKevaTable()" class="example-full-width fontSize" mat-raised-button
+          color="accent">{{'Cancel' | translate}}</button>
       </div>
     </div>
   </form>

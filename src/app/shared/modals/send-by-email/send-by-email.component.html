@@ -1,5 +1,5 @@
 <div>
-  <h4>Send by email</h4>
+  <h4>{{'Send by email' | translate}}</h4>
   <hr>
   <ng-container *ngIf="emailsList.length > 0">
     <div class="row mb-4 mt-1 mailsBlock justify-content-center">
@@ -11,12 +11,12 @@
       <mat-icon class="arrowSize" (click)="plusCount()" mat-icon>arrow_forward_ios</mat-icon>
     </div>
     <div class="row justify-content-center">
-      <button class="col-5 submit-button " mat-raised-button  (click)="onConfirm()">Submit</button>
-      <button class="col-5 cancel-button ml-1" mat-raised-button  (click)="onDismiss()">Cancel</button>
+      <button class="col-5 submit-button " mat-raised-button  (click)="onConfirm()">{{'Submit' | translate}}</button>
+      <button class="col-5 cancel-button ml-1" mat-raised-button  (click)="onDismiss()">{{'Cancel' | translate}}</button>
     </div>
   </ng-container>
 
   <span class="mt-5" *ngIf="emailsList.length === 0">
-    <h5 class="labels">No one emails</h5>
+    <h5 class="labels">{{'No one emails' | translate}}</h5>
   </span>
 </div>

@@ -23,7 +23,7 @@ export class ReceiptsComponent implements OnInit, OnDestroy {
   receiptsCameFromDataSource = new MatTableDataSource<any>([]);
   receiptsInvolvedDataSource = new MatTableDataSource<any>([]);
   subscription$ = new Subject();
-  filterLables = ['UseAsCreditReceipt', 'ForCanclation', 'WhatForInThanksLet', 'RecieptTypeId'];
+  filterLables = ['UseAsCreditReceipt', 'ForCanclation', 'WhatForInThanksLet', 'RecieptTypeId', 'CurrencyId1'];
   buttonsForTable: { icon: string, label: string }[];
   customerEmailsList: CustomerEmails[];
   constructor(
@@ -65,7 +65,7 @@ export class ReceiptsComponent implements OnInit, OnDestroy {
       this.receiptsService.setDataSourceTable(this.receiptsInvolvedDataSource, [...data.GetCustomerReciepts_Involved], this.receiptsInvolvedTableComponent);
     }
 
-    this.columns = this.receiptsService.selColumns(this.listDisplayedColumns);
+    this.columns = this.receiptsService.setColumns(this.listDisplayedColumns);
     this.receiptsService.addDisplayedColumnToTable('Email', this.listDisplayedColumns);
     this.buttonsForTable = [{ icon: 'email', label: 'Email' }, { icon: 'create', label: 'Create' }]
   }
@@ -76,7 +76,7 @@ export class ReceiptsComponent implements OnInit, OnDestroy {
   }
 
   openModalSendByEmail(emailsList: CustomerEmails[] = [], receipt) {
-    const openedDialog = this.matDialog.open(SendByEmailComponent, { width: '350px', height: '270px', data: emailsList });
+    const openedDialog = this.matDialog.open(SendByEmailComponent, { width: '400px', height: '300px', data: emailsList });
 
     openedDialog.afterClosed()
       .pipe(

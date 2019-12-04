@@ -4,6 +4,10 @@ table {
 
 }
 
+th{
+  min-width: 100px;
+  width: fit-content;
+}
 
 .elevation {
   height: 85%;

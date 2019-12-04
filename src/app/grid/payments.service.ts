@@ -34,7 +34,7 @@ export class PaymentsService {
     { value: 'HokChargeDay', label: 'יום חיוב' },
     { value: 'TotalLeftToCharge', label: 'נותרו לחיוב' },
     { value: 'KEVAStart', label: 'מועד התחלה' },
-    { value: 'KEVAEnd', label: ' שימוש פנימי\ סיום' },
+    { value: 'KEVAEnd', label: 'שימוש פנימי\ סיום' },
     { value: 'GroupName', label: 'קבוצה' },
     { value: 'digits6', label: 'ספרות אחרונות' },
     { value: 'creditCardMonthAndYears', label: 'תוקף כרטיס' },

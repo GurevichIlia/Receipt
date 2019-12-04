@@ -23,3 +23,7 @@ input.mat-input-element {
       width: fit-content; 
 
     }
+    .phone {
+      text-align: justify;
+      display: flex;
+    }

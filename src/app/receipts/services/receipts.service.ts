@@ -32,7 +32,7 @@ export class ReceiptsService {
   selectedReceiptType: ReceiptType;
   totalAmount: number;
   checkSelectedRecType = new Subject<void>();
-  createNewEvent = new Subject<void>();
+  // createNewEvent = new Subject<void>();
   amount = new BehaviorSubject(this.totalAmount);
   currentAmount$ = this.amount.asObservable();
 
@@ -346,9 +346,9 @@ export class ReceiptsService {
   deleteAllProductsFromStore() {
     this.newReceipt.Receipt.products = [];
   }
-  createNewClicked() {
-    this.createNewEvent.next()
-  }
+  // createNewClicked() {
+  //   this.createNewEvent.next()
+  // }
 
   setCustomerInfoById(customerInfoById: CustomerInfoById) {
     this.customerInfoById.next(customerInfoById);

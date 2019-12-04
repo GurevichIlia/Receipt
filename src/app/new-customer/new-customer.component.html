@@ -1,10 +1,10 @@
 <div class="container mt-5">
   <mat-card>
-    <h2 class="text-center" translate>Create a new customer</h2>
+    <h2 class="text-center" translate>{{'New customer' | translate}}</h2>
     <!-- <app-search *ngIf="step === 1 || step === 0 " [searchControl]="searchControl"
       [filteredOptions]="filteredOptions | async" (pickedCustomer)="getCustomerInfoById($event)"
       (newCustomer)="createNew($event)">
     </app-search> -->
   </mat-card>
 </div>
-<app-customer-info (toNewCustomerDetails)="goToNewCustomerDetails($event)"></app-customer-info>
+<app-customer-info (onSave)="saveNewCustomer($event)"></app-customer-info>
