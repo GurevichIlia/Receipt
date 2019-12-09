@@ -1,10 +1,10 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { CustomerAddresses } from './../../models/customer-info-by-ID.model';
-import { CustomerPhones, CustomerEmails, MainDetails } from './../../models/fullCustomerDetailsById.model';
-import { CustomerDetailsService } from './../customer-details.service';
 import { Injectable } from '@angular/core';
 import { FormGroup, FormArray, FormBuilder, AbstractControl } from '@angular/forms';
+
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+
+import { CustomerDetailsService } from './../customer-details.service';
+
 import { CustomerTitle } from 'src/app/models/globalData.model';
 
 

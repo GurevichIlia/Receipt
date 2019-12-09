@@ -3,7 +3,7 @@ import { CustomerDetailsService } from './../customer-details/customer-details.s
 import { CustomerInfoService } from './../receipts/customer-info/customer-info.service';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, catchError, filter } from 'rxjs/operators';
+import { map, catchError, filter, tap } from 'rxjs/operators';
 import { Subject, BehaviorSubject, Observable, throwError } from 'rxjs';
 
 import { AuthenticationService } from '../receipts/services/authentication.service';
@@ -18,6 +18,18 @@ import { UpdateKevaHistoryChargeStatus } from '../models/upadateKevaHistoryCharg
 import { NewKevaFull } from '../models/newKevaFull';
 import { KevaCharge } from './../models/kevaCharge.model';
 
+export interface KevaRemark {
+  Id: number;
+  Remark: string;
+  RDate: string;
+}
+
+export interface KevaRemarkForUpdate {
+  id: number;
+  remark: string;
+  deleterow: number;
+  customerid: number
+}
 
 @Injectable({
   providedIn: 'root'
@@ -184,7 +196,7 @@ export class PaymentsService {
   }
 
   saveNewKeva(orgName: string, newKeva: NewKevaFull) {
-    newKeva.customerInfo.addresses =  newKeva.customerInfo.addresses
+    newKeva.customerInfo.addresses = newKeva.customerInfo.addresses
     console.log('SAVE NEW KEVA', newKeva);
     console.log('SAVE NEW KEVA STRING', JSON.stringify(newKeva));
     return this.http.post(`${this.baseUrl}keva/SaveCustomerKevaInfo?urlAddr=${orgName}`, newKeva, this.httpOptions)
@@ -214,6 +226,27 @@ export class PaymentsService {
     } else {
       return `${monthValue}/${yearValue}`;
     }
+  }
+
+  getKevaRemarksById(kevaId: number): Observable<KevaRemark[]> {
+  
+    const orgName = this.generalService.getOrgName()
+    return this.http.get<Response>(`${this.baseUrl}keva/GetKevaRemarks?urlAddr=${orgName}&kevaid=${kevaId}`)
+      .pipe(
+        tap(data => console.log('GetKevaRemarks', data)),
+        map(data => data.Data),
+        catchError(this.handleError));
+  }
+
+  deleteKevaRemarksById(kevaRemark: KevaRemarkForUpdate) {
+    const orgName = this.generalService.getOrgName();
+    return this.http.post(`${this.baseUrl}keva/UpateKevaRemark?urlAddr=${orgName}`, kevaRemark);
+
+  }
+
+  updateKevaRemarkById(kevaRemark: KevaRemarkForUpdate) {
+    const orgName = this.generalService.getOrgName();
+    return this.http.post(`${this.baseUrl}keva/UpateKevaRemark?urlAddr=${orgName}`, kevaRemark);
   }
 
   setPaymentTablePage(tablePageState: { pageIndex: number, pageSize: number }) {
@@ -268,6 +301,7 @@ export class PaymentsService {
   // Error handling 
   handleError(error) {
     let errorMessage = '';
+
     if (error.error instanceof ErrorEvent) {
       // Get client-side error
       errorMessage = error.error.message;

@@ -1,12 +1,12 @@
 <div infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" [scrollWindow]="false"
   [horizontal]="true" [fromRoot]="true">
-  <button mat-button type="button" (click)="refreshGroups()"> <i  class="material-icons">
-    refresh
-  </i> </button>
+  <button mat-button type="button" (click)="refreshGroups()"> <i class="material-icons">
+      refresh
+    </i> </button>
   <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
     <mat-tree-node [style.fontSize]="'18px'" *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
       <button type="button" mat-icon-button disabled></button>
-      <mat-checkbox class="checklist-leaf-node" (change)="addGroup(node.GroupId)"><span
+      <mat-checkbox [checked]="node.isSelected" class="checklist-leaf-node" (change)="selectGroup(node.isSelected, node.GroupId )"><span
           class="ml-2">{{node.GroupName}}</span></mat-checkbox>
     </mat-tree-node>
 
@@ -25,7 +25,8 @@
           {{treeControl.isExpanded(node) ? 'remove' : 'add'}}
         </mat-icon>
       </button>
-      <mat-checkbox (change)="addGroup(node.GroupId)"><span class="ml-2">{{node.GroupName}}</span></mat-checkbox>
+      <mat-checkbox [checked]="node.isSelected" (change)="selectGroup(node.isSelected, node.GroupId)"><span class="ml-2">{{node.GroupName}}</span>
+      </mat-checkbox>
       <!-- <button mat-icon-button (click)="addNewItem(node)">
         <mat-icon>add</mat-icon>
       </button> -->

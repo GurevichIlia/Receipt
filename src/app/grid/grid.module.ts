@@ -13,6 +13,7 @@ import { PaymentsHistoryComponent } from './grid-payments/payments-history/payme
 import { PaymentsTableViewComponent } from './grid-payments/payments-history/payments-table-view/payments-table-view.component';
 import { ChargesByChargeIdComponent } from './grid-payments/payments-history/charges-byChargeId-modal/charges-by-charge-id.component';
 import { ChargeIdEditModalComponent } from './grid-payments/payments-history/charges-byChargeId-modal/charge-id-edit-modal/charge-id-edit-modal.component';
+import { EditRemarkComponent } from './grid-payments/new-payment/keva-remarks/edit-remark/edit-remark.component';
 
 const gridRouter: Routes = [
   {

@@ -50,7 +50,7 @@ export interface CustomerInfoForReceiept {
       lname: string;
 }
 
-export class CustomerInfoById {
+export interface CustomerInfoById {
       CustomerAddresses: CustomerAddresses[];
       CustomerCreditCardTokens: any[];
       CustomerEmails: CustomerEmails[];
@@ -61,6 +61,24 @@ export class CustomerInfoById {
       GetCustomerReciepts: GetCustomerReceipts[]
       GetCustomerReciepts_CameFrom: GetCustomerReceipts[]
       GetCustomerReciepts_Involved: GetCustomerReceipts[]
-      QuickGeneralGroupList: []
+      QuickGeneralGroupList: QuickCustomerGroupList[]
 }
 
+export interface QuickCustomerGroupList {
+      CategoryId: number;
+      GroupId: number;
+      GroupName: string;
+      GroupNameEng: string;
+      GroupParenCategory: number;
+      SortOrder: number;
+}
+
+export interface CustomerGroupsGeneralSet {
+      CustomerGeneralGroupId: number;
+      Customerid: number;
+      GroupStatusId: number;
+      JoinDate: string;
+      SortOrder: number;
+      isTop: boolean;
+      isWork: boolean;
+}

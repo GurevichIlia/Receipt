@@ -1,3 +1,5 @@
+import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
+import { CustomerGroupsService } from './../../core/services/customer-groups.service';
 import { FullCustomerDetailsById } from './../../models/fullCustomerDetailsById.model';
 import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from './../customer-info/customer-info.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -8,7 +10,7 @@ import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from 'sr
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { Subscription } from 'rxjs';
 
-import { map, debounceTime, } from 'rxjs/operators';
+import { map, debounceTime, tap, } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ReceiptsService } from '../services/receipts.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
@@ -64,8 +66,8 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv, private translate: TranslateService,
     private spinner: NgxUiLoaderService,
-    private customerInfoService: CustomerInfoService
-
+    private customerInfoService: CustomerInfoService,
+    private globalStateService: GlobalStateService
   ) {
     translate.setDefaultLang('he');
   }
@@ -96,7 +98,8 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     }));
     // this.generalService.addSubscription(currentlyStep$);
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
-    this.customerInfoService.createNewEvent$.subscribe(data => this.searchControl.patchValue(''));
+    this.subscriptions.add(this.customerInfoService.createNewEvent$
+      .subscribe(data => this.searchControl.patchValue('')));
     // this.spinner.stop();
   }
 
@@ -144,23 +147,16 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   getCustomerInfoById(customerId: number) {
     this.spinner.start();
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId)
+      .pipe(
+        tap(customerInfo => console.log('CUSTOMER INFO BY ID FROM SERVER', customerInfo)))
       .subscribe((customer: CustomerInfoById) => {
+       
+        // Отмечаем в общем списке групп,
+        // группы которые нам приходят с найденым клиентом,
+        // тем самым поазывая их в списке групп у клиента в инфо.
 
-
-        // this.customerInfoService.setCustomerInfoById(
-        //   customer.CustomerEmails,
-        //   customer.CustomerMobilePhones,
-        //   customer.CustomerAddresses,
-        //   customer.CustomerInfoForReceiept,
-        //   customer.CustomerCreditCardTokens,
-        //   customer.QuickGeneralGroupList
-        // );
-
-        this.customerInfoService.setCustomerGroupList(customer.QuickGeneralGroupList);
-        this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.transformCustomerDetailsForCustomerInfoComponent(customer))
+        this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.customerInfoService.transformCustomerDetailsForCustomerInfoComponent(customer));
         this.customerInfo = customer;
-        this.receiptService
-        this.receiptService
 
         this.spinner.stop();
         this.customerInfoService.setEventCUstomerIsFoundById();
@@ -175,53 +171,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     console.log(form.value);
   }
 
-  transformCustomerDetailsForCustomerInfoComponent(customerDetails: CustomerInfoById) {
-    const newObject: CustomerInfoByIdForCustomerInfoComponent = {
-      customerEmails: customerDetails.CustomerEmails.map((email: CustomerEmails) => {
-        const changedEmail = {
-          emailName: email.EmailName,
-          email: email.Email
-        }
-        return changedEmail;
-      }),
-      customerPhones: customerDetails.CustomerMobilePhones.map((phone: CustomerPhones) => {
-        const changedPhone = {
-          phoneTypeId: phone.PhoneTypeId,
-          phoneNumber: phone.PhoneNumber
-        }
-        return changedPhone;
-      }),
-      customerAddress: customerDetails.CustomerAddresses.map((address: CustomerAddresses) => {
-        const changedAddress = {
-          cityName: address.CityName,
-          street: address.Street,
-          street2: address.Street2,
-          zip: address.Zip,
-          addressTypeId: address.AddressTypeId,
-          mainAddress: address.MainAddress
-        }
-        return changedAddress;
-      }),
-      customerMainInfo: customerDetails.CustomerInfoForReceiept.map((mainInfo: CustomerInfoForReceiept) => {
-        const changedMainInfo = {
-          customerId: mainInfo.CustomerId,
-          fname: mainInfo.fname,
-          lname: mainInfo.lname,
-          company: mainInfo.Company,
-          customerType: mainInfo.CustomerType,
-          title: mainInfo.Title,
-          gender: mainInfo.Gender,
-          customerCode: mainInfo.CustomerCode,
-          spouseName: mainInfo.SpouseName,
-          fileAs: mainInfo.FileAs,
-          birthday: mainInfo.BirthDate,
-          afterSunset1: mainInfo.AfterSunset1
-        }
-        return changedMainInfo
-      }),
-    }
-    return newObject
-  }
+
 
   createNew() {
     this.customerInfoService.createNewClicked();
@@ -238,6 +188,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.customerInfoService.createNewClicked();
+    this.globalStateService.clearSelectedMark();
     this.subscriptions.unsubscribe();
     this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
     console.log('NEW RECEIPT SUBSCRIBE On Destroy', this.subscriptions);

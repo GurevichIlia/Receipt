@@ -184,7 +184,7 @@ export class PaymentsTableComponent implements OnInit {
       {
         height: '150', width: '350px', disableClose: true, position: { top: 'top' },
         panelClass: 'question',
-        data: { questionText: 'Would you like to delete this payment', acceptButtonName: 'Accept', closeButtonName: 'Cancel' }
+        data: { questionText: 'Would you like to delete this payment', acceptButtonName: 'Confirm', closeButtonName: 'Cancel' }
       })
       .afterClosed().pipe(filter(answer => answer === true));
 

@@ -10,4 +10,5 @@ export class GeneralGroups {
       isTop: boolean;
       isWork: boolean;
       children?: GeneralGroups[];
+      isSelected?: boolean;
 }

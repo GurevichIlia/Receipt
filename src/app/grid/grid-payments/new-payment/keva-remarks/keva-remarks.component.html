@@ -1,0 +1,27 @@
+<hr>
+<div class="kevaRemarsBlock">
+  <div class="row mb-3 align-items-center">
+    <h4 class="mr-3 ml-3">{{'Keva remarks' | translate}}</h4>
+    <button class="mr-3 ml-3" type="button" mat-raised-button (click)="addNewRemark('Add remark')"
+      class="addRemarkBtn">{{'Add' | translate}}</button>
+  </div>
+
+
+  <!-- <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar> -->
+
+
+  <app-table #remarksTable *ngIf="showTable" [dataSource]="kevaRemarks$ | async" [buttons]="buttons" [columns]="columns"
+    [listDisplayedColumns]="listDisplayedColumns" (clickedButton)="getActionFromRemark($event)"></app-table>
+
+
+
+
+  <ng-container *ngIf="!showTable">{{'No one remarks' | translate}}</ng-container>
+
+  <!-- <ul class="list-unstyled mb-2">
+    <li *ngFor="let remark of (kevaRemarks$ | async); let i = index" class="mb-2">
+
+      <app-remark [kevaRemark]="remark" (remarkAction)="getActionFromRemark($event, i)"></app-remark>
+    </li>
+  </ul> -->
+</div>

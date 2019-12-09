@@ -1,3 +1,6 @@
+import { CustomerGroupsService } from './../../core/services/customer-groups.service';
+import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
+import { CustomerGroupsComponent } from './../../shared/modals/customer-groups/customer-groups.component';
 import { Customerinfo } from './../../models/customerInfo.model';
 import { CustomerInfoViewComponent } from './customer-info-view/customer-info-view.component';
 import { SuggestExistingCustomerComponent } from './../../shared/modals/suggest-existing-customer/suggest-existing-customer.component';
@@ -6,8 +9,8 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, AfterViewInit, Afte
 import { Router } from '@angular/router';
 import { FormArray, Validators, FormBuilder, FormGroup, FormControl, AbstractControl } from '@angular/forms';
 
-import { Observable, Subscription, Subject, of, BehaviorSubject, from, fromEvent, timer } from 'rxjs';
-import { debounceTime, takeUntil, delay, mapTo, takeWhile, map, mergeAll, mergeMap, concatAll, concatMap, switchAll, switchMap } from 'rxjs/operators';
+import { Observable, Subscription, Subject, of, } from 'rxjs';
+import { debounceTime, takeUntil, filter } from 'rxjs/operators';
 
 import { ReceiptsService } from '../services/receipts.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
@@ -17,7 +20,7 @@ import * as moment from 'moment';
 
 import { CustomerType } from 'src/app/models/customerType.model';
 import { GetCustomerReceipts } from 'src/app/models/customer-info-by-ID.model';
-import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from './customer-info.service';
+import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent, NewCustomerInfo } from './customer-info.service';
 import { CustomerTitle } from 'src/app/models/globalData.model';
 import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
 import { Phones } from 'src/app/models/phones.model';
@@ -40,7 +43,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   customerTitle: CustomerTitle[];;
   customerTypes: CustomerType[];
   @Output() toNewPayment = new EventEmitter();
-  @Output() onSave = new EventEmitter<CustomerInfoByIdForCustomerInfoComponent>();
+  @Output() onSave = new EventEmitter<NewCustomerInfo>();
   customerInfoById: CustomerInfoByIdForCustomerInfoComponent;
   step: number;
   // cityAutoCompleteControl = new FormControl();
@@ -96,7 +99,9 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     private route: Router,
     private paymentsService: PaymentsService,
     private customerInfoService: CustomerInfoService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private globalStateService: GlobalStateService,
+    private customerGroupsSevice: CustomerGroupsService
   ) {
     // tslint:disable-next-line: max-line-length
     // this.payMath = new FormControl({ value: localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null, disabled: this.disabledPayMethod }, [Validators.required])
@@ -115,11 +120,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         // tslint:disable-next-line: max-line-length
         customerType: [this.setCustomerType()],
         title: [this.getItemsFromSessionStorage('title')],
-        gender: [this.getItemsFromSessionStorage('gender')],
+        gender: [0],
         customerCode: [this.getItemsFromSessionStorage('tZ')],
         spouseName: [this.getItemsFromSessionStorage('spouseName')],
         fileAs: [this.getItemsFromSessionStorage('fileAs')],
-        birthday: [moment(this.getItemsFromSessionStorage('birthday')).format('YYYY-MM-DD')],
+        birthday: [''],
         afterSunset1: [this.getItemsFromSessionStorage('afterSunset')],
       }),
       phones: this.fb.array([
@@ -143,15 +148,6 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
           addressTypeId: [''],
           mainAddress: [''],
 
-
-        }),
-        this.fb.group({
-          cityName: [''],
-          street: [''],
-          street2: [''],
-          zip: [''],
-          addressTypeId: [''],
-          mainAddress: [''],
 
         }),
       ]),
@@ -296,6 +292,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         this.changeCustomerInfoIfCustomerIsFound(this.customerInfoById);
         console.log('EVENT CUSTOMER FOUND');
       });
+    this.addGroupsIsClicked();
   }
 
   ngAfterViewInit(): void {
@@ -576,7 +573,10 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         // this.receiptService.createNewClicked();
         break
       case '/home/new-customer':
+
+
         this.saveNewCustomer(this.userInfoGroup.value);
+
         // setTimeout(() => this.goToNewCustomerDetails(3076), 2000);
         break
     }
@@ -666,6 +666,8 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         break
       case 'deleteAddress': this.deleteAddress($event.index);
         break
+      // case 'showGroups': this.openCustomerGroupsModal();
+      //   break
     }
   }
   resetGroup() {
@@ -703,7 +705,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   //   this.toNewCustomerDetails.emit(id);
   // }
 
-  saveNewCustomer(newCustomer: CustomerInfoByIdForCustomerInfoComponent) {
+  saveNewCustomer(newCustomer: NewCustomerInfo) {
+    this.deleteEmptyEmail(this.emails);
+    this.deleteEmptyAddress(this.address);
+    this.deleteEmptyPhone(this.phones);
+    newCustomer.customerMainInfo.fileAs = this.customerInfoService.createFileAs(newCustomer.customerMainInfo);
     this.onSave.emit(newCustomer);
   }
 
@@ -764,7 +770,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
 
   cityAutocomplete(filteredSubject: CustomerTitle[], formControl: AbstractControl, filterKey: string) {
     this.filteredCity$ = this.generalService.formControlAutoComplete(filteredSubject, formControl, filterKey);
-   return this.filteredCity$;
+    return this.filteredCity$;
   }
 
   getCurrentCustomerInfoByIdForCustomerInfoComponent() {
@@ -774,9 +780,14 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       .subscribe((customerInfo: CustomerInfoByIdForCustomerInfoComponent) => {
         console.log('CUSTOMER INFO GOT IN CUSTOMER INFO COMPONENT', customerInfo);
         if (customerInfo) {
+          this.globalStateService.clearSelectedMark();
           this.customerInfoById = customerInfo;
 
           this.changeCustomerInfoIfCustomerIsFound(customerInfo);
+          if (customerInfo.customerGroups) {
+            customerInfo.customerGroups.map(group => this.globalStateService.markGroupAsSelected(group.GroupId));
+
+          }
         } else {
           setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
 
@@ -792,6 +803,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   getCities() {
     this.customerInfoService.getCities$()
       .pipe(
+        filter(cities => cities !== null),
         debounceTime(1),
         takeUntil(this.subscription$))
       .subscribe(cities => {
@@ -834,7 +846,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     // пытаюсь отправить адреса как массив,
     // поэтому пока посылаю как один объект
     customerInfo.addresses = customerInfo.addresses;
-    customerInfo.groups = this.customerInfoService.getCurrentCustomerInfoByIdForCustomerInfoComponent().pickedGroups;
+    customerInfo.groups = this.customerInfoService.getSelectedGroupsId(this.globalStateService.customerGroups.getValue());
 
     this.receiptService.setCustomerInfoToNewReceipt(customerInfo);
   }
@@ -874,6 +886,17 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
 
   enableFormGroup(formGroup: FormGroup) {
     formGroup.enable();
+  }
+
+  openCustomerGroupsModal() {
+    this.matDialog.open(CustomerGroupsComponent, { width: '500px', height: '600px' });
+  }
+
+  addGroupsIsClicked() {
+    this.customerGroupsSevice.addGroupsIsClicked$
+      .pipe(
+        takeUntil(this.subscription$)
+      ).subscribe(() => this.openCustomerGroupsModal());
   }
 
   ngOnDestroy() {

@@ -1,5 +1,7 @@
+import { GeneralGroups } from 'src/app/models/generalGroups.model';
+import { takeUntil } from 'rxjs/operators';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { SendMessageService } from '../send-message.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
@@ -20,6 +22,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
   selectedGroups: number[] = [];
   postfix = new FormControl('');
   currentLang: string;
+  subscription$ = new Subject();
   constructor(
     private fb: FormBuilder,
     private sendMessageService: SendMessageService,
@@ -30,22 +33,27 @@ export class SendMessageComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.postfix.valueChanges.subscribe(postfix => {
-      let message: string = this.message.value;
-      if (this.currentLang === 'he') {
-        this.message.patchValue(`{${postfix}} ${message}`);
-      } else {
-        this.message.patchValue(`${message} {${postfix}} `);
-      }
-    })
-  // this.spinner.start();
+    this.postfix.valueChanges
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(postfix => {
+        let message: string = this.message.value;
+        if (this.currentLang === 'he') {
+          this.message.patchValue(`{${postfix}} ${message}`);
+        } else {
+          this.message.patchValue(`${message} {${postfix}} `);
+        }
+      })
+    // this.spinner.start();
     this.checkWindowSize();
     this.addClassOrderFirst();
     this.createMessageForm();
     this.getSelectedGroups();
     this.getOrgName();
     this.getQuantityOfMessages();
-    this.generalService.currentLang$.subscribe(lang => this.currentLang = lang);
+    this.generalService.currentLang$
+
+      .subscribe(lang => this.currentLang = lang);
     // this.spinner.stop();
   }
   addClassOrderFirst() {
@@ -73,6 +81,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
   get groups() {
     return this.messageForm.get('groups');
   }
+
   getSelectedGroups() {
     this.subscription.add(this.sendMessageService.selectedGroups.subscribe((group: number) => {
       if (this.selectedGroups.includes(group)) {
@@ -81,20 +90,30 @@ export class SendMessageComponent implements OnInit, OnDestroy {
         this.selectedGroups.push(group);
       }
       this.updateGroups();
-      console.log('SELECTION', this.groups.value);
+      console.log('SELECTION', this.selectedGroups);
     }))
   }
+
+
   updateGroups() {
     this.groups.patchValue(this.selectedGroups);
   }
+
   checkWindowSize() {
-    this.generalService.currentSizeOfWindow$.subscribe(width => this.addClassOrderFirst());
+    this.generalService.currentSizeOfWindow$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(width => this.addClassOrderFirst());
   }
+
   getOrgName() {
-    this.generalService.currentOrgName$.subscribe((orgName: string) => {
-      console.log('SEND MESSAGE', orgName)
-      this.orgName = orgName;
-    })
+    this.generalService.currentOrgName$
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((orgName: string) => {
+        console.log('SEND MESSAGE', orgName)
+        this.orgName = orgName;
+      })
   }
   sendMessage() {
     // tslint:disable-next-line: max-line-length
@@ -150,5 +169,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
     // Called once, before the instance is destroyed.
     // Add 'implements OnDestroy' to the class.
     this.subscription.unsubscribe();
+    this.subscription$.next();
+    this.subscription$.complete();
   }
 }

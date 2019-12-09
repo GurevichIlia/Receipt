@@ -1,11 +1,14 @@
+import { QuickCustomerGroupList, CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from './../../models/customer-info-by-ID.model';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { Injectable } from '@angular/core';
+
 import { NewCustomerService } from './../../new-customer/new-customer.service';
 import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
-import { Router, NavigationEnd } from '@angular/router';
-import { BehaviorSubject, Subject, from } from 'rxjs';
-import { Injectable } from '@angular/core';
+
 import { ReceiptsService } from '../services/receipts.service';
 import { GeneralSrv } from '../services/GeneralSrv.service';
-import { FormArray, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormArray, FormGroup, FormBuilder } from '@angular/forms';
 import { Phones } from 'src/app/models/phones.model';
 import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
@@ -13,12 +16,25 @@ import { Group } from './customer-info.component';
 import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 import { Customerinfo } from 'src/app/models/customerInfo.model';
+import { GeneralGroups } from 'src/app/models/generalGroups.model';
+import { CustomerEmails, CustomerPhones } from 'src/app/models/fullCustomerDetailsById.model';
 
 export interface CustomerInfoByIdForCustomerInfoComponent {
   customerEmails: Emails[],
   customerPhones: Phones[],
   customerAddress: Addresses[],
-  customerMainInfo: CustomerMainInfo[]
+  customerMainInfo: CustomerMainInfo[];
+  customerGroups?: QuickCustomerGroupList[];
+  customerCreditCardTokens?: any[],
+  pickedGroups?: Group[]
+}
+
+export interface NewCustomerInfo {
+  customerEmails: Emails[],
+  customerPhones: Phones[],
+  customerAddress: Addresses[],
+  customerGroups?: QuickCustomerGroupList[];
+  customerMainInfo: CustomerMainInfo;
   customerCreditCardTokens?: any[],
   pickedGroups?: Group[]
 }
@@ -302,12 +318,81 @@ export class CustomerInfoService {
   //     }))
   //   }
   // }
+  transformCustomerDetailsForCustomerInfoComponent(customerDetails: CustomerInfoById) {
+    const newObject: CustomerInfoByIdForCustomerInfoComponent = {
+      customerEmails: customerDetails.CustomerEmails.map((email: CustomerEmails) => {
+        const changedEmail = {
+          emailName: email.EmailName,
+          email: email.Email
+        }
+        return changedEmail;
+      }),
+      customerPhones: customerDetails.CustomerMobilePhones.map((phone: CustomerPhones) => {
+        const changedPhone = {
+          phoneTypeId: phone.PhoneTypeId,
+          phoneNumber: phone.PhoneNumber
+        }
+        return changedPhone;
+      }),
+      customerAddress: customerDetails.CustomerAddresses.map((address: CustomerAddresses) => {
+        const changedAddress = {
+          cityName: address.CityName,
+          street: address.Street,
+          street2: address.Street2,
+          zip: address.Zip,
+          addressTypeId: address.AddressTypeId,
+          mainAddress: address.MainAddress
+        }
+        return changedAddress;
+      }),
+      customerMainInfo: customerDetails.CustomerInfoForReceiept.map((mainInfo: CustomerInfoForReceiept) => {
+        const changedMainInfo = {
+          customerId: mainInfo.CustomerId,
+          fname: mainInfo.fname,
+          lname: mainInfo.lname,
+          company: mainInfo.Company,
+          customerType: mainInfo.CustomerType,
+          title: mainInfo.Title,
+          gender: mainInfo.Gender,
+          customerCode: mainInfo.CustomerCode,
+          spouseName: mainInfo.SpouseName,
+          fileAs: mainInfo.FileAs,
+          birthday: mainInfo.BirthDate,
+          afterSunset1: mainInfo.AfterSunset1
+        }
+        return changedMainInfo
+      }),
+      customerGroups: customerDetails.CustomerGroupsGeneralSet
+    }
+    return newObject
 
-  saveNewCustomer(newCustomer: CustomerInfoByIdForCustomerInfoComponent) {
-    this.newCustomerService.saveNewCustomer(newCustomer);
   }
 
-   createNewClicked() {
+  createFileAs(customerInfo: CustomerMainInfo) {
+    debugger
+    if (customerInfo) {
+      let fileAs = customerInfo.fileAs;
+      const fname = customerInfo.fname;
+      const lname = customerInfo.lname;
+      const company = customerInfo.company;
+
+      return fileAs = fileAs ? fileAs : `${fname} ${lname} ${company}`;
+    }
+
+  }
+
+  getSelectedGroupsId(generalGroups: GeneralGroups[]) {
+    debugger
+    const selectedGroupsId: Group[] = generalGroups.filter(group => group.isSelected === true).map(selectedGroups => {
+      return { GroupId: selectedGroups.GroupId };
+    });
+    return selectedGroupsId;
+  }
+  // saveNewCustomer(newCustomer: CustomerInfoByIdForCustomerInfoComponent) {
+  //   this.newCustomerService.saveNewCustomer(newCustomer);
+  // }
+
+  createNewClicked() {
     this.createNewEvent$.next()
   }
 }

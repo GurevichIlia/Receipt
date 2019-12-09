@@ -1,0 +1,18 @@
+.mat-card {
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.submit-button {
+  background-color: rgb(38, 87, 122);
+  color: white;
+
+}
+
+.cancel-button {
+  background-color: rgb(250, 174, 33);
+  color: black;
+}

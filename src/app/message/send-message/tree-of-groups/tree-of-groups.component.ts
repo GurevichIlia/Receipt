@@ -1,11 +1,14 @@
+import { GlobalStateService } from './../../../shared/global-state-store/global-state.service';
+import { CustomerGroupsService } from './../../../core/services/customer-groups.service';
 import { GeneralGroups } from '../../../models/generalGroups.model';
 import { GeneralSrv } from '../../../receipts/services/GeneralSrv.service';
 import { SendMessageService, TodoItemFlatNode, TodoItemNode } from '../../send-message.service';
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit, Output, OnChanges } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { takeUntil, mergeMap, switchMap, map } from 'rxjs/operators';
 
 
 
@@ -14,25 +17,30 @@ import { Subscription } from 'rxjs';
   templateUrl: './tree-of-groups.component.html',
   styleUrls: ['./tree-of-groups.component.css']
 })
-export class TreeOfGroupsComponent implements OnInit {
+export class TreeOfGroupsComponent implements OnInit, OnChanges {
   generalGroups: GeneralGroups[] = [];
   treeViewGeneralGroups: GeneralGroups[] = [];
-  selectedGroups: number[] = [];
+  selectedGroups: GeneralGroups[] = [];
   groups: any[] = [];
   subscription = new Subscription();
-
-  constructor(private _database: SendMessageService,
+  subscription$ = new Subject();
+  constructor(
     private sendMessageService: SendMessageService,
-    private generalService: GeneralSrv
+    private generalService: GeneralSrv,
+    private customerGroupsService: CustomerGroupsService,
+    private globalStateService: GlobalStateService
   ) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
       this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<TodoItemFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-    _database.dataChange.subscribe(data => {
-      this.dataSource.data = data;
-    });
+    sendMessageService.dataChange
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(data => {
+        this.dataSource.data = data;
+      });
 
   }
   /** Map from flat node to nested node. This helps us finding the nested node to be modified */
@@ -56,26 +64,78 @@ export class TreeOfGroupsComponent implements OnInit {
   /** The selection for checklist */
   checklistSelection = new SelectionModel<TodoItemFlatNode>(true /* multiple */);
 
+  ngOnChanges(simple) {
+    console.log(simple)
+  }
+
   ngOnInit() {
-    this.getGroups();
+    this.getGeneralGroups();
+    // this.getSelectedGroups();
   }
-  getGroups() {
-    if (this.generalService.checkLocalStorage('generalGroups')) {
-      this.generalGroups = JSON.parse(this.generalService.checkLocalStorage('generalGroups'))
-      this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
-    } else {
-      this.subscription.add(this.generalService.GetSystemTables()
-        .subscribe(response => {
-          this.generalGroups = response.CustomerGroupsGeneral.sort(this.compareName);
-          localStorage.setItem('generalGroups', JSON.stringify(this.generalGroups));
-          this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
-        }));
-    }
+
+  // getGroups() {
+  //   // if (this.generalService.checkLocalStorage('generalGroups')) {
+  //   //   this.generalGroups = JSON.parse(this.generalService.checkLocalStorage('generalGroups'))
+  //   //   this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
+  //   // } else {
+  //   if (this.globalStateService.customerGroups.getValue()) {
+  //     this.generalGroups = this.globalStateService.customerGroups.getValue();
+  //     this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
+  //   } else {
+  //     this.subscription.add(this.generalService.GetSystemTables()
+  //       .subscribe(response => {
+  //         this.generalGroups = response.CustomerGroupsGeneral.sort(this.compareName);
+  //         this.globalStateService.setCustomerGroups(this.generalGroups);
+  //         // localStorage.setItem('generalGroups', JSON.stringify(this.generalGroups));
+  //         console.log('GROUPS RESPONSE', response)
+  //         this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(this.generalGroups, 0);
+  //         console.log('TREE VIEW', this.treeViewGeneralGroups)
+  //       }));
+  //   }
+  // }
+
+
+  getGeneralGroups() {
+    this.customerGroupsService.getGeneralGroups$()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((groups: GeneralGroups[]) => {
+        if (groups) {
+          groups = groups.sort(this.compareName)
+          const generalGroups = groups.sort(this.compareName);
+
+          this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(generalGroups, 0);
+        }
+      })
   }
+
+
+
+  // getSelectedGroups() {
+  //   this.customerGroupsService.getGeneralGroups$()
+  //     .pipe(
+  //       switchMap((groups: GeneralGroups[]) => {
+  //         if (this.customerGroupsService.selectedGroups.getValue().length === 0) {
+  //           const sortedGroups = [...groups.sort(this.compareName)];
+  //           this.customerGroupsService.setSelectedGroups(sortedGroups);
+  //         }
+  //         return this.customerGroupsService.getSelectedGroups$();
+  //       }))
+  //     .pipe(
+  //       takeUntil(this.subscription$))
+  //     .subscribe(selectedGroups => {
+  //       selectedGroups = [...selectedGroups.sort(this.compareName)];
+  //       this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(selectedGroups, 0);
+
+  //     })
+  // }
+
+
   refreshGroups() {
     localStorage.removeItem('generalGroups');
-    this.getGroups();
+    // this.getGeneralGroups();
   }
+
   compareName(a: GeneralGroups, b: GeneralGroups) {
     if (a.GroupName < b.GroupName) {
       return -1;
@@ -108,6 +168,8 @@ export class TreeOfGroupsComponent implements OnInit {
     flatNode.GroupName = node.GroupName;
     flatNode.GroupId = node.GroupId;
     flatNode.GroupNameEng = node.GroupNameEng;
+    flatNode.isSelected = node.isSelected;
+
     flatNode.level = level;
     flatNode.expandable = !!node.children;
     this.flatNodeMap.set(flatNode, node);
@@ -116,36 +178,39 @@ export class TreeOfGroupsComponent implements OnInit {
   }
 
   /** Whether all the descendants of the node are selected. */
-  descendantsAllSelected(node: TodoItemFlatNode): boolean {
-    const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.every(child =>
-      this.checklistSelection.isSelected(child)
-    );
+  // descendantsAllSelected(node: TodoItemFlatNode): boolean {
+  //   debugger
+  //   const descendants = this.treeControl.getDescendants(node);
+  //   const descAllSelected = descendants.every(child =>
+  //     this.checklistSelection.isSelected(child)
+  //   );
 
-    return descAllSelected;
-  }
+  //   return descAllSelected;
+  // }
 
   /** Whether part of the descendants are selected */
-  descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
-    const descendants = this.treeControl.getDescendants(node);
-    const result = descendants.some(child => this.checklistSelection.isSelected(child));
-    return result && !this.descendantsAllSelected(node);
-  }
+  // descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
+  //   debugger
+  //   const descendants = this.treeControl.getDescendants(node);
+  //   const result = descendants.some(child => this.checklistSelection.isSelected(child));
+  //   return result && !this.descendantsAllSelected(node);
+  // }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
-  todoItemSelectionToggle(node: TodoItemFlatNode): void {
-    this.checklistSelection.toggle(node);
-    const descendants = this.treeControl.getDescendants(node);
-    this.checklistSelection.isSelected(node)
-      ? this.checklistSelection.select(...descendants)
-      : this.checklistSelection.deselect(...descendants);
+  // todoItemSelectionToggle(node: TodoItemFlatNode): void {
 
-    // Force update for the parent
-    descendants.every(child =>
-      this.checklistSelection.isSelected(child)
-    );
-    this.checkAllParentsSelection(node);
-  }
+  //   this.checklistSelection.toggle(node);
+  //   const descendants = this.treeControl.getDescendants(node);
+  //   this.checklistSelection.isSelected(node)
+  //     ? this.checklistSelection.select(...descendants)
+  //     : this.checklistSelection.deselect(...descendants);
+
+  //   // Force update for the parent
+  //   descendants.every(child =>
+  //     this.checklistSelection.isSelected(child)
+  //   );
+  //   this.checkAllParentsSelection(node);
+  // }
 
   /** Toggle a leaf to-do item selection. Check all the parents to see if they changed */
   todoLeafItemSelectionToggle(node: TodoItemFlatNode): void {
@@ -212,12 +277,20 @@ export class TreeOfGroupsComponent implements OnInit {
 
   // }
 
-  addGroup(groupId: number) {
-    this.sendMessageService.selectedGroups.next(groupId);
-    // console.log('SELECTED', this.checklistSelection.selected);
-  }
-  sendGroupsToService() {
+  // addGroup(groupId: number) {
+  //   this.sendMessageService.selectedGroups.next(groupId);
 
+  //   this.customerGroupsService.addGroup(groupId);
+  // }
+
+  selectGroup(isSelected: boolean, groupId: number) {
+    console.log('SELECTED', isSelected, groupId);
+    this.sendMessageService.selectedGroups.next(groupId);
+
+    this.customerGroupsService.selectGroup({isSelected, groupId});
+  }
+
+  sendGroupsToService() {
 
   }
   // addGroup(node){
@@ -227,6 +300,9 @@ export class TreeOfGroupsComponent implements OnInit {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
+    this.globalStateService.updateCustomerGroups();
     this.subscription.unsubscribe();
+    this.subscription$.next();
+    this.subscription$.complete();
   }
 }

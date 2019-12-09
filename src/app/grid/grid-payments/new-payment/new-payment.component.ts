@@ -1,3 +1,7 @@
+import { KevaRemarksService } from './keva-remarks/keva-remarks.service';
+import { KevaRemark } from './../../payments.service';
+import { ResponseData } from './../../../models/response.model';
+
 
 import { Addresses } from './../../../models/addresses.model';
 import { Emails } from './../../../models/emails.model';
@@ -49,7 +53,8 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   listCredCard: BehaviorSubject<CustomerCreditCard[]>;
   listCustomerCreditCard$: Observable<CustomerCreditCard[]>;
   listNewCreditCard = <Creditcard[]>[]
-  editiingKevaId: number;
+  editingKevaId: number;
+  editingCustomerId: number;
   // paymentTypes = new BehaviorSubject<string>('');
   // paymentTypes$: Observable<string> = this.paymentTypes.asObservable();
   customerEmails$: Observable<Emails[]>;
@@ -57,6 +62,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   customerPhones$: Observable<Phones[]>;
   currentLang: string;
   isSubmit = false;
+  kevaRemarks$: Observable<KevaRemark[]>;
   constructor(
     private _formBuilder: FormBuilder,
     private paymentsService: PaymentsService,
@@ -66,7 +72,8 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private creditCardService: CreditCardService,
     private newPaymentService: NewPaymentService,
     private location: Location,
-    private toaster: ToastrService
+    private toaster: ToastrService,
+    private kevaRemarksService: KevaRemarksService
   ) { }
 
   ngOnInit() {
@@ -244,7 +251,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
           this.newPaymentService.updatePaymentFormForEditeMode(this.newPaymentForm, data)
           this.newPaymentService.setFoundedCustomerId(data.Customerid);
           this.getListCustomerCreditCard(data.Customerid);
-          this.editiingKevaId = data.Kevaid;
+          this.editingKevaId = data.Kevaid;
+          this.editingCustomerId = data.Customerid
+          this.newPaymentService.setEditingKevaIdAndCustomerId(data.Kevaid, data.Customerid);
         } else {
         }
       })
@@ -304,7 +313,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
           const message = this.currentLang === 'he' ? 'נשמר בהצלחה' : 'Successfully';
           this.toaster.success('', message, {
             positionClass: 'toast-top-center'
-          }); 
+          });
           this.addNewCardToListOfNewCreditCards(credCard.newCredCard);
 
           this.newPaymentForm.get('thirdStep.creditCard').patchValue({
@@ -413,6 +422,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+ 
 
   // duplicateKeva() {
   //   this.setDataToNewPaymentKeva();
@@ -434,7 +444,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   updateCustomerKeva() {
     if (this.newPaymentForm.valid) {
       this.setDataToNewPaymentKeva();
-      this.newPaymentService.setEditKevaId(this.editiingKevaId);
+      this.newPaymentService.setEditKevaId(this.editingKevaId);
       this.paymentsService.updateCUstomerKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
         .pipe(
           takeUntil(this.subscription$))
@@ -516,13 +526,15 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(
         takeUntil(this.subscription$))
       .subscribe((newCredCard: { credCard: Creditcard }) => {
-         if(newCredCard.credCard && typeof(newCredCard.credCard) !== 'number' ){
+        if (newCredCard.credCard && typeof (newCredCard.credCard) !== 'number') {
           console.log('CURRENT CREDIT CARD', newCredCard.credCard.customername);
           this.updateAccount(newCredCard.credCard);
         }
-        
+
       })
   }
+
+ 
 
 
 

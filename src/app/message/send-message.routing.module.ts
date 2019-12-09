@@ -18,12 +18,11 @@ export const sendMessageRoutes: Routes = [
 @NgModule({
       imports: [CommonModule,
             SharedModule,
-            InfiniteScrollModule,
             TranslateModule, RouterModule.forChild(sendMessageRoutes)],
       exports: [],
       declarations: [
             SendMessageComponent,
-            TreeOfGroupsComponent,
+           
             MessageComponent]
 })
 export class SendMessageRoutingModule { }

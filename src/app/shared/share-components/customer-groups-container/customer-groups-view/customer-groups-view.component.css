@@ -1,0 +1,19 @@
+ul {
+  direction: inherit;
+}
+
+li {
+  text-align: justify;
+  font-size: 17px;
+}
+
+button {
+  width: 90px;
+  height: 30px;
+}
+
+.header {
+  display: flex;
+  flex-direction: initial;
+  justify-content: inherit;
+}

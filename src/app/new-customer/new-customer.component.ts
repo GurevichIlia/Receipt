@@ -1,3 +1,4 @@
+import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { ToastrService } from 'ngx-toastr';
 import { CustomerDetailsService } from './../customer-details/customer-details.service';
@@ -21,7 +22,8 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
     private router: Router,
     private newCustomerService: NewCustomerService,
     private toaster: ToastrService,
-    private customerDetails: CustomerDetailsService
+    private customerDetails: CustomerDetailsService,
+    private customerInfoService: CustomerInfoService
   ) { }
 
   ngOnInit() {
@@ -47,6 +49,11 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
             });
             this.goToCustomerDetails();
             localStorage.removeItem('customerSearchData')
+          } else {
+            console.log('NEW CUSTOMER ERROR', response )
+            this.toaster.error('', response.ErrMsg, {
+              positionClass: 'toast-top-center'
+            });
           }
         }
       },
@@ -63,6 +70,8 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
+    this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
+    this.customerInfoService.createNewClicked();
     this.subscription$.next();
     this.subscription$.complete();
   }

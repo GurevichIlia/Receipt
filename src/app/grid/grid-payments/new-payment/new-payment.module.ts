@@ -10,6 +10,9 @@ import { FourthStepComponent } from './fourth-step/fourth-step.component';
 import { FifthStepComponent } from './fifth-step/fifth-step.component';
 import { BankComponent } from './third-step/bank/bank.component';
 import { CreditCardComponent } from '../new-payment/third-step/credit-card/credit-card.component';
+import { KevaRemarksComponent } from './keva-remarks/keva-remarks.component';
+import { RemarkComponent } from './keva-remarks/remark/remark.component';
+import { EditRemarkComponent } from './keva-remarks/edit-remark/edit-remark.component';
 
 ;
 
@@ -28,11 +31,15 @@ const newPaymentRoutes: Routes = [
     FifthStepComponent,
     BankComponent,
     CreditCardComponent,
+    KevaRemarksComponent,
+    RemarkComponent,
+    EditRemarkComponent
   ],
   imports: [
     SharedModule,
     CommonModule,
     RouterModule.forChild(newPaymentRoutes),
-  ]
+  ],
+  entryComponents: [EditRemarkComponent]
 })
 export class NewPaymentModule { }

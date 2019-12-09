@@ -22,6 +22,11 @@ import { ModalSessionexpiredComponent } from '../receipts/modals/modal-sessionex
 import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/confirm-purchases.component';
 import { AutocompleteComponent } from './share-components/autocomplete/autocomplete.component';
 import { HighlightErrorIfInvalidDirective } from './directives/highlight-error-if-invalid.directive';
+import { CustomerGroupsComponent } from './modals/customer-groups/customer-groups.component';
+import { TreeOfGroupsComponent } from '../message/send-message/tree-of-groups/tree-of-groups.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { CustomerGroupsContainerComponent } from './share-components/customer-groups-container/customer-groups-container.component';
+import { CustomerGroupsViewComponent } from './share-components/customer-groups-container/customer-groups-view/customer-groups-view.component';
 
 
 @NgModule({
@@ -41,7 +46,11 @@ import { HighlightErrorIfInvalidDirective } from './directives/highlight-error-i
             ConfirmPurchasesComponent,
             ModalSessionexpiredComponent,
             AutocompleteComponent,
-            HighlightErrorIfInvalidDirective
+            HighlightErrorIfInvalidDirective,
+            CustomerGroupsComponent,
+            TreeOfGroupsComponent,
+            CustomerGroupsContainerComponent,
+            CustomerGroupsViewComponent,
 
       ],
       imports: [
@@ -53,6 +62,7 @@ import { HighlightErrorIfInvalidDirective } from './directives/highlight-error-i
             NgxPageScrollCoreModule,
             NgxPageScrollModule,
             MomentModule,
+            InfiniteScrollModule
 
 
 
@@ -75,10 +85,11 @@ import { HighlightErrorIfInvalidDirective } from './directives/highlight-error-i
             DateTransformPipe,
             HighlightErrorIfInvalidDirective,
             AutocompleteComponent,
+            TreeOfGroupsComponent
 
 
       ],
-      entryComponents: [CreditCardComponent, SendByEmailComponent, SuggestExistingCustomerComponent, AskQuestionComponent, ModalSessionexpiredComponent, ConfirmPurchasesComponent]
+      entryComponents: [CreditCardComponent, SendByEmailComponent, SuggestExistingCustomerComponent, AskQuestionComponent, ModalSessionexpiredComponent, ConfirmPurchasesComponent, CustomerGroupsComponent]
 })
 export class SharedModule {
 

@@ -1,3 +1,4 @@
+import { GeneralGroups } from './../../models/generalGroups.model';
 import { Router, NavigationEnd } from '@angular/router';
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -122,7 +123,7 @@ export class GeneralSrv {
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerSearchData?urlAddr=${this.orgName}`,
     )
       .pipe(map(response => response.Data
-      
+
       ));
   }
 
@@ -237,7 +238,8 @@ export class GeneralSrv {
     return obs;
   }
 
-  public GetSystemTables(): Observable<any> {
+  public GetSystemTables(): Observable<{ Cities: [], CustomerGroupsGeneral: GeneralGroups[] }> {
+
     let apiUrl = `${this.baseUrl}LandingPage/GetSytemTablesData?urlAddr=${this.orgName}`;
 
 
@@ -248,7 +250,16 @@ export class GeneralSrv {
     };
     let params = JSON.stringify(userInfo);
     const obs = this.http.get(apiUrl)
-      .pipe(map(response => response['Data']));
+      .pipe(map(response => response['Data']),
+        map((data: { Cities: [], CustomerGroupsGeneral: GeneralGroups[] }) => {
+
+          data.CustomerGroupsGeneral.map(group => {
+            group.isSelected = false;
+            const newGroup = {...group}
+            return newGroup;
+          })
+          return data;
+        }));
 
     // obs.subscribe(response => {
     //   const cities = response.Cities;

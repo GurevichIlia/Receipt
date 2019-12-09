@@ -1,10 +1,10 @@
 export interface Response {
-      Data: Data;
+      Data: any;
       ErrMsg: string;
       IsError: boolean;
 }
 
-interface Data {
+export interface ResponseData {
       error: string;
       res_description: string;
       customerid?: string;

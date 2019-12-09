@@ -4,7 +4,7 @@ table {
 
 }
 
-th{
+th.notBtn{
   min-width: 100px;
   width: fit-content;
 }
@@ -17,5 +17,10 @@ th{
 }
 
 .btn-lable-width {
-  width: 50px
+  width: 20px
+}
+
+.element-row:hover {
+  cursor: pointer;
+  background-color: whitesmoke !important;
 }

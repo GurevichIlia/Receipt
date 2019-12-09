@@ -1,0 +1,10 @@
+<mat-card class="mat-card">
+  <h4 class="mb-3">{{title | translate}}</h4>
+  <mat-form-field class="mb-2">
+    <textarea matInput placeholder="{{'Remark' | translate}}" [formControl]="remarkControl"></textarea>
+  </mat-form-field>
+  <div class="row justify-content-center">
+    <button class="col-5 submit-button " mat-raised-button (click)="onConfirm()">{{'Submit' | translate}}</button>
+    <button class="col-5 cancel-button ml-1" mat-raised-button (click)="onDismiss()">{{'Cancel' | translate}}</button>
+  </div>
+</mat-card>

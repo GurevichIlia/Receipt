@@ -8,9 +8,9 @@
     <div class="row kevaTitle">
 
       <div *ngIf="!isEditFileAs && fileAs.value !== ''" class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 text-right">
-        <h5> {{fileAs.value}} <span (click)="editFileAs()" style="cursor: pointer" mat-cell>
+        <h4> {{fileAs.value}} <span (click)="editFileAs()" style="cursor: pointer" mat-cell>
             <mat-icon>create</mat-icon>
-          </span> </h5>
+          </span> </h4>
       </div>
 
       <mat-form-field class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-right" *ngIf="isEditFileAs"
@@ -20,7 +20,7 @@
       </mat-form-field>
 
       <button type="button" mat-raised-button (click)="goBack()" class="btnBack col-sm-1 col-md-1 col-lg-1 col-xl-1">
-        {{'Previous' | translate}} 
+        {{'Previous' | translate}}
         <!-- <mat-icon>arrow_back</mat-icon> -->
       </button>
     </div>
@@ -28,7 +28,7 @@
       <!-- ROW ONE -->
       <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
         <mat-expansion-panel-header>
-          <h5> הוראת קבע </h5>
+          <h4> הוראת קבע </h4>
         </mat-expansion-panel-header>
         <app-first-step [isSubmit]="isSubmit" [globalData$]="globalData$" [firstStep]="newPaymentForm.get('firstStep')">
         </app-first-step>
@@ -41,7 +41,7 @@
       <!-- ROW TWO -->
       <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
         <mat-expansion-panel-header>
-          <h5> פרטים אישיים</h5>
+          <h4> פרטים אישיים</h4>
         </mat-expansion-panel-header>
         <app-second-step [isSubmit]="isSubmit" [secondStep]="newPaymentForm.get('secondStep')"
           [customerPhones]="customerPhones$ | async">
@@ -57,9 +57,9 @@
       <!-- ROW THREE -->
       <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
         <mat-expansion-panel-header>
-          <!-- <h5 *ngIf="paymentType.value === '2' || paymentType.value === '1'">פרטי ח.בנק</h5>
-          <h5 *ngIf="paymentType.value === '3'">כרטיס אשראי</h5> -->
-          <h5>אמצעי חיוב</h5>
+          <!-- <h4 *ngIf="paymentType.value === '2' || paymentType.value === '1'">פרטי ח.בנק</h4>
+          <h4 *ngIf="paymentType.value === '3'">כרטיס אשראי</h4> -->
+          <h4>אמצעי חיוב</h4>
         </mat-expansion-panel-header>
         <app-third-step [isSubmit]="isSubmit" [paymentType]="paymentType" [listNewCreditCard]="listNewCreditCard"
           [listCustomerCreditCard$]="listCustomerCreditCard$" [thirdStep]="newPaymentForm.get('thirdStep')"
@@ -76,7 +76,7 @@
       <!-- ROW FOUR -->
       <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
         <mat-expansion-panel-header>
-          <h5>פרטי החיוב</h5>
+          <h4>פרטי החיוב</h4>
         </mat-expansion-panel-header>
         <app-fourth-step [isSubmit]="isSubmit" [globalData$]="globalData$"
           [fourthStep]="newPaymentForm.get('fourthStep')">
@@ -92,11 +92,15 @@
       <!-- ROW FIVE -->
       <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)">
         <mat-expansion-panel-header>
-          <h5>מידע לבניית קבלה</h5>
+          <h4>מידע לבניית קבלה</h4>
         </mat-expansion-panel-header>
         <app-fifth-step [isSubmit]="isSubmit" [projectCat]="projectCat" [paymentType]="paymentType.value"
           [employeeList$]="employeeList$" [globalData$]="globalData$" [fifthStep]="newPaymentForm.get('fifthStep')"
           [customerAddresses]="customerAddresses$ | async" [customerEmails]="customerEmails$ | async"></app-fifth-step>
+       
+        <app-keva-remarks *ngIf="kevaMode === 'edit'" ></app-keva-remarks>
+
+
         <mat-action-row>
           <button *ngIf="kevaMode === 'newKeva'" type="button" mat-button color="warn" (click)="prevStep()">
             {{'Previous' | translate}}</button>
@@ -104,9 +108,11 @@
             (click)="nextStep()">{{'Next' | translate}}</button>
         </mat-action-row>
       </mat-expansion-panel>
-      <!-- ROW FIVE -->
-    </mat-accordion>
 
+      <!-- ROW FIVE -->
+
+
+    </mat-accordion>
 
 
     <div class="row mt-3" style="justify-content: flex-end">

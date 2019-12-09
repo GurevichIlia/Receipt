@@ -34,6 +34,7 @@
     "creditcards-types": "^2.2.0",
     "guid-typescript": "^1.0.9",
     "hammerjs": "^2.0.8",
+    "immutable": "^4.0.0-rc.12",
     "jwt-decode": "^2.2.0",
     "moment": "^2.24.0",
     "ngx-infinite-scroll": "^7.2.0",

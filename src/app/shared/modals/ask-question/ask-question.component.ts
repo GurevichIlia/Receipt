@@ -9,7 +9,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 })
 export class AskQuestionComponent implements OnInit {
   questionText: string = '';
-  acceptButtonName: string = 'Accept';
+  acceptButtonName: string = 'Confirm';
   closeButtonName: string = 'Cancel';
   constructor(public matDialogRef: MatDialogRef<AskQuestionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { questionText: string, acceptButtonName?: string, closeButtonName?: string }

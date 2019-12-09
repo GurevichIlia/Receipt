@@ -7,7 +7,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 
 import { PaymentKeva } from 'src/app/models/paymentKeva.model';
 import { Projects4Receipt } from 'src/app/models/projects4receipt.model';
-import { PaymentsService } from '../../payments.service';
+import { PaymentsService, KevaRemarkForUpdate } from '../../payments.service';
 import { Customerinfo } from 'src/app/models/customerInfo.model';
 import { CreditCardList } from 'src/app/models/creditCardList.model';
 import * as moment from 'moment';
@@ -16,13 +16,16 @@ import { Creditcard } from 'src/app/models/creditCard.model';
 import { NewKevaFull } from 'src/app/models/newKevaFull';
 import { CustomerTitle } from 'src/app/models/globalData.model';
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
+import { filter } from 'rxjs/operators';
+
+
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class NewPaymentService {
-  _foundedCustomerId = new BehaviorSubject<number | string>('');
+  _foundedCustomerId = new BehaviorSubject<number>(null);
   foundedCustomerId$ = this._foundedCustomerId.asObservable();
 
   paymentType = new BehaviorSubject('');
@@ -31,8 +34,8 @@ export class NewPaymentService {
   customerInfoForNewKeva: BehaviorSubject<Customerinfo> = new BehaviorSubject(null);
   currentCustomerInfoForNewKeva$ = this.customerInfoForNewKeva.asObservable();
 
-  editingPayment = new BehaviorSubject<PaymentKeva>(null);
-  currentEditingPayment$ = this.editingPayment.asObservable();
+  editingKeva = new BehaviorSubject<PaymentKeva>(null);
+  currentEditingPayment$ = this.editingKeva.asObservable();
 
   duplicatingKeva = new BehaviorSubject<PaymentKeva>(null);
   currentDuplicatingKeva$ = this.duplicatingKeva.asObservable();
@@ -43,6 +46,8 @@ export class NewPaymentService {
   kevaMode = new BehaviorSubject<string>('newKeva');
   kevaMode$ = this.kevaMode.asObservable();
 
+  editingKevaIdAndCustomerId = new BehaviorSubject<{ kevaId: number, customerId: number }>(null);
+  editingKevaIdAndCustomerId$ = this.editingKevaIdAndCustomerId.asObservable().pipe(filter(ids => ids !== null));
 
   baseUrl = ''
   newKeva: NewKevaFull;
@@ -266,9 +271,12 @@ export class NewPaymentService {
 
   searchProjectId(projectName: string, projectsList: Projects4Receipt[]) {
     let projectId;
-    projectsList.filter((project: Projects4Receipt) => project.ProjectName === projectName ? projectId = project.ProjectId : '');
-    console.log('projectId', projectId);
-    return projectId;
+    if (projectsList) {
+      projectsList.filter((project: Projects4Receipt) => project.ProjectName === projectName ? projectId = project.ProjectId : '');
+      console.log('projectId', projectId);
+      return projectId;
+    }
+
   }
 
   setPaymentType(type: string) {
@@ -276,7 +284,7 @@ export class NewPaymentService {
   }
 
   setEditingPayment(payment: PaymentKeva) {
-    this.editingPayment.next(payment);
+    this.editingKeva.next(payment);
   }
 
   setDuplicatingKeva(keva: PaymentKeva) {
@@ -441,6 +449,17 @@ export class NewPaymentService {
     }
 
   }
+
+  getEditingKevaIdAndCustomerId$() {
+    return this.editingKevaIdAndCustomerId$;
+  }
+
+  setEditingKevaIdAndCustomerId(kevaId: number, customerId: number) {
+    this.editingKevaIdAndCustomerId.next({ kevaId, customerId })
+  }
+
+
+
   // setCustomerInfoById(customerEmails: CustomerEmails[], customerPhones: CustomerPhones[], customerAddress: CustomerAddresses[],
   //   customerMainInfo: Customermaininfo[] | MainDetails[],
   //   customerCreditCardTokens?: any[], customerGroupList?: CustomerGroupById[]

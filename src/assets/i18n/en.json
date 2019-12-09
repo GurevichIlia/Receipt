@@ -232,7 +232,7 @@
 "TotalInLeadCurrent":"Total in lead current",
 "ValueDate":"Value date",
 "chargedate":"Charge date",
-"id":"T.Z",
+"id":"id",
 "tadirut":"Tadirut",
 
 "New payment":"New payment",
@@ -261,6 +261,11 @@
     "Total": " Total",
     "GUID": " Guid",
     "ThanksLetterId": " Thanks Letter id",
-    "Duplicate the keva": "Duplicate the keva"
+    "Duplicate the keva": "Duplicate the keva",
+    "Edit remark": "Edit the remark",
+    "Add remark": "Add a new remark",
 
+    "Keva remarks": "Remarks",
+    "Would you like to delete this remark": "Would you like to delete this remark?",
+    "Would you like to delete this payment": "Would you like to delete this remark?"
   }

@@ -27,7 +27,9 @@ export class DateTransformPipe implements PipeTransform {
         break;
       case 'ValueDate': date = moment(date).format('DD/MM/YYYY');
         break;
-        case 'RecieptDate': date = moment(date).format('DD/MM/YYYY');
+      case 'RecieptDate': date = moment(date).format('DD/MM/YYYY');
+        break;
+        case 'Date': date = moment(date).format('DD/MM/YYYY');
         break;
     }
 

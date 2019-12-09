@@ -187,7 +187,7 @@
     "TotalInLeadCurrent": "סך במטבע מוביל",
     "ValueDate": "תאריך ערך",
     "chargedate": "תאריך חיוב",
-    "id": "ת.ז",
+    "id": "קוד שורה",
     "tadirut": "תדירות",
     "New payment": "תשלום חדש",
     "Reason": " סיבה",
@@ -215,5 +215,11 @@
     "Total": " סה``כ",
     "GUID": " קוד יחודי",
     "ThanksLetterId": " תבנית קבלה",
-    "Duplicate the keva": "הוראת קבע שכפל"
+    "Duplicate the keva": "הוראת קבע שכפל",
+    "Edit remark": " ערוך הערה ",
+    "Add remark": "הוסף הערה ",
+    "Keva remarks": "הערות",
+    "Would you like to delete this remark": "?האם תרצה למחוק הערה",
+    "Would you like to delete this payment": "?האם תרצה למחוק קבע"
+
 }

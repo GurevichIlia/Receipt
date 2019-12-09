@@ -36,21 +36,23 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
   }
 
   getCities() {
-    if (this.generalService.checkLocalStorage('cities')) {
-      const cities = JSON.parse(this.generalService.checkLocalStorage('cities'));
-      this.generalService.setCities(cities)
-    } else {
+    // if (this.generalService.checkLocalStorage('cities')) {
+    //   const cities = JSON.parse(this.generalService.checkLocalStorage('cities'));
+    //   this.generalService.setCities(cities)
+    // } else {
       this.generalService.GetSystemTables()
         .pipe(
           takeUntil(this.subscription$))
         .subscribe(
           response => {
             console.log('LoadSystemTables', response);
-            if (response.IsError == true) {
+            if (response['IsError'] == true) {
               alert('err');
             } else {
               const cities = response.Cities;
-              this.generalService.setCities(cities)
+              const generalGroups = [...response.CustomerGroupsGeneral]
+              this.generalService.setCities(cities);
+              this.globalStateService.setCustomerGroups(generalGroups);
               localStorage.setItem('cities', JSON.stringify(cities))
               console.log('CITIES', cities)
             }
@@ -62,7 +64,7 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
             console.log('CallCompleted');
           }
         );
-    }
+    // }
 
   }
 
@@ -97,10 +99,10 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
 
   GetCustomerSearchData() {
     let customerList: CustomerSearchData[] = [];
-    if (this.generalService.checkLocalStorage('customerSearchData')) {
-      customerList = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
-      this.globalStateService.setCustomerList(customerList);
-    } else {
+    // if (this.generalService.checkLocalStorage('customerSearchData')) {
+    //   customerList = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
+    //   this.globalStateService.setCustomerList(customerList);
+    // } else {
       this.generalService.getUsers()
         .pipe(
           map(response => {
@@ -112,6 +114,7 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
             }
           }),
           // map(response => response)
+  
           takeUntil(this.subscription$))
         .subscribe(
           data => {
@@ -123,7 +126,7 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
           },
         );
 
-    }
+    // }
   }
 
 

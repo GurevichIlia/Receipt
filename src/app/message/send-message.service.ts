@@ -15,6 +15,7 @@ export class TodoItemNode {
   GroupId: number;
   GroupName: string;
   GroupNameEng: string;
+  isSelected?: boolean;
   GroupParenCategory: number;
   Quick: boolean;
   SecurityLevel: number;
@@ -30,6 +31,7 @@ export class TodoItemFlatNode {
   GroupId: number;
   GroupName: string;
   GroupNameEng: string;
+  isSelected: boolean;
   GroupParenCategory: number;
   Quick: boolean;
   SecurityLevel: number;

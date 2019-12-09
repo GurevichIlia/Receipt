@@ -1,6 +1,6 @@
-<h4 class="mb-3">{{questionText}}?</h4>
+<h4 class="mb-3 text-center">{{questionText  | translate}}</h4>
 
 <div class="row " style="justify-content: space-evenly">
-  <button class="submit-button col-xl-5 " mat-raised-button (click)="accept()">{{acceptButtonName}}</button>
-  <button class="cancel-button col-xl-5" mat-raised-button (click)="close()">{{closeButtonName}}</button>
+  <button class="submit-button col-xl-5 " mat-raised-button (click)="accept()">{{acceptButtonName | translate}}</button>
+  <button class="cancel-button col-xl-5" mat-raised-button (click)="close()">{{closeButtonName | translate}}</button>
 </div>

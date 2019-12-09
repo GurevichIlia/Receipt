@@ -175,8 +175,9 @@
             </mat-autocomplete>
           </mat-form-field> -->
           <!-- <div class=" col-xs-12 col-sm-12 col-md-9 col-lg-3 col-xl-3"> -->
-            <app-autocomplete (formControlValue)="sendEventFromChild($event)" [arrayForFilter$]="cities$" [autoFormControl]="addresses.controls[i].controls.cityName" [placeHolder]="'City'"
-              [filterKeyWord]="'CityName'"></app-autocomplete>
+          <app-autocomplete (formControlValue)="sendEventFromChild($event)" [arrayForFilter$]="cities$"
+            [autoFormControl]="addresses.controls[i].controls.cityName" [placeHolder]="'City'"
+            [filterKeyWord]="'CityName'"></app-autocomplete>
 
           <!-- </div> -->
 
@@ -275,6 +276,7 @@
     <!-- <button type="button" mat-button color="primary"
       (click)="moreAddress=!moreAddress">{{'Address' | translate}}</button> -->
     <hr>
+    <app-customer-groups-container></app-customer-groups-container>
     <div>
       <h4 *ngIf="customerInfo?.QuickGeneralGroupList.length > 0">{{'Groups' | translate}}</h4>
       <mat-selection-list formControlName="groups">
@@ -286,7 +288,7 @@
   </div>
 
 
-  <p id="goDown" pageScroll href="#goDown">
+  <p class="button" id="goDown" pageScroll href="#goDown">
     <button id="goDown" pageScroll href="#goDown" style="background-color: rgb(38, 87, 122); color: white"
       *ngIf="!showMoreInfo" class="mb-2" type="button" mat-raised-button color="primary"
       (click)="showMoreInfo=!showMoreInfo;">

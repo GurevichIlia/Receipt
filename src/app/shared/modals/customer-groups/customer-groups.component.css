@@ -1,0 +1,20 @@
+.cancel-button {
+  width: 135px;
+  height: 35px;
+  background-color: rgb(250, 174, 33);
+  color: black;
+}
+
+.submit-button {
+  width: 135px;
+  height: 35px;
+  background-color: rgb(38, 87, 122);
+  color: white;
+}
+
+div.header {
+  /* background-color: white;
+  position: sticky;
+  z-index: 100; */
+  justify-content: space-between
+}

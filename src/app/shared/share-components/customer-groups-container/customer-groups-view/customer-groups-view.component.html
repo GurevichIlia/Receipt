@@ -1,0 +1,14 @@
+<div class="header mb-5">
+    <h4 class="">{{'Groups' | translate}}</h4>
+    <button class="mb-2 mr-1 ml-1 " style="background-color:  rgb(38, 87, 122); color: white" type="button" mat-raised-button
+       (click)="sendEventFromChild()">
+      {{'Add groups' | translate}}
+    </button>
+</div>
+
+
+<ul>
+  <li *ngFor="let group of selectedGroups">
+    {{group.GroupName}}
+  </li>
+</ul>

@@ -1,3 +1,6 @@
+h4 {
+  direction: initial;
+}
 
 .buttonBox {
   text-align: center;
@@ -27,5 +30,3 @@ button {
   background-color: rgb(38, 87, 122);
   color: white;
 }
-
-
