@@ -1,3 +1,4 @@
+import { CustomerGroupsGeneralSet } from './../../models/customer-info-by-ID.model';
 import { CustomerGroupsService } from './../../core/services/customer-groups.service';
 import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 import { CustomerGroupsComponent } from './../../shared/modals/customer-groups/customer-groups.component';
@@ -9,8 +10,8 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, AfterViewInit, Afte
 import { Router } from '@angular/router';
 import { FormArray, Validators, FormBuilder, FormGroup, FormControl, AbstractControl } from '@angular/forms';
 
-import { Observable, Subscription, Subject, of, } from 'rxjs';
-import { debounceTime, takeUntil, filter } from 'rxjs/operators';
+import { Observable, Subscription, Subject, of, EMPTY, } from 'rxjs';
+import { debounceTime, takeUntil, filter, switchMap, } from 'rxjs/operators';
 
 import { ReceiptsService } from '../services/receipts.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
@@ -29,6 +30,7 @@ import { Addresses } from 'src/app/models/addresses.model';
 import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
 import { MatDialog } from '@angular/material';
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
+import { GeneralGroups } from 'src/app/models/generalGroups.model';
 
 export interface Group {
   GroupId: number;
@@ -69,7 +71,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   currentLang: string;
 
 
-  selectedGroups: Group[] = [];
+  selectedGroups: CustomerGroupsGeneralSet[] = [];
   currentRoute: string;
   private subscriptions: Subscription = new Subscription();
   paymentsListData: GetCustomerReceipts;
@@ -81,7 +83,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   customerAddress: Addresses[];
   customerDetails: CustomerMainInfo[];
 
-  customerGroupList$: Observable<CustomerGroupById[]>
+
 
   customer: {
     customermaininfo: CustomerMainInfo;
@@ -91,6 +93,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     groups: Group[];
 
   }
+  selectedGroups$: Observable<number[]>
   subscription$ = new Subject();
   constructor(
     private receiptService: ReceiptsService,
@@ -100,8 +103,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     private paymentsService: PaymentsService,
     private customerInfoService: CustomerInfoService,
     private matDialog: MatDialog,
-    private globalStateService: GlobalStateService,
-    private customerGroupsSevice: CustomerGroupsService
+    private customerGroupsService: CustomerGroupsService
   ) {
     // tslint:disable-next-line: max-line-length
     // this.payMath = new FormControl({ value: localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null, disabled: this.disabledPayMethod }, [Validators.required])
@@ -254,11 +256,8 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     this.getCurrentCustomerInfoByIdForCustomerInfoComponent();
     // this.suggestUseExistingCustomerDetails();
     this.getCities();
-    this.getCustomerGroupList();
-
 
     this.getCreateNewEvent();
-
     // setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
     // this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
     //   .subscribe(data => {
@@ -292,7 +291,6 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         this.changeCustomerInfoIfCustomerIsFound(this.customerInfoById);
         console.log('EVENT CUSTOMER FOUND');
       });
-    this.addGroupsIsClicked();
   }
 
   ngAfterViewInit(): void {
@@ -367,6 +365,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       this.customerInfoService.updateValueInPhoneInputsArray(this.phones, customer.customerPhones)
       // this.setCustomerPhoneFormControls(this.phones, customer.customerPhones, this.generalService.getAddPhoneFunction(), this.fb);
 
+      if (customer.pickedGroups) {
+        customer.pickedGroups.map(group => this.customerGroupsService.markGroupAsSelected(group.CustomerGeneralGroupId));
+        this.customerGroupsService.updateCustomerGroups();
+        
+      } 
       this.setCustomerMainInfo(this.customerMainInfo, [customer.customerMainInfo[0]]);
 
       if (custInfo.customerId) {
@@ -478,6 +481,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     this.resetAddresses();
     this.refreshRequiredFormFields();
     this.disabledNextStep();
+    this.customerGroupsService.clearSelectedGroups();
 
   }
 
@@ -523,33 +527,18 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     return birthday;
   }
 
-  addCUstomerInfoToReceipt() {
 
 
 
-    // tslint:disable-next-line: max-line-length
-
-    this.setCustomerInfoToNewReceipt();
 
 
 
-    this.receiptService.setFullName(`${this.firstName.value} ${this.lastName.value}`);
-    // this.receiptService.setCustomerMainfInfoToReceipt(this.userInfoGroup.get('customerMainInfo').value);
-    // this.receiptService.newReceipt.customerInfo.customermaininfo.birthday = birthday;
-    // this.receiptService.setPhonesToReceipt(this.deleteEmptyPhone(this.phones));
-    // this.receiptService.setEmailsToReceipt(this.deleteEmptyEmail(this.emails));
-    // this.receiptService.setAdressesToReceipt(this.deleteEmptyAddress(this.addresses.value));
-    this.receiptService.customerEmails.next(this.deleteEmptyEmail(this.emails));
-    // this.receiptService.addGroupsToReceipt(this.addGroups());
-    this.addCurrentAddress(this.deleteEmptyAddress(this.address));
-    this.setCustomerCreditCardList();
 
-    console.log('form.value', this.userInfoGroup.value);
-    console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
-  }
+
   addCurrentAddress(currentAddress: Addresses[]) {
     this.customerInfoService.addCurrentAddress(currentAddress)
   }
+
   submit() {
     const birthday = this.changeBirthdayFormat(this.birthday);
     this.setItemToSessionStorage('birthday', birthday);
@@ -560,12 +549,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     if (this.lastName.value === null) {
       this.lastName.patchValue('');
     }
-
-    this.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.emails.value, this.phones.value, this.address.value, [this.customerMainInfo.value], this.getPickedGroups());
+    this.setCurrentCustomerInfoByIdState(this.emails.value, this.phones.value, this.address.value, [this.customerMainInfo.value], this.customerGroupsService.getTransformedSelectedGroups());
     // this.customerInfoService.setCustomerInfoById(this.emails.value, this.phones.value, this.address.value, this.customerMainInfo.value, null, this.getPickedGroups());
     switch (this.currentRoute) {
       case '/home/newreceipt':
-        this.addCUstomerInfoToReceipt()
+        this.setCustomerInfoToNewReceipt();
         this.receiptService.setStep(3);
         break
       case '/home/payments-grid/customer-search':
@@ -577,17 +565,15 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
 
         this.saveNewCustomer(this.userInfoGroup.value);
 
-        // setTimeout(() => this.goToNewCustomerDetails(3076), 2000);
         break
     }
-    // const birthday = this.changeBirthdayFormat(this.birthday);
-    // this.setItemToSessionStorage('birthday', birthday);
-    // this.setNewCustomer(this.customerMainInfo.value, this.phones.value, this.emails.value, this.address.value, this.getPickedGroups());
+
   }
   openShop() {
-    this.addCUstomerInfoToReceipt()
+    this.setCustomerInfoToNewReceipt();
     this.receiptService.setStep(2);
   }
+
   getItemsFromSessionStorage(key) {
     if (sessionStorage.getItem(key)) {
       return sessionStorage.getItem(key);
@@ -614,6 +600,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       this.paymentMethodId = null;
     }
   }
+
   getPaymentTypes() {
     this.subscriptions.add(this.receiptService.getGlobalReceiptData$().subscribe(data => {
       this.paymentMethods = data['PaymentTypes'];
@@ -682,20 +669,6 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     }
   }
 
-  getPickedGroups() {
-    if (this.group.value.length > 0) {
-      for (const selGroup of this.group.value) {
-        const selectedGroup: Group = {
-          GroupId: selGroup
-        };
-        this.selectedGroups.push(selectedGroup);
-      }
-      console.log(this.selectedGroups)
-      return this.selectedGroups;
-    } else {
-      return [];
-    }
-  }
 
   goToNewPaymentPage() {
     this.toNewPayment.emit();
@@ -780,24 +753,15 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       .subscribe((customerInfo: CustomerInfoByIdForCustomerInfoComponent) => {
         console.log('CUSTOMER INFO GOT IN CUSTOMER INFO COMPONENT', customerInfo);
         if (customerInfo) {
-          this.globalStateService.clearSelectedMark();
           this.customerInfoById = customerInfo;
 
           this.changeCustomerInfoIfCustomerIsFound(customerInfo);
-          if (customerInfo.customerGroups) {
-            customerInfo.customerGroups.map(group => this.globalStateService.markGroupAsSelected(group.GroupId));
 
-          }
         } else {
           setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
 
         }
       })
-  }
-
-  getCustomerGroupList() {
-    console.log('GROUP LIST', this.customerInfoService.getCustomerGroupList$())
-    this.customerGroupList$ = this.customerInfoService.getCustomerGroupList$();
   }
 
   getCities() {
@@ -808,32 +772,22 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         takeUntil(this.subscription$))
       .subscribe(cities => {
         this.cities$ = of([...cities])
-        // for (let address of this.address.controls) {
-        //   debugger
-        //   address.get('cityName').valueChanges.pipe(switchMap(value => {
-        //     return this.cityAutocomplete([...cities], value, 'CityName')
-        //   }
-        //   ))
-
-        // }
-        // this.cityAutocomplete([...cities], this.address.controls[0].get('cityName'), 'CityName');
-        // this.cityAutocomplete([...cities], this.address.controls[1].get('cityName'), 'CityName');
-
       });
 
 
 
   }
 
-  setCurrentCustomerInfoByIdForCustomerInfoComponent(customerEmails: Emails[],
+  setCurrentCustomerInfoByIdState(customerEmails: Emails[],
     customerPhones: Phones[],
     customerAddress: Addresses[],
     customerMainInfo: CustomerMainInfo[],
-    pickedGroups?: Group[],
+    pickedGroups?: CustomerGroupsGeneralSet[],
     customerCreditCardTokens?: any[],
 
   ) {
-    this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent({ customerEmails, customerPhones, customerAddress, customerMainInfo, pickedGroups })
+    debugger
+    this.customerInfoService.setCurrentCustomerInfoByIdState({ customerEmails, customerPhones, customerAddress, customerMainInfo, pickedGroups })
   }
 
   // getNewCustomer() {
@@ -842,13 +796,22 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
 
   setCustomerInfoToNewReceipt() {
     const customerInfo: Customerinfo = Object.assign({}, this.userInfoGroup.value);
-    // Сервер выдает ошибку когда 
-    // пытаюсь отправить адреса как массив,
-    // поэтому пока посылаю как один объект
-    customerInfo.addresses = customerInfo.addresses;
-    customerInfo.groups = this.customerInfoService.getSelectedGroupsId(this.globalStateService.customerGroups.getValue());
+
+    // customerInfo.addresses = customerInfo.addresses;
+    customerInfo.groups = this.customerGroupsService.getTransformedSelectedGroups()
+
+    this.receiptService.setFullName(`${this.firstName.value} ${this.lastName.value}`);
+
+    this.receiptService.customerEmails.next(this.deleteEmptyEmail(this.emails));
+    // this.receiptService.addGroupsToReceipt(this.addGroups());
+    this.addCurrentAddress(this.deleteEmptyAddress(this.address));
+    this.setCustomerCreditCardList();
+
 
     this.receiptService.setCustomerInfoToNewReceipt(customerInfo);
+
+    console.log('form.value', this.userInfoGroup.value);
+    console.log('this.receiptService.newReceipt', this.receiptService.newReceipt);
   }
 
   getGlobalCustomerDetailsState() {
@@ -864,7 +827,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         .subscribe((response: boolean) => {
           if (response === true) {
             // this.customerInfoService.setCustomerInfoById(customerInfo.CustomerEmails, customerInfo.GetCustomerPhones, customerInfo.CustomerAddresses, customerInfo.CustomerCard_MainDetails, null, customerInfo.CustomerGroupsGeneralSet)
-            this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.customerInfoService.getCustomerDetailsByIdTranformedForCUstomerInfoComponent());
+            this.customerInfoService.setCurrentCustomerInfoByIdState(this.customerInfoService.getCustomerDetailsByIdTranformedForCUstomerInfoComponent());
           } else if (response === false) {
             this.customerInfoService.createNewClicked();
             // this.customerInfoService.clearCustomerById();
@@ -888,16 +851,47 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     formGroup.enable();
   }
 
-  openCustomerGroupsModal() {
-    this.matDialog.open(CustomerGroupsComponent, { width: '500px', height: '600px' });
-  }
+  // openCustomerGroupsModal() {
+  //   const groupsModal$ = this.matDialog.open(CustomerGroupsComponent, { width: '500px', height: '600px', disableClose: true });
 
-  addGroupsIsClicked() {
-    this.customerGroupsSevice.addGroupsIsClicked$
-      .pipe(
-        takeUntil(this.subscription$)
-      ).subscribe(() => this.openCustomerGroupsModal());
-  }
+  //   groupsModal$.afterClosed().pipe(switchMap((modalResult: boolean) => {
+  //     if (modalResult) {
+  //       return this.customerGroupsSevice.getSelectedGroups$();
+  //     } else if (!modalResult) {
+  //       // this.customerGroupsSevice.clearSelectedGroups();
+  //       return EMPTY
+  //     }
+  //   }))
+  //     .pipe(
+  //       takeUntil(this.subscription$))
+  //     .subscribe(selectedGroups => {
+  //       debugger
+  //       this.selectedGroups = selectedGroups.map(group => group.GroupId);
+  //       console.log('SELECTED GROUPS AFTER CONFIRM', this.selectedGroups);
+  //     })
+
+
+
+  // }
+
+
+  // addGroupsIsClicked() {
+  //   this.customerGroupsSevice.addGroupsIsClicked$
+  //     .pipe(
+  //       takeUntil(this.subscription$)
+  //     ).subscribe(() => this.openCustomerGroupsModal());
+  // }
+
+  // getSelectedGroups() {
+  //   this.customerGroupsService.getSelectedGroups$()
+  //     .pipe(
+  //       takeUntil(this.subscription$))
+  //     .subscribe((selectedGroups: GeneralGroups[]) => {
+  //       if (selectedGroups)
+  //         this.selectedGroups = selectedGroups;
+  //     })
+
+  // }
 
   ngOnDestroy() {
     // this.customerInfoService.clearCustomerById();

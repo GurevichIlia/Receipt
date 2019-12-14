@@ -129,10 +129,11 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.spinner.start();
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
       if (customer) {
+        console.log('CUSTOMER INFO FOR NEW KEVA FROM SERVER', customer);
         // this.outputCustomerDetails(customer);
         // this.customerInfoService.setCustomerInfoById(customer.CustomerEmails, customer.CustomerMobilePhones, customer.CustomerAddresses, customer.CustomerInfoForReceiept, customer.CustomerCreditCardTokens);
-        this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.transformCustomerDetailsForCustomerInfoComponent(customer));
-        this.customerInfoService.setCustomerGroupList(customer.QuickGeneralGroupList);
+        this.customerInfoService.setCurrentCustomerInfoByIdState(this.transformCustomerDetailsForCustomerInfoComponent(customer));
+        this.customerInfoService.setCustomerGroupList(customer.CustomerGroupsGeneralSet);
 
         // this.newPaymentService.setFoundedCustomerId(customerId);
         // console.log('FOUNDED CUSTOMER', customer);
@@ -242,6 +243,8 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
         }
         return changedMainInfo
       }),
+      pickedGroups: customerDetails.CustomerGroupsGeneralSet,
+    
     }
     return newObject
   }

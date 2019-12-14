@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from '@angular/router';
 import { SendMessageComponent } from './send-message/send-message.component';
 import { AuthGuard } from '../receipts/services/auth.guard';
-import { TreeOfGroupsComponent } from './send-message/tree-of-groups/tree-of-groups.component';
+import { TreeOfGroupsComponent } from '../shared/share-components/tree-of-groups/tree-of-groups.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
@@ -18,7 +18,8 @@ export const sendMessageRoutes: Routes = [
 @NgModule({
       imports: [CommonModule,
             SharedModule,
-            TranslateModule, RouterModule.forChild(sendMessageRoutes)],
+            TranslateModule,
+             RouterModule.forChild(sendMessageRoutes)],
       exports: [],
       declarations: [
             SendMessageComponent,

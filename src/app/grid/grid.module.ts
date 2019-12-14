@@ -20,7 +20,7 @@ const gridRouter: Routes = [
     path: '', component: GridPaymentsComponent, children: [
       { path: '', redirectTo: 'payments' },
       { path: 'customer-search', component: CustomerSearchComponent },
-      { path: 'new-payment', loadChildren: './grid-payments/new-payment/new-payment.module#NewPaymentModule'},
+      { path: 'new-payment', loadChildren: './grid-payments/new-payment/new-payment.module#NewPaymentModule' },
       { path: 'payments', component: PaymentsTableComponent },
       { path: 'keva-charges', component: PaymentsHistoryComponent },
     ]

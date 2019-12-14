@@ -7,12 +7,9 @@ input.mat-input-element {
 }
 
 .emailDirection {
-  direction: ltr;
-}
-
-input {
   direction: initial;
 }
+
 
 p.button {
   direction: initial;

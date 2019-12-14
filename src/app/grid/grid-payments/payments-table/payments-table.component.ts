@@ -166,7 +166,7 @@ export class PaymentsTableComponent implements OnInit {
     this.newPaymentService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
     this.newPaymentService.setKevaMode('edit');
-    this.router.navigate(['home/payments-grid/new-payment']);
+    this.router.navigate([`home/payments-grid/new-payment`]);
     console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
   }
 
@@ -184,7 +184,7 @@ export class PaymentsTableComponent implements OnInit {
       {
         height: '150', width: '350px', disableClose: true, position: { top: 'top' },
         panelClass: 'question',
-        data: { questionText: 'Would you like to delete this payment', acceptButtonName: 'Confirm', closeButtonName: 'Cancel' }
+        data: { questionText: 'Would you like to delete this payment', acceptButtonName: 'Confirm', closeButtonName: 'Cancel', item: {fileAs: paymentRow.FileAs, kevaId: paymentRow.Kevaid} }
       })
       .afterClosed().pipe(filter(answer => answer === true));
 

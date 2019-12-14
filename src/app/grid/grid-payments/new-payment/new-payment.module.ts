@@ -11,7 +11,6 @@ import { FifthStepComponent } from './fifth-step/fifth-step.component';
 import { BankComponent } from './third-step/bank/bank.component';
 import { CreditCardComponent } from '../new-payment/third-step/credit-card/credit-card.component';
 import { KevaRemarksComponent } from './keva-remarks/keva-remarks.component';
-import { RemarkComponent } from './keva-remarks/remark/remark.component';
 import { EditRemarkComponent } from './keva-remarks/edit-remark/edit-remark.component';
 
 ;
@@ -32,7 +31,6 @@ const newPaymentRoutes: Routes = [
     BankComponent,
     CreditCardComponent,
     KevaRemarksComponent,
-    RemarkComponent,
     EditRemarkComponent
   ],
   imports: [

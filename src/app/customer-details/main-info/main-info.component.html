@@ -4,26 +4,30 @@
       <!-- </mat-card-header>
       <mat-card-content> -->
       <!-- <div class="row "> -->
-            <!-- PERSONAL INFO -->
-            <!-- <mat-card class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12  mb-4"> -->
-                  <app-main-info-view class="mb-4" [mainInfoForm]="mainInfoForm"></app-main-info-view>
-            <!-- </mat-card> -->
+      <!-- PERSONAL INFO -->
+      <!-- <mat-card class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12  mb-4"> -->
+      <app-main-info-view class="mb-4" [mainInfoForm]="mainInfoForm"></app-main-info-view>
+      <!-- </mat-card> -->
 
-            <!-- PHONES-->
-            <!-- <mat-card class="ol-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4"> -->
-                  <app-phones-info class="mb-4" [mainInfoForm]="mainInfoForm">
-                  </app-phones-info>
-            <!-- </mat-card> -->
-            <!-- EMAILS -->
-            <!-- <mat-card class="ol-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4"> -->
-                  <app-emails-info class="mb-4" [mainInfoForm]="mainInfoForm">
-                  </app-emails-info>
-            <!-- </mat-card> -->
-            <!-- ADDRESSES -->
-            <!-- <mat-card class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4"> -->
-                  <app-addresses-info class="mb-4" [displayWidth$]="displayWidth$" [mainInfoForm]="mainInfoForm">
-                  </app-addresses-info>
-            <!-- </mat-card> -->
+      <!-- PHONES-->
+      <!-- <mat-card class="ol-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4"> -->
+      <app-phones-info class="mb-4" [mainInfoForm]="mainInfoForm">
+      </app-phones-info>
+      <!-- </mat-card> -->
+      <!-- EMAILS -->
+      <!-- <mat-card class="ol-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4"> -->
+      <app-emails-info class="mb-4" [mainInfoForm]="mainInfoForm">
+      </app-emails-info>
+      <!-- </mat-card> -->
+      <!-- ADDRESSES -->
+      <!-- <mat-card class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4"> -->
+      <app-addresses-info class="mb-4" [displayWidth$]="displayWidth$" [mainInfoForm]="mainInfoForm">
+      </app-addresses-info>
+      <!-- </mat-card> -->
+
+      <mat-card class="mb-4">
+            <app-customer-groups-container></app-customer-groups-container>
+      </mat-card>
       <!-- </div> -->
       <!-- </mat-card-content> -->
 </div>

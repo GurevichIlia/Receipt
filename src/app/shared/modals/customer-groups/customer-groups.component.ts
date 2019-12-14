@@ -9,16 +9,17 @@ import { Component, OnInit, Inject } from '@angular/core';
 export class CustomerGroupsComponent implements OnInit {
 
   constructor(
-    private MatDialogRef: MatDialogRef<CustomerGroupsComponent>,
+    private matDialogRef: MatDialogRef<CustomerGroupsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: {}) { }
 
   ngOnInit() {
   }
 
   close() {
+    this.matDialogRef.close(false)
     console.log('Test close')
   }
   accept() {
-    console.log('Test confirm')
+    this.matDialogRef.close(true)
   }
 }

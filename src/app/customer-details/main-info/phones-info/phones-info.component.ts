@@ -1,4 +1,4 @@
-import { takeUntil, take } from 'rxjs/operators';
+import { takeUntil, take, map } from 'rxjs/operators';
 import { FullCustomerDetailsById, CustomerPhones } from './../../../models/fullCustomerDetailsById.model';
 import { PhonesService, Phone } from './phones.service';
 import { MainInfoService } from './../main-info.service';
@@ -39,11 +39,12 @@ export class PhonesInfoComponent implements OnInit, OnDestroy {
   getCustomerPhones() {
     this.phonesService.getCustomerDetailsByIdState$()
       .pipe(
+        map(details => details.GetCustomerPhones),
         takeUntil(this.subscription$))
-      .subscribe((customerDetails: FullCustomerDetailsById) => {
-        console.log('GOT CUSTOMER DETAILS', customerDetails);
-        if (customerDetails) {
-          this.customerPhones = customerDetails.GetCustomerPhones;
+      .subscribe((customerPhones: CustomerPhones[]) => {
+        console.log('GOT CUSTOMER PHONES', customerPhones);
+        if (customerPhones) {
+          this.customerPhones = customerPhones;
 
           this.createPhoneInputsArray(this.phones, this.customerPhones);
           this.connectAreaWithPhone();

@@ -1,7 +1,7 @@
 <div class="container mt-5">
 
   <mat-card class="mb-3">
-    <h2 class="text-center" translate> {{'Create a new keva' | translate}}</h2>
+    <h2 class="text-center" translate> {{title | translate}} {{editingKevaId}}</h2>
   </mat-card>
 
   <form [formGroup]="newPaymentForm" (ngSubmit)="saveNewKeva()">
@@ -97,8 +97,8 @@
         <app-fifth-step [isSubmit]="isSubmit" [projectCat]="projectCat" [paymentType]="paymentType.value"
           [employeeList$]="employeeList$" [globalData$]="globalData$" [fifthStep]="newPaymentForm.get('fifthStep')"
           [customerAddresses]="customerAddresses$ | async" [customerEmails]="customerEmails$ | async"></app-fifth-step>
-       
-        <app-keva-remarks *ngIf="kevaMode === 'edit'" ></app-keva-remarks>
+
+        <app-keva-remarks *ngIf="kevaMode === 'edit'"></app-keva-remarks>
 
 
         <mat-action-row>

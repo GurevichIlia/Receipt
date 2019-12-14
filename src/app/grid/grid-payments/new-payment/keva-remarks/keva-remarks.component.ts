@@ -53,12 +53,11 @@ export class KevaRemarksComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setDataToTable(kevaRemarks) {
-
     this.dataSource.data = kevaRemarks;
     this.dataSource.paginator = this.RemarksTable.paginator;
     this.dataSource.sort = this.RemarksTable.sort
-
-    return of(this.dataSource);
+    this.kevaRemarksService.setkevaRemarks(this.dataSource)
+    // of(this.dataSource);
   }
 
 
@@ -79,6 +78,10 @@ export class KevaRemarksComponent implements OnInit, OnDestroy, AfterViewInit {
     })
   }
 
+  // getKevaRemarks() {
+  //   this.kevaRemarks$ = this.kevaRemarksService.getkevaRemarks$().pipe(filter(remarks => remarks !== null));
+  // }
+
   getKevaRemarksById$() {
     this.kevaRemarks$ = this.newPaymentService.getEditingKevaIdAndCustomerId$()
       .pipe(
@@ -92,14 +95,13 @@ export class KevaRemarksComponent implements OnInit, OnDestroy, AfterViewInit {
         }), switchMap(remarks => {
           if (remarks.length !== 0) {
             this.showTable = true;
-
-            return this.setDataToTable(remarks)
+            this.setDataToTable([...remarks])
+            return this.kevaRemarksService.getkevaRemarks$();
           } else {
             this.showTable = false;
             return [];
           }
         }))
-    this.loading = false
   }
 
 
@@ -212,6 +214,8 @@ export class KevaRemarksComponent implements OnInit, OnDestroy, AfterViewInit {
           console.log(res)
           this.successMessage();
           this.getKevaRemarksById$();
+
+          this.showTable = true;
 
         } else {
           console.log(res)

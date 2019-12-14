@@ -10,13 +10,14 @@ import { CustomerGroupsService } from './../core/services/customer-groups.servic
 export class MessageComponent implements OnInit, OnDestroy {
 
   constructor(
-    private globalStateService: GlobalStateService
+    private customerGroupsService: CustomerGroupsService
   ) { }
 
   ngOnInit() {
+    this.customerGroupsService.clearSelectedGroups();
   }
 
   ngOnDestroy() {
-    this.globalStateService.clearSelectedMark();
+    this.customerGroupsService.clearSelectedGroups();
   }
 }

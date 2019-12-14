@@ -26,7 +26,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private globalStateService: GlobalStateService
   ) {
     // translate.setDefaultLang('en');
-
   }
 
   title = 'jaffaCrmAng';

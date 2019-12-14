@@ -54,7 +54,7 @@ export interface CustomerInfoById {
       CustomerAddresses: CustomerAddresses[];
       CustomerCreditCardTokens: any[];
       CustomerEmails: CustomerEmails[];
-      CustomerGroupsGeneralSet: []
+      CustomerGroupsGeneralSet: CustomerGroupsGeneralSet[]
       CustomerInfoForReceiept: CustomerInfoForReceiept[]
       CustomerMobilePhones: CustomerPhones[]
       CustomerNames4Receipt: []

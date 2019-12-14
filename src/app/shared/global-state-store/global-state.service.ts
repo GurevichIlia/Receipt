@@ -1,6 +1,6 @@
 import { GeneralGroups } from './../../models/generalGroups.model';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, from } from 'rxjs';
+import { BehaviorSubject, Observable, from, of } from 'rxjs';
 import { FullCustomerDetailsById, CustomerEmails, CustomerPhones, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
 import { CustomerAddresses, CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
@@ -22,9 +22,7 @@ export class GlobalStateService {
   customerList = new BehaviorSubject<CustomerSearchData[]>(null);
   customerList$ = this.customerList.asObservable();
 
-  //Список всех групп клиентов
-  readonly customerGroups = new BehaviorSubject<GeneralGroups[]>(null);
-  readonly customerGroups$ = this.customerGroups.asObservable()
+
   constructor() { }
 
   // CUSTOMER DEYAILS BY ID METHODS
@@ -92,7 +90,8 @@ export class GlobalStateService {
         }
         return changedMainInfo
       }),
-      customerGroups: customerDetails.CustomerGroupsGeneralSet
+      pickedGroups: customerDetails.CustomerGroupsGeneralSet,
+      
     }
     return newObject
   }
@@ -111,62 +110,6 @@ export class GlobalStateService {
     this.customerList.next(null);
   }
 
-  // CUSTOMER GROUPS METHODS
 
-  setCustomerGroups(customerGroups: GeneralGroups[]) {
-    this.customerGroups.next(customerGroups);
-  }
-
-  /** GETTING GENERAL CUSTOMER GROUPS*/
-  getCustomerGroups$() {
-    return this.customerGroups$
-  }
-
-  /** GETTING CUSTOMER GROUPS MARKED isSelected === True */
-  getSelectedGroups$() {
-    return this.customerGroups$.pipe(map(groups => groups.filter(group => group.isSelected === true)));
-  }
-
-  /** MAKING GROUP VALUE isSelected = True */
-  markGroupAsSelected(groupId: number) {
-    this.customerGroups.getValue().map(group => {
-      if (group.GroupId === groupId) {
-        group.isSelected = true
-      }
-      return { ...group };
-    });
-  }
-
-  /** MARKING GROUP VALUE isSelected = False */
-  markGroupAsNotSelected(groupId: number) {
-    this.customerGroups.getValue().map(group => {
-      if (group.GroupId === groupId) {
-        group.isSelected = false
-      }
-      return { ...group };
-    });
-
-  }
-
-  /** MARK ALL GROUPS VALUE isSelected = False, CLEAR STATE */
-  clearSelectedMark() {
-    const customerGroups = [...this.customerGroups.getValue().map(group => {
-      if (group.isSelected) {
-        group.isSelected = false;
-        return group;
-      } else {
-        return { ...group };
-      }
-    })]
-    this.setCustomerGroups(customerGroups);
-
-  }
-
-  /** UPDATE GROUPS TO SHOW IF THERE ARE SELECTED GROUPS*/
-  updateCustomerGroups() {
-    const customerGroups = [...this.customerGroups.getValue()];
-    this.setCustomerGroups(customerGroups);
-
-  }
 
 }

@@ -1,3 +1,4 @@
+import { CustomerGroupsService } from './../../core/services/customer-groups.service';
 import { GeneralGroups } from 'src/app/models/generalGroups.model';
 import { takeUntil } from 'rxjs/operators';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
@@ -23,12 +24,14 @@ export class SendMessageComponent implements OnInit, OnDestroy {
   postfix = new FormControl('');
   currentLang: string;
   subscription$ = new Subject();
+  treeViewGeneralGroups
   constructor(
     private fb: FormBuilder,
     private sendMessageService: SendMessageService,
     private generalService: GeneralSrv,
     private toastr: ToastrService,
-    private spinner: NgxUiLoaderService
+    private spinner: NgxUiLoaderService,
+    private customerGroupsService: CustomerGroupsService
   ) { }
 
 
@@ -45,6 +48,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
         }
       })
     // this.spinner.start();
+    this.getGeneralGroups();
     this.checkWindowSize();
     this.addClassOrderFirst();
     this.createMessageForm();
@@ -94,6 +98,19 @@ export class SendMessageComponent implements OnInit, OnDestroy {
     }))
   }
 
+  getGeneralGroups() {
+    this.customerGroupsService.getGeneralGroups$()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe((groups: GeneralGroups[]) => {
+        if (groups) {
+          const generalGroups = groups.sort(this.customerGroupsService.compareName);
+
+          // this.treeViewGeneralGroups = 
+          this.customerGroupsService.setDataForGroupsTree(this.customerGroupsService.getNestedChildren(generalGroups, 0));
+        }
+      })
+  }
 
   updateGroups() {
     this.groups.patchValue(this.selectedGroups);
@@ -163,6 +180,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
       groups: []
     });
     this.updateGroups();
+
     console.log(this.messageForm)
   }
   ngOnDestroy(): void {

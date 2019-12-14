@@ -51,7 +51,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserAnimationsModule,
     BrowserModule,
     SharedModule,
-    NewCustomerModule,
     AppRoutingModule,
     HttpClientModule,
     NgxMaskModule.forRoot(),

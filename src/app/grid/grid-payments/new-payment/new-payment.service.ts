@@ -1,3 +1,4 @@
+import { CustomerGroupsService } from './../../../core/services/customer-groups.service';
 import { CustomerInfoByIdForCustomerInfoComponent } from './../../../receipts/customer-info/customer-info.service';
 import { Injectable } from '@angular/core';
 import { FormGroup, AbstractControl, Validators } from '@angular/forms';
@@ -63,6 +64,7 @@ export class NewPaymentService {
   constructor(
     private generalService: GeneralSrv,
     private paymentsService: PaymentsService,
+    private customerGroupsService: CustomerGroupsService
   ) {
 
   }
@@ -296,7 +298,7 @@ export class NewPaymentService {
       addresses: customerInfoFromInfoComponent.customerAddress,
       customerMainInfo: customerInfoFromInfoComponent.customerMainInfo[0],
       emails: customerInfoFromInfoComponent.customerEmails,
-      groups: customerInfoFromInfoComponent.pickedGroups,
+      groups: this.customerGroupsService.getTransformedSelectedGroups(),
       phones: customerInfoFromInfoComponent.customerPhones
     };
 

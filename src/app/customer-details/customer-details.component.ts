@@ -1,3 +1,4 @@
+import { CustomerGroupsService } from './../core/services/customer-groups.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
@@ -29,10 +30,10 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   customerIsExist = false;
   constructor(
     private customerDetailsService: CustomerDetailsService,
-    private activatedRoute: ActivatedRoute,
     private router: Router,
     private globalStateService: GlobalStateService,
-    private loader: NgxUiLoaderService
+    private loader: NgxUiLoaderService,
+    private customerGroupsService: CustomerGroupsService
 
   ) {
 
@@ -77,14 +78,16 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
           console.log('CUSTOMER INFO', data);
           this.setCustomerDetailsByIdState(data);
           this.customerDetailsById$ = this.customerDetailsService.getCustomerDetailsByIdState$();
+          this.customerGroupsService.clearSelectedGroups();
+          this.customerGroupsService.setSelectedGroups(data.CustomerGroupsGeneralSet)
           // this.customerDetailsService.setCustomerInfoForNewReceipt(this.customerDetailsService.getCustomerDetailsByIdState());
         }
         this.loader.stop();
       },
-      error => {
-        console.log(error);
-        this.loader.stop();
-      })
+        error => {
+          console.log(error);
+          this.loader.stop();
+        })
   }
 
   setCustomerDetailsByIdState(customerDetailsById: FullCustomerDetailsById) {
@@ -145,7 +148,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
       .pipe(
         takeUntil(this.subscription$))
       .subscribe((updateClicked: boolean) => {
-        
+
         if (updateClicked) {
           this.getCustomerDetailsByIdFromServer();
         }

@@ -1,9 +1,9 @@
-import { GlobalStateService } from './../../../shared/global-state-store/global-state.service';
-import { CustomerGroupsService } from './../../../core/services/customer-groups.service';
+import { GlobalStateService } from '../../global-state-store/global-state.service';
+import { CustomerGroupsService } from '../../../core/services/customer-groups.service';
 import { GeneralGroups } from '../../../models/generalGroups.model';
 import { GeneralSrv } from '../../../receipts/services/GeneralSrv.service';
-import { SendMessageService, TodoItemFlatNode, TodoItemNode } from '../../send-message.service';
-import { Component, OnInit, Output, OnChanges } from '@angular/core';
+import { SendMessageService, TodoItemFlatNode, TodoItemNode } from '../../../message/send-message.service';
+import { Component, OnInit, Output, OnChanges, Input } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
@@ -19,14 +19,13 @@ import { takeUntil, mergeMap, switchMap, map } from 'rxjs/operators';
 })
 export class TreeOfGroupsComponent implements OnInit, OnChanges {
   generalGroups: GeneralGroups[] = [];
-  treeViewGeneralGroups: GeneralGroups[] = [];
+  // @Input() treeViewGeneralGroups: GeneralGroups[] = [];
   selectedGroups: GeneralGroups[] = [];
   groups: any[] = [];
   subscription = new Subscription();
   subscription$ = new Subject();
   constructor(
     private sendMessageService: SendMessageService,
-    private generalService: GeneralSrv,
     private customerGroupsService: CustomerGroupsService,
     private globalStateService: GlobalStateService
   ) {
@@ -35,7 +34,7 @@ export class TreeOfGroupsComponent implements OnInit, OnChanges {
     this.treeControl = new FlatTreeControl<TodoItemFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-    sendMessageService.dataChange
+    customerGroupsService.dataChange
       .pipe(
         takeUntil(this.subscription$))
       .subscribe(data => {
@@ -69,7 +68,6 @@ export class TreeOfGroupsComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.getGeneralGroups();
     // this.getSelectedGroups();
   }
 
@@ -95,19 +93,7 @@ export class TreeOfGroupsComponent implements OnInit, OnChanges {
   // }
 
 
-  getGeneralGroups() {
-    this.customerGroupsService.getGeneralGroups$()
-      .pipe(
-        takeUntil(this.subscription$))
-      .subscribe((groups: GeneralGroups[]) => {
-        if (groups) {
-          groups = groups.sort(this.compareName)
-          const generalGroups = groups.sort(this.compareName);
 
-          this.treeViewGeneralGroups = this.sendMessageService.getNestedChildren(generalGroups, 0);
-        }
-      })
-  }
 
 
 
@@ -136,16 +122,7 @@ export class TreeOfGroupsComponent implements OnInit, OnChanges {
     // this.getGeneralGroups();
   }
 
-  compareName(a: GeneralGroups, b: GeneralGroups) {
-    if (a.GroupName < b.GroupName) {
-      return -1;
-    }
-    if (a.GroupName < b.GroupName) {
-      return 1;
-    }
-    // a must be equal to b
-    return 0;
-  }
+
 
   getLevel = (node: TodoItemFlatNode) => node.level;
 
@@ -284,10 +261,9 @@ export class TreeOfGroupsComponent implements OnInit, OnChanges {
   // }
 
   selectGroup(isSelected: boolean, groupId: number) {
-    console.log('SELECTED', isSelected, groupId);
     this.sendMessageService.selectedGroups.next(groupId);
 
-    this.customerGroupsService.selectGroup({isSelected, groupId});
+    this.customerGroupsService.selectGroup(groupId);
   }
 
   sendGroupsToService() {
@@ -300,7 +276,7 @@ export class TreeOfGroupsComponent implements OnInit, OnChanges {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
-    this.globalStateService.updateCustomerGroups();
+    this.customerGroupsService.updateCustomerGroups();
     this.subscription.unsubscribe();
     this.subscription$.next();
     this.subscription$.complete();

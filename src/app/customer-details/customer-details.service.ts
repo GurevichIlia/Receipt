@@ -103,7 +103,7 @@ export class CustomerDetailsService {
   }
 
   setCustomerInfoForNewReceipt(customerInfo: FullCustomerDetailsById) {
-    this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(
+    this.customerInfoService.setCurrentCustomerInfoByIdState(
       this.globalStateService.getCustomerDetailsByIdTranformedForCUstomerInfoComponent()
     )
     // this.customerInfoService.setCustomerGroupList(this.globalStateService.getCustomerDetailsByIdGlobalState().CustomerGroupsGeneralSet)

@@ -67,7 +67,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     private generalService: GeneralSrv, private translate: TranslateService,
     private spinner: NgxUiLoaderService,
     private customerInfoService: CustomerInfoService,
-    private globalStateService: GlobalStateService
+    private customerGroupsService: CustomerGroupsService,
   ) {
     translate.setDefaultLang('he');
   }
@@ -150,12 +150,11 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
       .pipe(
         tap(customerInfo => console.log('CUSTOMER INFO BY ID FROM SERVER', customerInfo)))
       .subscribe((customer: CustomerInfoById) => {
-       
         // Отмечаем в общем списке групп,
         // группы которые нам приходят с найденым клиентом,
         // тем самым поазывая их в списке групп у клиента в инфо.
-
-        this.customerInfoService.setCurrentCustomerInfoByIdForCustomerInfoComponent(this.customerInfoService.transformCustomerDetailsForCustomerInfoComponent(customer));
+        this.customerGroupsService.clearSelectedGroups();
+        this.customerInfoService.setCurrentCustomerInfoByIdState(this.customerInfoService.transformCustomerDetailsForCustomerInfoComponent(customer));
         this.customerInfo = customer;
 
         this.spinner.stop();
@@ -188,10 +187,10 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.customerInfoService.createNewClicked();
-    this.globalStateService.clearSelectedMark();
+    // this.globalStateService.clearSelectedMark();
     this.subscriptions.unsubscribe();
     this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
-    console.log('NEW RECEIPT SUBSCRIBE On Destroy', this.subscriptions);
+    console.log('NEW RECEIPT DESTROED');
 
   }
 }

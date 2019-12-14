@@ -1,11 +1,11 @@
-import { CustomerAddresses } from './customer-info-by-ID.model';
+import { CustomerAddresses, CustomerGroupsGeneralSet } from './customer-info-by-ID.model';
 
 export interface FullCustomerDetailsById {
       CustomerAddresses: CustomerAddresses[];
       CustomerCard_MainDetails: MainDetails[];
       CustomerCreditCardTokens: [];
       CustomerEmails: CustomerEmails[];
-      CustomerGroupsGeneralSet: [];
+      CustomerGroupsGeneralSet: CustomerGroupsGeneralSet [];
       CustomerKevas: [];
       CustomerMobilePhones: CustomerPhones[];
       CustomerNames4FileAs: [];

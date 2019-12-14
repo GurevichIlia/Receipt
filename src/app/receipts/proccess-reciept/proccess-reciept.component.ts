@@ -419,7 +419,6 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     this.receiptService.currentAddress
       .pipe(
         map(addresses => addresses.map(address => {
-          debugger
           for (let item in address) {
             address[item] = address[item] === null ? '' : address[item];
           }

@@ -4,22 +4,25 @@ import { NewCustomerComponent } from './new-customer.component';
 import { NewCustomerRouterModule } from './new-customer-router.module';
 import { SharedModule } from '../shared/shared.module';
 import { Routes, RouterModule } from '@angular/router';
+console.log('NEW CUSTOMER LOADED')
 
-const newCustomerRoutes: Routes = [
-  { path: '', component: NewCustomerComponent }
-]
+// const newCustomerRoutes: Routes = [
+//   { path: '', component: NewCustomerComponent }
+// ]
 
 @NgModule({
   declarations: [NewCustomerComponent],
   imports: [
-    // NewCustomerRouterModule,
+    NewCustomerRouterModule,
     SharedModule,
     CommonModule,
-    RouterModule.forChild(newCustomerRoutes),
+    // RouterModule.forChild(newCustomerRoutes),
 
   ],
   exports: [
-    // NewCustomerRouterModule
   ]
 })
-export class NewCustomerModule { }
+
+export class NewCustomerModule {
+
+}

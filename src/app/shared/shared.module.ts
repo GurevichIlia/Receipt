@@ -23,7 +23,7 @@ import { ConfirmPurchasesComponent } from '../receipts/modals/confirm-purchases/
 import { AutocompleteComponent } from './share-components/autocomplete/autocomplete.component';
 import { HighlightErrorIfInvalidDirective } from './directives/highlight-error-if-invalid.directive';
 import { CustomerGroupsComponent } from './modals/customer-groups/customer-groups.component';
-import { TreeOfGroupsComponent } from '../message/send-message/tree-of-groups/tree-of-groups.component';
+import { TreeOfGroupsComponent } from './share-components/tree-of-groups/tree-of-groups.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CustomerGroupsContainerComponent } from './share-components/customer-groups-container/customer-groups-container.component';
 import { CustomerGroupsViewComponent } from './share-components/customer-groups-container/customer-groups-view/customer-groups-view.component';
@@ -85,7 +85,8 @@ import { CustomerGroupsViewComponent } from './share-components/customer-groups-
             DateTransformPipe,
             HighlightErrorIfInvalidDirective,
             AutocompleteComponent,
-            TreeOfGroupsComponent
+            TreeOfGroupsComponent,
+            CustomerGroupsContainerComponent
 
 
       ],

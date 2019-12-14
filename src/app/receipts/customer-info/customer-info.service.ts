@@ -1,8 +1,8 @@
-import { QuickCustomerGroupList, CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from './../../models/customer-info-by-ID.model';
-import { Router } from '@angular/router';
-import { BehaviorSubject, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
+
+import { BehaviorSubject, Subject } from 'rxjs';
 import { NewCustomerService } from './../../new-customer/new-customer.service';
 import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 
@@ -12,11 +12,12 @@ import { FormArray, FormGroup, FormBuilder } from '@angular/forms';
 import { Phones } from 'src/app/models/phones.model';
 import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
-import { Group } from './customer-info.component';
-import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
+
+import {  CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept, CustomerGroupsGeneralSet } from './../../models/customer-info-by-ID.model';
+
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 import { Customerinfo } from 'src/app/models/customerInfo.model';
-import { GeneralGroups } from 'src/app/models/generalGroups.model';
+
 import { CustomerEmails, CustomerPhones } from 'src/app/models/fullCustomerDetailsById.model';
 
 export interface CustomerInfoByIdForCustomerInfoComponent {
@@ -24,19 +25,19 @@ export interface CustomerInfoByIdForCustomerInfoComponent {
   customerPhones: Phones[],
   customerAddress: Addresses[],
   customerMainInfo: CustomerMainInfo[];
-  customerGroups?: QuickCustomerGroupList[];
+  // customerGroupsGeneralSet?: CustomerGroupsGeneralSet[];
   customerCreditCardTokens?: any[],
-  pickedGroups?: Group[]
+  pickedGroups?: CustomerGroupsGeneralSet[]
 }
 
 export interface NewCustomerInfo {
   customerEmails: Emails[],
   customerPhones: Phones[],
   customerAddress: Addresses[],
-  customerGroups?: QuickCustomerGroupList[];
+  // customerGroupsGeneralSet?: CustomerGroupsGeneralSet[];
   customerMainInfo: CustomerMainInfo;
   customerCreditCardTokens?: any[],
-  pickedGroups?: Group[]
+  pickedGroups?: CustomerGroupsGeneralSet[]
 }
 
 @Injectable({
@@ -46,7 +47,7 @@ export class CustomerInfoService {
   customerInfoByIdForCustomerInfoComponent = new BehaviorSubject<CustomerInfoByIdForCustomerInfoComponent>(null);
   customerInfoByIdForCustomerInfoComponent$ = this.customerInfoByIdForCustomerInfoComponent.asObservable();
 
-  customerGroupList = new BehaviorSubject<CustomerGroupById[]>(null);
+  customerGroupList = new BehaviorSubject<CustomerGroupsGeneralSet[]>(null);
   customerGroupList$ = this.customerGroupList.asObservable();
   // currentCustomerDetailsForCustomerInfoComponent = new BehaviorSubject<CustomerInfoByIdForCustomerInfoComponent>(null);
   // currentCustomerDetailsForCustomerInfoComponent$ = this.currentCustomerDetailsForCustomerInfoComponent.asObservable();
@@ -82,7 +83,7 @@ export class CustomerInfoService {
     this.generalService.patchInputValue(inputsArray, valueArray, addNewInputFunction, formBuilder)
   }
 
-  addCurrentAddress(currentAddres: Addresses[]) {
+  addCurrentAddress(currentAddress: Addresses[]) {
     // const address = currentAddres.value
     // if (address.street === null) {
     //   address.street = '';
@@ -99,7 +100,7 @@ export class CustomerInfoService {
     //     this.receiptService.fullAddress.next(`${address.street}`);
     //   }
     // }
-    this.receiptService.fullAddress.next(currentAddres);
+    this.receiptService.fullAddress.next(currentAddress);
 
   }
   resetFormArray(array: FormArray) {
@@ -124,9 +125,9 @@ export class CustomerInfoService {
     return checkedphones;
   }
 
-  setCurrentCustomerInfoByIdForCustomerInfoComponent(
+  setCurrentCustomerInfoByIdState(
     customerInfoById: {
-      customerEmails: Emails[], customerPhones: Phones[], customerAddress: Addresses[], customerMainInfo: CustomerMainInfo[], pickedGroups?: Group[], customerCreditCardTokens?: any[],
+      customerEmails: Emails[], customerPhones: Phones[], customerAddress: Addresses[], customerMainInfo: CustomerMainInfo[], pickedGroups?: CustomerGroupsGeneralSet[], customerCreditCardTokens?: any[],
     }
   ) {
     this.customerInfoByIdForCustomerInfoComponent.next(customerInfoById);
@@ -146,7 +147,7 @@ export class CustomerInfoService {
     this.clearCustomerGroupList();
   }
 
-  setCustomerGroupList(groupList: CustomerGroupById[]) {
+  setCustomerGroupList(groupList: CustomerGroupsGeneralSet[]) {
     this.customerGroupList.next(groupList);
   }
 
@@ -362,14 +363,14 @@ export class CustomerInfoService {
         }
         return changedMainInfo
       }),
-      customerGroups: customerDetails.CustomerGroupsGeneralSet
+      pickedGroups: customerDetails.CustomerGroupsGeneralSet,
+      
     }
     return newObject
 
   }
 
   createFileAs(customerInfo: CustomerMainInfo) {
-    debugger
     if (customerInfo) {
       let fileAs = customerInfo.fileAs;
       const fname = customerInfo.fname;
@@ -381,13 +382,12 @@ export class CustomerInfoService {
 
   }
 
-  getSelectedGroupsId(generalGroups: GeneralGroups[]) {
-    debugger
-    const selectedGroupsId: Group[] = generalGroups.filter(group => group.isSelected === true).map(selectedGroups => {
-      return { GroupId: selectedGroups.GroupId };
-    });
-    return selectedGroupsId;
-  }
+  // getSelectedGroupsId(generalGroups: GeneralGroups[]) {
+  //   const selectedGroupsId: Group[] = generalGroups.filter(group => group.isSelected === true).map(selectedGroups => {
+  //     return { GroupId: selectedGroups.GroupId };
+  //   });
+  //   return selectedGroupsId;
+  // }
   // saveNewCustomer(newCustomer: CustomerInfoByIdForCustomerInfoComponent) {
   //   this.newCustomerService.saveNewCustomer(newCustomer);
   // }

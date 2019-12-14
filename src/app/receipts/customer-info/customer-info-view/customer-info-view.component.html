@@ -277,14 +277,6 @@
       (click)="moreAddress=!moreAddress">{{'Address' | translate}}</button> -->
     <hr>
     <app-customer-groups-container></app-customer-groups-container>
-    <div>
-      <h4 *ngIf="customerInfo?.QuickGeneralGroupList.length > 0">{{'Groups' | translate}}</h4>
-      <mat-selection-list formControlName="groups">
-        <mat-list-option *ngFor="let group of customerGroupList" [value]="group.GroupId">
-          {{group.GroupName}}
-        </mat-list-option>
-      </mat-selection-list>
-    </div>
   </div>
 
 

@@ -13,7 +13,7 @@ const routes: Routes = [
       { path: 'newreceipt', loadChildren: './receipts/receipt.module#ReceiptModule', canActivate: [AuthGuard] },
       { path: 'customer-details/customer', loadChildren: './customer-details/customer-details.module#CustomerDetailsModule', canActivate: [AuthGuard] },
       { path: 'payments-grid', loadChildren: './grid/grid.module#GridModule', canActivate: [AuthGuard] },
-      { path: 'new-customer', loadChildren: './new-customer/new-customer.module#NewCustomerModule', canActivate:[AuthGuard] },
+      { path: 'new-customer', loadChildren: './new-customer/new-customer.module#NewCustomerModule', canActivate:[AuthGuard] }
     ]
   },
   { path: '**', redirectTo: 'home' },
@@ -24,3 +24,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+

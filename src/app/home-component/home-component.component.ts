@@ -1,3 +1,4 @@
+import { CustomerGroupsService } from './../core/services/customer-groups.service';
 import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
@@ -18,8 +19,11 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
     private generalService: GeneralSrv,
     private router: Router,
     private customerInfoService: CustomerInfoService,
-    private globalStateService: GlobalStateService
-  ) { }
+    private globalStateService: GlobalStateService,
+    private customerGroupsService: CustomerGroupsService
+  ) {
+
+   }
 
   ngOnInit() {
     this.getGlobalData();
@@ -52,7 +56,7 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
               const cities = response.Cities;
               const generalGroups = [...response.CustomerGroupsGeneral]
               this.generalService.setCities(cities);
-              this.globalStateService.setCustomerGroups(generalGroups);
+              this.customerGroupsService.setCustomerGroups(generalGroups);
               localStorage.setItem('cities', JSON.stringify(cities))
               console.log('CITIES', cities)
             }

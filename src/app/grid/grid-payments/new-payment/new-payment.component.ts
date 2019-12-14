@@ -1,3 +1,4 @@
+import { CustomerGroupsService } from './../../../core/services/customer-groups.service';
 import { KevaRemarksService } from './keva-remarks/keva-remarks.service';
 import { KevaRemark } from './../../payments.service';
 import { ResponseData } from './../../../models/response.model';
@@ -12,7 +13,7 @@ import { PaymentsService } from '../../payments.service';
 import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { MatAccordion, MatDialog } from '@angular/material';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subject, Observable, BehaviorSubject, from, of } from 'rxjs';
 import { takeUntil, delay, map, filter, distinctUntilChanged } from 'rxjs/operators';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
@@ -63,6 +64,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   currentLang: string;
   isSubmit = false;
   kevaRemarks$: Observable<KevaRemark[]>;
+  title = 'הוראת קבע';
   constructor(
     private _formBuilder: FormBuilder,
     private paymentsService: PaymentsService,
@@ -73,13 +75,14 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private newPaymentService: NewPaymentService,
     private location: Location,
     private toaster: ToastrService,
-    private kevaRemarksService: KevaRemarksService
+    private activatedRoute: ActivatedRoute,
+    private customerGroupsService: CustomerGroupsService
+
   ) { }
 
   ngOnInit() {
     this.createNewPaymentForm();
     this.getGlobalData();
-    this.newPaymentForm.valueChanges.pipe(takeUntil(this.subscription$)).subscribe(data => console.log(data));
     console.log('Proj cat', this.projectCat);
     this.getDuplicatingKeva();
     this.getCustomerInfoById();
@@ -93,6 +96,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((lang: string) => this.currentLang = lang);
     const component = NewPaymentComponent
     console.log('COMPONENT', component);
+    this.setTitle()
   }
   ngAfterViewInit() {
     this.getEditingPayment();
@@ -107,6 +111,18 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   prevStep() {
     this.step--;
   }
+
+  setTitle() {
+    switch (this.kevaMode) {
+      case 'edit': this.title = 'הוראת קבע';
+        break;
+      case 'duplicate': this.title = 'הוראת קבע שכפל';
+        break;
+      case 'newKeva': this.title = 'Create a new keva';
+        break;
+    }
+  }
+
   createNewPaymentForm() {
     this.newPaymentForm = this._formBuilder.group({
       firstStep: this._formBuilder.group({
@@ -407,6 +423,8 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
                 positionClass: 'toast-top-center'
               });
               this.router.navigate(['/home/payments-grid/payments']);
+              this.customerGroupsService.clearSelectedGroups();
+
               this.paymentsService.updateKevaTable();
             }
           }
@@ -422,7 +440,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
- 
+
 
   // duplicateKeva() {
   //   this.setDataToNewPaymentKeva();
@@ -489,6 +507,8 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
                 positionClass: 'toast-top-center'
               });
               this.router.navigate(['/home/payments-grid/payments']);
+              this.customerGroupsService.clearSelectedGroups();
+
               this.paymentsService.updateKevaTable();
             }
           }
@@ -518,6 +538,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   goToKevaTable() {
     this.router.navigate(['/home/payments-grid/payments']);
     this.newPaymentService.clearNewKeva();
+    this.customerGroupsService.clearSelectedGroups()
 
   }
 
@@ -534,7 +555,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
- 
+
 
 
 

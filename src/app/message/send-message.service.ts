@@ -51,11 +51,11 @@ export class TodoItemFlatNode {
 })
 export class SendMessageService {
   generalGroups: GeneralGroups[] = [];
-  dataChange = new BehaviorSubject<TodoItemNode[]>([]);
+ 
   selectedGroups = new Subject();
   baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/LandingPage/';
   orgName: string;
-  get data(): TodoItemNode[] { return this.dataChange.value; }
+  
   constructor(
     private generalService: GeneralSrv,
     private http: HttpClient
@@ -74,27 +74,7 @@ export class SendMessageService {
   //   node.GroupName = name;
   //   this.dataChange.next(this.data);
   // }
-  getNestedChildren(arr, parent) {
-    const children = [];
-    for (let i = 0; i < arr.length; ++i) {
-      if (arr[i].GroupParenCategory == parent) {
-        let groupId;
-        if (arr[i].GroupId !== 0) {
-          groupId = arr[i].GroupId;
-        } else {
 
-        }
-        const grandChildren = this.getNestedChildren(arr, groupId);
-        if (grandChildren.length) {
-          arr[i].children = grandChildren;
-        }
-        children.push(arr[i]);
-      }
-    }
-    // const data = this.buildFileTree(children, 0);
-    this.dataChange.next(children);
-    return children;
-  }
   // createHebrewAlphabet() {
   //   let groupArray = 'אבגדהוזחטיכלמנסעפצקרשת';
   //   const hebrewAlphabet = groupArray.split('');

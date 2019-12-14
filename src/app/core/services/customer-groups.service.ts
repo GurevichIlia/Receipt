@@ -1,9 +1,14 @@
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
+import { CustomerGroupsGeneralSet } from './../../models/customer-info-by-ID.model';
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, Subject } from 'rxjs';
+
+import { Observable, Subject, BehaviorSubject, of } from 'rxjs';
+
 import { GeneralGroups } from 'src/app/models/generalGroups.model';
-import { filter, map, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { } from './../../shared/global-state-store/global-state.service';
+import { TodoItemNode } from 'src/app/message/send-message.service';
+import { Group } from 'src/app/receipts/customer-info/customer-info.component';
 
 export interface SelectedCustomerGroups {
   groupId: number,
@@ -14,83 +19,216 @@ export interface SelectedCustomerGroups {
   providedIn: 'root'
 })
 export class CustomerGroupsService {
-  selectedGroups = new BehaviorSubject<number[]>([]);
-  selectedGroups$ = this.selectedGroups.asObservable();
-  generalGroups: GeneralGroups[] = [];
+  // Список всех групп клиентов
+  readonly customerGroups = new BehaviorSubject<GeneralGroups[]>([]);
+  customerGroups$ = this.customerGroups.asObservable()
+
   addGroupsIsClicked$ = new Subject();
-  // selectedGroups = new BehaviorSubject<GeneralGroups[]>([]);
-  // selectedGroups$ = this.selectedGroups.asObservable();
+  selectedGroupsId: number[] = [];
+
+  // Данные для формирования вложенного списка групп 
+  dataChange = new BehaviorSubject<TodoItemNode[]>([]);
+  get data(): TodoItemNode[] { return this.dataChange.value; }
 
   constructor(
-    private globalStateService: GlobalStateService,
     private generalService: GeneralSrv
   ) { }
 
-  setGeneralGroups(generalGroups: GeneralGroups[]) {
-    this.generalGroups = generalGroups;
+  private getSelectedGroupsId() {
+    return this.selectedGroupsId;
   }
 
-  getGeneralGroups() {
-    return [...this.generalGroups];
+  getTransformedSelectedGroups() {
+    const selectedGroupsId: Group[] = this.customerGroups.getValue().filter(groups => groups.isSelected === true).map(selectedGroup => {
+      return { GroupId: selectedGroup.GroupId };
+    });
+    return selectedGroupsId;
   }
 
-  setSelectedGroups(selectedGroup: number[]) {
-    this.selectedGroups.next(selectedGroup);
+
+  setDataForGroupsTree(dataTree: TodoItemNode[]) {
+    this.dataChange.next(dataTree);
   }
 
-  getSelectedGroups$(): Observable<number[]> {
-    return this.selectedGroups$;
+  deleteGroupFromList(groupId: number) {
+    this.markGroupAsNotSelected(groupId);
+    this.updateCustomerGroups();
   }
 
-  getGeneralGroups$() {
-    if (this.globalStateService.customerGroups.getValue()) {
-      return this.globalStateService.getCustomerGroups$();
-    } else {
-      return this.generalService.GetSystemTables().pipe(map(data => data.CustomerGroupsGeneral),
-        //  tap(groups => {
-        //   this.globalStateService.setCustomerGroups([...groups]);
-        //   console.log('GLOBAL GROUPS ПОСЛЕ ПОЛУЧЕНИЯ С СЕРВЕРА', this.globalStateService.customerGroups.getValue());
-        // })
-      );
-    }
+  addGroupsIsClicked() {
+    this.addGroupsIsClicked$.next();
   }
 
-  // addGroup(selectedGroup: number) {
-  //   let selectedGroups: number[] = this.selectedGroups.getValue();
-  //   if (selectedGroups.includes(selectedGroup)) {
-  //     selectedGroups.splice(selectedGroups.indexOf(selectedGroup), 1);
-  //   } else {
-  //     selectedGroups.push(selectedGroup);
-  //   }
-  //   console.log('SELECTED', selectedGroups);
-  //   this.setSelectedGroups(selectedGroups);
-  //   return selectedGroups;
+  getAddGroupsIsClickedEvent$() {
+    return this.addGroupsIsClicked$;
+  }
+
+  setSelectedGroups(customerGroupsGeneralSet: CustomerGroupsGeneralSet[]) {
+    const customerGroups = customerGroupsGeneralSet.map(group => group.CustomerGeneralGroupId);
+    customerGroups.map(group => this.markGroupAsSelected(group));
+    this.updateCustomerGroups();
+  }
+
+  // getSelectedGroups$(): Observable<GeneralGroups[]> {
+  //   return this.getSelectedGroups$().pipe(map(groups => {
+  //     const sortedGroups = groups.sort(this.compareName)
+  //     return sortedGroups
+  //   }));
   // }
 
 
-  selectGroup(selectedGroup: { isSelected: boolean, groupId: number }) {
-    if (selectedGroup.isSelected === true) {
-      selectedGroup.isSelected = false;
-      this.globalStateService.markGroupAsNotSelected(selectedGroup.groupId)
+  getGeneralGroups$() {
+    if (this.customerGroups.getValue()) {
+      return this.getCustomerGroups$();
     } else {
-      selectedGroup.isSelected = true;
-      this.globalStateService.markGroupAsSelected(selectedGroup.groupId)
-
+      return this.generalService.GetSystemTables().pipe(map(data => data.CustomerGroupsGeneral));
     }
   }
 
-  filterGroups(generalGroups$: Observable<GeneralGroups[]>, selectedGroupId: number[]) {
-    const selectedGroups$ = generalGroups$
-      .pipe(
-        map(groups => {
-          return groups.filter(group => {
-            if (selectedGroupId.includes(group.GroupId)) {
-              return group;
-            }
-          })
-        }),
-        tap(groups => console.log(groups))
-      )
-    return selectedGroups$;
+  compareName(a: GeneralGroups, b: GeneralGroups) {
+    if (a.GroupName < b.GroupName) {
+      return -1;
+    }
+    if (a.GroupName < b.GroupName) {
+      return 1;
+    }
+    // a must be equal to b
+    return 0;
   }
+
+  getNestedChildren(arr, parent) {
+    const children = [];
+    for (let i = 0; i < arr.length; ++i) {
+      if (arr[i].GroupParenCategory == parent) {
+        let groupId;
+        if (arr[i].GroupId !== 0) {
+          groupId = arr[i].GroupId;
+        } else {
+
+        }
+        const grandChildren = this.getNestedChildren(arr, groupId);
+        if (grandChildren.length) {
+          arr[i].children = grandChildren;
+        }
+        children.push(arr[i]);
+      }
+    }
+    // const data = this.buildFileTree(children, 0);
+    // this.dataChange.next(children);
+    return children;
+  }
+
+
+
+  // selectGroup(selectedGroup: { isSelected: boolean, groupId: number }) {
+  //   if (selectedGroup.isSelected === true) {
+  //     selectedGroup.isSelected = false;
+  //     this.markGroupAsNotSelected(selectedGroup.groupId)
+  //   } else {
+  //     selectedGroup.isSelected = true;
+  //     this.markGroupAsSelected(selectedGroup.groupId)
+
+  //   }
+  // }
+
+  selectGroup(groupId: number) {
+    debugger
+    if (this.selectedGroupsId.includes(groupId)) {
+      this.selectedGroupsId.splice(this.selectedGroupsId.indexOf(groupId), 1);
+    } else {
+      this.selectedGroupsId.push(groupId);
+    }
+  }
+
+  clearSelectedGroupsId() {
+    this.selectedGroupsId = [];
+  }
+
+  markSelectedGroupsInGeneralList() {
+    this.getSelectedGroupsId().map(group => this.markGroupAsSelected(group));
+    this.updateCustomerGroups();
+  }
+
+  getQuickListOfGroups(groups: GeneralGroups[]) {
+    let quickGroups: GeneralGroups[] = [];
+    if (groups.length > 0) {
+      return quickGroups = groups.filter(group => group.Quick === true);
+    } else {
+      return quickGroups;
+    }
+
+  }
+
+  // CUSTOMER GROUPS METHODS
+
+  setCustomerGroups(customerGroups: GeneralGroups[]) {
+    this.customerGroups.next(customerGroups);
+  }
+
+  /** GETTING GENERAL CUSTOMER GROUPS*/
+  getCustomerGroups$() {
+    return this.customerGroups$
+  }
+
+  /** GETTING CUSTOMER GROUPS MARKED isSelected === True */
+  getSelectedGroups$(): Observable<GeneralGroups[]> {
+    return this.customerGroups$.pipe(map(groups => groups.filter(group => group.isSelected === true)),
+      map(groups => {
+        const sortedGroups = groups.sort(this.compareName)
+        return sortedGroups
+      }));
+  }
+
+  /** MAKING GROUP VALUE isSelected = True */
+  markGroupAsSelected(groupId: number) {
+    this.customerGroups.getValue().map(group => {
+      if (group.GroupId === groupId) {
+        group.isSelected = true
+      }
+      return { ...group };
+    });
+    // this.setCustomerGroups([...customerGroups]);
+  }
+
+  /** MARKING GROUP VALUE isSelected = False */
+  markGroupAsNotSelected(groupId: number) {
+    this.customerGroups.getValue().map(group => {
+      if (group.GroupId === groupId) {
+        group.isSelected = false
+      }
+      return { ...group };
+    });
+    // this.setCustomerGroups([...customerGroups]);
+  }
+
+  /** MARK ALL GROUPS VALUE isSelected = False, CLEAR STATE */
+  clearSelectedGroups() {
+    const existingGroups = this.customerGroups.getValue()
+    const customerGroups = existingGroups.map(group => {
+      if (group) {
+        if (group.isSelected) {
+          group.isSelected = false;
+          return group;
+        } else {
+          return { ...group };
+        }
+      }
+
+    })
+    this.setCustomerGroups([...customerGroups]);
+
+  }
+
+  /** UPDATE GROUPS TO SHOW IF THERE ARE SELECTED GROUPS*/
+  updateCustomerGroups() {
+    const customerGroups = this.customerGroups.getValue();
+    if (customerGroups) {
+      this.setCustomerGroups([...customerGroups]);
+
+    }
+
+  }
+
+
 }
+

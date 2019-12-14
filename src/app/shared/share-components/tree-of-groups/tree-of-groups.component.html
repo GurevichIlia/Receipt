@@ -4,9 +4,9 @@
       refresh
     </i> </button>
   <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-    <mat-tree-node [style.fontSize]="'18px'" *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+    <mat-tree-node   [style.fontSize]="'18px'" *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
       <button type="button" mat-icon-button disabled></button>
-      <mat-checkbox [checked]="node.isSelected" class="checklist-leaf-node" (change)="selectGroup(node.isSelected, node.GroupId )"><span
+      <mat-checkbox [checked]="node.isSelected" [disabled]="node.isSelected" class="checklist-leaf-node" (change)="selectGroup(node.isSelected, node.GroupId )"><span
           class="ml-2">{{node.GroupName}}</span></mat-checkbox>
     </mat-tree-node>
 
@@ -18,14 +18,14 @@
       <button type="button" mat-button (click)="saveNode(node, itemValue.value)">Save</button> -->
     </mat-tree-node>
 
-    <mat-tree-node [style.fontSize]="'18px'" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+    <mat-tree-node  [style.fontSize]="'18px'" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
       <button style="direction: ltr" type="button" mat-icon-button matTreeNodeToggle
         [attr.aria-label]="'toggle ' + node.filename">
         <mat-icon class="mat-icon-rtl-mirror">
           {{treeControl.isExpanded(node) ? 'remove' : 'add'}}
         </mat-icon>
       </button>
-      <mat-checkbox [checked]="node.isSelected" (change)="selectGroup(node.isSelected, node.GroupId)"><span class="ml-2">{{node.GroupName}}</span>
+      <mat-checkbox [checked]="node.isSelected" [disabled]="node.isSelected" (change)="selectGroup(node.isSelected, node.GroupId)"><span class="ml-2">{{node.GroupName}}</span>
       </mat-checkbox>
       <!-- <button mat-icon-button (click)="addNewItem(node)">
         <mat-icon>add</mat-icon>
