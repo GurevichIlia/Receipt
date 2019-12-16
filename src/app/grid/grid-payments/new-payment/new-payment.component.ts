@@ -241,7 +241,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
   toCustomerSearch() {
-    this.router.navigate(['/payments-grid/customer-search'])
+    this.router.navigate(['payments-grid/customer-search'])
   }
 
   editFileAs() {
@@ -422,7 +422,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
               this.toaster.success(title, message, {
                 positionClass: 'toast-top-center'
               });
-              this.router.navigate(['/home/payments-grid/payments']);
+              this.router.navigate(['payments-grid/payments']);
               this.customerGroupsService.clearSelectedGroups();
 
               this.paymentsService.updateKevaTable();
@@ -442,23 +442,6 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-  // duplicateKeva() {
-  //   this.setDataToNewPaymentKeva();
-  //   this.paymentsService.saveNewKeva(this.generalService.getOrgName(), this.newPaymentService.getNewKeva())
-  //     .pipe(
-  //       takeUntil(this.subscription$))
-  //     .subscribe(res => {
-  //       console.log('NEW KEVA RESPONSE', res);
-  //       if (res) {
-  //         if (res['Data'].error === 'false') {
-  //           this.router.navigate(['/home/payments-grid/payments']);
-  //           this.paymentsService.updateKevaTable();
-  //         }
-  //       }
-  //       this.newPaymentService.clearNewKeva();
-  //     })
-  // }
-
   updateCustomerKeva() {
     if (this.newPaymentForm.valid) {
       this.setDataToNewPaymentKeva();
@@ -475,7 +458,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
               this.toaster.success(title, message, {
                 positionClass: 'toast-top-center'
               });
-              this.router.navigate(['/home/payments-grid/payments']);
+              this.router.navigate(['payments-grid/payments']);
               this.paymentsService.updateKevaTable();
             }
           }
@@ -506,7 +489,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
               this.toaster.success(title, message, {
                 positionClass: 'toast-top-center'
               });
-              this.router.navigate(['/home/payments-grid/payments']);
+              this.router.navigate(['payments-grid/payments']);
               this.customerGroupsService.clearSelectedGroups();
 
               this.paymentsService.updateKevaTable();
@@ -536,7 +519,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   goToKevaTable() {
-    this.router.navigate(['/home/payments-grid/payments']);
+    this.router.navigate(['payments-grid/payments']);
     this.newPaymentService.clearNewKeva();
     this.customerGroupsService.clearSelectedGroups()
 
@@ -555,10 +538,6 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
-
-
-
-
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed
     //Add 'implements OnDestroy' to the class.
@@ -566,6 +545,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newPaymentService.setEditingPayment(null);
     this.newPaymentService.setDuplicatingKeva(null);
     this.newPaymentService.clearCustomerInfoForNewKeva();
+    this.customerGroupsService.clearSelectedGroups();
     this.fileAs.patchValue('');
     this.newPaymentService.setKevaMode('newKeva');
     this.newPaymentForm.reset();

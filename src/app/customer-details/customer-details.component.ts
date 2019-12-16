@@ -6,8 +6,8 @@ import { FullCustomerDetailsById, CustomerPhones } from './../models/fullCustome
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomerDetailsService } from './customer-details.service';
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil, switchMap, filter } from 'rxjs/operators';
+import { Observable, Subject, of } from 'rxjs';
+import { takeUntil, switchMap, filter, map, tap } from 'rxjs/operators';
 import { MatSidenav } from '@angular/material';
 import { FormControl } from '@angular/forms';
 
@@ -28,6 +28,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   filteredOptions$: Observable<CustomerSearchData[]>;
 
   customerIsExist = false;
+  customerSearchList$: Observable<CustomerSearchData[]>
   constructor(
     private customerDetailsService: CustomerDetailsService,
     private router: Router,
@@ -41,7 +42,8 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngOnInit() {
     this.customerId = 1952;
-    this.filteredOptions$ = this.customerDetailsService.customerListAutocomplete(this.searchControl, this.globalStateService.getCustomerList$());
+    this.getCustomerSearchData();
+
     this.customerDetailsService.setCustomerId(this.customerId);
     this.getCustomerDetailsByIdFromServer();
     this.getDisplayWidth();
@@ -75,7 +77,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
         takeUntil(this.subscription$))
       .subscribe((data: FullCustomerDetailsById) => {
         if (data) {
-          console.log('CUSTOMER INFO', data);
+          console.log('CUSTOMER INFO FROM THE SERVER', data);
           this.setCustomerDetailsByIdState(data);
           this.customerDetailsById$ = this.customerDetailsService.getCustomerDetailsByIdState$();
           this.customerGroupsService.clearSelectedGroups();
@@ -124,7 +126,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   navigateTo(route: string) {
-    this.router.navigate([`home/customer-details/customer/${route}`]);
+    this.router.navigate([`customer-details/customer/${route}`]);
   }
 
   navigation() {
@@ -155,8 +157,25 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
       })
   }
 
+
+  getCustomerSearchData() {
+    this.globalStateService.getCustomerSearchList$()
+      .pipe(
+        map((searchData: CustomerSearchData[]) => searchData.filter(data => String(data['FileAs1']) != ' ')),
+        takeUntil(this.subscription$))
+      .subscribe((searchData: CustomerSearchData[]) => {
+        if(!this.globalStateService.customerSearchList.getValue()){
+          this.globalStateService.setCustomerSearchList(searchData)
+        }
+        this.customerSearchList$ = of(searchData);
+        this.filteredOptions$ = this.customerDetailsService.customerListAutocomplete(this.searchControl, this.customerSearchList$);
+
+      }, err => console.log(err))
+
+  }
   ngOnDestroy() {
     this.customerDetailsService.clearCurrentMenuItem();
+    this.customerGroupsService.clearSelectedGroups();
     this.subscription$.next();
     this.subscription$.complete();
   }

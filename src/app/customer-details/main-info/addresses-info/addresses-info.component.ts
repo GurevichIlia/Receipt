@@ -1,8 +1,9 @@
+import { GlobalStateService } from './../../../shared/global-state-store/global-state.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { AddressesService, Address } from './addresses.service';
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { FormGroup, FormArray, AbstractControl } from '@angular/forms';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, of } from 'rxjs';
 import { takeUntil, filter, tap } from 'rxjs/operators';
 import { FullCustomerDetailsById } from 'src/app/models/fullCustomerDetailsById.model';
 import { Response } from 'src/app/models/response.model';
@@ -24,7 +25,7 @@ export class AddressesInfoComponent implements OnInit {
   cities$: Observable<any[]>
   constructor(
     private addressService: AddressesService,
-    private generalService: GeneralSrv
+    private globalStateService: GlobalStateService
   ) { }
 
   get addresses() {
@@ -37,14 +38,23 @@ export class AddressesInfoComponent implements OnInit {
   }
 
   getCities() {
-    this.cities$ = this.generalService.getCities$();
-  
+    this.globalStateService.getCities$()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(cities => {
+        this.cities$ = of(cities)
+        if(!this.globalStateService.cities.getValue()){
+          this.globalStateService.setCities(cities);
+
+        }
+      })
+
+
   }
 
   getCustomerAddresses() {
     this.addressService.getCustomerDetailsByIdState$()
-      .pipe(
-        takeUntil(this.subscription$))
+
       .subscribe((customerDetails: FullCustomerDetailsById) => {
         console.log('GOT CUSTOMER DETAILS', customerDetails);
         if (customerDetails) {

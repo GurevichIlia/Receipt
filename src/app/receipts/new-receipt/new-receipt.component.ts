@@ -187,7 +187,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     console.log('NEW RECEIPT SUBSCRIBE', this.subscriptions);
     this.customerInfoService.createNewClicked();
-    // this.globalStateService.clearSelectedMark();
+    this.customerGroupsService.clearSelectedGroups();
     this.subscriptions.unsubscribe();
     this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
     console.log('NEW RECEIPT DESTROED');

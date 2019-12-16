@@ -1,11 +1,10 @@
-import { GeneralGroups } from './../../models/generalGroups.model';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
 import { FullCustomerDetailsById, CustomerEmails, CustomerPhones, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
 import { CustomerAddresses, CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
-import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
-import { map } from 'rxjs/operators';
+import { CustomerSearchData, GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { map, tap } from 'rxjs/operators';
 
 
 
@@ -19,11 +18,15 @@ export class GlobalStateService {
   customerDetailsById$ = this.customerDetailsById.asObservable();
 
   // Список кастомеров для поиска
-  customerList = new BehaviorSubject<CustomerSearchData[]>(null);
-  customerList$ = this.customerList.asObservable();
+  customerSearchList = new BehaviorSubject<CustomerSearchData[]>(null);
+  customerSearchList$ = this.customerSearchList.asObservable();
+
+  cities = new BehaviorSubject<any[]>(null);
+  cities$ = this.cities.asObservable();
 
 
-  constructor() { }
+
+  constructor(private generalService: GeneralSrv) { }
 
   // CUSTOMER DEYAILS BY ID METHODS
   setCustomerDetailsByIdGlobalState(value) {
@@ -90,26 +93,46 @@ export class GlobalStateService {
         }
         return changedMainInfo
       }),
-      pickedGroups: customerDetails.CustomerGroupsGeneralSet,
-      
+      customerGroups: customerDetails.CustomerGroupsGeneralSet.map(group => {
+        return { GroupId: group.CustomerGeneralGroupId }
+      }),
+
     }
     return newObject
   }
 
-  // CUSTOMER LIST METHODS
+  // CUSTOMER SEARCH LIST METHODS
 
-  setCustomerList(customerList: CustomerSearchData[]) {
-    this.customerList.next(customerList);
+  setCustomerSearchList(customerList: CustomerSearchData[]) {
+    console.log('SEARCH DATA NEW STATE', customerList)
+    this.customerSearchList.next(customerList);
   }
 
-  getCustomerList$() {
-    return this.customerList$;
+  getCustomerSearchList$() {
+    if (this.customerSearchList.getValue()) {
+      return this.customerSearchList$;
+    } else {
+      return this.generalService.getUsers();
+    }
   }
 
   clearCustomerList() {
-    this.customerList.next(null);
+    this.customerSearchList.next(null);
   }
 
+  // CITIES METHODS
 
+  setCities(cities: any[]) {
+    this.cities.next(cities);
+  }
+
+  getCities$() {
+    if (this.cities.getValue()) {
+      return this.cities$;
+    } else {
+      return this.generalService.GetSystemTables().pipe(map(systemData => systemData.Cities));
+    }
+
+  }
 
 }

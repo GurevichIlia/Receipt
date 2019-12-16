@@ -145,7 +145,7 @@ export class PaymentsTableComponent implements OnInit {
     })
   }
   showDetails(element) {
-    this.router.navigate(['home/payments-grid/customer-details'])
+    this.router.navigate(['payments-grid/customer-details'])
   }
   getPaymentsTableData() {
     this.paymentsService.currentPaymentsTableData$.pipe(
@@ -166,7 +166,7 @@ export class PaymentsTableComponent implements OnInit {
     this.newPaymentService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
     this.newPaymentService.setKevaMode('edit');
-    this.router.navigate([`home/payments-grid/new-payment`]);
+    this.router.navigate([`payments-grid/new-payment`]);
     console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
   }
 
@@ -175,7 +175,7 @@ export class PaymentsTableComponent implements OnInit {
     this.newPaymentService.setKevaMode('duplicate');
 
     console.log('edit row', customerKeva);
-    this.router.navigate(['home/payments-grid/customer-search']);
+    this.router.navigate(['payments-grid/customer-search']);
   }
 
   deletePaymentRow(paymentRow: PaymentKeva) {

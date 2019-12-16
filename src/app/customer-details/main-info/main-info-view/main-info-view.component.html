@@ -7,10 +7,10 @@
       (click)="savePersonalInfo(personalInfoControl)" class=" material-icons">save</i>
 
   </div>
-  <app-dumb-presentation *ngIf="globalData$ | async; else loader" [globalData]="globalData$ | async"
+  <app-dumb-presentation *ngIf="globalData$ | async as globalData; else loader" [globalData]="globalData"
     [filteredCustomerTitles]="filteredCustomerTitles$ | async" [personalInfo]="personalInfoControl"
     (newAction)="getAction($event)">
-    <ng-template [ngIf]="globalData$ | async" #btn>
+    <ng-template [ngIf]="globalData" #btn>
       <div class="ngContentButton">
         <i style="cursor: pointer" (click)="showFullComment()" class="material-icons">zoom_in
         </i>

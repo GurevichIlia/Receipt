@@ -1,41 +1,63 @@
 <div class="container mt-5">
   <div class=" example-headers-align">
     <mat-card class="mb-2">
+
       <mat-card-header class="row">
-      
-          <h6 class="col-sm-1 col-md-4 col-lg-4 col-xl-4 " style="text-align: justify">{{'Customer Info' | translate}}</h6>
-          <h6 class="col-sm-1 col-md-4 col-lg-3 col-xl-3" style="text-align: center; direction: initial;">{{customerInfoTitle || 'Customer Name' | translate}} </h6>
-          <span class="col-sm-1 col-md-4 col-lg-4 col-xl-4 "><mat-icon >account_circle</mat-icon></span>
-
+        <h6 class="col-sm-1 col-md-4 col-lg-4 col-xl-4 " style="text-align: justify">{{'Customer Info' | translate}}
+        </h6>
+        <h6 class="col-sm-1 col-md-4 col-lg-3 col-xl-3" style="text-align: center; direction: initial;">
+          {{customerInfoTitle || 'Customer Name' | translate}} </h6>
+        <span class="col-sm-1 col-md-4 col-lg-4 col-xl-4 ">
+          <mat-icon>account_circle</mat-icon>
+        </span>
       </mat-card-header>
-      <app-customer-info-view [requiredField]="requiredField" [currentRoute]="currentRoute"
-        [customerGroupList]="customerGroupList$ | async" [cities$]="cities$"
-        [filterCustomerTitle]="filterCustTitle$ | async" [customerTypes]="customerTypes" [userInfoGroup]="userInfoGroup"
-        (openShopIsClicked)="openShop()" (newEventFromChild)="getEventsFromChildComponent($event)">
 
+      <app-customer-info-view [showMoreInfo]="showMoreInfo" [requiredField]="requiredField"
+        [currentRoute]="currentRoute" [cities$]="cities$" [filterCustomerTitle]="filterCustTitle$ | async"
+        [customerTypes]="customerTypes" [userInfoGroup]="userInfoGroup" (openShopIsClicked)="openShop()"
+        (newEventFromChild)="getEventsFromChildComponent($event)">
+
+        <ng-template #Groups [ngIf]="'true'">
+          <hr>
+          <!-- CUSTOMER GROUPS COMPONEN -->
+          <app-customer-groups-container [isShowGroupsOptions]="isShowGroupsOptions"></app-customer-groups-container>
+        </ng-template>
       </app-customer-info-view>
+
+      <!-- SHOW MORE INFO BUTTON -->
+      <p class="button" id="goDown" pageScroll href="#goDown">
+        <button id="goDown" pageScroll href="#goDown" style="background-color: rgb(38, 87, 122); color: white"
+          *ngIf="!showMoreInfo" class="mb-2" type="button" mat-raised-button color="primary"
+          (click)="showMoreInfo=!showMoreInfo;">
+          {{'Show customer info' | translate}}
+        </button>
+        <button *ngIf="showMoreInfo" class="mb-2" style="background-color:  rgb(38, 87, 122); color: white"
+          type="button" mat-raised-button color="primary" (click)="showMoreInfo=!showMoreInfo;">
+          {{'Hide customer info' | translate}}
+        </button>
+      </p>
+
+  
+      <!-- NEXT STEP BUTTONS -->
+      <mat-action-row>
+        <ng-container *ngIf="currentRoute === '/newreceipt'">
+          <button class="mr-1 ml-2" type="button" mat-raised-button
+            [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}"
+            (click)="openShop()" [disabled]="requiredField === true">
+            {{'Store' | translate}}
+          </button>
+          <button (click)="submit()" type="button" mat-raised-button color="primary"
+            [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
+            [disabled]="requiredField === true">
+            {{'Next' | translate}}
+          </button>
+        </ng-container>
+        <button (click)="submit()" *ngIf="currentRoute !== '/newreceipt'" type="button" mat-raised-button color="primary"
+          [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
+          [disabled]="requiredField === true">
+          {{'Next' | translate}}
+        </button>
+      </mat-action-row>
     </mat-card>
-    <!-- <mat-expansion-panel [expanded]="step === 1 || step === 0" (opened)="receiptService.setStep(1)" hideToggle>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-
-          <h6>{{'Customer Info' | translate}}</h6>
-        </mat-panel-title>
-        <mat-panel-description>
-          <h6>{{customerInfoTitle || 'Customer Name' | translate}}{{customerId}} </h6>
-          <mat-icon class="text-right">account_circle</mat-icon>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <app-customer-info-view [requiredField]="requiredField" [currentRoute]="currentRoute"
-        [customerGroupList]="customerGroupList" [cities]="filteredCity$ | async"
-        [filterCustomerTitle]="filterCustTitle$ | async" [customerTypes]="customerTypes" [userInfoGroup]="userInfoGroup"
-        (openShopIsClicked)="openShop()" (newEventFromChild)="getEventsFromChildComponent($event)">
-
-      </app-customer-info-view>
-
-    </mat-expansion-panel> -->
   </div>
 </div>
-
-

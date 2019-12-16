@@ -145,7 +145,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   }
   checkShowCvv() {
     console.log('SHOW CVV');
-    this.isShowCvv = "/home/payments-grid/new-payment" === this.generalService.getCurrentRoute();
+    this.isShowCvv = "/payments-grid/new-payment" === this.generalService.getCurrentRoute();
 
   }
 
@@ -379,7 +379,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
     this.dialogRef.close({ newCredCard: creditCard });
   }
   checkRoute() {
-    if (this.location.path() === '/home/newreceipt') {
+    if (this.location.path() === '/newreceipt') {
       this.receiptRoute = true;
       this.creditCardForm.get('amount').setValidators(Validators.required);
       this.creditCardForm.get('numberOfPayments').setValidators(Validators.required);

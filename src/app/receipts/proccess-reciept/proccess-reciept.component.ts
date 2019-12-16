@@ -1,3 +1,4 @@
+import { CustomerGroupsService } from './../../core/services/customer-groups.service';
 import { Addresses } from 'src/app/models/addresses.model';
 import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 import { CreditCardService } from './../credit-card/credit-card.service';
@@ -65,7 +66,8 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
     private router: Router,
     private creditCardService: CreditCardService,
     private spinner: NgxUiLoaderService,
-    private customerInfoService: CustomerInfoService
+    private customerInfoService: CustomerInfoService,
+    private customerGroupsService: CustomerGroupsService
   ) {
   }
   ngOnChanges() {
@@ -376,6 +378,7 @@ export class ProccessRecieptComponent implements OnInit, OnChanges, OnDestroy {
           // this.receiptService.refreshNewReceipt();
           this.spinner.stop();
           this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
+          this.customerGroupsService.clearSelectedGroups();
           console.log('Success', res);
         }
       }));

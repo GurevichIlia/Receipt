@@ -9,7 +9,7 @@ import { PaymentsService } from '../grid/payments.service';
 import { Router } from '@angular/router';
 import { CustomerInfoService } from '../receipts/customer-info/customer-info.service';
 
-import { debounceTime, map, switchMap } from 'rxjs/operators';
+import { debounceTime, map, switchMap, filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -68,7 +68,7 @@ export class CustomerDetailsService {
   }
 
   getCustomerDetailsByIdState$(): Observable<FullCustomerDetailsById> {
-    return this.globalStateService.getCustomerDetailsByIdGlobalState$();
+    return this.globalStateService.getCustomerDetailsByIdGlobalState$().pipe(filter(details => details !== null));
   }
 
 
@@ -99,7 +99,7 @@ export class CustomerDetailsService {
 
   goToCreateNewReceiptPage() {
     this.setCustomerInfoForNewReceipt(this.getCustomerDetailsByIdState());
-    this.router.navigate(['/home/newreceipt']);
+    this.router.navigate(['newreceipt']);
   }
 
   setCustomerInfoForNewReceipt(customerInfo: FullCustomerDetailsById) {
@@ -139,7 +139,6 @@ export class CustomerDetailsService {
   customerListAutocomplete(searchControl: FormControl, customerList: Observable<CustomerSearchData[]>) {
     const filteredOptions$ = searchControl.valueChanges
       .pipe(
-        debounceTime(1),
         switchMap((value: string) => customerList
           .pipe(
             map(customers => customers

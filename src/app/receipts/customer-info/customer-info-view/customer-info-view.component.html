@@ -1,4 +1,4 @@
-<form [formGroup]="userInfoGroup" (ngSubmit)="sendEventFromChild('toNextStep')" [style.fontSize]="'20px'">
+<form [formGroup]="userInfoGroup"  [style.fontSize]="'20px'">
 
   <div formGroupName="customerMainInfo">
     <mat-form-field hidden class="col-12">
@@ -275,40 +275,11 @@
 
     <!-- <button type="button" mat-button color="primary"
       (click)="moreAddress=!moreAddress">{{'Address' | translate}}</button> -->
-    <hr>
-    <app-customer-groups-container></app-customer-groups-container>
+    <ng-content ></ng-content>
+
   </div>
 
 
-  <p class="button" id="goDown" pageScroll href="#goDown">
-    <button id="goDown" pageScroll href="#goDown" style="background-color: rgb(38, 87, 122); color: white"
-      *ngIf="!showMoreInfo" class="mb-2" type="button" mat-raised-button color="primary"
-      (click)="showMoreInfo=!showMoreInfo;">
-      {{'Show customer info' | translate}}
-    </button>
-    <button *ngIf="showMoreInfo" class="mb-2" style="background-color:  rgb(38, 87, 122); color: white" type="button"
-      mat-raised-button color="primary" (click)="showMoreInfo=!showMoreInfo;">
-      {{'Hide customer info' | translate}}
-    </button>
-  </p>
 
-  <mat-action-row>
-    <ng-container *ngIf="currentRoute === '/home/newreceipt'">
-      <button class="mr-1 ml-2" type="button" mat-raised-button
-        [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}"
-        (click)="sendEventFromChild('toShop')" [disabled]="requiredField === true">
-        {{'Store' | translate}}
-      </button>
-      <button type="submit" mat-raised-button color="primary"
-        [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
-        [disabled]="requiredField === true">
-        {{'Next' | translate}}
-      </button>
-    </ng-container>
-    <button *ngIf="currentRoute !== '/home/newreceipt'" type="submit" mat-raised-button color="primary"
-      [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
-      [disabled]="requiredField === true">
-      {{'Next' | translate}}
-    </button>
-  </mat-action-row>
+
 </form>

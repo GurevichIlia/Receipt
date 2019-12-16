@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 
 import { trigger, state, keyframes, animate, transition } from '@angular/animations';
 import * as kf from '../../shared/keyframes';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-side-bar',
@@ -23,14 +24,15 @@ import * as kf from '../../shared/keyframes';
 })
 export class SideBarComponent implements OnInit {
   customerDetailsById$: Observable<FullCustomerDetailsById>
-  animationState: string
+  animationState: string;
+  customerId: number
   constructor(private sidebarService: SideBarService) { }
 
   ngOnInit() {
     this.getCustomerDetailsById();
   }
   getCustomerDetailsById() {
-    this.customerDetailsById$ = this.sidebarService.getCustomerInfoById$();
+    this.customerDetailsById$ = this.sidebarService.getCustomerInfoById$().pipe(tap((details: FullCustomerDetailsById) => this.customerId = details.CustomerCard_MainDetails[0].CustomerId));
   }
   setChildItem(item: string) {
     this.sidebarService.setChildMenuItem(item);

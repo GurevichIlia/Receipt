@@ -1,20 +1,22 @@
 <div class="header mb-3">
   <h4>{{'Groups' | translate}}</h4>
-  <button class="mb-2 mr-1 ml-1 " style="background-color:  rgb(38, 87, 122); color: white" type="button"
-    mat-raised-button (click)="openModal('general')">
+
+  <button *ngIf="isShowGroupsOptions" class="mb-2 mr-1 ml-1 " style="background-color:  rgb(38, 87, 122); color: white"
+    type="button" mat-raised-button (click)="openModal('general')">
     {{'Add' | translate}}
   </button>
 
-  <button class="mb-2 mr-1 ml-1 " style="background-color:  rgb(38, 87, 122); color: white" type="button"
-    mat-raised-button (click)="openModal('quick')">
-    {{'Quick' | translate}}
+  <button *ngIf="isShowGroupsOptions" class="mb-2 mr-1 ml-1 " style="background-color:  rgb(38, 87, 122); color: white"
+    type="button" mat-raised-button (click)="openModal('quick')">
+    {{'שיוך מהיר לקבוצה' | translate}}
   </button>
 </div>
 
 
 <ul class="list-unstyled">
   <li *ngFor="let group of selectedGroups" class="row listItem">
-    {{group.GroupName}} <i style="cursor: pointer" (click)="deleteGroup(group.GroupId)"
+    {{group.GroupName}} <i *ngIf="isShowGroupsOptions" style="cursor: pointer" (click)="deleteGroup(group.GroupId)"
       class=" material-icons ">delete</i>
   </li>
 </ul>
+

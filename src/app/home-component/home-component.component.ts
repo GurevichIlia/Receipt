@@ -1,3 +1,4 @@
+import { GlobalEventsService } from './../core/services/global-events.service';
 import { CustomerGroupsService } from './../core/services/customer-groups.service';
 import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
@@ -20,118 +21,104 @@ export class HomeComponentComponent implements OnInit, OnDestroy {
     private router: Router,
     private customerInfoService: CustomerInfoService,
     private globalStateService: GlobalStateService,
-    private customerGroupsService: CustomerGroupsService
+    private customerGroupsService: CustomerGroupsService,
+    private globalEventsService: GlobalEventsService
   ) {
-
-   }
+  }
 
   ngOnInit() {
-    this.getGlobalData();
-    this.getCities();
-    this.getCurrentAndPreviousRoutes();
-    this.GetCustomerSearchData();
-  }
-
-  getGlobalData() {
-    this.generalService.getKevaGlbData(this.generalService.getOrgName())
-      .pipe(
-        takeUntil(this.subscription$))
-      .subscribe(data => this.generalService.setGlobalDataState(data));
-  }
-
-  getCities() {
-    // if (this.generalService.checkLocalStorage('cities')) {
-    //   const cities = JSON.parse(this.generalService.checkLocalStorage('cities'));
-    //   this.generalService.setCities(cities)
-    // } else {
-      this.generalService.GetSystemTables()
-        .pipe(
-          takeUntil(this.subscription$))
-        .subscribe(
-          response => {
-            console.log('LoadSystemTables', response);
-            if (response['IsError'] == true) {
-              alert('err');
-            } else {
-              const cities = response.Cities;
-              const generalGroups = [...response.CustomerGroupsGeneral]
-              this.generalService.setCities(cities);
-              this.customerGroupsService.setCustomerGroups(generalGroups);
-              localStorage.setItem('cities', JSON.stringify(cities))
-              console.log('CITIES', cities)
-            }
-          },
-          error => {
-            console.log(error);
-          },
-          () => {
-            console.log('CallCompleted');
-          }
-        );
-    // }
-
-  }
-
-  getCurrentAndPreviousRoutes() {
-    this.generalService.setCurrentRoute(this.router.url)
-    this.router.events.
-      pipe(
-        filter((event: NavigationEnd) => event.url !== this.generalService.getCurrentRoute()),
-        takeUntil(this.subscription$),
-
-      )
-      .subscribe(event => {//Вызывается два раза не знаю почему, поэтому фильтрую
-        if (event instanceof NavigationEnd) {
-          this.generalService.setPreviousRoute(this.generalService.getCurrentRoute())
-          this.generalService.setCurrentRoute(event.url);
-          console.log('ROUTE CURRENT', event);
-          // Проверяем если мы после заполнения формы с информацией переходим не на роут с созданием Кева,
-          // тогда стираем стейт с данными в сервисе для компонента CustomerInfoComponent.
-          // если на создание Кева, то оставляем стейт до завершения создания Кева.
-          if (this.generalService.getPreviousRoute() === '/home/payments-grid/customer-search' && this.generalService.getCurrentRoute() !== '/home/payments-grid/new-payment' ||
-            this.generalService.getCurrentRoute() !== '/home/payments-grid/customer-search' && this.generalService.getPreviousRoute() === '/home/payments-grid/new-payment'
-          ) {
-            this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
-
-          } else {
-            console.log('NOT CLEAR')
-          }
-        }
-
-      })
-  }
-
-  GetCustomerSearchData() {
-    let customerList: CustomerSearchData[] = [];
-    // if (this.generalService.checkLocalStorage('customerSearchData')) {
-    //   customerList = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
-    //   this.globalStateService.setCustomerList(customerList);
-    // } else {
-      this.generalService.getUsers()
-        .pipe(
-          map(response => {
-            if (response.length === 0) {
-              // this.authService.logout();
-              return response;
-            } else {
-              return response;
-            }
-          }),
-          // map(response => response)
+    // this.getGlobalData();
+    // this.getCities();
   
-          takeUntil(this.subscription$))
-        .subscribe(
-          data => {
-            customerList = data;
-            customerList = customerList.filter(data => String(data['FileAs1']) != ' ');
-            this.globalStateService.setCustomerList(customerList)
-            localStorage.setItem('customerSearchData', JSON.stringify(customerList));
-            console.log('this.AllCustomerTables', customerList);
-          },
-        );
-
-    // }
+    // this.GetCustomerSearchData();
+    // this.isUpdateCustomerSearchData();
   }
+
+  // getGlobalData() {
+  //   this.generalService.getKevaGlbData(this.generalService.getOrgName())
+  //     .pipe(
+  //       takeUntil(this.subscription$))
+  //     .subscribe(data => this.generalService.setGlobalDataState(data));
+  // }
+
+  // getCities() {
+  //   // if (this.generalService.checkLocalStorage('cities')) {
+  //   //   const cities = JSON.parse(this.generalService.checkLocalStorage('cities'));
+  //   //   this.generalService.setCities(cities)
+  //   // } else {
+  //   this.generalService.GetSystemTables()
+  //     .pipe(
+  //       takeUntil(this.subscription$))
+  //     .subscribe(
+  //       response => {
+  //         console.log('LoadSystemTables', response);
+  //         if (response['IsError'] == true) {
+  //           alert('err');
+  //         } else {
+  //           const cities = response.Cities;
+  //           const generalGroups = [...response.CustomerGroupsGeneral]
+  //           this.generalService.setCities(cities);
+  //           this.customerGroupsService.setCustomerGroups(generalGroups);
+  //           localStorage.setItem('cities', JSON.stringify(cities))
+  //           console.log('CITIES', cities)
+  //         }
+  //       },
+  //       error => {
+  //         console.log(error);
+  //       },
+  //       () => {
+  //         console.log('CallCompleted');
+  //       }
+  //     );
+  //   // }
+
+  // }
+
+
+
+  // GetCustomerSearchData() {
+  //   let customerList: CustomerSearchData[] = [];
+  //   if (this.generalService.checkLocalStorage('customerSearchData')) {
+  //     customerList = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
+  //     this.globalStateService.setCustomerList(customerList);
+  //   } else {
+  //     this.generalService.getUsers()
+  //       .pipe(
+  //         map(response => {
+  //           if (response.length === 0) {
+  //             // this.authService.logout();
+  //             return response;
+  //           } else {
+  //             return response;
+  //           }
+  //         }),
+  //         // map(response => response)
+
+  //         takeUntil(this.subscription$))
+  //       .subscribe(
+  //         data => {
+  //           customerList = data;
+  //           customerList = customerList.filter(data => String(data['FileAs1']) != ' ');
+  //           this.globalStateService.setCustomerList(customerList)
+  //           localStorage.setItem('customerSearchData', JSON.stringify(customerList));
+  //           console.log('this.AllCustomerTables', customerList);
+  //         },
+  //       );
+
+  //   }
+  // }
+
+  // isUpdateCustomerSearchData() {
+  //   this.globalEventsService.getIsUpdateCustomerSearchData$()
+  //     .pipe(
+  //       takeUntil(this.subscription$))
+  //     .subscribe((isUpdate: boolean) => {
+  //       if (isUpdate) {
+  //         this.GetCustomerSearchData();
+  //       }
+  //     })
+
+  // }
 
 
   checkAuthStatus() {

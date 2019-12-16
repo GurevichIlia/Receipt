@@ -31,6 +31,7 @@ export class MainInfoComponent implements OnInit {
   currentMenuItem = 'personalInfo';
   animationState: string;
   displayWidth$: Observable<number>;
+  isShowGroupsOptions = true;
   constructor(
     private mainInfoService: MainInfoService,
     private fb: FormBuilder,
@@ -44,7 +45,6 @@ export class MainInfoComponent implements OnInit {
     // this.getGlobalData();
     this.getChildMenuItem();
     this.getDisplayWidth();
-    this.getIfAddGroupsIsClicked();
   }
 
   getDisplayWidth() {
@@ -111,21 +111,6 @@ export class MainInfoComponent implements OnInit {
         // })
       ])
     })
-
-  }
-
-  getIfAddGroupsIsClicked() {
-    this.customerGroupsService.getAddGroupsIsClickedEvent$().pipe(
-      takeUntil(this.subscription$))
-      .subscribe(() => {
-        this.openCustomerGroupsModal();
-      })
-
-  }
-
-
-  openCustomerGroupsModal() {
-    const groupsModal = this.matDialog.open(CustomerGroupsComponent, { width: '500px', height: '600px', disableClose: true });
 
   }
 

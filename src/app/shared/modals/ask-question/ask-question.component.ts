@@ -9,7 +9,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 })
 export class AskQuestionComponent implements OnInit {
   questionText: string = '';
-  questionTtemInfo: string;
+  questionItemInfo: string;
   acceptButtonName: string = 'Confirm';
   closeButtonName: string = 'Cancel';
   constructor(public matDialogRef: MatDialogRef<AskQuestionComponent>,
@@ -26,7 +26,7 @@ export class AskQuestionComponent implements OnInit {
   createQuestionText() {
     if (this.data.item) {
       const fileAs = this.data.item.fileAs.trim() ? `על שם ${this.data.item.fileAs}` : '';
-      this.questionTtemInfo = `${this.data.item.kevaId} ${fileAs}`
+      this.questionItemInfo = `${this.data.item.kevaId} ${fileAs}`
     }
 
     this.questionText = this.data.questionText

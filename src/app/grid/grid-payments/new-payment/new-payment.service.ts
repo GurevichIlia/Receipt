@@ -298,7 +298,7 @@ export class NewPaymentService {
       addresses: customerInfoFromInfoComponent.customerAddress,
       customerMainInfo: customerInfoFromInfoComponent.customerMainInfo[0],
       emails: customerInfoFromInfoComponent.customerEmails,
-      groups: this.customerGroupsService.getTransformedSelectedGroups(),
+      groups: this.customerGroupsService.getSelectedGroupsId(),
       phones: customerInfoFromInfoComponent.customerPhones
     };
 

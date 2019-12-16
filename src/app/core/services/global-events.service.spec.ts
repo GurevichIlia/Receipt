@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { EditModeService } from './edit-mode.service';
+import { GlobalEventsService } from './global-events.service';
 
-describe('EditModeService', () => {
+describe('GlobalEventsService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: EditModeService = TestBed.get(EditModeService);
+    const service: GlobalEventsService = TestBed.get(GlobalEventsService);
     expect(service).toBeTruthy();
   });
 });

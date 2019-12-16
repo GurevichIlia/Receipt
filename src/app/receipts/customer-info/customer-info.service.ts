@@ -1,3 +1,4 @@
+import { Group } from 'src/app/receipts/customer-info/customer-info.component';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -13,7 +14,7 @@ import { Phones } from 'src/app/models/phones.model';
 import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
 
-import {  CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept, CustomerGroupsGeneralSet } from './../../models/customer-info-by-ID.model';
+import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept, CustomerGroupsGeneralSet } from './../../models/customer-info-by-ID.model';
 
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 import { Customerinfo } from 'src/app/models/customerInfo.model';
@@ -25,19 +26,17 @@ export interface CustomerInfoByIdForCustomerInfoComponent {
   customerPhones: Phones[],
   customerAddress: Addresses[],
   customerMainInfo: CustomerMainInfo[];
-  // customerGroupsGeneralSet?: CustomerGroupsGeneralSet[];
+  customerGroups: Group[];
   customerCreditCardTokens?: any[],
-  pickedGroups?: CustomerGroupsGeneralSet[]
 }
 
 export interface NewCustomerInfo {
   customerEmails: Emails[],
   customerPhones: Phones[],
   customerAddress: Addresses[],
-  // customerGroupsGeneralSet?: CustomerGroupsGeneralSet[];
+  customerGroups: Group[];
   customerMainInfo: CustomerMainInfo;
   customerCreditCardTokens?: any[],
-  pickedGroups?: CustomerGroupsGeneralSet[]
 }
 
 @Injectable({
@@ -126,8 +125,9 @@ export class CustomerInfoService {
   }
 
   setCurrentCustomerInfoByIdState(
+    
     customerInfoById: {
-      customerEmails: Emails[], customerPhones: Phones[], customerAddress: Addresses[], customerMainInfo: CustomerMainInfo[], pickedGroups?: CustomerGroupsGeneralSet[], customerCreditCardTokens?: any[],
+      customerEmails: Emails[], customerPhones: Phones[], customerAddress: Addresses[], customerMainInfo: CustomerMainInfo[], customerGroups: Group[], customerCreditCardTokens?: any[],
     }
   ) {
     this.customerInfoByIdForCustomerInfoComponent.next(customerInfoById);
@@ -172,9 +172,9 @@ export class CustomerInfoService {
     this.cities = cities;
   }
 
-  getCities$() {
-    return this.generalService.getCities$();
-  }
+  // getCities$() {
+  //   return this.generalService.getCities$();
+  // }
 
   // setCurrentCustomerDetailsForCustomerInfoComponent(customermaininfo: Customermaininfo, phones: Phones[], emails: Emails[], addresses: Addresses[], groups: Group[]) {
   //   this.customer = null;
@@ -363,8 +363,10 @@ export class CustomerInfoService {
         }
         return changedMainInfo
       }),
-      pickedGroups: customerDetails.CustomerGroupsGeneralSet,
-      
+      customerGroups: customerDetails.CustomerGroupsGeneralSet.map(group => {
+        return { GroupId: group.CustomerGeneralGroupId }
+      })
+
     }
     return newObject
 

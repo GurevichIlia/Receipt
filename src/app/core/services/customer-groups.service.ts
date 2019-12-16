@@ -23,8 +23,9 @@ export class CustomerGroupsService {
   readonly customerGroups = new BehaviorSubject<GeneralGroups[]>([]);
   customerGroups$ = this.customerGroups.asObservable()
 
+
   addGroupsIsClicked$ = new Subject();
-  selectedGroupsId: number[] = [];
+  groupsCondidatesToAddition: number[] = [];
 
   // Данные для формирования вложенного списка групп 
   dataChange = new BehaviorSubject<TodoItemNode[]>([]);
@@ -34,11 +35,11 @@ export class CustomerGroupsService {
     private generalService: GeneralSrv
   ) { }
 
-  private getSelectedGroupsId() {
-    return this.selectedGroupsId;
+  private getGroupsCondidatesToAddition() {
+    return this.groupsCondidatesToAddition;
   }
 
-  getTransformedSelectedGroups() {
+  getSelectedGroupsId(): Group[] {
     const selectedGroupsId: Group[] = this.customerGroups.getValue().filter(groups => groups.isSelected === true).map(selectedGroup => {
       return { GroupId: selectedGroup.GroupId };
     });
@@ -69,19 +70,11 @@ export class CustomerGroupsService {
     this.updateCustomerGroups();
   }
 
-  // getSelectedGroups$(): Observable<GeneralGroups[]> {
-  //   return this.getSelectedGroups$().pipe(map(groups => {
-  //     const sortedGroups = groups.sort(this.compareName)
-  //     return sortedGroups
-  //   }));
-  // }
-
-
   getGeneralGroups$() {
-    if (this.customerGroups.getValue()) {
+    if (this.customerGroups.getValue().length !== 0) {
       return this.getCustomerGroups$();
     } else {
-      return this.generalService.GetSystemTables().pipe(map(data => data.CustomerGroupsGeneral));
+      return this.generalService.GetSystemTables().pipe(map(data => data.CustomerGroupsGeneral), tap(groups => this.setCustomerGroups(groups)));
     }
   }
 
@@ -118,34 +111,20 @@ export class CustomerGroupsService {
     return children;
   }
 
-
-
-  // selectGroup(selectedGroup: { isSelected: boolean, groupId: number }) {
-  //   if (selectedGroup.isSelected === true) {
-  //     selectedGroup.isSelected = false;
-  //     this.markGroupAsNotSelected(selectedGroup.groupId)
-  //   } else {
-  //     selectedGroup.isSelected = true;
-  //     this.markGroupAsSelected(selectedGroup.groupId)
-
-  //   }
-  // }
-
   selectGroup(groupId: number) {
-    debugger
-    if (this.selectedGroupsId.includes(groupId)) {
-      this.selectedGroupsId.splice(this.selectedGroupsId.indexOf(groupId), 1);
+    if (this.groupsCondidatesToAddition.includes(groupId)) {
+      this.groupsCondidatesToAddition.splice(this.groupsCondidatesToAddition.indexOf(groupId), 1);
     } else {
-      this.selectedGroupsId.push(groupId);
+      this.groupsCondidatesToAddition.push(groupId);
     }
   }
 
-  clearSelectedGroupsId() {
-    this.selectedGroupsId = [];
+  clearGroupsCondidatesToAddition() {
+    this.groupsCondidatesToAddition = [];
   }
 
   markSelectedGroupsInGeneralList() {
-    this.getSelectedGroupsId().map(group => this.markGroupAsSelected(group));
+    this.getGroupsCondidatesToAddition().map(group => this.markGroupAsSelected(group));
     this.updateCustomerGroups();
   }
 

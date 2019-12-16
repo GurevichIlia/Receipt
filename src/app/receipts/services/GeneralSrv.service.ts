@@ -1,5 +1,4 @@
-import { GeneralGroups } from './../../models/generalGroups.model';
-import { Router, NavigationEnd } from '@angular/router';
+
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -7,22 +6,20 @@ import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { map, switchMapTo, takeUntil, filter, startWith } from 'rxjs/operators';
 
 import { LastSelection } from '../../models/lastSelection.model';
-import { AuthenticationService } from './authentication.service';
 import { NewReceipt } from '../../models/newReceipt.model';
 import { Guid } from 'guid-typescript';
-import { ReceiptsService } from './receipts.service';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { CustomerInfoById, CustomerAddresses } from '../../models/customer-info-by-ID.model';
+import { CustomerInfoById} from '../../models/customer-info-by-ID.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import { FormArray, FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
 
-import { GlobalData, CustomerTitle } from 'src/app/models/globalData.model';
+import { GlobalData} from 'src/app/models/globalData.model';
 import { Phones } from 'src/app/models/phones.model';
 import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
-
+import { GeneralGroups } from './../../models/generalGroups.model';
 export interface CustomerSearchData {
   ActiveStatus: number;
   CustomerId: number;
@@ -68,18 +65,14 @@ export class GeneralSrv {
   /** Using this data in payments part of application */
   currentGlobalData$ = this.globalData.asObservable();
 
-  cities = new BehaviorSubject<any[]>(null);
-  cities$ = this.cities.asObservable();
+
   subscription$ = new Subject();
 
   currentRoute: string;
   previousRoute: string;
   constructor(private http: HttpClient,
-    private authen: AuthenticationService,
     private zone: NgZone,
-    private receiptService: ReceiptsService,
     private translate: TranslateService,
-    private router: Router
   ) {
     console.log('GENERAL SERVICE')
     this.switchLanguage('he');
@@ -255,7 +248,7 @@ export class GeneralSrv {
 
           data.CustomerGroupsGeneral.map(group => {
             group.isSelected = false;
-            const newGroup = {...group}
+            const newGroup = { ...group }
             return newGroup;
           })
           return data;
@@ -408,8 +401,13 @@ export class GeneralSrv {
   getGlobalDataState() {
     return this.globalData.getValue();
   }
+
   getGlobalData$() {
-    return this.currentGlobalData$;
+    if (this.getGlobalDataState()) {
+      return this.currentGlobalData$;
+    } else {
+      return this.getKevaGlbData(this.getOrgName());
+    }
   }
 
   formControlAutoComplete(filteredSubject: any[], titleInput: AbstractControl, filterKey: string) {
@@ -542,13 +540,6 @@ export class GeneralSrv {
 
   getAddAddressFunction() {
     return this.addAddressInput;
-  }
-  setCities(cities: any[]) {
-    this.cities.next(cities);
-  }
-
-  getCities$() {
-    return this.cities$;
   }
 
   setCurrentRoute(route: string) {

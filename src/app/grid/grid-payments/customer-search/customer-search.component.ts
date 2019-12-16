@@ -1,9 +1,10 @@
+import { GlobalStateService } from './../../../shared/global-state-store/global-state.service';
 import { CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from './../../../models/customer-info-by-ID.model';
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
 import { Observable, Subscription, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil, startWith } from 'rxjs/operators';
 
 
 import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
@@ -48,14 +49,15 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     private paymentsService: PaymentsService,
     private router: Router,
     private newPaymentService: NewPaymentService,
-    private customerInfoService: CustomerInfoService
+    private customerInfoService: CustomerInfoService,
+    private globalStateService: GlobalStateService
   ) { }
 
   ngOnInit() {
     this.spinner.start();
     // this.switchLanguage('he');
     this.getCities();
-    this.GetCustomerSearchData1();
+    this.getCustomerSearchData();
     this.filterOption();
     // this.generalService.getLastSelectionFromLocalStore();
     this.subscriptions.add(this.generalService.currentLang$.subscribe(lang => this.currentLang = lang));
@@ -98,32 +100,21 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
 
   }
 
-  GetCustomerSearchData1() {
-    if (this.generalService.checkLocalStorage('customerSearchData')) {
-      this.AllCustomerTables = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
-    } else {
-      this.subscriptions.add(this.generalService.getUsers()
-        .pipe(
-          map(response => {
-            if (response.length === 0) {
-              // this.authService.logout();
-              return response;
-            } else {
-              return response;
-            }
-          }),
-          map(response => response),
-        ).subscribe(
-          data => {
-            this.AllCustomerTables = data;
-            this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
+  getCustomerSearchData() {
+    this.subscriptions.add(this.globalStateService.getCustomerSearchList$()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(
+        data => {
+          this.AllCustomerTables = data;
+          this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
 
-            localStorage.setItem('customerSearchData', JSON.stringify(this.AllCustomerTables));
-            console.log('this.AllCustomerTables', this.AllCustomerTables);
-          },
-        ));
-    }
+          localStorage.setItem('customerSearchData', JSON.stringify(this.AllCustomerTables));
+          console.log('this.AllCustomerTables', this.AllCustomerTables);
+        },
+      ));
   }
+
 
   getCustomerInfoById(customerId: number) {
     this.spinner.start();
@@ -151,7 +142,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
 
 
   getCities() {
-    this.generalService.getCities$()
+    this.globalStateService.getCities$()
       .pipe(
         takeUntil(this.subscription$))
       .subscribe(cities => this.cities = cities);
@@ -188,7 +179,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
         takeUntil(this.subscription$))
       .subscribe(customerInfo => {
         this.newPaymentService.setCustomerInfoForNewKeva(customerInfo);
-        this.router.navigate(['home/payments-grid/new-payment']);
+        this.router.navigate(['payments-grid/new-payment']);
 
       })
 
@@ -243,18 +234,15 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
         }
         return changedMainInfo
       }),
-      pickedGroups: customerDetails.CustomerGroupsGeneralSet,
-    
+      customerGroups: customerDetails.CustomerGroupsGeneralSet.map(group => {
+        return { GroupId: group.CustomerGeneralGroupId }
+      })
+
     }
     return newObject
   }
 
   ngOnDestroy() {
-    // debugger
-    // console.log(this.router)
-    // if (this.generalService.currentRoute !== '/home/payments-grid/new-payment') {
-    //   this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
-    // }
     this.subscription$.next();
     this.subscription$.complete();
   }

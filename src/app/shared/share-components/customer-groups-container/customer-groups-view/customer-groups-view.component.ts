@@ -11,6 +11,8 @@ export class CustomerGroupsViewComponent implements OnChanges {
   @Input() selectedGroups: GeneralGroups[];
   @Output() deleteGroupEvent = new EventEmitter();
   @Output() openModalEvent = new EventEmitter();
+  @Input() isShowGroupsOptions: boolean;
+
 
   constructor() { }
 

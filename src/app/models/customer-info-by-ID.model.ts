@@ -82,3 +82,4 @@ export interface CustomerGroupsGeneralSet {
       isTop: boolean;
       isWork: boolean;
 }
+

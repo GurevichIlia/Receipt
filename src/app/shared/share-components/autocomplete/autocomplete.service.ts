@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
 import { Observable } from 'rxjs';
-import { debounceTime, switchMap, map, tap } from 'rxjs/operators';
+import { debounceTime, switchMap, map, tap, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +15,9 @@ export class AutocompleteService {
       // this.generalService.getCities$(),
       arrayForFilter$,
       formControl, filterKey)
-      // .pipe(
-      //   // tap(city => console.log('CITIES FILTERED', city))
-      //   )
+    // .pipe(
+    //   // tap(city => console.log('CITIES FILTERED', city))
+    //   )
     // return this.filtredArray$.pipe(tap(city => console.log('CITIES FILTERED' ,city)))
   }
 
@@ -25,7 +25,6 @@ export class AutocompleteService {
   formControlAutoComplete(filterList: Observable<any[]>, searchControl: AbstractControl, filterKey) {
     const filteredOptions$ = searchControl.valueChanges
       .pipe(
-        debounceTime(1),
         // tap(value => console.log('VALUE IN INPUT', value)),
         switchMap((value: string) => filterList
           .pipe(

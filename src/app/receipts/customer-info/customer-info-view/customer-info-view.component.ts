@@ -11,25 +11,19 @@ import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
   styleUrls: ['./customer-info-view.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomerInfoViewComponent implements OnInit, OnChanges {
+export class CustomerInfoViewComponent {
   @Input() userInfoGroup: FormGroup
   @Input() filterCustomerTitle: CustomerTitle[];
   @Input() customerTypes: CustomerType[];
   @Input() cities$: Observable<any[]>;
   @Input() currentRoute: string
   @Input() requiredField: boolean;
-  @Input() customerGroupList: CustomerGroupById[]
+  @Input() isShowGroupsOptions: boolean;
+  @Input() showMoreInfo = false;
+
   @Output() newEventFromChild = new EventEmitter();
-  showMoreInfo = false;
   constructor() { }
 
-  ngOnChanges() {
-    console.log('CUSTOMER GROUP LIST', this.customerGroupList)
-  }
-
-  ngOnInit() {
-
-  }
 
   get phones() {
     return this.userInfoGroup.get('phones') as FormArray;

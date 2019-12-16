@@ -2,7 +2,7 @@ import { CustomerGroupsService } from './../../../core/services/customer-groups.
 import { debounceTime, tap, takeUntil, map } from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
 import { GeneralGroups } from './../../../models/generalGroups.model';
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { CustomerGroupsComponent } from '../../modals/customer-groups/customer-groups.component';
 import { MatDialog } from '@angular/material';
 
@@ -12,13 +12,13 @@ import { MatDialog } from '@angular/material';
   styleUrls: ['./customer-groups-container.component.css']
 })
 export class CustomerGroupsContainerComponent implements OnInit, OnDestroy {
+  @Input() isShowGroupsOptions: boolean;
   selectedGroups$: Observable<GeneralGroups[]>
   selectedGroupsId: number[] = [];
   customerGeneralGroups$: Observable<GeneralGroups[]>
   subscription$ = new Subject();
   treeViewGeneralGroups;
   generalGroups: GeneralGroups[] = [];
-  @Output() newEventFromChild = new EventEmitter();
 
   constructor(
     private customerGroupsService: CustomerGroupsService,
@@ -39,10 +39,13 @@ export class CustomerGroupsContainerComponent implements OnInit, OnDestroy {
       .subscribe((groups: GeneralGroups[]) => {
         if (groups) {
           const generalGroups = groups.sort(this.compareName);
-
           this.generalGroups = this.customerGroupsService.getNestedChildren(generalGroups, 0);
+          if (!this.customerGroupsService.customerGroups.getValue()) {
+            this.customerGroupsService.setCustomerGroups(generalGroups);
+          }
+
         }
-      })
+      }, err => console.log(err))
   }
 
   compareName(a: GeneralGroups, b: GeneralGroups) {
@@ -60,7 +63,7 @@ export class CustomerGroupsContainerComponent implements OnInit, OnDestroy {
   getSelectedGroups() {
     this.selectedGroups$ = this.customerGroupsService.getSelectedGroups$()
       .pipe(
-        tap(groups => console.log('SELECTED GROUPS AFTER CONFIRM ', groups)),
+        tap(groups => console.log('SELECTED GROUPS', groups)),
         debounceTime(1),
       )
   }
@@ -80,7 +83,7 @@ export class CustomerGroupsContainerComponent implements OnInit, OnDestroy {
         if (modalResult) {
           this.customerGroupsService.markSelectedGroupsInGeneralList();
         } else {
-          return this.customerGroupsService.clearSelectedGroupsId();
+          return this.customerGroupsService.clearGroupsCondidatesToAddition();
         }
       })
   }

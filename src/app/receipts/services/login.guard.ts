@@ -24,7 +24,7 @@ export class LoginGuard implements CanActivate {
                         take(1))
                   .subscribe(state => {
                         if (state) {
-                              this.router.navigate(['/home']);
+                              this.router.navigate(['home']);
                               authStatus = false
                         } else
                               authStatus = true;

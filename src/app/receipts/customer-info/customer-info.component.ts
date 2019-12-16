@@ -95,6 +95,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   }
   selectedGroups$: Observable<number[]>
   subscription$ = new Subject();
+  isShowGroupsOptions = true;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
@@ -103,7 +104,8 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     private paymentsService: PaymentsService,
     private customerInfoService: CustomerInfoService,
     private matDialog: MatDialog,
-    private customerGroupsService: CustomerGroupsService
+    private customerGroupsService: CustomerGroupsService,
+    private globalStateService: GlobalStateService
   ) {
     // tslint:disable-next-line: max-line-length
     // this.payMath = new FormControl({ value: localStorage.getItem('paymenthMethod') ? Number(localStorage.getItem('paymenthMethod')) : null, disabled: this.disabledPayMethod }, [Validators.required])
@@ -365,18 +367,21 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       this.customerInfoService.updateValueInPhoneInputsArray(this.phones, customer.customerPhones)
       // this.setCustomerPhoneFormControls(this.phones, customer.customerPhones, this.generalService.getAddPhoneFunction(), this.fb);
 
-      if (customer.pickedGroups) {
-        customer.pickedGroups.map(group => this.customerGroupsService.markGroupAsSelected(group.CustomerGeneralGroupId));
+      if (customer.customerGroups) {
+        customer.customerGroups.map(group => this.customerGroupsService.markGroupAsSelected(group.GroupId));
         this.customerGroupsService.updateCustomerGroups();
-        
-      } 
+
+      }
       this.setCustomerMainInfo(this.customerMainInfo, [customer.customerMainInfo[0]]);
 
       if (custInfo.customerId) {
         this.disableFormGroup(this.userInfoGroup);
+        this.isShowGroupsOptions = false;
         this.customerInfoTitle = `${custInfo.fileAs} ${custInfo.customerId}`
       } else {
         this.customerInfoTitle = 'New customer'
+        this.isShowGroupsOptions = true;
+
       }
 
       // this.updateCustomerMainInfo(custInfo);
@@ -391,81 +396,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     // console.log('GROUPS', this.customerInfo.QuickGeneralGroupList);
   }
 
-  // updateCustomerMainInfo(custInfo) {
-  //   this.userInfoGroup.controls.customerMainInfo.patchValue({
-  //     customerId: custInfo.CustomerId,
-  //     firstName: custInfo.fname,
-  //     lastName: custInfo.lname,
-  //     company: custInfo.Company,
-  //     customerType: custInfo.CustomerType,
-  //     title: custInfo.Title,
-  //     gender: custInfo.Gender,
-  //     tZ: custInfo.CustomerCode,
-  //     spouseName: custInfo.SpouseName,
-  //     fileAs: custInfo.FileAs,
-  //     birthday: moment(custInfo.BirthDate).format('DD/MM/YYYY'),
-  //     afterSunset: custInfo.AfterSunset1,
-  //   });
-  // }
-  // updateCustomerAddress(customer) {
-  //   if (customer.CustomerAddresses.length > 0) {
-  //     this.userInfoGroup.controls.addresses.patchValue({
-  //       city: customer.CustomerAddresses[0].CityName,
-  //       street: customer.CustomerAddresses[0].Street,
-  //       zip: customer.CustomerAddresses[0].Zip,
-  //       addresstypeid: customer.CustomerAddresses[0].AddressTypeId
-
-  //     });
-  //   } else {
-  //     this.userInfoGroup.controls.addresses.patchValue({
-  //       city: '',
-  //       street: '',
-  //       zip: '',
-  //       addresstypeid: ''
-  //     });
-  //   }
-  // }
-  // updateCustomerPhones() {
-  //   if (this.foundCustomerPhones.length > 0) {
-  //     this.phones.controls[0].patchValue({
-  //       PhoneTypeId: this.foundCustomerPhones[0]['PhoneTypeId'],
-  //       phone: this.foundCustomerPhones[0]['PhoneNumber'],
-  //     });
-  //     this.foundCustomerPhones = [];
-  //   } else {
-  //     this.phones.controls[0].patchValue({
-  //       PhoneTypeId: 2,
-  //       phone: ''
-  //     });
-  //   }
-  // }
-  // updateCustomerEmails(custInfo) {
-  //   if (this.foundCustomerEmails.length > 0) {
-  //     let i = 0;
-  //     for (const email of this.foundCustomerEmails) {
-  //       this.emails.controls[i].patchValue({
-  //         emailname: email['EmailName'],
-  //         email: email['Email'],
-  //       });
-  //       if (this.foundCustomerEmails.length > i + 1) {
-  //         this.addEmail();
-  //         i++;
-  //       } else {
-  //         break;
-  //       }
-  //     }
-  //     this.foundCustomerEmails = [];
-  //   } else {
-  //     this.emails.controls[0].patchValue({
-  //       emailname: custInfo.fname,
-  //       email: ''
-  //     });
-  //   }
-  // }
   getCreateNewEvent() {
     this.subscriptions.add(this.customerInfoService.createNewEvent$.subscribe(() => {
       this.refreshCustomerForm();
       this.enableFormGroup(this.userInfoGroup)
+      this.isShowGroupsOptions = true;
       // this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
     }));
   }
@@ -549,20 +484,19 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     if (this.lastName.value === null) {
       this.lastName.patchValue('');
     }
-    this.setCurrentCustomerInfoByIdState(this.emails.value, this.phones.value, this.address.value, [this.customerMainInfo.value], this.customerGroupsService.getTransformedSelectedGroups());
+    this.setCurrentCustomerInfoByIdState(this.emails.value, this.phones.value, this.address.value, [this.customerMainInfo.value], this.customerGroupsService.getSelectedGroupsId());
     // this.customerInfoService.setCustomerInfoById(this.emails.value, this.phones.value, this.address.value, this.customerMainInfo.value, null, this.getPickedGroups());
     switch (this.currentRoute) {
-      case '/home/newreceipt':
+      
+      case '/newreceipt':
         this.setCustomerInfoToNewReceipt();
         this.receiptService.setStep(3);
         break
-      case '/home/payments-grid/customer-search':
+      case '/payments-grid/customer-search':
         this.goToNewPaymentPage();
         // this.receiptService.createNewClicked();
         break
-      case '/home/new-customer':
-
-
+      case '/new-customer':
         this.saveNewCustomer(this.userInfoGroup.value);
 
         break
@@ -635,23 +569,19 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     //   //   this.deleteAddress(i);
     //   // }
   }
-  getEventsFromChildComponent($event: { action: string, index: number }) {
-    switch ($event.action) {
-      case 'toShop': this.openShop();
-        break
-      case 'toNextStep': this.submit();
-        break
+  getEventsFromChildComponent(event: { action: string, index: number }) {
+    switch (event.action) {
       case 'addEmail': this.addEmail();
         break
       case 'addPhone': this.addPhone();
         break
       case 'addAddress': this.addAddress();
         break
-      case 'deleteEmail': this.deleteEmail($event.index);
+      case 'deleteEmail': this.deleteEmail(event.index);
         break
-      case 'deletePhone': this.deletePhone($event.index);
+      case 'deletePhone': this.deletePhone(event.index);
         break
-      case 'deleteAddress': this.deleteAddress($event.index);
+      case 'deleteAddress': this.deleteAddress(event.index);
         break
       // case 'showGroups': this.openCustomerGroupsModal();
       //   break
@@ -678,10 +608,13 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   //   this.toNewCustomerDetails.emit(id);
   // }
 
-  saveNewCustomer(newCustomer: NewCustomerInfo) {
+  saveNewCustomer(newCustomer) {
+    debugger
+    this.currentRoute
     this.deleteEmptyEmail(this.emails);
     this.deleteEmptyAddress(this.address);
     this.deleteEmptyPhone(this.phones);
+    newCustomer.groups = this.customerGroupsService.getSelectedGroupsId();
     newCustomer.customerMainInfo.fileAs = this.customerInfoService.createFileAs(newCustomer.customerMainInfo);
     this.onSave.emit(newCustomer);
   }
@@ -765,7 +698,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   }
 
   getCities() {
-    this.customerInfoService.getCities$()
+    this.globalStateService.getCities$()
       .pipe(
         filter(cities => cities !== null),
         debounceTime(1),
@@ -782,12 +715,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     customerPhones: Phones[],
     customerAddress: Addresses[],
     customerMainInfo: CustomerMainInfo[],
-    pickedGroups?: CustomerGroupsGeneralSet[],
+    customerGroups: Group[],
     customerCreditCardTokens?: any[],
 
   ) {
-    debugger
-    this.customerInfoService.setCurrentCustomerInfoByIdState({ customerEmails, customerPhones, customerAddress, customerMainInfo, pickedGroups })
+    this.customerInfoService.setCurrentCustomerInfoByIdState({ customerEmails, customerPhones, customerAddress, customerMainInfo, customerGroups })
   }
 
   // getNewCustomer() {
@@ -798,7 +730,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     const customerInfo: Customerinfo = Object.assign({}, this.userInfoGroup.value);
 
     // customerInfo.addresses = customerInfo.addresses;
-    customerInfo.groups = this.customerGroupsService.getTransformedSelectedGroups()
+    customerInfo.groups = this.customerGroupsService.getSelectedGroupsId()
 
     this.receiptService.setFullName(`${this.firstName.value} ${this.lastName.value}`);
 
@@ -819,7 +751,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   }
 
   suggestUseExistingCustomerDetails() {
-    if (this.getGlobalCustomerDetailsState() && this.generalService.getCurrentRoute() !== '/home/new-customer') {
+    if (this.getGlobalCustomerDetailsState() && this.generalService.getCurrentRoute() !== '/new-customer') {
       const matDialog = this.matDialog.open(SuggestExistingCustomerComponent, { width: '450px', height: '200px', position: { top: 'top' }, disableClose: true, data: { customer: this.getGlobalCustomerDetailsState().CustomerCard_MainDetails } })
       matDialog.afterClosed()
         .pipe(
@@ -834,7 +766,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
           }
         }
         );
-    } else if (this.generalService.getCurrentRoute() === '/home/new-customer') {
+    } else if (this.generalService.getCurrentRoute() === '/new-customer') {
       // this.customerInfoService.createNewClicked()
       console.log('No One CUSTOMER')
     } else {

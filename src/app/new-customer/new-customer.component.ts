@@ -1,3 +1,5 @@
+import { GlobalStateService } from './../shared/global-state-store/global-state.service';
+import { GlobalEventsService } from './../core/services/global-events.service';
 import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { ToastrService } from 'ngx-toastr';
@@ -23,7 +25,9 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
     private newCustomerService: NewCustomerService,
     private toaster: ToastrService,
     private customerDetails: CustomerDetailsService,
-    private customerInfoService: CustomerInfoService
+    private customerInfoService: CustomerInfoService,
+    private globalStateService: GlobalStateService,
+
   ) { }
 
   ngOnInit() {
@@ -31,7 +35,7 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
   }
 
   goToCustomerDetails() {
-    this.router.navigate([`home/customer-details/customer/main-info`]);
+    this.router.navigate([`customer-details/customer/main-info`]);
   }
 
   saveNewCustomer(newCustomer: CustomerInfoByIdForCustomerInfoComponent) {
@@ -48,10 +52,11 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
               positionClass: 'toast-top-center'
             });
             this.goToCustomerDetails();
-            localStorage.removeItem('customerSearchData')
+            this.globalStateService.clearCustomerList();
+
           } else {
-            console.log('NEW CUSTOMER ERROR', response )
-            this.toaster.error('', response.ErrMsg, {
+            console.log('NEW CUSTOMER ERROR', response)
+            this.toaster.error('', response.Data.res_description, {
               positionClass: 'toast-top-center'
             });
           }
