@@ -10,6 +10,7 @@ import { Observable, Subject, of } from 'rxjs';
 import { takeUntil, switchMap, filter, map, tap } from 'rxjs/operators';
 import { MatSidenav } from '@angular/material';
 import { FormControl } from '@angular/forms';
+import { GeneralGroups } from '../models/generalGroups.model';
 
 @Component({
   selector: 'app-customer-details',
@@ -28,7 +29,8 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   filteredOptions$: Observable<CustomerSearchData[]>;
 
   customerIsExist = false;
-  customerSearchList$: Observable<CustomerSearchData[]>
+  customerSearchList$: Observable<CustomerSearchData[]>;
+  generalGroups: GeneralGroups[] = [];
   constructor(
     private customerDetailsService: CustomerDetailsService,
     private router: Router,
@@ -74,14 +76,15 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   getCustomerDetailsByIdFromServer() {
     this.createCustomerDetailsStream$()
       .pipe(
+
         takeUntil(this.subscription$))
       .subscribe((data: FullCustomerDetailsById) => {
         if (data) {
           console.log('CUSTOMER INFO FROM THE SERVER', data);
-          this.setCustomerDetailsByIdState(data);
+          this.setCustomerDetailsByIdState({ ...data });
           this.customerDetailsById$ = this.customerDetailsService.getCustomerDetailsByIdState$();
           this.customerGroupsService.clearSelectedGroups();
-          this.customerGroupsService.setSelectedGroups(data.CustomerGroupsGeneralSet)
+          this.customerGroupsService.setAlreadySelectedGroupsFromCustomerInfo(data.CustomerGroupsGeneralSet.map(group => group.CustomerGeneralGroupId))
           // this.customerDetailsService.setCustomerInfoForNewReceipt(this.customerDetailsService.getCustomerDetailsByIdState());
         }
         this.loader.stop();
@@ -91,6 +94,8 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
           this.loader.stop();
         })
   }
+
+
 
   setCustomerDetailsByIdState(customerDetailsById: FullCustomerDetailsById) {
     this.customerDetailsService.setGlobalCustomerDetails(customerDetailsById);
@@ -164,9 +169,9 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
         map((searchData: CustomerSearchData[]) => searchData.filter(data => String(data['FileAs1']) != ' ')),
         takeUntil(this.subscription$))
       .subscribe((searchData: CustomerSearchData[]) => {
-        if(!this.globalStateService.customerSearchList.getValue()){
-          this.globalStateService.setCustomerSearchList(searchData)
-        }
+        // if (!this.globalStateService.customerSearchList.getValue()) {
+        //   this.globalStateService.setCustomerSearchList(searchData)
+        // }
         this.customerSearchList$ = of(searchData);
         this.filteredOptions$ = this.customerDetailsService.customerListAutocomplete(this.searchControl, this.customerSearchList$);
 

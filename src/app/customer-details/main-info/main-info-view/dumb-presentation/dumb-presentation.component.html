@@ -22,8 +22,9 @@
     </mat-select>
   </mat-form-field>
   <mat-form-field class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
-    <input formControlName="birthDate" matInput [matDatepicker]="picker" placeholder="{{'Birthday' | translate}}">
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <input #birthday maxlength="10" formControlName="birthDate" matInput placeholder="{{'Birthday' | translate}}" (keyup)="onChange(birthday.value, $event)">
+    <!-- <input hidden="true" [matDatepicker]="picker" formControlName="birthDate" matInput placeholder="{{'Birthday' | translate}}"> -->
+    <!-- <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle> -->
     <!-- <button matSuffix [matDatepickerToggle]="picker"></button> -->
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>

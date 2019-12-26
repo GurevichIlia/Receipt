@@ -1,3 +1,4 @@
+import { CustomerGroupsService } from './../core/services/customer-groups.service';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { GlobalEventsService } from './../core/services/global-events.service';
 import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
@@ -27,6 +28,7 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
     private customerDetails: CustomerDetailsService,
     private customerInfoService: CustomerInfoService,
     private globalStateService: GlobalStateService,
+    private customerGroupsService: CustomerGroupsService
 
   ) { }
 
@@ -75,6 +77,7 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
+    this.customerGroupsService.clearSelectedGroups();
     this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
     this.customerInfoService.createNewClicked();
     this.subscription$.next();

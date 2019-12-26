@@ -1,20 +1,20 @@
+import { Component, OnInit, OnDestroy, Output, EventEmitter, AfterViewInit, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { CustomerGroupsGeneralSet } from './../../models/customer-info-by-ID.model';
 import { CustomerGroupsService } from './../../core/services/customer-groups.service';
 import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
-import { CustomerGroupsComponent } from './../../shared/modals/customer-groups/customer-groups.component';
 import { Customerinfo } from './../../models/customerInfo.model';
-import { CustomerInfoViewComponent } from './customer-info-view/customer-info-view.component';
 import { SuggestExistingCustomerComponent } from './../../shared/modals/suggest-existing-customer/suggest-existing-customer.component';
 
-import { Component, OnInit, OnDestroy, Output, EventEmitter, AfterViewInit, AfterContentInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormArray, Validators, FormBuilder, FormGroup, FormControl, AbstractControl } from '@angular/forms';
 
-import { Observable, Subscription, Subject, of, EMPTY, } from 'rxjs';
-import { debounceTime, takeUntil, filter, switchMap, } from 'rxjs/operators';
+import { FormArray, Validators, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+
+import { Observable, Subscription, Subject, of, forkJoin, combineLatest } from 'rxjs';
+import { debounceTime, takeUntil, filter, distinctUntilChanged, switchMap, map, mergeMap, tap, shareReplay } from 'rxjs/operators';
 
 import { ReceiptsService } from '../services/receipts.service';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { GeneralSrv, CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
 import { PaymentsService } from './../../grid/payments.service';
 
 import * as moment from 'moment';
@@ -27,10 +27,10 @@ import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
 import { Phones } from 'src/app/models/phones.model';
 import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
-import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
 import { MatDialog } from '@angular/material';
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
-import { GeneralGroups } from 'src/app/models/generalGroups.model';
+import { ExistingCustomersListComponent } from 'src/app/shared/modals/existing-customers-list/existing-customers-list.component';
+
 
 export interface Group {
   GroupId: number;
@@ -41,12 +41,12 @@ export interface Group {
   styleUrls: ['./customer-info.component.css']
 })
 export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterContentInit, OnDestroy {
-  cities$: Observable<any[]>;
-  customerTitle: CustomerTitle[];;
-  customerTypes: CustomerType[];
   @Output() toNewPayment = new EventEmitter();
   @Output() onSave = new EventEmitter<NewCustomerInfo>();
   customerInfoById: CustomerInfoByIdForCustomerInfoComponent;
+  cities$: Observable<any[]>;
+  customerTitle: CustomerTitle[];;
+  customerTypes: CustomerType[];
   step: number;
   // cityAutoCompleteControl = new FormControl();
   // titleAutoCompleteControl = new FormControl();
@@ -96,6 +96,8 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   selectedGroups$: Observable<number[]>
   subscription$ = new Subject();
   isShowGroupsOptions = true;
+  foundedExistingCustomers$: Observable<CustomerSearchData[]>;
+  currentCustomerId: number = 0;
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
@@ -128,7 +130,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         customerCode: [this.getItemsFromSessionStorage('tZ')],
         spouseName: [this.getItemsFromSessionStorage('spouseName')],
         fileAs: [this.getItemsFromSessionStorage('fileAs')],
-        birthday: [''],
+        birthday: this.fb.group({
+          year: [''],
+          month: [''],
+          day: ['']
+        }),
         afterSunset1: [this.getItemsFromSessionStorage('afterSunset')],
       }),
       phones: this.fb.array([
@@ -150,9 +156,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
           street2: [''],
           zip: [''],
           addressTypeId: [''],
-          mainAddress: [''],
-
-
+          mainAddress: ['true'],
         }),
       ]),
       groups: ['']
@@ -213,6 +217,9 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   get group() {
     return this.userInfoGroup.get('groups');
   }
+  get customerId() {
+    return this.userInfoGroup.controls.customerMainInfo.get('customerId');
+  }
   setCustomerType() {
     let custType;
     if (this.getItemsFromSessionStorage('customerType') === '') {
@@ -224,12 +231,10 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   }
 
 
-
-
-
   getCustomerTypes(data) {
     this.customerTypes = data['GetCustomerTypes'];
   }
+
   getGlobalData() {
     this.subscriptions.add(this.generalService.getGlobalData$()
       .pipe(
@@ -242,6 +247,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
           console.log(this.customerTypes);
         }));
   }
+
   ngOnInit() {
     this.getCurrentLanguage();
     // console.log('this.payMath', this.payMath)
@@ -260,6 +266,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     this.getCities();
 
     this.getCreateNewEvent();
+    this.searchExistingCustomers();
     // setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
     // this.userInfoGroup.valueChanges.pipe(debounceTime(1000))
     //   .subscribe(data => {
@@ -286,13 +293,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     })
 
     this.getCurrentRoute();
-    this.customerInfoService.getEventCUstomerIsFoundById$()
-      .pipe(
-        takeUntil(this.subscription$))
-      .subscribe(() => {
-        this.changeCustomerInfoIfCustomerIsFound(this.customerInfoById);
-        console.log('EVENT CUSTOMER FOUND');
-      });
+
   }
 
   ngAfterViewInit(): void {
@@ -334,6 +335,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
         this.checkRequiredNameFields();
       }));
   }
+
   checkRequiredNameFields() {
     const firstNameControl = this.firstName.value;
     const lastNameControl = this.lastName.value;
@@ -355,7 +357,16 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     if (customer) {
       this.refreshCustomerForm();
       const custInfo = customer.customerMainInfo[0];
+      // if (customer.customerMainInfo[0].birthday) {
+      //   const birthday = customer.customerMainInfo[0].birthday
+      //   this.birthday.patchValue({
+      //     day: +birthday.substring(0, 2),
+      //     month: +birthday.substring(3, 5),
+      //     year: +birthday.substring(6, 11)
+      //   })
+      // }
 
+      this.generalService.setBirthdayDate(this.birthday, customer.customerMainInfo[0].birthday);
 
       this.receiptService.setIsNewCustomer(false);
       // this.receiptService.setStep(1);
@@ -366,13 +377,14 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       // this.setCustomerEmailFormControls(this.emails, customer.customerEmails, this.generalService.getAddEmailFunction(), this.fb);
       this.customerInfoService.updateValueInPhoneInputsArray(this.phones, customer.customerPhones)
       // this.setCustomerPhoneFormControls(this.phones, customer.customerPhones, this.generalService.getAddPhoneFunction(), this.fb);
+      this.customerInfoService.updateValueInMaininfo(this.customerMainInfo, customer.customerMainInfo[0])
 
       if (customer.customerGroups) {
         customer.customerGroups.map(group => this.customerGroupsService.markGroupAsSelected(group.GroupId));
         this.customerGroupsService.updateCustomerGroups();
 
       }
-      this.setCustomerMainInfo(this.customerMainInfo, [customer.customerMainInfo[0]]);
+      // this.setCustomerMainInfo(this.customerMainInfo, [customer.customerMainInfo[0]]);
 
       if (custInfo.customerId) {
         this.disableFormGroup(this.userInfoGroup);
@@ -416,6 +428,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     this.resetAddresses();
     this.refreshRequiredFormFields();
     this.disabledNextStep();
+    this.currentCustomerId = null;
     this.customerGroupsService.clearSelectedGroups();
 
   }
@@ -463,31 +476,26 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   }
 
 
-
-
-
-
-
-
-
   addCurrentAddress(currentAddress: Addresses[]) {
     this.customerInfoService.addCurrentAddress(currentAddress)
   }
 
   submit() {
-    const birthday = this.changeBirthdayFormat(this.birthday);
-    this.setItemToSessionStorage('birthday', birthday);
-
+    // const birthday = this.changeBirthdayFormat(this.birthday);
+    // this.setItemToSessionStorage('birthday', birthday);
+    const customerInfo: CustomerMainInfo = Object.assign({}, this.customerMainInfo.value)
+    const birthday = this.customerMainInfo.get('birthday').value
+    customerInfo.birthday = this.generalService.getBirthdayDate(birthday.day, birthday.month, birthday.year);
     if (this.firstName.value === null) {
       this.firstName.patchValue('');
     }
     if (this.lastName.value === null) {
       this.lastName.patchValue('');
     }
-    this.setCurrentCustomerInfoByIdState(this.emails.value, this.phones.value, this.address.value, [this.customerMainInfo.value], this.customerGroupsService.getSelectedGroupsId());
+    this.setCurrentCustomerInfoByIdState(this.emails.value, this.phones.value, this.address.value, [customerInfo], this.customerGroupsService.getSelectedGroupsId());
     // this.customerInfoService.setCustomerInfoById(this.emails.value, this.phones.value, this.address.value, this.customerMainInfo.value, null, this.getPickedGroups());
     switch (this.currentRoute) {
-      
+
       case '/newreceipt':
         this.setCustomerInfoToNewReceipt();
         this.receiptService.setStep(3);
@@ -503,6 +511,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     }
 
   }
+
   openShop() {
     this.setCustomerInfoToNewReceipt();
     this.receiptService.setStep(2);
@@ -515,6 +524,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       return '';
     }
   }
+
   setItemToSessionStorage(key: string, value: string) {
     if (value === '' || value === null) {
       value = '';
@@ -523,6 +533,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
       sessionStorage.setItem(key, value);
     }
   }
+
   getPayMethFromLocalStorage() {
     if (localStorage.getItem('paymenthMethod')) {
       if (localStorage.getItem('paymenthMethod') === '3') {
@@ -609,8 +620,7 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   // }
 
   saveNewCustomer(newCustomer) {
-    debugger
-    this.currentRoute
+    this.currentRoute;
     this.deleteEmptyEmail(this.emails);
     this.deleteEmptyAddress(this.address);
     this.deleteEmptyPhone(this.phones);
@@ -663,12 +673,12 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
   //   this.customerInfoService.patchInputValue(inputsArray, valueArray, addNewInputFunction, formBuilder)
   // }
 
-  setCustomerMainInfo(
-    inputsArray: FormArray | FormGroup,
-    valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[]
-  ) {
-    this.customerInfoService.patchInputValue(inputsArray, valueArray)
-  }
+  // setCustomerMainInfo(
+  //   inputsArray: FormArray | FormGroup,
+  //   valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[]
+  // ) {
+  //   this.customerInfoService.patchInputValue(inputsArray, valueArray)
+  // }
 
   setCustomerTitleAutoComplete(filteredSubject: CustomerTitle[], formControl: AbstractControl, filterKey: string) {
     this.filterCustTitle$ = this.generalService.formControlAutoComplete(filteredSubject, formControl, filterKey);
@@ -689,7 +699,8 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
           this.customerInfoById = customerInfo;
 
           this.changeCustomerInfoIfCustomerIsFound(customerInfo);
-
+          this.customerGroupsService.setAlreadySelectedGroupsFromCustomerInfo(customerInfo.customerGroups.map(group => group.GroupId))
+          this.currentCustomerId = customerInfo.customerMainInfo[0].customerId;
         } else {
           setTimeout(() => this.suggestUseExistingCustomerDetails(), 1000);
 
@@ -711,7 +722,8 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
 
   }
 
-  setCurrentCustomerInfoByIdState(customerEmails: Emails[],
+  setCurrentCustomerInfoByIdState(
+    customerEmails: Emails[],
     customerPhones: Phones[],
     customerAddress: Addresses[],
     customerMainInfo: CustomerMainInfo[],
@@ -733,7 +745,11 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     customerInfo.groups = this.customerGroupsService.getSelectedGroupsId()
 
     this.receiptService.setFullName(`${this.firstName.value} ${this.lastName.value}`);
-
+    customerInfo.customerMainInfo.birthday = this.generalService.getBirthdayDate(
+      this.birthday.get('day').value,
+      this.birthday.get('month').value,
+      this.birthday.get('year').value,
+    )
     this.receiptService.customerEmails.next(this.deleteEmptyEmail(this.emails));
     // this.receiptService.addGroupsToReceipt(this.addGroups());
     this.addCurrentAddress(this.deleteEmptyAddress(this.address));
@@ -783,6 +799,48 @@ export class CustomerInfoComponent implements OnInit, AfterViewInit, AfterConten
     formGroup.enable();
   }
 
+  searchExistingCustomers() {
+    const firstName$ = this.firstName.valueChanges.pipe(debounceTime(1000), distinctUntilChanged());
+    const lastName$ = this.lastName.valueChanges.pipe(debounceTime(1000), distinctUntilChanged());
+    const company$ = this.company.valueChanges.pipe(debounceTime(1000), distinctUntilChanged());
+    const customerList$ = this.globalStateService.getCustomerSearchList$();
+
+    const combineValue = combineLatest(firstName$, lastName$, company$);
+
+
+
+    this.foundedExistingCustomers$ = combineValue.pipe(switchMap((customerParameters: string[]) => {
+      const newCustomerList$ = customerList$.pipe(map(customers => customers.filter(customer => {
+
+        let newCustomer: CustomerSearchData
+        for (let param of customerParameters.filter(value => value)) {
+          if (customer.FileAs1.trim().toLowerCase().includes(param.toLowerCase())) {
+            newCustomer = customer
+          }
+        }
+        return newCustomer
+      })))
+      return newCustomerList$
+    }))
+  }
+
+
+  openModalWithExistingCustomers(existingCustomers: CustomerSearchData[]) {
+    console.log(existingCustomers)
+    this.matDialog.open(ExistingCustomersListComponent, { width: '350px', height: '500px', data: [...existingCustomers] })
+  }
+
+  // isCustomerId() {
+  //   if (this.customerId.value) {
+  //     this.currentCustomerId$ = of(this.customerId.value);
+  //   }
+  //   this.currentCustomerId$ = this.customerId.valueChanges
+  //     .pipe(
+  //       tap(customerId => console.log('CUSTOMER ID IN FORM', customerId))
+  //     )
+
+
+  // }
   // openCustomerGroupsModal() {
   //   const groupsModal$ = this.matDialog.open(CustomerGroupsComponent, { width: '500px', height: '600px', disableClose: true });
 

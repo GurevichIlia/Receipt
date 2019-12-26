@@ -54,10 +54,12 @@ export class PaymentsTableComponent implements OnInit {
   ngOnInit() {
     this.createTableColumns();
     this.getValueForColumns();
-    this.selection.onChange.pipe(takeUntil(this.subscription$)).subscribe(data => {
-      this.selectedCustomers = data.source.selected;
-      console.log('SELECTED ROWS', data.source.selected)
-    });
+    this.selection.onChange
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(data => {
+        this.selectedCustomers = data.source.selected;
+      });
     this.getPaymentsTableData();
     this.filterPaymentTable();
     this.filterPaymentTableByday();
@@ -184,7 +186,7 @@ export class PaymentsTableComponent implements OnInit {
       {
         height: '150', width: '350px', disableClose: true, position: { top: 'top' },
         panelClass: 'question',
-        data: { questionText: 'Would you like to delete this payment', acceptButtonName: 'Confirm', closeButtonName: 'Cancel', item: {fileAs: paymentRow.FileAs, kevaId: paymentRow.Kevaid} }
+        data: { questionText: 'Would you like to delete this payment', acceptButtonName: 'Confirm', closeButtonName: 'Cancel', item: { name: paymentRow.FileAs, id: paymentRow.Kevaid } }
       })
       .afterClosed().pipe(filter(answer => answer === true));
 
@@ -210,12 +212,11 @@ export class PaymentsTableComponent implements OnInit {
 
       }, error => console.log(error))
   }
-  duplicatePaymentRow() {
 
-  }
   setCurrentPaymentTablePageIndex(pageIndex: number, pageSize: number) {
     this.paymentsService.setPaymentTablePage({ pageIndex, pageSize });
   }
+
   getCurrentPaymentTablePageIndex() {
     this.paymentsService.currentPaymentTablePage$.
       pipe(
@@ -225,6 +226,7 @@ export class PaymentsTableComponent implements OnInit {
         this.paginator.pageSize = pageOptions.pageSize;
       });
   }
+  
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.

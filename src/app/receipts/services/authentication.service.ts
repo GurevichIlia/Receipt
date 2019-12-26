@@ -1,7 +1,8 @@
-import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
-import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+
+import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
+
 import * as moment from 'moment';
 import { ReceiptsService } from './receipts.service';
 import { CreditCardService } from '../credit-card/credit-card.service';
@@ -34,7 +35,7 @@ export class AuthenticationService {
   ) {
     console.log('AUTH SERVICE LOADED');
     console.log('AUTH', this.isAuthenticated())
-
+    this, this.currentlyAuthStatus$.subscribe(status => console.log('AUTH STATUS', status))
     if (localStorage.getItem('id_token')) {
       this.authenticationstate.next(true);
 
@@ -42,6 +43,7 @@ export class AuthenticationService {
       this.authenticationstate.next(false);
 
     }
+
     if (localStorage.getItem('typeOfUser')) {
       this.typeOfUser.next(+localStorage.getItem('typeOfUser'));
     }
@@ -55,8 +57,8 @@ export class AuthenticationService {
 
   isAuthenticated() {
     // check memory
-    this.authenticationstate.next(this.isLoggedIn());
-    return this.authenticationstate.value;
+    // this.authenticationstate.next(this.isLoggedIn());
+    return this.authenticationstate.getValue();
   }
 
   // checkToken() {
@@ -76,12 +78,14 @@ export class AuthenticationService {
     localStorage.setItem('id_token', authResult);
     localStorage.setItem('expires_at', JSON.stringify(expiresAt.exp.valueOf()));
   }
+
   logout() {
     //  alert(2);
     sessionStorage.clear();
     this.refreshFullState();
     this.router.navigate(['login']);
   }
+
   isLoggedIn() {
     //  alert(1);
     return moment().isBefore(this.getExpiration());
@@ -99,14 +103,16 @@ export class AuthenticationService {
     console.log('GetExpiration', expiresAt);
     return expiresAt;
   }
+
   refreshFullState() {
+    this.authenticationstate.next(false);
     localStorage.removeItem('cities');
     localStorage.removeItem('customerSearchData');
     localStorage.removeItem('generalGroups');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
     this.receiptService.setStep(1);
-    this.authenticationstate.next(false);
+    
     this.receiptService.amount.next(null);
     this.globalStateService.clearCustomerInfoById();
     this.globalStateService.clearCustomerList();

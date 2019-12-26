@@ -6,7 +6,7 @@ import { AuthenticationService } from './authentication.service';
 
 
 import { takeUntil, take } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+
 @Injectable({
   providedIn: 'root'
 })

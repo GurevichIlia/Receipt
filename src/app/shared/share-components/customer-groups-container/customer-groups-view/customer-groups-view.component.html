@@ -15,8 +15,8 @@
 
 <ul class="list-unstyled">
   <li *ngFor="let group of selectedGroups" class="row listItem">
-    {{group.GroupName}} <i *ngIf="isShowGroupsOptions" style="cursor: pointer" (click)="deleteGroup(group.GroupId)"
-      class=" material-icons ">delete</i>
+    {{group.GroupName}} <i *ngIf="isShowGroupsOptions" style="cursor: pointer" (click)="deleteGroup(group.GroupId, group.GroupName)"
+      class=" material-icons">delete</i>
   </li>
 </ul>
 

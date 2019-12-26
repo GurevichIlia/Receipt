@@ -1,3 +1,5 @@
+import { GlobalStateService } from './shared/global-state-store/global-state.service';
+import { AuthenticationService } from 'src/app/receipts/services/authentication.service';
 import { LoginModule } from './login/login.module';
 import { NewCustomerModule } from './new-customer/new-customer.module';
 import { BrowserModule } from '@angular/platform-browser';
@@ -70,7 +72,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
   ],
   // tslint:disable-next-line: max-line-length
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
+  providers: [AuthenticationService, GlobalStateService, { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true, }, { provide: HTTP_INTERCEPTORS, useClass: ServerErrorInterceptor, multi: true }],
   bootstrap: [AppComponent],
   entryComponents: []
 

@@ -1,4 +1,4 @@
-<form [formGroup]="userInfoGroup"  [style.fontSize]="'20px'">
+<form [formGroup]="userInfoGroup" [style.fontSize]="'20px'">
 
   <div formGroupName="customerMainInfo">
     <mat-form-field hidden class="col-12">
@@ -19,7 +19,7 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="col-12">
+    <mat-form-field id="goDown" class="col-12">
       <input #company formControlName="company" matInput placeholder="{{'Company' | translate}}"
         [required]="requiredField" />
       <mat-error class="mb-1" *ngIf="requiredField">{{'First name or Last name or Company is required' | translate}}
@@ -30,7 +30,7 @@
 
   <hr *ngIf="showMoreInfo">
   <div formGroupName="customerMainInfo">
-    <div *ngIf="showMoreInfo">
+    <div [hidden]="!showMoreInfo" #target>
 
       <mat-form-field class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
         <mat-select formControlName="customerType" placeholder="{{'Customer type' | translate}}">
@@ -62,7 +62,7 @@
 
 
       <mat-form-field class="col-12">
-        <input max="9" formControlName="customerCode" #Tz matInput placeholder="{{'T.Z' | translate}}">
+        <input maxlength="15" formControlName="customerCode" #Tz matInput placeholder="{{'T.Z' | translate}}">
         <mat-hint>{{Tz.value.length}}/9</mat-hint>
       </mat-form-field>
 
@@ -74,11 +74,48 @@
         <input formControlName="fileAs" matInput placeholder="{{'FileAs' | translate}}">
       </mat-form-field>
 
-      <mat-form-field class="col-12">
+      <!-- <mat-form-field class="col-12">
         <input matInput [matDatepicker]='picker' placeholder="{{'Birthday' | translate}}" formControlName="birthday">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
+      </mat-form-field> -->
+
+      <div formGroupName="birthday" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 birthdayRow">
+        <h5>{{'Birthday' | translate}}</h5>
+
+
+        <mat-form-field class="mr-1 ml-1" style="width: 80px">
+          <mat-label>שנה</mat-label>
+          <mat-select formControlName="year">
+            <mat-option *ngFor="let year of years" [value]="year">
+              {{year}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="mr-1 ml-1" style="width: 80px">
+          <mat-label>חודש</mat-label>
+          <mat-select formControlName="month">
+            <mat-option *ngFor="let month of monthes; let i = index" [value]="i+1">
+              <span *ngIf="10 > (i+1)">0</span>{{i+1}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="mr-1 ml-1" style="width: 80px">
+          <mat-label>יום</mat-label>
+          <mat-select formControlName="day">
+            <mat-option *ngFor="let day of days; let i = index" [value]="i+1">
+              <span *ngIf="10 > (i+1)">0</span>{{i+1}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- <mat-form-field class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <input #Birthday mask="00/00/0000" formControlName="birthday" maxlength="10"
+                  [required]="birthdayRequired === 1" matInput placeholder="{{'Birthday' | translate}}">
+            <mat-error>{{'dateFormatError' | translate}} DD/MM/YYYY</mat-error>
+
+      </mat-form-field> -->
+      </div>
 
 
       <mat-checkbox formControlName="afterSunset1" class="col-12"><strong>{{'After sunset' | translate}}</strong>
@@ -87,7 +124,7 @@
   </div>
   <hr>
   <!-- <button type="button" mat-button color="primary" (click)="showMoreInfo=!showMoreInfo">{{!showMoreInfo? 'Show' : 'Hide' }} customer info</button> -->
-  <div *ngIf="showMoreInfo">
+  <div *ngIf="showMoreInfo" >
     <div class="row justify-content-start mb-3">
       <h4 style="margin-right: 15px">{{'Phone' | translate}}
       </h4>
@@ -275,10 +312,18 @@
 
     <!-- <button type="button" mat-button color="primary"
       (click)="moreAddress=!moreAddress">{{'Address' | translate}}</button> -->
-    <ng-content ></ng-content>
-
+    <ng-content></ng-content>
   </div>
-
+  <p class="button"  >
+    <button  style="background-color: rgb(38, 87, 122); color: white" *ngIf="!showMoreInfo" class="mb-2" type="button"
+      mat-raised-button color="primary" (click)="showMore();scrollToElement(target)">
+      {{'Show customer info' | translate}}
+    </button>
+    <button  *ngIf="showMoreInfo" class="mb-2" style="background-color:  rgb(38, 87, 122); color: white"
+      type="button" mat-raised-button color="primary" (click)="showMore()">
+      {{'Hide customer info' | translate}}
+    </button>
+  </p>
 
 
 

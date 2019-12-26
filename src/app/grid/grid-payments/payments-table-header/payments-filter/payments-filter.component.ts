@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
 export class PaymentsFilterComponent {
   windowWidth: number;
   @Input() filterForm: FormGroup;
-  @Input() globalData$: Observable<GlobalData | ''>;
+  @Input() globalData: GlobalData;
   // @Output() filterValue: EventEmitter<string> = new EventEmitter();
   // @Output() filterValueByDay: EventEmitter<string> = new EventEmitter();
   @Output() showPayments: EventEmitter<void> = new EventEmitter();

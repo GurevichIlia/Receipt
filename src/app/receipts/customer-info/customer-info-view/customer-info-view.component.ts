@@ -1,9 +1,10 @@
 import { Observable } from 'rxjs';
 import { FormGroup, FormArray } from '@angular/forms';
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ViewChild, ElementRef, OnChanges } from '@angular/core';
 import { CustomerType } from 'src/app/models/customerType.model';
 import { CustomerTitle } from 'src/app/models/globalData.model';
-import { CustomerGroupById } from 'src/app/models/customerGroupById.model';
+import * as _ from 'lodash';
+
 
 @Component({
   selector: 'app-customer-info-view',
@@ -20,8 +21,14 @@ export class CustomerInfoViewComponent {
   @Input() requiredField: boolean;
   @Input() isShowGroupsOptions: boolean;
   @Input() showMoreInfo = false;
+  @Input() currentLang: string;
 
   @Output() newEventFromChild = new EventEmitter();
+
+  down
+  years = _.range(new Date().getFullYear(), 1899);
+  monthes = new Array(12);
+  days = new Array(31);
   constructor() { }
 
 
@@ -42,5 +49,13 @@ export class CustomerInfoViewComponent {
     this.newEventFromChild.emit({ action, index });
   }
 
+  showMore() {
+    this.showMoreInfo = !this.showMoreInfo;
+  }
+
+  scrollToElement($element): void {
+    setTimeout(_ => $element.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"}), 200)
+    
+  }
 }
 

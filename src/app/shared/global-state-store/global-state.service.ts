@@ -4,7 +4,7 @@ import { FullCustomerDetailsById, CustomerEmails, CustomerPhones, MainDetails } 
 import { CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
 import { CustomerAddresses, CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
 import { CustomerSearchData, GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, filter, shareReplay } from 'rxjs/operators';
 
 
 
@@ -18,8 +18,11 @@ export class GlobalStateService {
   customerDetailsById$ = this.customerDetailsById.asObservable();
 
   // Список кастомеров для поиска
-  customerSearchList = new BehaviorSubject<CustomerSearchData[]>(null);
-  customerSearchList$ = this.customerSearchList.asObservable();
+  // customerSearchList = new BehaviorSubject<CustomerSearchData[]>(null);
+  // customerSearchList$ = this.customerSearchList.asObservable();
+
+  private customerSearchList$: Observable<CustomerSearchData[]>
+
 
   cities = new BehaviorSubject<any[]>(null);
   cities$ = this.cities.asObservable();
@@ -88,7 +91,7 @@ export class GlobalStateService {
           customerCode: mainInfo.CustomerCode,
           spouseName: mainInfo.SpouseName,
           fileAs: mainInfo.FileAs,
-          birthday: mainInfo.BirthDate,
+          birthday: this.generalService.changeDateFormat(mainInfo.BirthDate, 'DD/MM/YYYY'),
           afterSunset1: mainInfo.AfterSunset2
         }
         return changedMainInfo
@@ -103,21 +106,21 @@ export class GlobalStateService {
 
   // CUSTOMER SEARCH LIST METHODS
 
-  setCustomerSearchList(customerList: CustomerSearchData[]) {
-    console.log('SEARCH DATA NEW STATE', customerList)
-    this.customerSearchList.next(customerList);
-  }
+  // setCustomerSearchList(customerList: CustomerSearchData[]) {
+  //   console.log('SEARCH DATA NEW STATE', customerList)
+  //   this.customerSearchList.next(customerList);
+  // }
 
   getCustomerSearchList$() {
-    if (this.customerSearchList.getValue()) {
-      return this.customerSearchList$;
-    } else {
-      return this.generalService.getUsers();
+    if (!this.customerSearchList$) {
+      this.customerSearchList$ = this.generalService.getUsers().pipe(map(customers => customers.filter(customer => customer.FileAs1.trim() !== '')))
+        .pipe(tap(customers => console.log('CUSTOMER SEARCH DATA', customers)), shareReplay(1));
     }
+    return this.customerSearchList$
   }
 
   clearCustomerList() {
-    this.customerSearchList.next(null);
+    this.customerSearchList$ = null
   }
 
   // CITIES METHODS

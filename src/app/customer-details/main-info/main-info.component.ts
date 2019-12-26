@@ -1,15 +1,16 @@
+import { Component, OnInit } from '@angular/core';
+
+
 import { CustomerGroupsService } from './../../core/services/customer-groups.service';
 import { GlobalData } from 'src/app/models/globalData.model';
 import { CustomerAddresses } from './../../models/customer-info-by-ID.model';
-import { CustomerPhones, FullCustomerDetailsById, CustomerEmails, MainDetails } from './../../models/fullCustomerDetailsById.model';
+import { CustomerPhones, CustomerEmails, MainDetails } from './../../models/fullCustomerDetailsById.model';
 import { MainInfoService } from './main-info.service';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl } from '@angular/forms';
-import { takeUntil, map, filter } from 'rxjs/operators';
+import { FormBuilder, FormGroup} from '@angular/forms';
+import { takeUntil} from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
 import { CustomerTitle } from 'src/app/models/customerTitle.model';
 import { MatDialog } from '@angular/material';
-import { CustomerGroupsComponent } from 'src/app/shared/modals/customer-groups/customer-groups.component';
 
 
 
@@ -123,19 +124,19 @@ export class MainInfoComponent implements OnInit {
   }
 
 
-  editPhone(phone: CustomerPhones) {
-    const newPhone = Object.assign({}, phone);
-    newPhone.isSms = +phone.isSms;
-    newPhone.publish = +phone.publish;
-    newPhone.Phone = phone.Area ? phone.Area + phone.Phone : phone.Phone;
-    newPhone.Area = '';
-    console.log('EDITED PHONE', { phones: [newPhone] });
-    return { phones: [newPhone] };
-  }
+  // editPhone(phone: CustomerPhones) {
+  //   const newPhone = Object.assign({}, phone);
+  //   newPhone.isSms = +phone.isSms;
+  //   newPhone.publish = +phone.publish;
+  //   newPhone.Phone = phone.Area ? phone.Area + phone.Phone : phone.Phone;
+  //   newPhone.Area = '';
+  //   console.log('EDITED PHONE', { phones: [newPhone] });
+  //   return { phones: [newPhone] };
+  // }
 
-  getEditedPhone(phone: CustomerPhones) {
-    return this.editPhone(phone);
-  }
+  // getEditedPhone(phone: CustomerPhones) {
+  //   return this.editPhone(phone);
+  // }
 
   ngOnDestroy() {
     this.subscription$.next();

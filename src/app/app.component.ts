@@ -1,8 +1,7 @@
-import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
-import { GlobalStateService } from './shared/global-state-store/global-state.service';
-import { GeneralSrv } from './receipts/services/GeneralSrv.service';
 import { Component, HostListener, OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
+
+
 import { AuthenticationService } from './receipts/services/authentication.service';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Router, NavigationEnd } from '@angular/router';
@@ -10,7 +9,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { ReceiptsService } from './receipts/services/receipts.service';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
-
+import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
+import { GlobalStateService } from './shared/global-state-store/global-state.service';
+import { GeneralSrv } from './receipts/services/GeneralSrv.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

@@ -1,25 +1,22 @@
-import { Group } from 'src/app/receipts/customer-info/customer-info.component';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-
-
+import { FormArray, FormGroup, FormBuilder } from '@angular/forms';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { NewCustomerService } from './../../new-customer/new-customer.service';
-import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 
+import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 import { ReceiptsService } from '../services/receipts.service';
 import { GeneralSrv } from '../services/GeneralSrv.service';
-import { FormArray, FormGroup, FormBuilder } from '@angular/forms';
+
 import { Phones } from 'src/app/models/phones.model';
 import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
-
 import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept, CustomerGroupsGeneralSet } from './../../models/customer-info-by-ID.model';
-
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 import { Customerinfo } from 'src/app/models/customerInfo.model';
-
 import { CustomerEmails, CustomerPhones } from 'src/app/models/fullCustomerDetailsById.model';
+
+import { Group } from 'src/app/receipts/customer-info/customer-info.component';
+
+
 
 export interface CustomerInfoByIdForCustomerInfoComponent {
   customerEmails: Emails[],
@@ -53,8 +50,7 @@ export class CustomerInfoService {
   createNewEvent$ = new Subject<void>();
 
   cities = <any>[];
-  eventCustomerIsFoundById = new Subject<void>();
-  eventCustomerIsFoundById$ = this.eventCustomerIsFoundById.asObservable();
+
   // customer: {
   //   customerMainInfo: Customermaininfo,
   //   customerPhones: Phones[],
@@ -65,22 +61,20 @@ export class CustomerInfoService {
   constructor(
     private receiptService: ReceiptsService,
     private generalService: GeneralSrv,
-    private router: Router,
     private globalStateService: GlobalStateService,
     private fb: FormBuilder,
-    private newCustomerService: NewCustomerService
   ) {
 
   }
 
-  patchInputValue(
-    inputsArray: FormArray | FormGroup,
-    valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
-    addNewInputFunction?: Function,
-    formBuilder?: FormBuilder
-  ) {
-    this.generalService.patchInputValue(inputsArray, valueArray, addNewInputFunction, formBuilder)
-  }
+  // patchInputValue(
+  //   inputsArray: FormArray | FormGroup,
+  //   valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
+  //   addNewInputFunction?: Function,
+  //   formBuilder?: FormBuilder
+  // ) {
+  //   this.generalService.patchInputValue(inputsArray, valueArray, addNewInputFunction, formBuilder)
+  // }
 
   addCurrentAddress(currentAddress: Addresses[]) {
     // const address = currentAddres.value
@@ -125,7 +119,7 @@ export class CustomerInfoService {
   }
 
   setCurrentCustomerInfoByIdState(
-    
+
     customerInfoById: {
       customerEmails: Emails[], customerPhones: Phones[], customerAddress: Addresses[], customerMainInfo: CustomerMainInfo[], customerGroups: Group[], customerCreditCardTokens?: any[],
     }
@@ -144,21 +138,21 @@ export class CustomerInfoService {
 
   clearCurrentCustomerInfoByIdForCustomerInfoComponent() {
     this.customerInfoByIdForCustomerInfoComponent.next(null);
-    this.clearCustomerGroupList();
+    // this.clearCustomerGroupList();
   }
 
-  setCustomerGroupList(groupList: CustomerGroupsGeneralSet[]) {
-    this.customerGroupList.next(groupList);
-  }
+  // setCustomerGroupList(groupList: CustomerGroupsGeneralSet[]) {
+  //   this.customerGroupList.next(groupList);
+  // }
 
-  getCustomerGroupList$() {
-    return this.customerGroupList$;
-  }
+  // getCustomerGroupList$() {
+  //   return this.customerGroupList$;
+  // }
 
-  clearCustomerGroupList() {
-    console.log('CLEAR CARD LIST');
-    this.setCustomerGroupList(null);
-  }
+  // clearCustomerGroupList() {
+  //   console.log('CLEAR CARD LIST');
+  //   this.setCustomerGroupList(null);
+  // }
 
 
 
@@ -192,13 +186,7 @@ export class CustomerInfoService {
   //   return this.customer;
   // }
 
-  setEventCUstomerIsFoundById() {
-    this.eventCustomerIsFoundById.next();
-  }
 
-  getEventCUstomerIsFoundById$() {
-    return this.eventCustomerIsFoundById$;
-  }
 
   getGlobalCustomerDetailsState() {
     return this.globalStateService.getCustomerDetailsByIdGlobalState();
@@ -219,6 +207,28 @@ export class CustomerInfoService {
   setCustomerInfoToNewReceipt(customerInfo: Customerinfo) {
     this.receiptService.setCustomerInfoToNewReceipt(customerInfo)
   }
+
+
+  updateValueInMaininfo(form: FormGroup, customerMainInfo: CustomerMainInfo, ) {
+    form.patchValue({
+      customerId: customerMainInfo.customerId,
+      fname: customerMainInfo.fname,
+      lname: customerMainInfo.lname,
+      company: customerMainInfo.company,
+      // tslint:disable-next-line: max-line-length
+      customerType: customerMainInfo.customerType,
+      title: customerMainInfo.title,
+      gender: customerMainInfo.gender,
+      customerCode: customerMainInfo.customerCode,
+      spouseName: customerMainInfo.spouseName,
+      fileAs: customerMainInfo.fileAs,
+
+      afterSunset1: customerMainInfo.afterSunset,
+    })
+
+
+  }
+
 
 
   updateValueInAddressInputsArray(
@@ -381,6 +391,10 @@ export class CustomerInfoService {
 
       return fileAs = fileAs ? fileAs : `${fname} ${lname} ${company}`;
     }
+
+  }
+
+  searchExistingCustomer() {
 
   }
 

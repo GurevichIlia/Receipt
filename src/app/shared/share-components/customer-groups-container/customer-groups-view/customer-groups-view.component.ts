@@ -20,8 +20,8 @@ export class CustomerGroupsViewComponent implements OnChanges {
     console.log('CHANGES', this.selectedGroups)
   }
 
-  deleteGroup(groupId: number) {
-    this.deleteGroupEvent.emit(groupId);
+  deleteGroup(groupId: number, groupName: string) {
+    this.deleteGroupEvent.emit({ groupId: groupId, groupName: groupName });
   }
 
   openModal(typeOfGroups: string) {

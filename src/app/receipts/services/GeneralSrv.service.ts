@@ -3,23 +3,24 @@ import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
-import { map, switchMapTo, takeUntil, filter, startWith } from 'rxjs/operators';
+import { map, switchMapTo, takeUntil, filter, startWith, shareReplay } from 'rxjs/operators';
 
 import { LastSelection } from '../../models/lastSelection.model';
 import { NewReceipt } from '../../models/newReceipt.model';
 import { Guid } from 'guid-typescript';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { CustomerInfoById} from '../../models/customer-info-by-ID.model';
+import { CustomerInfoById } from '../../models/customer-info-by-ID.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
 import { FormArray, FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
 
-import { GlobalData} from 'src/app/models/globalData.model';
+import { GlobalData } from 'src/app/models/globalData.model';
 import { Phones } from 'src/app/models/phones.model';
 import { Emails } from 'src/app/models/emails.model';
 import { Addresses } from 'src/app/models/addresses.model';
 import { CustomerMainInfo } from 'src/app/models/customermaininfo.model';
 import { GeneralGroups } from './../../models/generalGroups.model';
+
 export interface CustomerSearchData {
   ActiveStatus: number;
   CustomerId: number;
@@ -61,10 +62,10 @@ export class GeneralSrv {
   partOfApplication = new BehaviorSubject('');
   currentPartOfApplication$ = this.partOfApplication.asObservable();
 
-  globalData = new BehaviorSubject<GlobalData>(null);
+  // globalData = new BehaviorSubject<GlobalData>(null);
   /** Using this data in payments part of application */
-  currentGlobalData$ = this.globalData.asObservable();
-
+  // currentGlobalData$ = this.globalData.asObservable();
+  currentGlobalData$: Observable<GlobalData>
 
   subscription$ = new Subject();
 
@@ -122,16 +123,11 @@ export class GeneralSrv {
 
   /***  Get customer by customerId */
   getCustomerInfoById(customerId: number): Observable<CustomerInfoById> {
-    // cons = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Bearer ' + this.authen.tokenNo
-    //   })
-    // };
     return this.http.get<any>(`${this.baseUrl}Receipt/GetCustomerDataByCustomerID?urlAddr=${this.orgName}&customerid=${customerId}`)
       .pipe(
         map(response => response.Data),
-        map(data => {
+        map((data: CustomerInfoById) => {
+          data.CustomerInfoForReceiept[0].BirthDate = this.changeDateFormat(data.CustomerInfoForReceiept[0].BirthDate, 'DD/MM/YYYY');
           data.GetCustomerReciepts_CameFrom.map(data => {
             data.ValueDate = this.changeDateFormat(data.ValueDate, 'YYYY-MM-DD');
             data.RecieptDate = this.changeDateFormat(data.RecieptDate, 'YYYY-MM-DD');
@@ -393,21 +389,21 @@ export class GeneralSrv {
       .pipe(map(data => data = data['Data'])).pipe(takeUntil(this.subscription$));
   }
 
-  setGlobalDataState(state: GlobalData) {
-    console.log('GLOBAL DATA SET', state);
-    this.globalData.next(state);
-  }
+  // setGlobalDataState(state: GlobalData) {
+  //   console.log('GLOBAL DATA SET', state);
+  //   this.globalData.next(state);
+  // }
 
-  getGlobalDataState() {
-    return this.globalData.getValue();
-  }
+  // getGlobalDataState() {
+  //   return this.globalData.getValue();
+  // }
 
   getGlobalData$() {
-    if (this.getGlobalDataState()) {
-      return this.currentGlobalData$;
-    } else {
-      return this.getKevaGlbData(this.getOrgName());
+    if (!this.currentGlobalData$) {
+      this.currentGlobalData$ = this.getKevaGlbData(this.getOrgName()).pipe(shareReplay(1))
     }
+
+    return this.currentGlobalData$;
   }
 
   formControlAutoComplete(filteredSubject: any[], titleInput: AbstractControl, filterKey: string) {
@@ -429,74 +425,74 @@ export class GeneralSrv {
     return filteredSubject.filter((title: any) => title[filterKey].toLowerCase().includes(filterValue))
   }
 
-  patchInputValue(
+  // patchInputValue(
 
-    inputsArray: FormArray | FormGroup,
-    valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
-    addNewInputFunction?: Function,
-    formBuilder?: FormBuilder) {
-    console.log('INPUTS ARRAY', inputsArray)
-    let controlsKeys;
-    if (valueArray) {
-      if (valueArray.length > 0) {
-        // если массив значений для инпутов не пустой, запуска. цикл для извлечения нужных значений.
-        for (let i = 0; i < valueArray.length; i++) {
-          if (inputsArray instanceof FormArray) {
-            //создаю массив с названиями ключей на основании пришедшего FormArray.
-            controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
-            // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
-            controlsKeys.forEach((key: string) => {
-              // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
-              const arrKey = key
-              //  (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
-              // обновляю массив FormArray c объектами в которых инпуты.
-              inputsArray.controls[i].patchValue({
-                [key]: valueArray[i][arrKey]
-              })
-            })
-          } else if (inputsArray instanceof FormGroup) {
-            //создаю массив с названиями ключей на основании пришедшего FormGroup.
-            controlsKeys = Object.keys(inputsArray.controls);
-            // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
-            controlsKeys.forEach(key => {
-              // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
-              const arrKey = key;
-              //  (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
-              // добавляю значения в объектe FormGroup с инпутами
-              inputsArray.patchValue({
-                [key]: valueArray[i][arrKey]
-              })
-            })
-          }
-          if (valueArray.length > i + 1) {
-            // если в массиве значений для инпутов больше чем 1 объект, создаю еще один инпут.
-            addNewInputFunction(inputsArray, formBuilder)
-          } else {
-            break;
-          }
-        }
-      } else {
-        if (inputsArray instanceof FormArray) {
-          // если массив с значения для инпута пустой, дабвляю дефолтные значения(пустая строка).
-          controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
-          controlsKeys.forEach(key => {
-            inputsArray.controls[0].patchValue({
-              [key]: ''
-            })
-          })
-        } else if (inputsArray instanceof FormGroup) {
-          controlsKeys = Object.keys(inputsArray.controls);
-          controlsKeys.forEach(key => {
-            inputsArray.patchValue({
-              [key]: ''
-            })
-          })
-        }
+  //   inputsArray: FormArray | FormGroup,
+  //   valueArray: Phones[] | Emails[] | Addresses[] | CustomerMainInfo[],
+  //   addNewInputFunction?: Function,
+  //   formBuilder?: FormBuilder) {
+  //   console.log('INPUTS ARRAY', inputsArray)
+  //   let controlsKeys;
+  //   if (valueArray) {
+  //     if (valueArray.length > 0) {
+  //       // если массив значений для инпутов не пустой, запуска. цикл для извлечения нужных значений.
+  //       for (let i = 0; i < valueArray.length; i++) {
+  //         if (inputsArray instanceof FormArray) {
+  //           //создаю массив с названиями ключей на основании пришедшего FormArray.
+  //           controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
+  //           // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
+  //           controlsKeys.forEach((key: string) => {
+  //             // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
+  //             const arrKey = key
+  //             //  (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
+  //             // обновляю массив FormArray c объектами в которых инпуты.
+  //             inputsArray.controls[i].patchValue({
+  //               [key]: valueArray[i][arrKey]
+  //             })
+  //           })
+  //         } else if (inputsArray instanceof FormGroup) {
+  //           //создаю массив с названиями ключей на основании пришедшего FormGroup.
+  //           controlsKeys = Object.keys(inputsArray.controls);
+  //           // каждый ключ использую как имя при инизиализации импута и получаю в него значение по такому же ключу.
+  //           controlsKeys.forEach(key => {
+  //             // изменяю стиль написания ключа, потому что в приходящих данных везде первая буква большая а название инпута в форме с маленькой, кроме fname и lname
+  //             const arrKey = key;
+  //             //  (key === 'lname' || key === 'fname') ? key : key[0].toUpperCase() + key.substring(1);
+  //             // добавляю значения в объектe FormGroup с инпутами
+  //             inputsArray.patchValue({
+  //               [key]: valueArray[i][arrKey]
+  //             })
+  //           })
+  //         }
+  //         if (valueArray.length > i + 1) {
+  //           // если в массиве значений для инпутов больше чем 1 объект, создаю еще один инпут.
+  //           addNewInputFunction(inputsArray, formBuilder)
+  //         } else {
+  //           break;
+  //         }
+  //       }
+  //     } else {
+  //       if (inputsArray instanceof FormArray) {
+  //         // если массив с значения для инпута пустой, дабвляю дефолтные значения(пустая строка).
+  //         controlsKeys = Object.keys(inputsArray.controls[0]['controls']);
+  //         controlsKeys.forEach(key => {
+  //           inputsArray.controls[0].patchValue({
+  //             [key]: ''
+  //           })
+  //         })
+  //       } else if (inputsArray instanceof FormGroup) {
+  //         controlsKeys = Object.keys(inputsArray.controls);
+  //         controlsKeys.forEach(key => {
+  //           inputsArray.patchValue({
+  //             [key]: ''
+  //           })
+  //         })
+  //       }
 
-      }
+  //     }
 
-    }
-  }
+  //   }
+  // }
 
   addPhoneInput(array: FormArray, fb: FormBuilder) {
     if (array.length < 10) {
@@ -556,6 +552,31 @@ export class GeneralSrv {
 
   getPreviousRoute() {
     return this.previousRoute;
+  }
+
+  setBirthdayDate(birthdayInput: AbstractControl, birthdayDate: string) {
+    if (birthdayDate) {
+      if (birthdayDate.trim()) {
+        birthdayInput.patchValue({
+          day: +birthdayDate.substring(0, 2),
+          month: +birthdayDate.substring(3, 5),
+          year: +birthdayDate.substring(6, 11)
+        })
+      }
+
+    }
+  }
+
+  getBirthdayDate(day, month, year) {
+    if (day && month && year) {
+      day = day < 10 ? `0${day}` : day;
+      month = month < 10 ? `0${month}` : month;
+      year = year;
+      const birthday = `${day}/${month}/${year}`;
+      console.log(birthday);
+      return birthday;
+    }
+
   }
   // getCurrentAndPreviousRoutes() {
   //   this.currentRoute = this.router.url;

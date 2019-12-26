@@ -294,6 +294,7 @@ export class NewPaymentService {
   }
 
   setCustomerInfoForNewKeva(customerInfoFromInfoComponent: CustomerInfoByIdForCustomerInfoComponent) {
+    const birthday = customerInfoFromInfoComponent.customerMainInfo[0].birthday
     let customerInfo: Customerinfo = {
       addresses: customerInfoFromInfoComponent.customerAddress,
       customerMainInfo: customerInfoFromInfoComponent.customerMainInfo[0],
@@ -301,7 +302,7 @@ export class NewPaymentService {
       groups: this.customerGroupsService.getSelectedGroupsId(),
       phones: customerInfoFromInfoComponent.customerPhones
     };
-
+    // customerInfo.customerMainInfo.birthday = this.generalService.getBirthdayDate(customerInfoFromInfoComponent.)
     this.customerInfoForNewKeva.next(customerInfo);
     console.log('CUSTOMER INFO FOR NEW KEVA', customerInfo)
   }

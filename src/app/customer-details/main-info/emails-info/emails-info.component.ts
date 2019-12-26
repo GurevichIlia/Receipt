@@ -74,7 +74,7 @@ export class EmailsInfoComponent implements OnInit, OnDestroy {
 
   saveEmail(array: FormArray, i) {
     const email: Email = array.controls[i].value;
-    debugger
+
     if (array.controls[i].valid) {
       this.loading = true;
       this.emailService.saveEmailOnServer(email)

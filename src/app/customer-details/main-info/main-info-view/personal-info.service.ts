@@ -1,3 +1,4 @@
+import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
@@ -28,7 +29,8 @@ export class PersonalInfoService {
 
   constructor(
     private fb: FormBuilder,
-    private mainInfoService: MainInfoService
+    private mainInfoService: MainInfoService,
+    private generalService: GeneralSrv
 
   ) { }
 
@@ -70,7 +72,7 @@ export class PersonalInfoService {
   savePersonalInfoOnServer(personalInfo: PersonalInfo) {
     console.log('PERSONAL INFO', JSON.stringify({ personalInfo: personalInfo }));
 
-    return this.mainInfoService.saveChangedCustomerData({ personalInfo: personalInfo});
+    return this.mainInfoService.saveChangedCustomerData({ personalInfo: personalInfo });
   }
 
   disableFormControl(control: AbstractControl) {
@@ -85,7 +87,10 @@ export class PersonalInfoService {
     return this.mainInfoService.changeDateFormat(date, format);
   }
 
-  updateCustomerInfo(){
+  getCurrentLanguage() {
+    return this.generalService.currentLang$
+  }
+  updateCustomerInfo() {
     this.mainInfoService.updateCustomerInfo();
   }
 }

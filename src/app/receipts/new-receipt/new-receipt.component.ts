@@ -1,21 +1,21 @@
 import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
-import { CustomerGroupsService } from './../../core/services/customer-groups.service';
-import { FullCustomerDetailsById } from './../../models/fullCustomerDetailsById.model';
-import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from './../customer-info/customer-info.service';
+import { GlobalMethodsService } from 'src/app/shared/global-methods/global-methods.service';
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
 
 import { TranslateService } from '@ngx-translate/core';
-import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from 'src/app/models/customer-info-by-ID.model';
+import { CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
 import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 
-import { map, debounceTime, tap, } from 'rxjs/operators';
+import { map, debounceTime, tap, takeUntil } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ReceiptsService } from '../services/receipts.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
-
+import { CustomerGroupsService } from './../../core/services/customer-groups.service';
+import { CustomerInfoService } from './../customer-info/customer-info.service';
+import { GlobalEventsService } from 'src/app/core/services/global-events.service';
 
 ///////////////////////// START CLASS
 
@@ -62,12 +62,16 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   nameFilter: any[];
 
   private subscriptions: Subscription = new Subscription();
+  subscription = new Subject();
   constructor(
     private receiptService: ReceiptsService,
-    private generalService: GeneralSrv, private translate: TranslateService,
+    private generalService: GeneralSrv,
+    private translate: TranslateService,
     private spinner: NgxUiLoaderService,
     private customerInfoService: CustomerInfoService,
     private customerGroupsService: CustomerGroupsService,
+    private globalStateService: GlobalStateService,
+    private globalEventsService: GlobalEventsService
   ) {
     translate.setDefaultLang('he');
   }
@@ -101,6 +105,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.customerInfoService.createNewEvent$
       .subscribe(data => this.searchControl.patchValue('')));
     // this.spinner.stop();
+    this.getCustomerId$(); 
   }
 
   filterOption() {
@@ -118,29 +123,27 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
 
 
   GetCustomerSearchData1() {
-    if (this.generalService.checkLocalStorage('customerSearchData')) {
-      this.AllCustomerTables = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
-    } else {
-      this.subscriptions.add(this.generalService.getUsers()
-        .pipe(
-          map(response => {
-            if (response.length === 0) {
-              // this.authService.logout();
-              return response;
-            } else {
-              return response;
-            }
-          }),
-          map(response => response),
-        ).subscribe(
-          data => {
-            this.AllCustomerTables = data;
-            this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
-            localStorage.setItem('customerSearchData', JSON.stringify(this.AllCustomerTables));
-            console.log('this.AllCustomerTables', this.AllCustomerTables);
-          },
-        ));
-    }
+    // if (this.generalService.checkLocalStorage('customerSearchData')) {
+    //   this.AllCustomerTables = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
+    // } else {
+    this.subscriptions.add(this.globalStateService.getCustomerSearchList$()
+      .pipe(
+        map(response => {
+          if (response.length === 0) {
+            // this.authService.logout();
+            return response;
+          } else {
+            return response;
+          }
+        }),
+        map(response => response),
+      ).subscribe(
+        data => {
+          this.AllCustomerTables = data;
+          // localStorage.setItem('customerSearchData', JSON.stringify(this.AllCustomerTables));
+        },
+      ));
+
   }
 
 
@@ -149,16 +152,20 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId)
       .pipe(
         tap(customerInfo => console.log('CUSTOMER INFO BY ID FROM SERVER', customerInfo)))
+
       .subscribe((customer: CustomerInfoById) => {
-        // Отмечаем в общем списке групп,
-        // группы которые нам приходят с найденым клиентом,
-        // тем самым поазывая их в списке групп у клиента в инфо.
+
         this.customerGroupsService.clearSelectedGroups();
         this.customerInfoService.setCurrentCustomerInfoByIdState(this.customerInfoService.transformCustomerDetailsForCustomerInfoComponent(customer));
         this.customerInfo = customer;
 
         this.spinner.stop();
-        this.customerInfoService.setEventCUstomerIsFoundById();
+        // Отмечаем в общем списке групп,
+        // группы которые нам приходят с найденым клиентом,
+        // тем самым поазывая их в списке групп у клиента в инфо.
+        this.customerGroupsService.setAlreadySelectedGroupsFromCustomerInfo(customer.CustomerGroupsGeneralSet.map(group => group.CustomerGeneralGroupId))
+        this.searchControl.patchValue('');
+
       },
         error => {
           console.log(error),
@@ -178,6 +185,15 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     this.searchControl.patchValue('');
   }
 
+  getCustomerId$() {
+    this.globalEventsService.getCustomerId$()
+      .pipe(
+        takeUntil(this.subscription))
+      .subscribe(customerId => {
+        this.getCustomerInfoById(customerId)
+      })
+
+  }
 
   // logOut() {
   //   console.log('Is logOut')
@@ -190,6 +206,8 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     this.customerGroupsService.clearSelectedGroups();
     this.subscriptions.unsubscribe();
     this.customerInfoService.clearCurrentCustomerInfoByIdForCustomerInfoComponent();
+    this.subscription.next();
+    this.subscription.complete();
     console.log('NEW RECEIPT DESTROED');
 
   }

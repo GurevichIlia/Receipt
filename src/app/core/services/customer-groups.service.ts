@@ -1,4 +1,4 @@
-import { CustomerGroupsGeneralSet } from './../../models/customer-info-by-ID.model';
+import { CustomerDetailsService } from './../../customer-details/customer-details.service';
 import { Injectable } from '@angular/core';
 
 import { Observable, Subject, BehaviorSubject, of } from 'rxjs';
@@ -10,6 +10,8 @@ import { } from './../../shared/global-state-store/global-state.service';
 import { TodoItemNode } from 'src/app/message/send-message.service';
 import { Group } from 'src/app/receipts/customer-info/customer-info.component';
 
+
+
 export interface SelectedCustomerGroups {
   groupId: number,
   groupName?: string
@@ -19,8 +21,13 @@ export interface SelectedCustomerGroups {
   providedIn: 'root'
 })
 export class CustomerGroupsService {
+  originalCustomerGroups: GeneralGroups[] = []
+
+  alreadySelectedGroupsFromCustomerInfo = new BehaviorSubject<number[]>([]);
+  alreadySelectedGroupsFromCustomerInfo$ = this.alreadySelectedGroupsFromCustomerInfo.asObservable()
+
   // Список всех групп клиентов
-  readonly customerGroups = new BehaviorSubject<GeneralGroups[]>([]);
+  customerGroups = new BehaviorSubject<GeneralGroups[]>([])
   customerGroups$ = this.customerGroups.asObservable()
 
 
@@ -32,11 +39,16 @@ export class CustomerGroupsService {
   get data(): TodoItemNode[] { return this.dataChange.value; }
 
   constructor(
-    private generalService: GeneralSrv
+    private generalService: GeneralSrv,
+    private customerDetailsService: CustomerDetailsService
   ) { }
 
   private getGroupsCondidatesToAddition() {
     return this.groupsCondidatesToAddition;
+  }
+
+  setOriginalGroupsList(newValue: GeneralGroups[]) {
+    this.originalCustomerGroups = newValue;
   }
 
   getSelectedGroupsId(): Group[] {
@@ -64,17 +76,19 @@ export class CustomerGroupsService {
     return this.addGroupsIsClicked$;
   }
 
-  setSelectedGroups(customerGroupsGeneralSet: CustomerGroupsGeneralSet[]) {
-    const customerGroups = customerGroupsGeneralSet.map(group => group.CustomerGeneralGroupId);
-    customerGroups.map(group => this.markGroupAsSelected(group));
-    this.updateCustomerGroups();
+  setSelectedGroups(customerGroupsGeneralSet: number[]) {
+    if (customerGroupsGeneralSet.length !== 0) {
+      const customerGroups = customerGroupsGeneralSet;
+      customerGroups.map(group => this.markGroupAsSelected(group));
+      this.updateCustomerGroups();
+    }
   }
 
   getGeneralGroups$() {
-    if (this.customerGroups.getValue().length !== 0) {
-      return this.getCustomerGroups$();
+    if (this.originalCustomerGroups.length !== 0) {
+      return of(this.originalCustomerGroups);
     } else {
-      return this.generalService.GetSystemTables().pipe(map(data => data.CustomerGroupsGeneral), tap(groups => this.setCustomerGroups(groups)));
+      return this.generalService.GetSystemTables().pipe(map(data => data.CustomerGroupsGeneral));
     }
   }
 
@@ -125,7 +139,6 @@ export class CustomerGroupsService {
 
   markSelectedGroupsInGeneralList() {
     this.getGroupsCondidatesToAddition().map(group => this.markGroupAsSelected(group));
-    this.updateCustomerGroups();
   }
 
   getQuickListOfGroups(groups: GeneralGroups[]) {
@@ -158,26 +171,34 @@ export class CustomerGroupsService {
       }));
   }
 
+  getSelectedGroups(): GeneralGroups[] {
+    return this.customerGroups.getValue().filter(group => group.isSelected === true)
+
+  }
+
   /** MAKING GROUP VALUE isSelected = True */
   markGroupAsSelected(groupId: number) {
-    this.customerGroups.getValue().map(group => {
+    const customerGroups = this.customerGroups.getValue();
+    const updatedCustomerGroups = customerGroups.map(group => {
       if (group.GroupId === groupId) {
         group.isSelected = true
       }
       return { ...group };
     });
-    // this.setCustomerGroups([...customerGroups]);
+
+    this.setCustomerGroups(updatedCustomerGroups);
   }
 
   /** MARKING GROUP VALUE isSelected = False */
   markGroupAsNotSelected(groupId: number) {
-    this.customerGroups.getValue().map(group => {
+    const customerGroups = this.customerGroups.getValue();
+    const updatedCustomerGroups = customerGroups.map(group => {
       if (group.GroupId === groupId) {
         group.isSelected = false
       }
       return { ...group };
     });
-    // this.setCustomerGroups([...customerGroups]);
+    this.setCustomerGroups(updatedCustomerGroups);
   }
 
   /** MARK ALL GROUPS VALUE isSelected = False, CLEAR STATE */
@@ -194,20 +215,32 @@ export class CustomerGroupsService {
       }
 
     })
-    this.setCustomerGroups([...customerGroups]);
+    this.setCustomerGroups(customerGroups);
+    this.setAlreadySelectedGroupsFromCustomerInfo([]);
+    this.clearGroupsCondidatesToAddition();
+    console.log('AFTER CLEAR', this.customerGroups.getValue().filter(group => group.isSelected === true));
+    console.log('AFTER CLEAR', this.alreadySelectedGroupsFromCustomerInfo.getValue());
 
   }
 
   /** UPDATE GROUPS TO SHOW IF THERE ARE SELECTED GROUPS*/
   updateCustomerGroups() {
-    const customerGroups = this.customerGroups.getValue();
-    if (customerGroups) {
-      this.setCustomerGroups([...customerGroups]);
 
-    }
+    this.setCustomerGroups(this.customerGroups.getValue());
 
   }
 
+  setAlreadySelectedGroupsFromCustomerInfo(groups: number[]) {
+    const transformedGroups =
+      this.alreadySelectedGroupsFromCustomerInfo.next(groups);
+  }
 
+  getAlreadySelectedGroupsFromCustomerInfo$() {
+    return this.alreadySelectedGroupsFromCustomerInfo$;
+  }
+
+ saveCustomerGroups(customerGroups: any[]) {
+    return this.customerDetailsService.saveChangedCustomerData({ groups: customerGroups });
+  }
 }
 

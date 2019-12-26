@@ -1,6 +1,6 @@
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Inject } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef, MatSelect } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material';
 
 
@@ -31,6 +31,7 @@ import { Location } from '@angular/common';
 export class CreditCardComponent implements OnInit, OnDestroy {
   @ViewChild('creditCard') creditCardInput: ElementRef;
   @ViewChild('expYear') expYearInput: ElementRef;
+  @ViewChild('Account') customerAccount: MatSelect;
   creditCardForm: FormGroup;
   accounts$: Observable<CreditCardAccount[]>
   termNo: string;
@@ -47,6 +48,7 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   subscription$ = new Subject();
   receiptRoute: boolean;
   isShowCvv: boolean;
+  cardReaderToken = '';
   constructor(
     private toastr: ToastrService,
     private receiptService: ReceiptsService,
@@ -182,8 +184,8 @@ export class CreditCardComponent implements OnInit, OnDestroy {
           // const expirationDate = `${this.expMonth.value}/${this.expYear.value}`;
           const cvv = form.value.cvv.substring(0, 4);
           let creditCardNumber;
-          if (form.value.creditCard.length > 25) {
-            creditCardNumber = form.value.creditCard;
+          if (this.cardReaderToken.length > 25) {
+            creditCardNumber = this.cardReaderToken;
           } else {
             creditCardNumber = form.value.creditCard.replace(/\s+/g, '');
           }
@@ -340,25 +342,34 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   getAccountNameAndNumber() {
 
   }
+
   useCardReader() {
-    const cardCode = '4580090107623093=24012010000016411000';
+    debugger
+    const cardCode: string = this.creditCardNumber.value;
     if (this.useCardReaderControl.value === true) {
       if (this.accountId.value === null || this.accountId.value === undefined || this.accountId.value === '') {
         this.toastr.warning('', 'Please select the account', {
           positionClass: 'toast-top-center'
         });
+        this.customerAccount.focus()
+        this.customerAccount.open();
+        this.creditCardNumber.patchValue('');
+        
       } else if (cardCode.length > 17) {
         // tslint:disable-next-line: max-line-length
-        this.credirCardService.getCreditCardInfoWithCardreader(this.termNo, cardCode, this.termName).subscribe(response => {
-          const token = response.substr(response.indexOf('Token') + 6, 36);
-          const expDate = response.substr(response.indexOf('Tokef_30') + 9, 4);
-          this.creditCardNumber.patchValue(token);
-          this.expMonth.patchValue(expDate.substr(0, 2));
-          this.expYear.patchValue(`20${expDate.substr(2, 3)}`);
-          // this.expirationDate.patchValue(expDate);
-          console.log(expDate);
-          console.log(response);
-        });
+        this.credirCardService.getCreditCardInfoWithCardreader(this.termNo, cardCode, this.termName)
+        .pipe(takeUntil(this.subscription$))
+          .subscribe(response => {
+            const token = response.substr(response.indexOf('Token') + 6, 36);
+            const expDate = response.substr(response.indexOf('Tokef_30') + 9, 4);
+            this.cardReaderToken = token;
+            this.creditCardNumber.patchValue(cardCode.substring(0, cardCode.indexOf('=')));
+            this.expMonth.patchValue(expDate.substr(0, 2));
+            this.expYear.patchValue(`20${expDate.substr(2, 3)}`);
+            // this.expirationDate.patchValue(expDate);
+            console.log(expDate);
+            console.log(response);
+          });
       }
     } else {
       this.toastr.warning('', 'Card reader required', {
@@ -366,14 +377,18 @@ export class CreditCardComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   onFocusCreditCardNumber() {
     this.creditCardInput.nativeElement.focus();
   }
+  
   getDataForModalDialog(data: { fullName: string, tZ: string, creditCardAccounts: Observable<CreditCardAccount[]> }) {
     this.setFullName(data.fullName);
     this.setTz(data.tZ);
     this.setAccounts(data.creditCardAccounts)
-    data.creditCardAccounts.subscribe(data => console.log('COMING ACCOUNTS', data))
+    data.creditCardAccounts
+      .pipe(takeUntil(this.subscription$))
+      .subscribe(data => console.log('COMING ACCOUNTS', data))
   }
   sendDataToParentComponent(creditCard: Creditcard) {
     this.dialogRef.close({ newCredCard: creditCard });

@@ -1,0 +1,10 @@
+.listItem:hover {
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+
+.listItem {
+
+  min-height: fit-content;
+  padding: 0% !important;
+}

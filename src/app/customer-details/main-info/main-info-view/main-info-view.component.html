@@ -8,7 +8,7 @@
 
   </div>
   <app-dumb-presentation *ngIf="globalData$ | async as globalData; else loader" [globalData]="globalData"
-    [filteredCustomerTitles]="filteredCustomerTitles$ | async" [personalInfo]="personalInfoControl"
+    [filteredCustomerTitles]="filteredCustomerTitles$ | async" [currentLang]="currentLang$ | async" [personalInfo]="personalInfoControl"
     (newAction)="getAction($event)">
     <ng-template [ngIf]="globalData" #btn>
       <div class="ngContentButton">

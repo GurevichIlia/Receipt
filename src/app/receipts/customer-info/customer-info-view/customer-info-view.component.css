@@ -14,3 +14,8 @@ input.mat-input-element {
 p.button {
   direction: initial;
 }
+
+.birthdayRow {
+  text-align: justify;
+
+}

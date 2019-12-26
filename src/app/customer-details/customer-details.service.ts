@@ -9,7 +9,7 @@ import { PaymentsService } from '../grid/payments.service';
 import { Router } from '@angular/router';
 import { CustomerInfoService } from '../receipts/customer-info/customer-info.service';
 
-import { debounceTime, map, switchMap, filter } from 'rxjs/operators';
+import { map, switchMap, filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -42,9 +42,10 @@ export class CustomerDetailsService {
 
   getCustomerDetailsById(customerId: number): Observable<FullCustomerDetailsById> {
     return this.http.get(`${this.baseUrl}Customer/GetCustomerData?urlAddr=${this.generalService.getOrgName()}&customerid=${customerId}`)
-      .pipe(map(data => {
-        return data = data['Data']
-      }));
+      .pipe(
+        map(data => {
+          return data = data['Data']
+        }))
   }
 
   // setCustomerDetailsByIdState(value) {

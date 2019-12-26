@@ -4,7 +4,7 @@
   <table mat-table [dataSource]="dataSource" matSort >
 
     <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef>
+      <th class="tableHeader" mat-header-cell *matHeaderCellDef>
         <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
           [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
         </mat-checkbox>
@@ -16,7 +16,7 @@
       </td>
     </ng-container>
     <ng-container matColumnDef="edit">
-      <th mat-header-cell *matHeaderCellDef>
+      <th class="tableHeader" mat-header-cell *matHeaderCellDef>
         <span>{{'Edit' | translate}}</span>
       </th>
       <td (click)="editPaymentRow(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
@@ -24,7 +24,7 @@
       </td>
     </ng-container>
     <ng-container matColumnDef="delete">
-      <th mat-header-cell *matHeaderCellDef>
+      <th class="tableHeader" mat-header-cell *matHeaderCellDef>
         <span>{{'Delete' | translate}}</span>
       </th>
       <td (click)="deletePaymentRow(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
@@ -33,7 +33,7 @@
     </ng-container>
 
     <ng-container matColumnDef="duplicate">
-      <th mat-header-cell *matHeaderCellDef>
+      <th class="tableHeader" mat-header-cell *matHeaderCellDef>
         <span>{{'Duplicate' | translate}}</span>
       </th>
       <td (click)="duplicateCustomerKeva(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
@@ -42,7 +42,7 @@
     </ng-container>
 
     <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header}} </th>
+      <th class="tableHeader" mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header}} </th>
       <td mat-cell *matCellDef="let row">
         <ng-container>
           {{col.cell(row) === 'null'? '' : col.cell(row) | dateTransform : col.header}}
@@ -51,7 +51,7 @@
     </ng-container>
 
 
-    <tr mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true"></tr>
+    <tr style="background-color:gainsboro;" mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true"></tr>
     <tr (dblclick)="row.backColor = !row.backColor" class="element-row"
       [ngStyle]="{'background-color': row.backColor? 'rgb(231, 227, 227)' : 'white' }" mat-row
       *matRowDef="let row; columns: listDisplayedColumns;"></tr>

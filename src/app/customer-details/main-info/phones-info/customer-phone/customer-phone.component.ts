@@ -23,7 +23,10 @@ export class CustomerPhoneComponent implements OnInit {
     this.editMode = this.phoneGroup.value.id === '' ? true : false;
     // console.log(this.phoneGroup.value);
     console.log('EDIT MODE', this.editMode);
-    this.phoneGroup.get('Prefix').value === '' ? this.phoneGroup.get('Prefix').patchValue('972') : this.phoneGroup.get('Prefix').value;
+    if(this.phoneGroup){
+      this.phoneGroup.get('Prefix').value === '' ? this.phoneGroup.get('Prefix').patchValue('972') : this.phoneGroup.get('Prefix').value;
+    }
+    
 
   }
 

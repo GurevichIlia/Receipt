@@ -4,8 +4,6 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from './../material.module';
 import { CustomerInfoComponent } from '../receipts/customer-info/customer-info.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgxPageScrollCoreModule } from 'ngx-page-scroll-core';
-import { NgxPageScrollModule } from 'ngx-page-scroll';
 import { CustomerPaymentsComponent } from '../receipts/payments-list/customer-payments/customer-payments.component';
 import { PaymentsListComponent } from '../receipts/payments-list/payments-list.component';
 import { MomentModule } from 'ngx-moment';
@@ -27,6 +25,7 @@ import { TreeOfGroupsComponent } from './share-components/tree-of-groups/tree-of
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CustomerGroupsContainerComponent } from './share-components/customer-groups-container/customer-groups-container.component';
 import { CustomerGroupsViewComponent } from './share-components/customer-groups-container/customer-groups-view/customer-groups-view.component';
+import { ExistingCustomersListComponent } from './modals/existing-customers-list/existing-customers-list.component';
 
 
 @NgModule({
@@ -51,6 +50,7 @@ import { CustomerGroupsViewComponent } from './share-components/customer-groups-
             TreeOfGroupsComponent,
             CustomerGroupsContainerComponent,
             CustomerGroupsViewComponent,
+            ExistingCustomersListComponent,
 
       ],
       imports: [
@@ -59,8 +59,6 @@ import { CustomerGroupsViewComponent } from './share-components/customer-groups-
             MaterialModule,
             FormsModule,
             ReactiveFormsModule,
-            NgxPageScrollCoreModule,
-            NgxPageScrollModule,
             MomentModule,
             InfiniteScrollModule
 
@@ -73,8 +71,6 @@ import { CustomerGroupsViewComponent } from './share-components/customer-groups-
             MaterialModule,
             TranslateModule,
             MomentModule,
-            NgxPageScrollCoreModule,
-            NgxPageScrollModule,
             PaymentsListComponent,
             CustomerPaymentsComponent,
             ReceiptTypeFilterPipe,
@@ -90,7 +86,17 @@ import { CustomerGroupsViewComponent } from './share-components/customer-groups-
 
 
       ],
-      entryComponents: [CreditCardComponent, SendByEmailComponent, SuggestExistingCustomerComponent, AskQuestionComponent, ModalSessionexpiredComponent, ConfirmPurchasesComponent, CustomerGroupsComponent]
+      entryComponents: [
+            CreditCardComponent,
+            SendByEmailComponent,
+            SuggestExistingCustomerComponent,
+            AskQuestionComponent,
+            ModalSessionexpiredComponent,
+            ConfirmPurchasesComponent,
+            CustomerGroupsComponent,
+            ExistingCustomersListComponent
+
+      ]
 })
 export class SharedModule {
 

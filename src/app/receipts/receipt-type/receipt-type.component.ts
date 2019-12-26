@@ -12,7 +12,7 @@ import { AuthenticationService } from 'src/app/receipts/services/authentication.
 import { Router } from '@angular/router';
 import { ReceiptType } from 'src/app/models/receiptType.interface';
 import { Subscription, Observable } from 'rxjs';
-import { map} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { CreditCardAccount } from 'src/app/models/credit-card-account.model';
 import { ReceiptGLobalData } from 'src/app/models/receiptGlobalData.model';
 
@@ -328,6 +328,7 @@ export class ReceiptTypeComponent implements OnInit, OnDestroy, DoCheck {
       err => console.log('ERROR', err),
 
     ));
+    
     //   let forDonation;
     //   if (localStorage.getItem('selected_receiptIsForDonation')) {
     //     forDonation = localStorage.getItem('selected_receiptIsForDonation') == 'true' ? true : false;

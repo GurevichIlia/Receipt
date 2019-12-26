@@ -16,7 +16,7 @@
       <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
         <mat-label>{{'Clearing firm' | translate}}</mat-label>
         <mat-select formControlName="instituteid">
-          <mat-option *ngFor="let group of (globalData$ | async)?.institutes" [value]="group.instituteId">
+          <mat-option *ngFor="let group of globalData.institutes" [value]="group.instituteId">
             {{group.Mosad}}
           </mat-option>
         </mat-select>
@@ -36,7 +36,7 @@
         <mat-label>{{'Activity status' | translate}}</mat-label>
         <mat-select formControlName="KevaStatusid">
           <mat-option value="9999">All</mat-option>
-          <mat-option *ngFor="let group of (globalData$| async)?.KevaStatus" [value]="group.KevaStatusId">
+          <mat-option *ngFor="let group of globalData.KevaStatus" [value]="group.KevaStatusId">
             {{group.KevaStatusIdname}}
           </mat-option>
         </mat-select>
@@ -46,7 +46,7 @@
         <mat-label>{{'Groups' | translate}}</mat-label>
         <mat-select formControlName="KevaGroupid">
           <mat-option value="9999">All groups</mat-option>
-          <mat-option *ngFor="let group of (globalData$ | async)?.KevaGroups" [value]="group.GroupId">
+          <mat-option *ngFor="let group of globalData.KevaGroups" [value]="group.GroupId">
             {{group.GroupName}}
           </mat-option>
         </mat-select>

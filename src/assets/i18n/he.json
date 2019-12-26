@@ -194,7 +194,6 @@
     "Options": "אפשרויות",
     "Keva name": "שם",
     "Main info": "מידע ראשי",
-    
     "State": "מדינה",
     "Main address": "כתובת ראשית",
     "ProjectName": "פרוייקט",
@@ -203,7 +202,6 @@
     "Send": "שלח",
     "Yes": "כן",
     "No": "לא",
-
     "Continue with this customer": " המשך עם הלקוח שבטיפול",
     "Confirm": " אשר",
     "Other customer": " לקוח אחר",
@@ -220,6 +218,6 @@
     "Add remark": "הוסף הערה ",
     "Keva remarks": "הערות",
     "Would you like to delete this remark": "האם תרצה למחוק הערה",
-    "Would you like to delete this payment": "האם למחוק הוראת קבע מספר"
-
+    "Would you like to delete this payment": "האם למחוק הוראת קבע מספר",
+    "Would you like to delete this group": " האם תרצה למחוק הקבוצה"
 }

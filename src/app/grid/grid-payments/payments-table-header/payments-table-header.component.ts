@@ -10,7 +10,6 @@ import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { takeUntil, filter, switchMap } from 'rxjs/operators';
 import { NewPaymentService } from '../new-payment/new-payment.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { PaymentKeva } from 'src/app/models/paymentKeva.model';
 
 
 @Component({
@@ -33,8 +32,9 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.createFilterForm();
     this.getGlobalData();
+    this.createFilterForm();
+    
     this.checkIfUpdateKevaTableWasClicked();
   }
 

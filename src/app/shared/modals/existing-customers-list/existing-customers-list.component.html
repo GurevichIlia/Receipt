@@ -1,0 +1,15 @@
+  <h4>נמצאו {{foundedExistingCustomers.length}} לקוחות דומים</h4>
+  <hr>
+  <mat-list>
+    <mat-list-item class="listItem" [matMenuTriggerFor]="menu"
+      *ngFor="let customer of foundedExistingCustomers; let i = index">
+      {{i+1}}. {{customer.FileAs}}
+
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="useCustomerIdForCustomerInfo(customer.CustomerId)">Use</button>
+        <button mat-menu-item>Details</button>
+      </mat-menu>
+    </mat-list-item>
+
+
+  </mat-list>

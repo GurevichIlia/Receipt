@@ -1,8 +1,18 @@
 <div class="container mt-5">
+  <div class="sticky" *ngIf="!currentCustomerId">
+    <p *ngIf="foundedExistingCustomers$ | async as customers">
+      <button class="suggestButton" (click)="openModalWithExistingCustomers(customers)" *ngIf="customers.length > 0 " mat-raised-button>
+        נמצאו {{customers.length}} לקוחות דומים
+      </button>
+
+    </p>
+  </div>
   <div class=" example-headers-align">
     <mat-card class="mb-2">
 
       <mat-card-header class="row">
+       
+
         <h6 class="col-sm-1 col-md-4 col-lg-4 col-xl-4 " style="text-align: justify">{{'Customer Info' | translate}}
         </h6>
         <h6 class="col-sm-1 col-md-4 col-lg-3 col-xl-3" style="text-align: center; direction: initial;">
@@ -12,10 +22,13 @@
         </span>
       </mat-card-header>
 
+
+
+
       <app-customer-info-view [showMoreInfo]="showMoreInfo" [requiredField]="requiredField"
         [currentRoute]="currentRoute" [cities$]="cities$" [filterCustomerTitle]="filterCustTitle$ | async"
-        [customerTypes]="customerTypes" [userInfoGroup]="userInfoGroup" (openShopIsClicked)="openShop()"
-        (newEventFromChild)="getEventsFromChildComponent($event)">
+        [customerTypes]="customerTypes" [userInfoGroup]="userInfoGroup" [currentLang]="currentLang"
+        (openShopIsClicked)="openShop()" (newEventFromChild)="getEventsFromChildComponent($event)">
 
         <ng-template #Groups [ngIf]="'true'">
           <hr>
@@ -24,26 +37,21 @@
         </ng-template>
       </app-customer-info-view>
 
-      <!-- SHOW MORE INFO BUTTON -->
-      <p class="button" id="goDown" pageScroll href="#goDown">
-        <button id="goDown" pageScroll href="#goDown" style="background-color: rgb(38, 87, 122); color: white"
-          *ngIf="!showMoreInfo" class="mb-2" type="button" mat-raised-button color="primary"
-          (click)="showMoreInfo=!showMoreInfo;">
-          {{'Show customer info' | translate}}
-        </button>
-        <button *ngIf="showMoreInfo" class="mb-2" style="background-color:  rgb(38, 87, 122); color: white"
-          type="button" mat-raised-button color="primary" (click)="showMoreInfo=!showMoreInfo;">
-          {{'Hide customer info' | translate}}
-        </button>
-      </p>
+      <!-- <ul>
+        <li *ngFor="let customer of foundedExistingCustomers$ | async">
+          {{customer.FileAs}}
+        </li>
+      </ul> -->
 
-  
+
+      <!-- SHOW MORE INFO BUTTON -->
+
       <!-- NEXT STEP BUTTONS -->
       <mat-action-row>
         <ng-container *ngIf="currentRoute === '/newreceipt'">
           <button class="mr-1 ml-2" type="button" mat-raised-button
-            [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}"
-            (click)="openShop()" [disabled]="requiredField === true">
+            [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}" (click)="openShop()"
+            [disabled]="requiredField === true">
             {{'Store' | translate}}
           </button>
           <button (click)="submit()" type="button" mat-raised-button color="primary"
@@ -52,8 +60,8 @@
             {{'Next' | translate}}
           </button>
         </ng-container>
-        <button (click)="submit()" *ngIf="currentRoute !== '/newreceipt'" type="button" mat-raised-button color="primary"
-          [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
+        <button (click)="submit()" *ngIf="currentRoute !== '/newreceipt'" type="button" mat-raised-button
+          color="primary" [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
           [disabled]="requiredField === true">
           {{'Next' | translate}}
         </button>

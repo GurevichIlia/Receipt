@@ -1,3 +1,4 @@
+import { CustomerGroupsService } from './../../../core/services/customer-groups.service';
 import { GlobalStateService } from './../../../shared/global-state-store/global-state.service';
 import { CustomerPhones, CustomerEmails } from 'src/app/models/fullCustomerDetailsById.model';
 import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from './../../../models/customer-info-by-ID.model';
@@ -16,6 +17,7 @@ import { CustomerType } from 'src/app/models/customerType.model';
 import { Router } from '@angular/router';
 import { NewPaymentService } from '../new-payment/new-payment.service';
 import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
+import { GlobalEventsService } from 'src/app/core/services/global-events.service';
 
 @Component({
   selector: 'app-customer-search',
@@ -50,7 +52,9 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     private router: Router,
     private newPaymentService: NewPaymentService,
     private customerInfoService: CustomerInfoService,
-    private globalStateService: GlobalStateService
+    private globalStateService: GlobalStateService,
+    private customerGroupsService: CustomerGroupsService,
+    private globalEventsService: GlobalEventsService
   ) { }
 
   ngOnInit() {
@@ -70,6 +74,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.getGlobalData();
     this.spinner.stop();
     this.checkKevaMode();
+    this.getCustomerId$();
   }
 
   filterOption() {
@@ -101,18 +106,14 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   }
 
   getCustomerSearchData() {
-    this.subscriptions.add(this.globalStateService.getCustomerSearchList$()
+    this.globalStateService.getCustomerSearchList$()
       .pipe(
         takeUntil(this.subscription$))
       .subscribe(
         data => {
           this.AllCustomerTables = data;
-          this.AllCustomerTables = this.AllCustomerTables.filter(data => String(data['FileAs1']) != ' ');
-
-          localStorage.setItem('customerSearchData', JSON.stringify(this.AllCustomerTables));
-          console.log('this.AllCustomerTables', this.AllCustomerTables);
         },
-      ));
+      );
   }
 
 
@@ -121,10 +122,14 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.generalService.getCustomerInfoById(customerId).subscribe(customer => {
       if (customer) {
         console.log('CUSTOMER INFO FOR NEW KEVA FROM SERVER', customer);
+        this.customerGroupsService.clearSelectedGroups();
+
         // this.outputCustomerDetails(customer);
         // this.customerInfoService.setCustomerInfoById(customer.CustomerEmails, customer.CustomerMobilePhones, customer.CustomerAddresses, customer.CustomerInfoForReceiept, customer.CustomerCreditCardTokens);
         this.customerInfoService.setCurrentCustomerInfoByIdState(this.transformCustomerDetailsForCustomerInfoComponent(customer));
-        this.customerInfoService.setCustomerGroupList(customer.CustomerGroupsGeneralSet);
+        // this.customerInfoService.setCustomerGroupList(customer.CustomerGroupsGeneralSet);
+        this.customerGroupsService.setAlreadySelectedGroupsFromCustomerInfo(customer.CustomerGroupsGeneralSet.map(group => group.CustomerGeneralGroupId));
+        this.searchControl.patchValue('');
 
         // this.newPaymentService.setFoundedCustomerId(customerId);
         // console.log('FOUNDED CUSTOMER', customer);
@@ -178,6 +183,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
         ),
         takeUntil(this.subscription$))
       .subscribe(customerInfo => {
+
         this.newPaymentService.setCustomerInfoForNewKeva(customerInfo);
         this.router.navigate(['payments-grid/new-payment']);
 
@@ -241,6 +247,17 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
     }
     return newObject
   }
+
+  getCustomerId$() {
+    this.globalEventsService.getCustomerId$()
+      .pipe(
+        takeUntil(this.subscription$))
+      .subscribe(customerId => {
+        this.getCustomerInfoById(customerId)
+      })
+
+  }
+
 
   ngOnDestroy() {
     this.subscription$.next();
