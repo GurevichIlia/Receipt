@@ -1,77 +1,81 @@
-  <nav *ngIf="currentlyAuthStatus$ | async" [style.fontSize]="'20px'">
+<nav *ngIf="currentlyAuthStatus$ | async" [style.fontSize]="'20px'">
 
-    <div class="row header">
-      <!-- MOBILE -->
-      <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-12 text-right  mobileMenuToggle"
-         *ngIf="mobileVersion">
-        <button class="mr-2" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-          <mat-icon [style.fontSize]="'35px'">menu</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4 " [style.fontSize]="'16px'"
-            mat-menu-item (click)="goToReceipt()">{{'Create a receipt' | translate }}</button>
+  <div class="row header">
+    <!-- MOBILE -->
+    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-12 text-right  mobileMenuToggle" *ngIf="mobileVersion">
+      <button class="mr-2" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <mat-icon [style.fontSize]="'35px'">menu</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4 " [style.fontSize]="'16px'"
+          mat-menu-item (click)="goToReceipt()">{{'Create a receipt' | translate }}</button>
 
-          <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'"
-            mat-menu-item (click)="goToSendMessage()">{{'Send message' | translate}}</button>
-
-          <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
-            (click)="goToGrid()">הוראת קבע</button>
-
-          <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
-            (click)="goToCustomerDetails()">{{'Customer details' | translate}}</button>
-
-          <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
-            (click)="createNewCustomer()">{{'New customer' | translate}}</button>
-
-          <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'he'"
-            (click)="generalSrv.switchLanguage('en')">en</button>
-          <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'en'"
-            (click)="generalSrv.switchLanguage('he')">he</button>
-          <button [style.fontSize]="'16px'" mat-menu-item color="primary" (click)="auth.logout()"><i
-              class="material-icons">
-              exit_to_app
-            </i></button>
-        </mat-menu>
-      </div>
-      <!-- MOBILE -->
-
-      <!-- LOGO -->
-      <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 col-xl-3"
-        [ngStyle]="{'width': mobileVersion ?  '200px' : ''}"
-        [ngClass]="{'order-first': mobileVersion ? true : false}">
-        <img src="assets/images/jaffa300.jpg" alt="JaffaCRM-logo">
-      </div>
-      <!-- LOGO -->
-      <!-- REGULAR -->
-      <div class="text-right navMenu" *ngIf="!mobileVersion" >
-        <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
-          (click)="goToReceipt()">{{'New receipt' | translate }}</button>
-
-
-        <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
           (click)="goToSendMessage()">{{'Send message' | translate}}</button>
 
-        <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
           (click)="goToGrid()">הוראת קבע</button>
 
-
-        <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
           (click)="goToCustomerDetails()">{{'Customer details' | translate}}</button>
 
-        <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
           (click)="createNewCustomer()">{{'New customer' | translate}}</button>
 
-        <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
+        <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-menu-item
+          (click)="goToNewsletter()">{{'Newsletter' | translate}}</button>
+
+        <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'he'"
           (click)="generalSrv.switchLanguage('en')">en</button>
-
-        <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"
+        <button [style.fontSize]="'16px'" mat-menu-item *ngIf="currentLang === 'en'"
           (click)="generalSrv.switchLanguage('he')">he</button>
-
-        <button [style.fontSize]="'16px'" mat-button color="primary" (click)="logout()"><i class="material-icons">
+        <button [style.fontSize]="'16px'" mat-menu-item color="primary" (click)="auth.logout()"><i
+            class="material-icons">
             exit_to_app
           </i></button>
-      </div>
-      <!-- REGULAR -->
+      </mat-menu>
     </div>
+    <!-- MOBILE -->
 
-  </nav>
+    <!-- LOGO -->
+    <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 col-xl-3" [ngStyle]="{'width': mobileVersion ?  '200px' : ''}"
+      [ngClass]="{'order-first': mobileVersion ? true : false}">
+      <img src="assets/images/jaffa300.jpg" alt="JaffaCRM-logo">
+    </div>
+    <!-- LOGO -->
+    <!-- REGULAR -->
+    <div class="text-right navMenu" *ngIf="!mobileVersion">
+      <button *ngIf="typeOfUser === 1 || typeOfUser === 2 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        (click)="goToReceipt()">{{'New receipt' | translate }}</button>
+
+
+      <button *ngIf="typeOfUser === 1|| typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        (click)="goToSendMessage()">{{'Send message' | translate}}</button>
+
+      <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        (click)="goToGrid()">הוראת קבע</button>
+
+
+      <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        (click)="goToCustomerDetails()">{{'Customer details' | translate}}</button>
+
+      <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        (click)="createNewCustomer()">{{'New customer' | translate}}</button>
+
+      <button *ngIf="typeOfUser === 3 || typeOfUser === 4" [style.fontSize]="'16px'" mat-button
+        (click)="goToNewsletter()">{{'Newsletter' | translate}}</button>
+
+      <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
+        (click)="generalSrv.switchLanguage('en')">en</button>
+
+      <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"
+        (click)="generalSrv.switchLanguage('he')">he</button>
+
+      <button [style.fontSize]="'16px'" mat-button color="primary" (click)="logout()"><i class="material-icons">
+          exit_to_app
+        </i></button>
+    </div>
+    <!-- REGULAR -->
+  </div>
+
+</nav>

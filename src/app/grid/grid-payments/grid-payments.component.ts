@@ -1,6 +1,6 @@
 import { GlobalData } from './../../models/globalData.model';
 import { CreditCardList } from './../../models/creditCardList.model';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { PaymentsService } from './../payments.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
@@ -26,21 +26,24 @@ export class GridPaymentsComponent implements OnInit, OnDestroy {
     this.getCustomersCreditCardList();
     this.getKevaGlobalData();
   }
+
   getCustomersCreditCardList() {
     this.paymentsService.getCustomersCreditCardListData(this.generalService.orgName)
       .pipe(takeUntil(this.subscription$))
       .subscribe((data: CreditCardList[]) => this.newPaymentService.setCreditCardList(data)),
       error => console.log(error);
   }
+
   getKevaGlobalData() {
-    this.paymentsService.getKevaGlbData(this.generalService.getOrgName())
+    this.generalService.getGlobalData$()
       .pipe(takeUntil(this.subscription$))
       .subscribe((data: GlobalData) => {
-        this.paymentsService.setGlobalDataState(data)
+        // this.paymentsService.setGlobalDataState(data)
         console.log('GLOBAL DATA', data);
       })
     // this.to_camel_case("The-stealth-warrior");
   }
+
   ngOnDestroy() {
     this.paymentsService.clearPaymentsTableState();
     // this.paymentsService.clearGlobalDataState();

@@ -1,20 +1,18 @@
-import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
-import { GlobalMethodsService } from 'src/app/shared/global-methods/global-methods.service';
-
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
+import { Subscription, Subject, Observable } from 'rxjs';
+import { map, debounceTime, tap, takeUntil } from 'rxjs/operators';
+
+import { GlobalStateService } from './../../shared/global-state-store/global-state.service';
 
 import { TranslateService } from '@ngx-translate/core';
 import { CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { Subscription, Subject } from 'rxjs';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 
-import { map, debounceTime, tap, takeUntil } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { ReceiptsService } from '../services/receipts.service';
+import { ReceiptsService } from '../../shared/services/receipts.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { CustomerGroupsService } from './../../core/services/customer-groups.service';
-import { CustomerInfoService } from './../customer-info/customer-info.service';
+import { CustomerInfoService } from '../../shared/share-components/customer-info/customer-info.service';
 import { GlobalEventsService } from 'src/app/core/services/global-events.service';
 
 ///////////////////////// START CLASS
@@ -91,8 +89,8 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     this.receiptService.setStep(1);
     // this.spinner.start();
     // this.switchLanguage('he');
-    this.GetCustomerSearchData1();
     this.filterOption();
+    this.getCustomerSearchData();
     this.generalService.getLastSelectionFromLocalStore();
     this.subscriptions.add(this.generalService.currentLang$.subscribe(lang => this.currentLang = lang));
     // this.generalService.addSubscription(currentLang$);
@@ -105,8 +103,10 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.customerInfoService.createNewEvent$
       .subscribe(data => this.searchControl.patchValue('')));
     // this.spinner.stop();
-    this.getCustomerId$(); 
+    this.getCustomerId$();
   }
+
+
 
   filterOption() {
     this.filteredOptions = this.searchControl.valueChanges
@@ -122,7 +122,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   }
 
 
-  GetCustomerSearchData1() {
+  getCustomerSearchData() {
     // if (this.generalService.checkLocalStorage('customerSearchData')) {
     //   this.AllCustomerTables = JSON.parse(this.generalService.checkLocalStorage('customerSearchData'))
     // } else {
@@ -145,6 +145,9 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
       ));
 
   }
+
+
+
 
 
   getCustomerInfoById(customerId: number) {
@@ -186,7 +189,7 @@ export class NewReceiptComponent implements OnInit, OnDestroy {
   }
 
   getCustomerId$() {
-    this.globalEventsService.getCustomerId$()
+    this.globalEventsService.getCustomerIdForSearch$()
       .pipe(
         takeUntil(this.subscription))
       .subscribe(customerId => {

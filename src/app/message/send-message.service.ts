@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
+import { GeneralSrv } from '../shared/services/GeneralSrv.service';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
 import { GeneralGroups } from '../models/generalGroups.model';
 import { map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 export class SendMessageForm {
   CellFrom: string;

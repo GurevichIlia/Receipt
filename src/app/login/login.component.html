@@ -2,7 +2,7 @@
   <img class="mb-2" src="assets/images/jaffa300.jpg" alt="Amax-logo">
   <mat-card-title [style.fontSize]="'22px'">{{'SystemLogin' | translate}}</mat-card-title>
   <mat-card-content>
-    <form [formGroup]="form" [style.fontSize]="'18px'" (ngSubmit)="submit()">
+    <form [formGroup]="form" [style.fontSize]="'18px'" (ngSubmit)="submit()" >
       <p>
         <mat-form-field>
           <input type="text" matInput maxlength="35" placeholder="{{'OrganisationId' | translate}}" formControlName="orgid" />
@@ -20,11 +20,11 @@
       </p>
 
       <div class="button row">
-        <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
+        <button type="button" [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'he'"
           (click)="generalSrv.switchLanguage('en')">en</button>
-        <button [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"
+        <button type="button" [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"
           (click)="generalSrv.switchLanguage('he')">he</button>
-        <button  type="submit" mat-raised-button
+        <button  type="submit" mat-raised-button (keydown.enter)="submit()"
           [ngStyle]="{'background-color': 'rgb(38, 87, 122)', 'color': 'white' }">{{'Login' | translate}}</button>
       </div>
     </form>

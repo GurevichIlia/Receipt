@@ -1,20 +1,21 @@
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { AskQuestionComponent } from './../../../shared/modals/ask-question/ask-question.component';
-import { NewPaymentService } from './../new-payment/new-payment.service';
-import { PaymentKeva } from './../../../models/paymentKeva.model';
-import { PaymentsService } from '../../payments.service';
+
 import { FormControl, FormBuilder, FormGroup } from '@angular/forms';
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectionStrategy, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { Router, NavigationExtras } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, switchMap, filter } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Subject, Observable, of } from 'rxjs';
+import { takeUntil, switchMap, filter, map } from 'rxjs/operators';
 import { MatDialog } from '@angular/material';
 import { ToastrService } from 'ngx-toastr';
-
+import { GlobalEventsService } from 'src/app/core/services/global-events.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
+import { AskQuestionComponent } from '../../../shared/modals/ask-question/ask-question.component';
+import { NewPaymentService } from '../new-payment/new-payment.service';
+import { PaymentKeva } from '../../../models/paymentKeva.model';
+import { PaymentsService } from '../../payments.service';
 
 
 @Component({
@@ -23,7 +24,8 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./payments-table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PaymentsTableComponent implements OnInit {
+export class PaymentsTableComponent implements OnInit, OnChanges {
+  @Input() filterBy: number = null;
   @ViewChild(MatSort, { read: '' }) sort: MatSort;
   @ViewChild(MatPaginator, { read: '', }) paginator: MatPaginator;
   @ViewChild('weight', { read: '' }) weight: ElementRef;
@@ -40,6 +42,7 @@ export class PaymentsTableComponent implements OnInit {
   dataSourceFilterData: PaymentKeva[] = []
   subscription$ = new Subject();
   currentLang: string;
+  dataSource$: Observable<MatTableDataSource<any>>
   constructor(
     private router: Router,
     private paymentsService: PaymentsService,
@@ -47,9 +50,18 @@ export class PaymentsTableComponent implements OnInit {
     private newPaymentService: NewPaymentService,
     private matDialog: MatDialog,
     private generalService: GeneralSrv,
-    private toaster: ToastrService
+    private toaster: ToastrService,
+    private globalEventsService: GlobalEventsService
 
   ) { }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+    //Add '${implements OnChanges}' to the class.
+    if (changes.filterBy.previousValue !== changes.filterBy.currentValue) {
+      this.getPaymentsTableData();
+    }
+  }
 
   ngOnInit() {
     this.createTableColumns();
@@ -149,35 +161,63 @@ export class PaymentsTableComponent implements OnInit {
   showDetails(element) {
     this.router.navigate(['payments-grid/customer-details'])
   }
+
+  // getPaymentsTableData() {
+  //   this.paymentsService.currentPaymentsTableData$.pipe(
+  //     map(tableData => tableData.filter(data => data.Customerid === this.filterBy || this.filterBy === null)),
+  //     takeUntil(this.subscription$))
+  //     .subscribe((data: any[]) => {
+  //       this.selection.clear();
+  //       console.log('GRID DATA', data)
+  //       if (data) {
+  //         this.dataSource.data = data;
+  //         this.dataSourceFilterData = data;// after use to filter by day
+  //         this.dataSource.paginator = this.paginator;
+  //         this.dataSource.sort = this.sort;
+  //       }
+
+  //     })
+  // }
+
   getPaymentsTableData() {
-    this.paymentsService.currentPaymentsTableData$.pipe(
-      takeUntil(this.subscription$))
-      .subscribe((data: any[]) => {
+    this.dataSource$ = this.paymentsService.currentPaymentsTableData$.pipe(
+      map(tableData => tableData.filter(data => data.Customerid === this.filterBy || this.filterBy === null)),
+      map(filteredData => {
         this.selection.clear();
-        console.log('GRID DATA', data)
-        if (data) {
-          this.dataSource.data = data;
-          this.dataSourceFilterData = data;// after use to filter by day
+        if (filteredData) {
+          this.dataSource.data = filteredData;
+          this.dataSourceFilterData = filteredData;// after use to filter by day
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         }
-
+        console.log('GRID DATA', this.dataSource)
+        return this.dataSource;
       })
+
+    )
   }
+
+
   editPaymentRow(paymentRow: PaymentKeva) {
+    this.paymentsService.setRouteForComeback(this.generalService.getCurrentRoute())
     this.newPaymentService.setEditingPayment(paymentRow);
     console.log('edit row', paymentRow);
     this.newPaymentService.setKevaMode('edit');
-    this.router.navigate([`payments-grid/new-payment`]);
+    this.router.navigate([`payments-grid/edit`]);
     console.log('CURRENT PAGE', this.paginator.pageSizeOptions)
   }
 
   duplicateCustomerKeva(customerKeva: PaymentKeva) {
+    this.paymentsService.setRouteForComeback(this.generalService.getCurrentRoute())
     this.newPaymentService.setDuplicatingKeva(customerKeva);
     this.newPaymentService.setKevaMode('duplicate');
+    this.globalEventsService.setCustomerIdForSearch(customerKeva.Customerid)
 
     console.log('edit row', customerKeva);
-    this.router.navigate(['payments-grid/customer-search']);
+    this.router.navigate(['payments-grid/customer-search'],
+     {queryParams: {event: 'duplicate'}}
+     );
+
   }
 
   deletePaymentRow(paymentRow: PaymentKeva) {
@@ -226,7 +266,7 @@ export class PaymentsTableComponent implements OnInit {
         this.paginator.pageSize = pageOptions.pageSize;
       });
   }
-  
+
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.

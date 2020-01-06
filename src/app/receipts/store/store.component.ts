@@ -1,7 +1,7 @@
-import { ConfirmPurchasesComponent } from './../modals/confirm-purchases/confirm-purchases.component';
-import { Component, OnInit, ChangeDetectorRef, ViewChild, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
-import { ReceiptsService } from '../services/receipts.service';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { ConfirmPurchasesComponent } from '../../shared/modals/confirm-purchases/confirm-purchases.component';
+import { Component, OnInit, ViewChild, Output, EventEmitter,  OnDestroy } from '@angular/core';
+import { ReceiptsService } from '../../shared/services/receipts.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { Product } from 'src/app/models/products.model';
 import { NgForm } from '@angular/forms';
 import { MatTable, MatSelectChange, MatDialog, MatDialogConfig } from '@angular/material';

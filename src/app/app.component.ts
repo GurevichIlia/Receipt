@@ -2,16 +2,15 @@ import { Component, HostListener, OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 
 
-import { AuthenticationService } from './receipts/services/authentication.service';
+import { AuthenticationService } from './shared/services/authentication.service';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { ReceiptsService } from './receipts/services/receipts.service';
+import { ReceiptsService } from './shared/services/receipts.service';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
-import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
-import { GlobalStateService } from './shared/global-state-store/global-state.service';
-import { GeneralSrv } from './receipts/services/GeneralSrv.service';
+import { CustomerInfoService } from 'src/app/shared/share-components/customer-info/customer-info.service';
+import { GeneralSrv } from './shared/services/GeneralSrv.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -25,7 +24,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private translate: TranslateService,
     private generalService: GeneralSrv,
-    private globalStateService: GlobalStateService,
     private customerInfoService: CustomerInfoService
   ) {
     // translate.setDefaultLang('en');
@@ -51,18 +49,15 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(data => console.log('RECEIPT DATA CURRENT', data));
 
     this.checkAuthStatus();
-    this.getCurrentAndPreviousRoutes()
+    this.getCurrentAndPreviousRoutes();
   }
 
   checkAuthStatus() {
     this.authService.currentlyAuthStatus$
-      .pipe(
-        takeUntil(this.subscription$))
+    .pipe(
+      takeUntil(this.subscription$))
       .subscribe(isLogged => {
-        console.log('CURRENT AUTH STATUS', isLogged);
-          console.log('CUSTOMER INFO AFTER LOG OUT', this.globalStateService.customerDetailsById.getValue());
-        
-
+        console.log('CURRENT AUTH STATUS', isLogged)
 
       })
   }

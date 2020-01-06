@@ -1,14 +1,14 @@
 import { CustomerGroupsService } from './../../../core/services/customer-groups.service';
-import { CustomerInfoByIdForCustomerInfoComponent } from './../../../receipts/customer-info/customer-info.service';
+import { CustomerInfoByIdForCustomerInfoComponent } from './../../../shared/share-components/customer-info/customer-info.service';
 import { Injectable } from '@angular/core';
 import { FormGroup, AbstractControl, Validators } from '@angular/forms';
 
-import { GeneralSrv } from './../../../receipts/services/GeneralSrv.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { GeneralSrv } from './../../../shared/services/GeneralSrv.service';
+import { BehaviorSubject } from 'rxjs';
 
 import { PaymentKeva } from 'src/app/models/paymentKeva.model';
 import { Projects4Receipt } from 'src/app/models/projects4receipt.model';
-import { PaymentsService, KevaRemarkForUpdate } from '../../payments.service';
+import { PaymentsService } from '../../payments.service';
 import { Customerinfo } from 'src/app/models/customerInfo.model';
 import { CreditCardList } from 'src/app/models/creditCardList.model';
 import * as moment from 'moment';
@@ -44,7 +44,7 @@ export class NewPaymentService {
   customertCreditCardList = new BehaviorSubject<CreditCardList[]>([]);
   currentCreditCardList$ = this.customertCreditCardList.asObservable();
 
-  kevaMode = new BehaviorSubject<string>('newKeva');
+  kevaMode = new BehaviorSubject<string>('');
   kevaMode$ = this.kevaMode.asObservable();
 
   editingKevaIdAndCustomerId = new BehaviorSubject<{ kevaId: number, customerId: number }>(null);
@@ -61,6 +61,7 @@ export class NewPaymentService {
     cvv: '',
     customername: ''
   }
+  projects4Receipt: Projects4Receipt[] = [];
   constructor(
     private generalService: GeneralSrv,
     private paymentsService: PaymentsService,
@@ -82,7 +83,7 @@ export class NewPaymentService {
   }
 
   updatePaymentFormForEditeMode(paymentForm: FormGroup, newData: PaymentKeva | null) {
-    console.log('GLDATA', this.paymentsService.getGlobalDataState())
+    // console.log('GLDATA', this.paymentsService.getGlobalDataState())
     paymentForm.get('firstStep').patchValue({
       type: String(newData.HokType),
       status: newData.KevaStatusId,
@@ -122,8 +123,10 @@ export class NewPaymentService {
       receipt2: newData.RecieptTypeIdREC,// receipt ForCanclation: true
       goal: newData.HokDonationTypeId,
       account: newData.AccountID,
-      projCat: this.searchProjectCatId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
-      project: this.searchProjectId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
+      // projCat: this.searchProjectCatId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
+      // project: this.searchProjectId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
+      projCat: this.searchProjectCatId(newData.ProjectName, this.projects4Receipt),
+      project: this.searchProjectId(newData.ProjectName, this.projects4Receipt),
       employeeId: newData.EmployeeId,
       thanksLetter: newData.ThanksLetterId,
       receiptName: newData.NameOnTheReciept,
@@ -173,8 +176,10 @@ export class NewPaymentService {
       receipt2: newData.RecieptTypeIdREC,// receipt ForCanclation: true
       goal: newData.HokDonationTypeId,
       account: newData.AccountID,
-      projCat: this.searchProjectCatId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
-      project: this.searchProjectId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
+      // projCat: this.searchProjectCatId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
+      // project: this.searchProjectId(newData.ProjectName, this.paymentsService.getGlobalDataState().Projects4Receipts),
+      projCat: this.searchProjectCatId(newData.ProjectName, this.projects4Receipt),
+      project: this.searchProjectId(newData.ProjectName, this.projects4Receipt),
       employeeId: newData.EmployeeId,
       thanksLetter: newData.ThanksLetterId,
       receiptName: '',
@@ -459,6 +464,12 @@ export class NewPaymentService {
 
   setEditingKevaIdAndCustomerId(kevaId: number, customerId: number) {
     this.editingKevaIdAndCustomerId.next({ kevaId, customerId })
+  }
+
+  changeDatesForDuplicateMode(keva: PaymentKeva) {
+    keva.KEVAStart = moment(new Date(), 'DD/MM/YYYY').toString();
+    keva.KEVAJoinDate = moment(new Date(), 'DD/MM/YYYY').toString()
+    return { ...keva }
   }
 
 

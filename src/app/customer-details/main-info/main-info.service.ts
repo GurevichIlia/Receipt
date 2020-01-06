@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormGroup, FormArray, FormBuilder, AbstractControl } from '@angular/forms';
 
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 
 import { CustomerDetailsService } from './../customer-details.service';
 

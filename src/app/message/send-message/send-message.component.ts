@@ -1,7 +1,7 @@
 import { CustomerGroupsService } from './../../core/services/customer-groups.service';
 import { GeneralGroups } from 'src/app/models/generalGroups.model';
 import { takeUntil } from 'rxjs/operators';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { Subscription, Subject } from 'rxjs';
 import { SendMessageService } from '../send-message.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';

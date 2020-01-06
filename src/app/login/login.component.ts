@@ -1,10 +1,8 @@
 import { ToastrService } from 'ngx-toastr';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { MatButtonModule } from '@angular/material';
-import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
-import { AuthenticationService } from '../receipts/services/authentication.service';
+import { GeneralSrv } from '../shared/services/GeneralSrv.service';
+import { AuthenticationService } from '../shared/services/authentication.service';
 import { TranslateService } from '@ngx-translate/core';
 
 

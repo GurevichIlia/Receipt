@@ -39,16 +39,23 @@
       <button (click)="selectChildMenuItem('payments/receipts', 'payments/receipts' )"
         [ngClass]="{'nestedmenuBackColor': pickedMenu == 'payments/receipts'}" style="width: 200px" mat-button><span
           class="nestedmenu">{{'Receipts' | translate}}</span> </button>
+
     </mat-list-item>
+    <mat-list-item role="listitem">
+      <button (click)="selectChildMenuItem('payments/kevas', 'payments/kevas' )"
+        [ngClass]="{'nestedmenuBackColor': pickedMenu == 'payments/kevas'}" style="width: 200px" mat-button><span
+          class="nestedmenu">{{'הוראת קבע' | translate}}</span> </button>
+    </mat-list-item>
+
   </mat-list>
   <hr>
 
   <!-- <mat-list-item role="listitem"><button style="width: 200px" class="itemMenuText" mat-button>
       <span class="row mainMenuItem">
-        <span>Item 1</span>
+        <span></span>
         <mat-icon *ngIf="!paymentsNestMenu" mat-icon>keyboard_arrow_right</mat-icon>
 
       </span></button>
-  </mat-list-item> -->
-  <!-- <hr> -->
+  </mat-list-item> 
+  <hr> -->
 </mat-list>

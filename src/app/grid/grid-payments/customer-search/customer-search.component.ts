@@ -5,18 +5,17 @@ import { CustomerInfoById, CustomerAddresses, CustomerInfoForReceiept } from './
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
 import { Observable, Subscription, Subject } from 'rxjs';
-import { map, takeUntil, startWith } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 
 
-import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
-import { TranslateService } from '@ngx-translate/core';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { ReceiptsService } from 'src/app/shared/services/receipts.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { PaymentsService } from '../../payments.service';
 import { CustomerType } from 'src/app/models/customerType.model';
 import { Router } from '@angular/router';
 import { NewPaymentService } from '../new-payment/new-payment.service';
-import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
+import { CustomerInfoService, CustomerInfoByIdForCustomerInfoComponent } from 'src/app/shared/share-components/customer-info/customer-info.service';
 import { GlobalEventsService } from 'src/app/core/services/global-events.service';
 
 @Component({
@@ -42,6 +41,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   customerTypes: CustomerType[] = [];
   subscription$ = new Subject();
   title = 'Create a new keva'
+  kevaMode: string = ''
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -95,6 +95,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
         takeUntil(this.subscription$))
       .subscribe((kevaMode: string) => {
         if (kevaMode) {
+          this.kevaMode = kevaMode;
           if (kevaMode === 'duplicate') {
             this.title = 'Duplicate the keva'
           } else if (kevaMode === 'newKeva') {
@@ -154,7 +155,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   }
 
   getGlobalData() {
-    this.paymentsService.currentGlobalData$.pipe(takeUntil(this.subscription$)).subscribe(data => {
+    this.generalService.getGlobalData$().pipe(takeUntil(this.subscription$)).subscribe(data => {
       if (data) {
         this.customerTitle = data['CustomerTitle'];
         this.customerTypes = data['GetCustomerTypes']
@@ -249,7 +250,7 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
   }
 
   getCustomerId$() {
-    this.globalEventsService.getCustomerId$()
+    this.globalEventsService.getCustomerIdForSearch$()
       .pipe(
         takeUntil(this.subscription$))
       .subscribe(customerId => {
@@ -260,6 +261,8 @@ export class CustomerSearchComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
+    this.globalEventsService.setCustomerIdForSearch(null);
+    // this.newPaymentService.setKevaMode('newKeva');
     this.subscription$.next();
     this.subscription$.complete();
   }

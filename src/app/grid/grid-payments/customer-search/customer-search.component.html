@@ -1,7 +1,7 @@
 <div class="container mt-5">
   <mat-card>
     <h2 class="text-center">{{title | translate}}</h2>
-    <app-search [filteredOptions]="filteredOptions$ | async" [searchControl]="searchControl"
+    <app-search [hidden]="kevaMode === 'duplicate'" [filteredOptions]="filteredOptions$ | async" [searchControl]="searchControl"
       (pickedCustomer)="getCustomerInfoById($event)" (newCustomer)="newCustomerIsClicked();"></app-search>
   </mat-card>
 </div>

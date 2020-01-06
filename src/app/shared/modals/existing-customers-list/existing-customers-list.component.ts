@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 
-import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
+import { CustomerSearchData } from 'src/app/shared/services/GeneralSrv.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { GlobalEventsService } from 'src/app/core/services/global-events.service';
 
@@ -22,9 +22,9 @@ export class ExistingCustomersListComponent implements OnInit {
   }
 
   useCustomerIdForCustomerInfo(customerId: number) {
-    this.globalEventsService.setCustomerId(customerId);
+    this.globalEventsService.setCustomerIdForSearch(customerId);
     this.dialogRef.close();
-    this.globalEventsService.setCustomerId(null);
+    this.globalEventsService.setCustomerIdForSearch(null);
   }
 
 }

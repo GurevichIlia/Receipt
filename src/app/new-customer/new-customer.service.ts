@@ -3,9 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
-import { CustomerInfoByIdForCustomerInfoComponent } from '../receipts/customer-info/customer-info.service';
-import { GeneralSrv } from './../receipts/services/GeneralSrv.service';
-import { CustomerDetailsService } from '../customer-details/customer-details.service';
+import { CustomerInfoByIdForCustomerInfoComponent } from '../shared/share-components/customer-info/customer-info.service';
+import { GeneralSrv } from './../shared/services/GeneralSrv.service';
 
 @Injectable({
   providedIn: 'root'

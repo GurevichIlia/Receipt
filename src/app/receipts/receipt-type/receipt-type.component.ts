@@ -1,14 +1,13 @@
 import { LastSelection } from './../../models/lastSelection.model';
 import { ToastrService } from 'ngx-toastr';
-import { ServerErrorInterceptor } from '../services/server-error-interceptor.service';
 import { Component, OnInit, EventEmitter, Output, Input, OnDestroy, DoCheck } from '@angular/core';
-import { ReceiptsService } from '../services/receipts.service';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { ReceiptsService } from '../../shared/services/receipts.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { MatRadioChange, MatDialog } from '@angular/material';
 import { CreditCardComponent } from '../credit-card/credit-card.component';
 import { CreditCardService } from '../credit-card/credit-card.service';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { AuthenticationService } from 'src/app/receipts/services/authentication.service';
+import { AuthenticationService } from 'src/app/shared/services/authentication.service';
 import { Router } from '@angular/router';
 import { ReceiptType } from 'src/app/models/receiptType.interface';
 import { Subscription, Observable } from 'rxjs';

@@ -1,4 +1,4 @@
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
@@ -58,7 +58,7 @@ export class PersonalInfoService {
       title: customerPersonalInfo.Title,
       gender: customerPersonalInfo.Gender,
       customerId: customerPersonalInfo.CustomerId,
-      tz: customerPersonalInfo.ID.trim(),
+      tz: customerPersonalInfo.CustomerCode ? customerPersonalInfo.CustomerCode.trim() : '' ,
       spouseName: customerPersonalInfo.SpouseName,
       fileAs: customerPersonalInfo.FileAs,
       remark: customerPersonalInfo.Remark,

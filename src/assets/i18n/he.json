@@ -213,11 +213,16 @@
     "Total": " סה``כ",
     "GUID": " קוד יחודי",
     "ThanksLetterId": " תבנית קבלה",
-    "Duplicate the keva": "הוראת קבע שכפל",
+    "Duplicate the keva": " שכפול הוראת קבע ",
     "Edit remark": " ערוך הערה ",
     "Add remark": "הוסף הערה ",
     "Keva remarks": "הערות",
     "Would you like to delete this remark": "האם תרצה למחוק הערה",
     "Would you like to delete this payment": "האם למחוק הוראת קבע מספר",
-    "Would you like to delete this group": " האם תרצה למחוק הקבוצה"
+    "Would you like to delete this group": " האם תרצה למחוק הקבוצה",
+    "No history": "אין פרטי חיוב" ,
+    "Template name": "שם התבנית"  ,
+    "Successfully": " בוצעה בהצלחה" ,
+    "Required template name": "נדרש שם התבנית  "
+
 }

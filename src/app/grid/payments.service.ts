@@ -1,14 +1,12 @@
 import { Response } from './../models/response.model';
-import { CustomerDetailsService } from './../customer-details/customer-details.service';
-import { CustomerInfoService } from './../receipts/customer-info/customer-info.service';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { CustomerInfoService } from './../shared/share-components/customer-info/customer-info.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, catchError, filter, tap } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { Subject, BehaviorSubject, Observable, throwError } from 'rxjs';
 
-import { AuthenticationService } from '../receipts/services/authentication.service';
-import { ReceiptsService } from '../receipts/services/receipts.service';
-import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
+import { AuthenticationService } from '../shared/services/authentication.service';
+import { GeneralSrv } from '../shared/services/GeneralSrv.service';
 
 import { GlobalData } from './../models/globalData.model';
 import { PaymentKeva } from '../models/paymentKeva.model';
@@ -17,6 +15,7 @@ import { KevaChargeById } from '../models/kevaChargeById.model';
 import { UpdateKevaHistoryChargeStatus } from '../models/upadateKevaHistoryChargeStatus.model';
 import { NewKevaFull } from '../models/newKevaFull';
 import { KevaCharge } from './../models/kevaCharge.model';
+import { NewPaymentService } from './grid-payments/new-payment/new-payment.service';
 
 export interface KevaRemark {
   Id: number;
@@ -90,9 +89,9 @@ export class PaymentsService {
   paymentsTableData = new BehaviorSubject<PaymentKeva[]>([]);
   currentPaymentsTableData$ = this.paymentsTableData.asObservable();
 
-  globalData = new BehaviorSubject<GlobalData>(<GlobalData>{});
-  /** Using this data in payments part of application */
-  currentGlobalData$ = this.globalData.asObservable();
+  // globalData = new BehaviorSubject<GlobalData>(<GlobalData>{});
+  // /** Using this data in payments part of application */
+  // currentGlobalData$ = this.globalData.asObservable();
 
   filterValue = new Subject();
   currentFilterValue$ = this.filterValue.asObservable();
@@ -109,13 +108,14 @@ export class PaymentsService {
   listCustomerCreditCard: CustomerCreditCard[] = [];
 
   updateKevaTableClicked$ = new BehaviorSubject<boolean>(null);
+
+  routeForComeBack = '' // Используем после удачного дублирования или редактирования или создания новой Кева, для возвращения на нужную страницу откуда мы начинали действия с Кева;
   constructor(
     private http: HttpClient,
     private auth: AuthenticationService,
     private generalService: GeneralSrv,
     private customerInfoService: CustomerInfoService,
     // private customerDetails: CustomerDetailsService
-    // private newPaymentService: NewPaymentService
 
   ) {
     this.httpOptions = {
@@ -129,8 +129,9 @@ export class PaymentsService {
     // this.getKevaGlbData(this.generalService.orgName);
   }
 
-  getGridData(filterParams: { kevaTypeid: string, instituteid: string, KevaStatusid: string, KevaGroupid: string }, orgName: string): Observable<PaymentKeva[]> {
-    return this.http.post(`${this.baseUrl}keva/GetKevaListData?urlAddr=${orgName}`, filterParams, this.httpOptions)
+
+  getGridData(filterParams: { kevaTypeid: string, instituteid: string, KevaStatusid: string, KevaGroupid: string }): Observable<PaymentKeva[]> {
+    return this.http.post(`${this.baseUrl}keva/GetKevaListData?urlAddr=${this.generalService.getOrgName()}`, filterParams, this.httpOptions)
       .pipe(
         map(data => data = data['Data']),
         map(data => {
@@ -229,7 +230,7 @@ export class PaymentsService {
   }
 
   getKevaRemarksById(kevaId: number): Observable<KevaRemark[]> {
-  
+
     const orgName = this.generalService.getOrgName()
     return this.http.get<Response>(`${this.baseUrl}keva/GetKevaRemarks?urlAddr=${orgName}&kevaid=${kevaId}`)
       .pipe(
@@ -277,25 +278,24 @@ export class PaymentsService {
     this.kevaChargesHistory.next(kevaCharges);
   }
 
-  setGlobalDataState(state: GlobalData) {
-    this.globalData.next(state);
-  }
+  // setGlobalDataState(state: GlobalData) {
+  //   this.globalData.next(state);
+  // }
 
-  getGlobalDataState() {
-    return this.globalData.getValue();
-  }
+  // getGlobalDataState() {
+  //   return this.globalData.getValue();
+  // }
 
-  getGlobalData$() {
-    return this.currentGlobalData$;
-  }
+  // getGlobalData$() {
+  //   return this.currentGlobalData$;
+  // }
+
+  // clearGlobalDataState() {
+  //   this.globalData.next(<GlobalData>{})
+  // }
 
   clearPaymentsTableState() {
     this.paymentsTableData.next(<PaymentKeva[]>[]);
-    this.currentPaymentsTableData$.subscribe(data => console.log('TABLE DATA AFTER CLEAR', data))
-  }
-
-  clearGlobalDataState() {
-    this.globalData.next(<GlobalData>{})
   }
 
   // Error handling 
@@ -329,6 +329,15 @@ export class PaymentsService {
 
   updateKevaTable() {
     this.updateKevaTableClicked$.next(true);
+  }
+
+
+  setRouteForComeback(route: string) {
+    this.routeForComeBack = route;
+  }
+
+  getRouteForComeback() {
+    return this.routeForComeBack;
   }
 
   // getCustomerInfoForNewKeva() {

@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { FullCustomerDetailsById, CustomerEmails, CustomerPhones, MainDetails } from 'src/app/models/fullCustomerDetailsById.model';
-import { CustomerInfoByIdForCustomerInfoComponent } from 'src/app/receipts/customer-info/customer-info.service';
-import { CustomerAddresses, CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
-import { CustomerSearchData, GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { map, tap, filter, shareReplay } from 'rxjs/operators';
+import { CustomerInfoByIdForCustomerInfoComponent } from 'src/app/shared/share-components/customer-info/customer-info.service';
+import { CustomerAddresses, } from 'src/app/models/customer-info-by-ID.model';
+import { map, tap, shareReplay } from 'rxjs/operators';
+import { ReceiptsService } from '../services/receipts.service';
+import { CustomerSearchData, GeneralSrv } from '../services/GeneralSrv.service';
 
 
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable(
+  { providedIn: 'root' }
+
+)
 export class GlobalStateService {
   // Хранит данные о кастомере если где то запрашивалась инфа по id
   customerDetailsById = new BehaviorSubject<FullCustomerDetailsById>(null);
@@ -29,7 +31,16 @@ export class GlobalStateService {
 
 
 
-  constructor(private generalService: GeneralSrv) { }
+  constructor(
+    private generalService: GeneralSrv,
+    private receiptService: ReceiptsService,
+
+  ) {
+    console.log('GENERAR SERVICE IN GLOBAL SERVICE', generalService)
+    console.log('receiptService SERVICE IN GLOBAL SERVICE', receiptService)
+
+
+  }
 
   // CUSTOMER DEYAILS BY ID METHODS
   setCustomerDetailsByIdGlobalState(value) {
@@ -113,10 +124,12 @@ export class GlobalStateService {
 
   getCustomerSearchList$() {
     if (!this.customerSearchList$) {
+
       this.customerSearchList$ = this.generalService.getUsers().pipe(map(customers => customers.filter(customer => customer.FileAs1.trim() !== '')))
         .pipe(tap(customers => console.log('CUSTOMER SEARCH DATA', customers)), shareReplay(1));
     }
     return this.customerSearchList$
+
   }
 
   clearCustomerList() {

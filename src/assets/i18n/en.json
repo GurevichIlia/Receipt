@@ -268,5 +268,10 @@
     "Keva remarks": "Remarks",
     "Would you like to delete this remark": "Would you like to delete this remark?",
     "Would you like to delete this payment": "Would you like to delete this payment?",
-    "Would you like to delete this group": "Would you like to delete this group?"
+    "Would you like to delete this group": "Would you like to delete this group?",
+     "No history": " No history "  ,
+     "Template name": "Template name" ,
+     "Successfully": "Successfully", 
+     "Required template name": "Required the template name "
+
   }

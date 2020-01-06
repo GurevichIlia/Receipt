@@ -10,5 +10,5 @@ export class CustomerMainInfo {
       spouseName?: string;
       fileAs?: string;
       birthday?: string;
-      afterSunset?: boolean;
+      afterSunset1?: boolean;
 }

@@ -5,10 +5,10 @@ import { Observable, Subject, BehaviorSubject, of } from 'rxjs';
 
 import { GeneralGroups } from 'src/app/models/generalGroups.model';
 import { map, tap } from 'rxjs/operators';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 import { } from './../../shared/global-state-store/global-state.service';
 import { TodoItemNode } from 'src/app/message/send-message.service';
-import { Group } from 'src/app/receipts/customer-info/customer-info.component';
+import { Group } from 'src/app/shared/services/receipts.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 
 
 

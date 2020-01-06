@@ -18,3 +18,8 @@ td {
   /* white-space: nowrap; */
   white-space: pre;
 }
+
+.tableHeader {
+  color: black;
+  font-size: 16px;
+}

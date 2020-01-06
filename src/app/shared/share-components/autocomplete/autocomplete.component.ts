@@ -11,7 +11,7 @@ import { Observable, Subject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [AutocompleteService]
 })
-export class AutocompleteComponent{
+export class AutocompleteComponent implements OnDestroy {
   @Input() placeHolder: string = '';
   @Input() isRequired: boolean = false;
   @Input() filterKeyWord: string;
@@ -19,18 +19,29 @@ export class AutocompleteComponent{
   @Input() arrayForFilter$: Observable<any[]>;
 
   // filtredArray$: Observable<any>
-
+  subs$ = new Subject()
   filtredList = [];
   constructor(private autocompleteService: AutocompleteService) { }
 
   filterArray() {
-    this.autocompleteService.autocomplete(this.arrayForFilter$, this.autoFormControl, this.filterKeyWord)
+    const subs = this.autocompleteService.autocomplete(this.arrayForFilter$, this.autoFormControl, this.filterKeyWord)
       .pipe(
-        take(1),
+        takeUntil(this.subs$)
       )
       .subscribe(filtredList => {
         this.filtredList = filtredList
-      }, err => console.log(err), () => console.log('COMPLETE'))
+      }, err => console.log(err), () => {
+        console.log('COMPLETE')
+        // this.subs$.next();
+        // this.subs$.complete();
+      })
+    console.log(subs)
   }
 
+  ngOnDestroy() {
+    console.log('AUTOCOMPLETE DESTROED')
+
+        this.subs$.next();
+         this.subs$.complete();
+  }
 }

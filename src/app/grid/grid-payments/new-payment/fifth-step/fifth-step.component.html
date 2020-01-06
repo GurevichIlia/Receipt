@@ -94,7 +94,7 @@
   </div>
   <div class="col-xs-6 col-sm-6 col-md-3 col-lg-4 col-xl-4 mb-3">
     <mat-form-field class="example-full-width">
-      <input maxlength="30" inputError [input]="fifthStep.controls.address" [isSubmit]="isSubmit" type="text"
+      <input maxlength="50" inputError [input]="fifthStep.controls.address" [isSubmit]="isSubmit" type="text"
         placeholder="כתובת לקבלה" aria-label="Number" matInput formControlName="address" [matAutocomplete]="address">
       <mat-autocomplete #address="matAutocomplete">
         <mat-option *ngFor="let address of customerAddresses; let i = index"
@@ -111,7 +111,7 @@
   </div>
   <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input inputError [input]="fifthStep.controls.receiptName" [isSubmit]="isSubmit" matInput
+      <input maxlength="50" inputError [input]="fifthStep.controls.receiptName" [isSubmit]="isSubmit" matInput
         placeholder="שם על הקבלה" formControlName="receiptName">
     </mat-form-field>
   </div>

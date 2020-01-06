@@ -7,7 +7,7 @@ import { Observable, Subject } from 'rxjs';
 import { GlobalData } from 'src/app/models/globalData.model';
 import { PaymentsService } from 'src/app/grid/payments.service';
 import { map, takeUntil, take } from 'rxjs/operators';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { KevaCharge } from 'src/app/models/kevaCharge.model';
 
 
@@ -41,35 +41,40 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
     ReturnResonname: string
   }[]>;
   subscription$ = new Subject();
+  loading = false;
   constructor(
     private dialog: MatDialog,
     private paymentsService: PaymentsService,
     private generalService: GeneralSrv,
     private dialogRef: MatDialogRef<ChargesByChargeIdComponent>,
-    @Inject(MAT_DIALOG_DATA) public dialogData: KevaCharge
+    @Inject(MAT_DIALOG_DATA) public dialogData: { keva: KevaCharge, customerId: string }
   ) { }
 
   ngOnInit() {
     // console.log('GETTING DATA MODAL', this.dialogData$);
     // this.getDataForPaymentsTable(this.dialogData$);
     // this.getKevaReturnReason();
-    this.showKevaDetails(this.dialogData);
-  }
-  getDataForPaymentsTable(kevaCharge$: Observable<KevaChargeById[]>, index?: number) {
-    kevaCharge$.pipe(takeUntil(this.subscription$))
-      .subscribe(kevaCharge => {
-        if (kevaCharge) {
-          const paymentsListData = kevaCharge;
-          // this.changeDateFormat(customerData);
-          this.dataSource.data = paymentsListData;
-          this.dataSource.sort = this.sort;
-          this.dataSource.paginator = this.paginator;
-          this.createTableColumns(paymentsListData);
-        }
-      })
-
+    this.showKevaDetails(this.dialogData.keva);
+    console.log('PAGINATOR', this.paginator)
 
   }
+  // getDataForPaymentsTable(kevaCharge$: Observable<KevaChargeById[]>, index?: number) {
+  //   kevaCharge$.pipe(takeUntil(this.subscription$))
+  //     .subscribe(kevaCharge => {
+  //       if (kevaCharge) {
+  //         const paymentsListData = kevaCharge;
+  //         // this.changeDateFormat(customerData);
+  //         console.log('PAGINATOR', this.paginator)
+
+  //         this.dataSource.data = paymentsListData;
+  //         this.dataSource.sort = this.sort;
+  //         this.dataSource.paginator = this.paginator;
+  //         this.createTableColumns(paymentsListData);
+  //       }
+  //     })
+
+
+  // }
   /**Create header lables of columns for table */
   createTableColumns(data: KevaChargeById[]) {
     if (data && data.length !== 0) {
@@ -92,6 +97,7 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
     displayedColumns.map(c =>
       this.columns.push({ columnDef: c.value, header: c.label, cell: (element: any) => `${element[c.value]}` }));
   }
+
   openChargeEditModal(data: KevaChargeById) {
     console.log('KevaChargeById', data)
     const chargeIdEdit = this.dialog.open(ChargeIdEditModalComponent, { width: '300px', height: '450px', data: { chargeById: data, reasons$: this.getKevaReturnReason() } })
@@ -120,8 +126,11 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   showKevaDetails(keva: KevaCharge) {
-    const subscription = this.paymentsService.getKevaChargesByChargeId(this.generalService.getOrgName(), keva.KevaChargeId.toString(), '')
+    this.loading = true;
+    const kevaChargeId = keva ? keva.KevaChargeId.toString() : ''
+    const subscription = this.paymentsService.getKevaChargesByChargeId(this.generalService.getOrgName(), kevaChargeId, this.dialogData.customerId)
       .pipe(map(keva => {
         keva.map(data => {
           data.chargedate = this.generalService.changeDateFormat(data.chargedate, 'YYYY-MM-DD');
@@ -130,23 +139,31 @@ export class ChargesByChargeIdComponent implements OnInit, OnDestroy {
         return keva;
       }), take(1))// Использую этот оператор потому что использую этот метод каждый раз для обновления данных в таблице.
       .subscribe((data: KevaChargeById[]) => {
+
         const paymentsListData = data;
         this.dataSource.data = paymentsListData;
         this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
         this.createTableColumns(paymentsListData);
         console.log('DETAILS KEVA BY ID', data)
-      });
+        this.loading = false;
+      }, err => {
+        console.log(err)
+        this.loading = false;
+      })
     console.log('SUBSCRIPTION TEST', subscription)
   }
+
   getKevaReturnReason() {
-    return this.kevaReturnReason$ = this.paymentsService.currentGlobalData$.pipe(map(data => data.kevaReturnReson ? data.kevaReturnReson : []));
+    return this.kevaReturnReason$ = this.generalService.getGlobalData$().pipe(map(data => data.kevaReturnReson ? data.kevaReturnReson : []));
   }
+
   updateKevaHistoryChargeStatus(orgName: string, newValue: UpdateKevaHistoryChargeStatus) {
     const subscription = this.paymentsService.updateKevaHistoryChargeStatus(orgName, newValue)
       .pipe(takeUntil(this.subscription$))
       .subscribe(data => {
         console.log('UPDATE RESPONSE', data);
-        this.showKevaDetails(this.dialogData);
+        this.showKevaDetails(this.dialogData.keva);
         console.log('SUBSCRT TEST 2', subscription)
       });
   }

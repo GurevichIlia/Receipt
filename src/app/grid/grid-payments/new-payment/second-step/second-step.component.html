@@ -1,20 +1,22 @@
 <div class="row mb-5 fontSize" [formGroup]="secondStep" >
   <div class="col-xs-12 col-sm-7 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
-      <input maxlength="30" inputError [input]="secondStep.controls.fileAs" [isSubmit]="isSubmit" matInput placeholder="שם החתום" formControlName="fileAs">
+      <input maxlength="50" inputError [input]="secondStep.controls.fileAs" [isSubmit]="isSubmit" matInput placeholder="שם החתום" formControlName="fileAs">
     </mat-form-field>
   </div>
   <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3 col-xl-3">
     <mat-form-field class="example-full-width">
       <input maxlength="9" inputError [input]="secondStep.controls.ID" #Tz [isSubmit]="isSubmit" matInput placeholder="{{'T.Z'| translate}}" formControlName="ID">
      <mat-hint>{{Tz.value.length}}/9</mat-hint> 
+     <mat-hint align="end" *ngIf="Tz.value.length === 9" (click)="checkValidate()"
+     class="mr-3 ml-3 isValid">Check validation</mat-hint>
     </mat-form-field>
   </div>
   <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" style="direction:ltr">
     <mat-form-field  class="example-full-width">
-      <input maxlength="30" inputError [input]="secondStep.controls.tel1" [isSubmit]="isSubmit"   #phone type="text" placeholder="{{'Phone'| translate}}" aria-label="Number" matInput formControlName="tel1"
-        [matAutocomplete]="address">
-      <mat-autocomplete #address="matAutocomplete">
+      <input maxlength="50" inputError [input]="secondStep.controls.tel1" [isSubmit]="isSubmit"   #phone type="text" placeholder="{{'Phone'| translate}}" aria-label="Number" matInput formControlName="tel1"
+        [matAutocomplete]="phone">
+      <mat-autocomplete #phone="matAutocomplete">
         <mat-option *ngFor="let phone of customerPhones; let i = index"
           [value]="phone.phoneNumber">
           {{phone.phoneNumber}} 
@@ -25,9 +27,9 @@
   </div>
   <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" style="direction:ltr">
     <mat-form-field class="example-full-width">
-      <input maxlength="30" inputError [input]="secondStep.controls.tel2" [isSubmit]="isSubmit" type="text" placeholder="{{'Phone'| translate}}" aria-label="Number" matInput formControlName="tel2"
-        [matAutocomplete]="address">
-      <mat-autocomplete #address="matAutocomplete">
+      <input maxlength="50" inputError [input]="secondStep.controls.tel2" [isSubmit]="isSubmit" type="text" placeholder="{{'Phone'| translate}}" aria-label="Number" matInput formControlName="tel2"
+        [matAutocomplete]="phone">
+      <mat-autocomplete #phone="matAutocomplete">
         <mat-option *ngFor="let phone of customerPhones; let i = index"
           [value]="phone.phoneNumber">
           {{phone.phoneNumber}} 
@@ -37,7 +39,7 @@
   </div>
   <div class="col-xs-12 col-sm-12 col-md-3 col-lg-6 col-xl-6">
     <mat-form-field class="example-full-width">
-      <textarea matInput placeholder="{{'Comment'| translate}}" formControlName="remark"></textarea>
+      <textarea maxlength="300" matInput placeholder="{{'Comment'| translate}}" formControlName="remark"></textarea>
     </mat-form-field>
   </div>
 </div>

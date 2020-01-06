@@ -1,0 +1,94 @@
+#externalSystemContainer {
+  background-color: gainsboro;
+
+  padding: 5px 0 5px 20px;
+  color: white;
+}
+
+#undoButton,
+#redoButton {
+  display: none;
+}
+
+#stripoSettingsContainer {
+  width: 400px;
+  float: left;
+}
+
+#stripoPreviewContainer {
+  width: calc(100% - 400px);
+  float: left;
+}
+
+.notification-zone {
+  position: fixed;
+  width: 400px;
+  z-index: 99999;
+  right: 20px;
+  bottom: 80px;
+}
+
+.control-button {
+  border-radius: 17px;
+  padding: 5px 10px;
+  border-color: grey;
+}
+
+#changeHistoryLink {
+  cursor: pointer;
+}
+
+/* .button {
+  background-color: rgb(38, 87, 122);
+  color: white;
+
+}
+
+.button:hover {
+  background-color: rgb(56, 111, 150);
+  color: whitesmoke;
+
+}
+
+.button.orange:hover {
+  background-color: rgb(255, 192, 74);
+  color: black;
+}
+
+.button.orange {
+  background-color: rgb(250, 174, 33);
+  color: black;
+} */
+
+
+
+#stripoSettingsContainer {
+  direction: initial;
+
+}
+
+::ng-deep a.sripo-watermark {
+  display: none !important;
+}
+
+::ng-deep .esdev-settings-tabs {
+  direction: ltr;
+}
+
+::ng-deep .nav-justified li {
+  width: 50% !important;
+}
+
+.cancel-button {
+  width: 135px;
+  background-color: rgb(250, 174, 33);
+  color: black;
+
+
+}
+
+.submit-button {
+  width: 135px;
+  background-color: rgb(38, 87, 122);
+  color: white;
+}

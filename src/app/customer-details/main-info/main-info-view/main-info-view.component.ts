@@ -1,3 +1,4 @@
+import { GlobalMethodsService } from 'src/app/shared/global-methods/global-methods.service';
 import { Component, OnInit, Input, } from '@angular/core';
 import { FormGroup, AbstractControl } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
@@ -29,7 +30,8 @@ export class MainInfoViewComponent implements OnInit {
   currentLang$: Observable<string>
   constructor(
     private personalInfoService: PersonalInfoService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private globalMethondsService: GlobalMethodsService
   ) { }
 
   ngOnInit() {
@@ -56,6 +58,10 @@ export class MainInfoViewComponent implements OnInit {
 
   get comment() {
     return this.mainInfoForm.get('personalInfo.remark');
+  }
+
+  get tZ() {
+    return this.mainInfoForm.get('personalInfo.tz');
   }
 
   getPersonalInfo() {
@@ -96,16 +102,13 @@ export class MainInfoViewComponent implements OnInit {
   //   this.editMode = !this.editMode;
   //   this.disableControls(controlName, this.editMode)
   // }
-  // getAction(action: string, personalInfo: FormGroup) {
-  //   debugger
-  //   switch (action) {
-  //     case 'editPersonalInfo': this.enableFormControl(personalInfo);
-  //       break
-  //     case 'savePersonalInfo': this.savePersonalInfo(personalInfo)
-  //       break
+  getEventFromChild(action: string) {
+    switch (action) {
+      case 'validate': this.validateTZ();
+        break
 
-  //   }
-  // }
+    }
+  }
 
   savePersonalInfo(personalInfo: FormGroup) {
     personalInfo.value.birthDate = moment(personalInfo.value.birthDate).format('DD/MM/YYYY')
@@ -153,6 +156,11 @@ export class MainInfoViewComponent implements OnInit {
     this.currentLang$ = this.personalInfoService.getCurrentLanguage();
 
   }
+
+  validateTZ() {
+    this.globalMethondsService.validateTZ(this.tZ.value);
+     
+   }
 
   ngOnDestroy() {
     this.subscription$.next();

@@ -1,7 +1,8 @@
+import { CustomerDetailsService } from './../../../customer-details/customer-details.service';
 import { ChargesByChargeIdComponent } from './charges-byChargeId-modal/charges-by-charge-id.component';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { KevaCharge } from './../../../models/kevaCharge.model';
-import { GeneralSrv } from './../../../receipts/services/GeneralSrv.service';
+import { GeneralSrv } from './../../../shared/services/GeneralSrv.service';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { PaymentsService } from '../../payments.service';
 import { Observable, Subject } from 'rxjs';
@@ -11,6 +12,7 @@ import { PaymentsTableViewComponent } from './payments-table-view/payments-table
 import { GlobalData } from 'src/app/models/globalData.model';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { Location } from '@angular/common';
+import { KevaChargeById } from 'src/app/models/kevaChargeById.model';
 
 
 interface DisplayedColumns {
@@ -39,7 +41,8 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private dialog: MatDialog,
     private spinner: NgxUiLoaderService,
-    private location: Location
+    private location: Location,
+    private customerDetailsService: CustomerDetailsService
 
   ) { }
 
@@ -58,7 +61,7 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
   }
   getGlobalData() {
     // this.paymentsService.currentGlobalData$.pipe(takeUntil(this.subscription$)).subscribe(data => {
-    this.globalData$ = this.paymentsService.currentGlobalData$;
+    this.globalData$ = this.generalService.getGlobalData$();
   }
   getKevaCharges() {
     this.spinner.start();
@@ -113,20 +116,9 @@ export class PaymentsHistoryComponent implements OnInit, OnDestroy {
     displayedColumns.map(c =>
       this.columns.push({ columnDef: c.value, header: c.label, cell: (element: any) => `${element[c.value]}` }));
   }
-  showKevaDetails(keva: KevaCharge) {
-    const kevaCharge$ = this.paymentsService.getKevaChargesByChargeId(this.generalService.getOrgName(), keva.KevaChargeId.toString(), '')
-      .pipe(map(keva => {
-        keva.map(data => {
-          data.chargedate = this.generalService.changeDateFormat(data.chargedate, 'YYYY-MM-DD');
-          data.ValueDate = this.generalService.changeDateFormat(data.ValueDate, 'YYYY-MM-DD');
-        })
-        return keva;
-      }), takeUntil(this.subscription$))
-    // .subscribe((data: KevaChargeById[]) => {
 
-    //   console.log('DETAILS KEVA BY ID', data)
-    this.dialog.open(ChargesByChargeIdComponent, { width: '1500px', height: '700px', data: <KevaCharge>keva })
-    // })
+  showKevaDetails(keva: KevaCharge) {
+    this.dialog.open(ChargesByChargeIdComponent, { width: '1500px', height: '700px', data: { keva } })
 
   }
   applyFilter(filterValue: string) {

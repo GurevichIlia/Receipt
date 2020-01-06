@@ -2,12 +2,12 @@ import { FormControl } from '@angular/forms';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FullCustomerDetailsById, } from 'src/app/models/fullCustomerDetailsById.model';
-import { GeneralSrv, CustomerSearchData } from './../receipts/services/GeneralSrv.service';
+import { GeneralSrv, CustomerSearchData } from './../shared/services/GeneralSrv.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { PaymentsService } from '../grid/payments.service';
 import { Router } from '@angular/router';
-import { CustomerInfoService } from '../receipts/customer-info/customer-info.service';
+import { CustomerInfoService } from '../shared/share-components/customer-info/customer-info.service';
 
 import { map, switchMap, filter } from 'rxjs/operators';
 
@@ -157,7 +157,9 @@ export class CustomerDetailsService {
   //   return customerList.pipe(filter(user => user['FileAs1'].toLowerCase().includes(filterValue)));
 
   // }
-
+  getOrgName() {
+    return this.generalService.getOrgName()
+  }
 
 
 }

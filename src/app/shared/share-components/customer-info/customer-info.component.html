@@ -1,0 +1,80 @@
+<div class="container mt-5">
+  <div class="sticky" *ngIf="!currentCustomerId">
+    <p *ngIf="foundedExistingCustomers$ | async as customers">
+      <button class="suggestButton" (click)="openModalWithExistingCustomers(customers)" *ngIf="customers.length > 0 "
+        mat-raised-button>
+        נמצאו {{customers.length}} לקוחות דומים
+      </button>
+
+    </p>
+  </div>
+  <div class=" example-headers-align">
+    <mat-card class="mb-2">
+
+      <mat-card-header class="row">
+
+
+        <h4 class="col-sm-1 col-md-4 col-lg-4 col-xl-4 " style="text-align: justify">{{'Customer Info' | translate}}
+        </h4>
+        <h4 class="col-sm-1 col-md-4 col-lg-3 col-xl-3" style="text-align: center; direction: initial;">
+          {{customerInfoTitle || 'Customer Name' | translate}} </h4>
+        <span class="col-sm-1 col-md-4 col-lg-4 col-xl-4 ">
+          <mat-icon>account_circle</mat-icon>
+        </span>
+      </mat-card-header>
+
+
+
+
+      <app-customer-info-view [showMoreInfo]="showMoreInfo" [requiredField]="requiredField"
+        [currentRoute]="currentRoute" [cities$]="cities$" [filterCustomerTitle]="filterCustTitle$ | async"
+        [customerTypes]="customerTypes" [userInfoGroup]="userInfoGroup" [currentLang]="currentLang"
+        (openShopIsClicked)="openShop()" (newEventFromChild)="getEventsFromChildComponent($event)">
+
+        <ng-template #Groups [ngIf]="'true'">
+          <hr>
+          <!-- CUSTOMER GROUPS COMPONEN -->
+          <app-customer-groups-container [isShowGroupsOptions]="isShowGroupsOptions"></app-customer-groups-container>
+        </ng-template>
+      </app-customer-info-view>
+      <!-- <ul>
+        <li *ngFor="let customer of foundedExistingCustomers$ | async">
+          {{customer.FileAs}}
+        </li>
+      </ul> -->
+
+
+      <!-- SHOW MORE INFO BUTTON -->
+
+      <!-- NEXT STEP BUTTONS -->
+      <mat-action-row>
+        <ng-container *ngIf="currentRoute === '/newreceipt'">
+          <button class="mr-1 ml-2" type="button" mat-raised-button
+            [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}" (click)="openShop()"
+            [disabled]="requiredField === true">
+            {{'Store' | translate}}
+          </button>
+          <button (click)="submit()" type="button" mat-raised-button color="primary"
+            [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
+            [disabled]="requiredField === true">
+            {{'Next' | translate}}
+          </button>
+        </ng-container>
+
+        <ng-container  *ngIf="currentRoute !== '/newreceipt'">
+          <button *ngIf="currentRoute === '/payments-grid/customer-search'" class="mr-1 ml-2"  type="button" (click)="goToKevaTable()"
+            [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" mat-raised-button>{{'Cancel' | translate}}</button>
+
+          <button  (click)="submit()" type="button"
+            mat-raised-button color="primary"
+            [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
+            [disabled]="requiredField === true">
+            {{'Next' | translate}}
+          </button>
+        </ng-container>
+
+
+      </mat-action-row>
+    </mat-card>
+  </div>
+</div>

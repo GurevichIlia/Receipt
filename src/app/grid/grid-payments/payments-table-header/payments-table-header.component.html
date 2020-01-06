@@ -1,2 +1,2 @@
-<app-payments-filter (kevaChargesClicked)="goToKevaCharges()" [filterForm]="filterForm" [globalData]="globalData$ | async" (paymentType)="setPaymentType($event)"  (showPayments)="getTablePaymentsData()"></app-payments-filter>
+<app-payments-filter (kevaChargesClicked)="goToKevaHistory()" [filterForm]="filterForm" [isShowFilterByGroups]="isShowGroupsFIlter" [globalData]="globalData$ | async" (paymentType)="setPaymentType($event)"  (showPayments)="getTablePaymentsData()"></app-payments-filter>
 

@@ -4,9 +4,9 @@ import { MatDialogRef, MatSelect } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material';
 
 
-import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
+import { ReceiptsService } from 'src/app/shared/services/receipts.service';
 import { CreditCardService } from './credit-card.service';
-import { GeneralSrv } from '../services/GeneralSrv.service';
+import { GeneralSrv } from '../../shared/services/GeneralSrv.service';
 
 import { LastSelection } from './../../models/lastSelection.model';
 import { Creditcard } from 'src/app/models/creditCard.model';
@@ -344,7 +344,6 @@ export class CreditCardComponent implements OnInit, OnDestroy {
   }
 
   useCardReader() {
-    debugger
     const cardCode: string = this.creditCardNumber.value;
     if (this.useCardReaderControl.value === true) {
       if (this.accountId.value === null || this.accountId.value === undefined || this.accountId.value === '') {

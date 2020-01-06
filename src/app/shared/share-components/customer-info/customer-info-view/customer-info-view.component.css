@@ -1,0 +1,38 @@
+input.mat-input-element {
+  color: black
+}
+
+::ng-deep .mat-select-disabled .mat-select-value {
+  color: black
+}
+
+.emailDirection {
+  direction: initial;
+}
+
+
+p.button {
+  direction: initial;
+}
+
+.birthdayRow {
+  text-align: justify;
+
+}
+
+.isValid {
+  cursor: pointer;
+
+}
+
+.isValid:hover {
+  /* background-color: whitesmoke; */
+  color: black;
+}
+
+.marginInh{
+  margin: inherit;
+}
+h4{
+  font-weight: bold;
+}

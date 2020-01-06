@@ -1,0 +1,9 @@
+<mat-card class="mb-3">
+  <h4 style="text-align: initial;">הוראת קבע</h4>
+  <app-payments-table-header></app-payments-table-header>
+</mat-card>
+
+
+<mat-card>
+  <app-payments-table [filterBy]="customerId$ | async"></app-payments-table>
+</mat-card>

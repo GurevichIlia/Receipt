@@ -1,7 +1,7 @@
 <div class="container mt-3">
 </div>
-<div *ngIf="windowWidth > 1575" class="search" >
-  <mat-form-field >
+<div *ngIf="windowWidth > 1575" class="search">
+  <mat-form-field>
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{'Search' | translate }}">
   </mat-form-field>
 </div>
@@ -16,8 +16,8 @@
       <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
         <mat-label>{{'Clearing firm' | translate}}</mat-label>
         <mat-select formControlName="instituteid">
-          <mat-option *ngFor="let group of globalData.institutes" [value]="group.instituteId">
-            {{group.Mosad}}
+          <mat-option *ngFor="let group of globalData?.institutes" [value]="group.instituteId">
+            {{group?.Mosad}}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -36,18 +36,18 @@
         <mat-label>{{'Activity status' | translate}}</mat-label>
         <mat-select formControlName="KevaStatusid">
           <mat-option value="9999">All</mat-option>
-          <mat-option *ngFor="let group of globalData.KevaStatus" [value]="group.KevaStatusId">
-            {{group.KevaStatusIdname}}
+          <mat-option *ngFor="let group of globalData?.KevaStatus" [value]="group.KevaStatusId">
+            {{group?.KevaStatusIdname}}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
+      <mat-form-field [hidden]="!isShowFilterByGroups" class="col-xs-5 col-sm-5 col-md-2 col-lg-2 col-xl-2">
         <mat-label>{{'Groups' | translate}}</mat-label>
         <mat-select formControlName="KevaGroupid">
           <mat-option value="9999">All groups</mat-option>
-          <mat-option *ngFor="let group of globalData.KevaGroups" [value]="group.GroupId">
-            {{group.GroupName}}
+          <mat-option *ngFor="let group of globalData?.KevaGroups" [value]="group.GroupId">
+            {{group?.GroupName}}
           </mat-option>
         </mat-select>
       </mat-form-field>

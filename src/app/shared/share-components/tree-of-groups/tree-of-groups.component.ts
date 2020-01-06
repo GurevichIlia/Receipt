@@ -1,7 +1,6 @@
 import { GlobalStateService } from '../../global-state-store/global-state.service';
 import { CustomerGroupsService } from '../../../core/services/customer-groups.service';
 import { GeneralGroups } from '../../../models/generalGroups.model';
-import { GeneralSrv } from '../../../receipts/services/GeneralSrv.service';
 import { SendMessageService, TodoItemFlatNode, TodoItemNode } from '../../../message/send-message.service';
 import { Component, OnInit, Output, OnChanges, Input } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';

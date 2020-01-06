@@ -43,7 +43,7 @@
         <mat-expansion-panel-header>
           <h4> פרטים אישיים</h4>
         </mat-expansion-panel-header>
-        <app-second-step [isSubmit]="isSubmit" [secondStep]="newPaymentForm.get('secondStep')"
+        <app-second-step (validate)="validateTZ()" [isSubmit]="isSubmit" [secondStep]="newPaymentForm.get('secondStep')"
           [customerPhones]="customerPhones$ | async">
         </app-second-step>
         <mat-action-row>

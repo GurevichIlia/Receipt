@@ -1,7 +1,6 @@
-<app-payments-table-header></app-payments-table-header>
 
-<div class="elevation" id="style-1">
-  <table mat-table [dataSource]="dataSource" matSort >
+<div class="elevation" id="style-1" >
+  <table mat-table [dataSource]="dataSource$ | async" matSort >
 
     <ng-container matColumnDef="select">
       <th class="tableHeader" mat-header-cell *matHeaderCellDef>

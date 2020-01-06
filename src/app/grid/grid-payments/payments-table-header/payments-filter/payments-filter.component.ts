@@ -17,6 +17,7 @@ export class PaymentsFilterComponent {
   windowWidth: number;
   @Input() filterForm: FormGroup;
   @Input() globalData: GlobalData;
+  @Input() isShowFilterByGroups: boolean;
   // @Output() filterValue: EventEmitter<string> = new EventEmitter();
   // @Output() filterValueByDay: EventEmitter<string> = new EventEmitter();
   @Output() showPayments: EventEmitter<void> = new EventEmitter();
@@ -26,7 +27,7 @@ export class PaymentsFilterComponent {
     private paymentsService: PaymentsService,
   ) {
     this.windowWidth = window.innerWidth;
-    console.log( ' this.windowWidth', this.windowWidth)
+    console.log(' this.windowWidth', this.windowWidth)
   }
   applyFilter(filterValue: string) {
     this.paymentsService.setFilterValue(filterValue);

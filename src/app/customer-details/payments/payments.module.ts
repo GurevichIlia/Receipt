@@ -7,7 +7,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 const paymentsRoutes: Routes = [
   {
     path: '', children: [
-      { path: 'receipts', loadChildren: '../receipts/receipts.module#ReceiptsModule' }
+      { path: 'receipts', loadChildren: '../payments/receipts/receipts.module#ReceiptsModule' },
+      { path: 'kevas', loadChildren: '../payments/kevas/kevas.module#KevasModule' },
+ 
     ]
   }
 ]

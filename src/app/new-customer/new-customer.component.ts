@@ -1,8 +1,6 @@
 import { CustomerGroupsService } from './../core/services/customer-groups.service';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
-import { GlobalEventsService } from './../core/services/global-events.service';
-import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { CustomerInfoService } from 'src/app/shared/share-components/customer-info/customer-info.service';
 import { ToastrService } from 'ngx-toastr';
 import { CustomerDetailsService } from './../customer-details/customer-details.service';
 import { Response } from 'src/app/models/response.model';
@@ -10,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { NewCustomerService } from './new-customer.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { CustomerInfoByIdForCustomerInfoComponent } from '../receipts/customer-info/customer-info.service';
+import { CustomerInfoByIdForCustomerInfoComponent } from '../shared/share-components/customer-info/customer-info.service';
 import { Subject } from 'rxjs';
 
 @Component({

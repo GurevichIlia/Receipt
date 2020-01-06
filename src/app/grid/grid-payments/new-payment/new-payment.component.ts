@@ -1,7 +1,6 @@
+import { GlobalMethodsService } from 'src/app/shared/global-methods/global-methods.service';
 import { CustomerGroupsService } from './../../../core/services/customer-groups.service';
-import { KevaRemarksService } from './keva-remarks/keva-remarks.service';
 import { KevaRemark } from './../../payments.service';
-import { ResponseData } from './../../../models/response.model';
 
 
 import { Addresses } from './../../../models/addresses.model';
@@ -11,16 +10,15 @@ import { CreditCardAccount } from './../../../models/credit-card-account.model';
 import { Customerinfo } from './../../../models/customerInfo.model';
 import { PaymentsService } from '../../payments.service';
 import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { MatAccordion, MatDialog } from '@angular/material';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Subject, Observable, BehaviorSubject, from, of } from 'rxjs';
-import { takeUntil, delay, map, filter, distinctUntilChanged } from 'rxjs/operators';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { Router } from '@angular/router';
+import { Subject, Observable, BehaviorSubject, of } from 'rxjs';
+import { takeUntil, delay, map, filter, tap } from 'rxjs/operators';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { PaymentKeva } from 'src/app/models/paymentKeva.model';
 import { GlobalData } from 'src/app/models/globalData.model';
 import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
-import { CreditCardService } from 'src/app/receipts/credit-card/credit-card.service';
 import { NewPaymentService } from './new-payment.service';
 import { Location } from '@angular/common';
 import { Creditcard } from 'src/app/models/creditCard.model';
@@ -44,7 +42,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   customerInfoById: Customerinfo;
   // editMode = false;
   // duplicateMode = false;
-  kevaMode = 'newKeva'
+  kevaMode = ''
   isEditFileAs = false;
   subscription$ = new Subject();
   creditCardAccounts$: Observable<CreditCardAccount[]>;
@@ -71,12 +69,13 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private generalService: GeneralSrv,
     private dialog: MatDialog,
-    private creditCardService: CreditCardService,
+    // private creditCardService: CreditCardService,
     private newPaymentService: NewPaymentService,
     private location: Location,
     private toaster: ToastrService,
-    private activatedRoute: ActivatedRoute,
-    private customerGroupsService: CustomerGroupsService
+    // private activatedRoute: ActivatedRoute,
+    private customerGroupsService: CustomerGroupsService,
+    private globalMethodsService: GlobalMethodsService
 
   ) { }
 
@@ -172,7 +171,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         thanksLetter: ['', Validators.required],
         receiptName: ['', Validators.required],
         address: ['', Validators.required],
-        email: ['', Validators.required],
+        email: [''],
         kevaMakeRecieptByYear: ['',]
       })
     })
@@ -208,9 +207,10 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   get creditCard() {
     return this.newPaymentForm.get('thirdStep.creditCard');
   }
+
   getGlobalData() {
-    this.globalData$ = this.paymentsService.getGlobalData$();
-    this.creditCardAccounts$ = this.paymentsService.getGlobalData$().pipe(map(data => data.Accounts));
+    this.globalData$ = this.generalService.getGlobalData$().pipe(tap(globalData => this.newPaymentService.projects4Receipt = globalData.Projects4Receipts));
+    this.creditCardAccounts$ = this.generalService.getGlobalData$().pipe(map(data => data.Accounts));
 
   }
   openAllSteps() {
@@ -285,6 +285,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         if (data) {
           console.log('DUPLICATE KEVA', data);
           this.newPaymentService.setKevaMode('duplicate');
+          data = this.newPaymentService.changeDatesForDuplicateMode({ ...data });
           this.newPaymentService.updatePaymentFormForDuplicateMode(this.newPaymentForm, data, this.customerInfoById);
           this.getListCustomerCreditCard(this.newPaymentService.getfoundedCustomerId());
           // this.editiingKevaId = data.Kevaid;
@@ -327,9 +328,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.newPaymentService.setNewCreditCard({ ...credCard.newCredCard });
         if (credCard.newCredCard) {
           const message = this.currentLang === 'he' ? 'נשמר בהצלחה' : 'Successfully';
-          this.toaster.success('', message, {
-            positionClass: 'toast-top-center'
-          });
+          this.toaster.success('', message);
           this.addNewCardToListOfNewCreditCards(credCard.newCredCard);
 
           this.newPaymentForm.get('thirdStep.creditCard').patchValue({
@@ -360,6 +359,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.setCustomerInfoById(this.customerInfoById.emails, this.customerInfoById.phones, this.customerInfoById.addresses, this.customerInfoById.customermaininfo, '', this.customerInfoById.groups)
     this.location.back();
   }
+
   checkKevaMode() {
     this.newPaymentService.getKevaMode$()
       .pipe(takeUntil(this.subscription$))
@@ -370,6 +370,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.openAllSteps();
         }
+        if (this.kevaMode === '') {
+          this.router.navigate(['payments-grid/payments'])
+        }
         this.getEmployeeList();
       });
     console.log('EDIT MODE', this.kevaMode)
@@ -379,9 +382,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   getEmployeeList() {
     if (this.kevaMode === 'edit') {
-      this.employeeList$ = this.paymentsService.getGlobalData$().pipe(map(data => data.GetEmployeesAll));
+      this.employeeList$ = this.generalService.getGlobalData$().pipe(map(data => data.GetEmployeesAll));
     } else {
-      this.employeeList$ = this.paymentsService.getGlobalData$().pipe(map(data => data.GetEmployees));
+      this.employeeList$ = this.generalService.getGlobalData$().pipe(map(data => data.GetEmployees));
     }
   }
 
@@ -419,10 +422,9 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
             if (res['Data'].error === 'false') {
               const message = this.currentLang === 'he' ? 'נשמר בהצלחה' : 'Successfully';
               const title = `מספר לקוח: ${res['Data'].cusomerid}, מספר קבע: ${res['Data'].kevaid}`
-              this.toaster.success(title, message, {
-                positionClass: 'toast-top-center'
-              });
-              this.router.navigate(['payments-grid/payments']);
+              this.toaster.success(title, message);
+              // this.router.navigate(['payments-grid/payments']);
+              this.router.navigate([this.paymentsService.getRouteForComeback()])
               this.customerGroupsService.clearSelectedGroups();
 
               this.paymentsService.updateKevaTable();
@@ -432,9 +434,11 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     } else {
       const message = 'Please fill in the required fields';
-      this.toaster.warning('', message, {
-        positionClass: 'toast-top-center'
-      });
+      this.toaster.warning('', message,
+        // {
+        //   positionClass: 'toast-top-center'
+        // }
+      );
       this.isSubmit = true;
       console.log(this.newPaymentForm.controls)
     }
@@ -455,10 +459,13 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
             if (res['Data'].error === 'false') {
               const message = this.currentLang === 'he' ? 'עודכן בהצלחה' : 'Successfully';
               const title = `מספר קבע: ${res['Data'].kevaid}`
-              this.toaster.success(title, message, {
-                positionClass: 'toast-top-center'
-              });
-              this.router.navigate(['payments-grid/payments']);
+              this.toaster.success(title, message,
+                //    {
+                //   positionClass: 'toast-top-center'
+                // }
+              );
+              // this.router.navigate(['payments-grid/payments']);
+              this.router.navigate([this.paymentsService.getRouteForComeback()])
               this.paymentsService.updateKevaTable();
             }
           }
@@ -466,9 +473,11 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     } else {
       const message = 'Please fill in the required fields';
-      this.toaster.warning('', message, {
-        positionClass: 'toast-top-center'
-      });
+      this.toaster.warning('', message,
+        // {
+        //   positionClass: 'toast-top-center'
+        // }
+      );
       this.isSubmit = true;
     }
 
@@ -486,13 +495,17 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
             if (res['Data'].error === 'false') {
               const message = this.currentLang === 'he' ? 'עודכן בהצלחה' : 'Successfully';
               const title = `מספר לקוח: ${res['Data'].cusomerid}, מספר קבע: ${res['Data'].kevaid}`
-              this.toaster.success(title, message, {
-                positionClass: 'toast-top-center'
-              });
-              this.router.navigate(['payments-grid/payments']);
+              this.toaster.success(title, message,
+                //   {
+                //   positionClass: 'toast-top-center'
+                // }
+              );
+              // this.router.navigate(['payments-grid/payments']);
+
               this.customerGroupsService.clearSelectedGroups();
 
               this.paymentsService.updateKevaTable();
+              this.router.navigate([this.paymentsService.getRouteForComeback()])
             }
           }
           this.newPaymentService.clearNewKeva();
@@ -538,6 +551,10 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
+  validateTZ() {
+    this.globalMethodsService.validateTZ(this.Tz.value)
+  }
+
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed
     //Add 'implements OnDestroy' to the class.
@@ -547,7 +564,7 @@ export class NewPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newPaymentService.clearCustomerInfoForNewKeva();
     this.customerGroupsService.clearSelectedGroups();
     this.fileAs.patchValue('');
-    this.newPaymentService.setKevaMode('newKeva');
+    this.newPaymentService.setKevaMode('');
     this.newPaymentForm.reset();
     this.subscription$.next();
     this.subscription$.complete();

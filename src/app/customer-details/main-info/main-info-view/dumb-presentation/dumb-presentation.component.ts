@@ -46,6 +46,9 @@ export class DumbPresentationComponent {
 
   }
 
+  sendEventFromChild(action: string){
+    this.newAction.emit(action)
+  }
   // createAction(action: string, subject?: any) {
   //   this.newAction.emit({ action, subject })
   //   if (action === 'editPersonalInfo') {

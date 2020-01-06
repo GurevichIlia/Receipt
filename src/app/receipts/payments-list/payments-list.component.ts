@@ -3,7 +3,6 @@ import { Component, OnInit, Input, OnChanges, ViewChild, AfterViewInit } from '@
 import { CustomerInfoById } from 'src/app/models/customer-info-by-ID.model';
 import { MatTableDataSource } from '@angular/material';
 import { CustomerPaymentsComponent } from './customer-payments/customer-payments.component';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
 
 interface DisplayedColumns {
   value: string,

@@ -1,13 +1,5 @@
-import { GlobalEventsService } from './../core/services/global-events.service';
-import { CustomerGroupsService } from './../core/services/customer-groups.service';
-import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
-import { GlobalStateService } from './../shared/global-state-store/global-state.service';
-import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
-import { Router, NavigationEnd } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
 import { Subject } from 'rxjs';
-import { takeUntil, filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home-component',
@@ -17,12 +9,12 @@ import { takeUntil, filter, map } from 'rxjs/operators';
 export class HomeComponentComponent implements OnInit, OnDestroy {
   subscription$ = new Subject();
   constructor(
-    private generalService: GeneralSrv,
-    private router: Router,
-    private customerInfoService: CustomerInfoService,
-    private globalStateService: GlobalStateService,
-    private customerGroupsService: CustomerGroupsService,
-    private globalEventsService: GlobalEventsService
+    // private generalService: GeneralSrv,
+    // private router: Router,
+    // private customerInfoService: CustomerInfoService,
+    // private globalStateService: GlobalStateService,
+    // private customerGroupsService: CustomerGroupsService,
+    // private globalEventsService: GlobalEventsService
   ) {
   }
 

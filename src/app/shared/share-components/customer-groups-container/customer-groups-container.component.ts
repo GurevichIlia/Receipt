@@ -1,3 +1,4 @@
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { CustomerGroupsGeneralSet } from './../../../models/customer-info-by-ID.model';
 import { CustomerGroupsService } from './../../../core/services/customer-groups.service';
@@ -28,13 +29,15 @@ export class CustomerGroupsContainerComponent implements OnInit, OnDestroy {
   constructor(
     private customerGroupsService: CustomerGroupsService,
     private matDialog: MatDialog,
-    private toaster: ToastrService
+    private toaster: ToastrService,
+    private router: Router
 
   ) { }
 
   ngOnInit() {
     this.getGeneralGroups();
     this.getSelectedGroups();
+
 
   }
 
@@ -127,53 +130,66 @@ export class CustomerGroupsContainerComponent implements OnInit, OnDestroy {
   }
 
   saveCustomerNewGroups() {
+    console.log(this.router.url)
     const customerGroupsForSaving = [
       ...this.customerGroupsService.getSelectedGroups().map(groups => { return { GroupId: groups.GroupId } }),
       ...this.customerGroupsService.groupsCondidatesToAddition.map(groups => { return { GroupId: groups } })]
-    this.customerGroupsService.saveCustomerGroups(customerGroupsForSaving)
-      .pipe(
-        takeUntil(this.subscription$))
-      .subscribe(response => {
-        console.log('AFTER SAVING GROUP',response);
 
-        if (response) {
-          if (response['Data'].error === 'false') {
-            const message = 'נשמר בהצלחה';
-            this.toaster.success('', message, {
-              positionClass: 'toast-top-center'
-            });
+    if (this.router.url === '/customer-details/customer/main-info') {
+      this.customerGroupsService.saveCustomerGroups(customerGroupsForSaving)
+        .pipe(
+          takeUntil(this.subscription$))
+        .subscribe(response => {
+          console.log('AFTER SAVING GROUP', response);
+
+          if (response) {
+            if (response['Data'].error === 'false') {
+              const message = 'נשמר בהצלחה';
+              this.toaster.success('', message, {
+                positionClass: 'toast-top-center'
+              });
+            }
           }
-        }
-      });
+        });
+    } else {
+      this.customerGroupsService.setSelectedGroups(customerGroupsForSaving.map(group => group.GroupId))
+    }
 
   }
 
   deleteGroup(deletedGroup: { groupId: number, groupName: string }) {
-    this.openQuestionModal(deletedGroup.groupName)
-      .pipe(switchMap(answer => {
-        if (answer) {
-          const group = {
-            GroupId: deletedGroup.groupId,
-            deleteRow: 1
+    if (this.router.url === '/customer-details/customer/main-info') {
+      this.openQuestionModal(deletedGroup.groupName)
+        .pipe(switchMap(answer => {
+          if (answer) {
+            const group = {
+              GroupId: deletedGroup.groupId,
+              deleteRow: 1
+            }
+            return this.customerGroupsService.saveCustomerGroups([group])
           }
-          return this.customerGroupsService.saveCustomerGroups([group])
-        }
-      }))
-      .pipe(
-        takeUntil(this.subscription$))
-      .subscribe(response => {
-        console.log('AFTER DELETING GROUP',response);
-        if (response) {
-          if (response['Data'].error === 'false') {
-            const message = 'נשמר בהצלחה';
-            this.toaster.success('', message, {
-              positionClass: 'toast-top-center'
-            });
-            this.customerGroupsService.deleteGroupFromList(deletedGroup.groupId);
+        }))
+        .pipe(
+          takeUntil(this.subscription$))
+        .subscribe(response => {
+          console.log('AFTER DELETING GROUP', response);
+          if (response) {
+            if (response['Data'].error === 'false') {
+              const message = 'נשמר בהצלחה';
+              this.toaster.success('', message, {
+                positionClass: 'toast-top-center'
+              });
+              this.customerGroupsService.deleteGroupFromList(deletedGroup.groupId);
+            }
           }
-        }
 
-      })
+        })
+    } else {
+      this.customerGroupsService.deleteGroupFromList(deletedGroup.groupId);
+  
+
+    }
+
 
 
   }

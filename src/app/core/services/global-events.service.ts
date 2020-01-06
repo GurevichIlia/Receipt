@@ -6,17 +6,17 @@ import { filter } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class GlobalEventsService {
-  customerId = new BehaviorSubject<number>(null);
-  customerId$ = this.customerId.asObservable();
+  customerIdForSearch = new BehaviorSubject<number>(null);
+  customerIdForSearch$ = this.customerIdForSearch.asObservable();
   constructor() { }
 
 
-  setCustomerId(customerId: number) {
-    this.customerId.next(customerId);
+  setCustomerIdForSearch(customerId: number) {
+    this.customerIdForSearch.next(customerId);
   }
 
-  getCustomerId$() {
-    return this.customerId$.pipe(filter(id => id !== null));
+  getCustomerIdForSearch$() {
+    return this.customerIdForSearch$.pipe(filter(id => id !== null));
   }
 
 }

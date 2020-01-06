@@ -1,3 +1,4 @@
+import { CustomerDetailsService } from './../../../customer-details/customer-details.service';
 import { PaymentsTableHeaderService, LastFilterOption } from './payments-table-header.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -6,10 +7,13 @@ import { Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 import { GlobalData } from 'src/app/models/globalData.model';
 import { PaymentsService } from '../../payments.service';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
-import { takeUntil, filter, switchMap } from 'rxjs/operators';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
+import { takeUntil, filter, tap } from 'rxjs/operators';
 import { NewPaymentService } from '../new-payment/new-payment.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { MatDialog } from '@angular/material';
+import { ChargesByChargeIdComponent } from '../payments-history/charges-byChargeId-modal/charges-by-charge-id.component';
+import { KevaCharge } from 'src/app/models/kevaCharge.model';
 
 
 @Component({
@@ -20,7 +24,9 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
   filterForm: FormGroup;
   subscription$ = new Subject();
-  globalData$: Observable<GlobalData | ''>;
+  globalData$: Observable<GlobalData>;
+  currentRoute = ''
+  isShowGroupsFIlter: boolean;
   constructor(
     private paymentsService: PaymentsService,
     private newPaymentService: NewPaymentService,
@@ -28,14 +34,17 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
     private generalService: GeneralSrv,
     private router: Router,
     private spinner: NgxUiLoaderService,
-    private paymentsHeaderService: PaymentsTableHeaderService
+    private paymentsHeaderService: PaymentsTableHeaderService,
+    private dialog: MatDialog,
+    private customerDetailsService: CustomerDetailsService
   ) { }
 
   ngOnInit() {
     this.getGlobalData();
     this.createFilterForm();
-    
+
     this.checkIfUpdateKevaTableWasClicked();
+    this.getCurrentRoute();
   }
 
 
@@ -44,7 +53,7 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
     // const lastFilterOption = this.paymentsHeaderService.getLastFilterOption();
     // const filterOptions = lastFilterOption ? lastFilterOption : this.filterFormValue.value;
     console.log('FILTER OPTION', this.filterFormValue.value);
-    this.paymentsService.getGridData(this.filterFormValue.value, this.generalService.orgName)
+    this.paymentsService.getGridData(this.filterFormValue.value)
       .pipe(
         takeUntil(this.subscription$))
       .subscribe(data => {
@@ -81,8 +90,9 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
   }
   getGlobalData() {
     // this.paymentsService.currentGlobalData$.pipe(takeUntil(this.subscription$)).subscribe(data => {
-    this.globalData$ = this.paymentsService.currentGlobalData$;
+    this.globalData$ = this.generalService.getGlobalData$().pipe(tap(data => console.log('GLOBAL DATA', data)));
   }
+
   createFilterForm() {
     this.filterForm = this.fb.group({
       kevaTypeid: ['1'],
@@ -117,8 +127,19 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
     // }
 
   }
-  goToKevaCharges() {
-    this.router.navigate(['payments-grid/keva-charges']);
+  goToKevaHistory() {
+    if (this.currentRoute === '/customer-details/customer/payments/kevas') {
+      this.showKevaHistory()
+    } else {
+      this.router.navigate(['payments-grid/keva-charges']);
+
+    }
+  }
+
+  showKevaHistory() {
+    const keva = ''
+    const customerId = this.customerDetailsService.getCustomerId() ? this.customerDetailsService.getCustomerId().toString() : '';
+    this.dialog.open(ChargesByChargeIdComponent, { width: '1500px', height: '700px', data: { keva, customerId } })
   }
 
   checkIfUpdateKevaTableWasClicked() {
@@ -137,6 +158,15 @@ export class PaymentsTableHeaderComponent implements OnInit, OnDestroy {
         this.getTablePaymentsData();
         console.log('TABLE UPDATED', event);
       })
+  }
+
+  getCurrentRoute() {
+    this.currentRoute = this.generalService.getCurrentRoute();
+    if (this.currentRoute === '/customer-details/customer/payments/kevas') {
+      this.isShowGroupsFIlter = false;
+    } else {
+      this.isShowGroupsFIlter = true;
+    }
   }
 
   ngOnDestroy(): void {

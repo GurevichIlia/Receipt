@@ -1,6 +1,6 @@
 import { AskQuestionComponent } from './../../../../shared/modals/ask-question/ask-question.component';
 import { TableComponent } from './../../../../shared/share-components/table/table.component';
-import { GeneralSrv } from './../../../../receipts/services/GeneralSrv.service';
+import { GeneralSrv } from './../../../../shared/services/GeneralSrv.service';
 import { Response } from 'src/app/models/response.model';
 
 import { NewPaymentService } from './../new-payment.service';

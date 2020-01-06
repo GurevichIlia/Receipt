@@ -6,14 +6,11 @@ import { SharedModule } from './../shared/shared.module';
 import { GridPaymentsComponent } from './grid-payments/grid-payments.component';
 import { PaymentsTableComponent } from './grid-payments/payments-table/payments-table.component';
 import { CustomerSearchComponent } from './grid-payments/customer-search/customer-search.component';
-import { PaymentsFilterComponent } from './grid-payments/payments-table-header/payments-filter/payments-filter.component';
 
-import { PaymentsTableHeaderComponent } from './grid-payments/payments-table-header/payments-table-header.component';
 import { PaymentsHistoryComponent } from './grid-payments/payments-history/payments-history.component';
 import { PaymentsTableViewComponent } from './grid-payments/payments-history/payments-table-view/payments-table-view.component';
-import { ChargesByChargeIdComponent } from './grid-payments/payments-history/charges-byChargeId-modal/charges-by-charge-id.component';
 import { ChargeIdEditModalComponent } from './grid-payments/payments-history/charges-byChargeId-modal/charge-id-edit-modal/charge-id-edit-modal.component';
-import { EditRemarkComponent } from './grid-payments/new-payment/keva-remarks/edit-remark/edit-remark.component';
+import { PaymentTableContainerComponent } from './grid-payments/payment-table-container/payment-table-container.component';
 
 const gridRouter: Routes = [
   {
@@ -21,7 +18,9 @@ const gridRouter: Routes = [
       { path: '', redirectTo: 'payments' },
       { path: 'customer-search', component: CustomerSearchComponent },
       { path: 'new-payment', loadChildren: './grid-payments/new-payment/new-payment.module#NewPaymentModule' },
-      { path: 'payments', component: PaymentsTableComponent },
+      { path: 'edit', loadChildren: './grid-payments/new-payment/new-payment.module#NewPaymentModule' },
+      { path: 'duplicate', loadChildren: './grid-payments/new-payment/new-payment.module#NewPaymentModule' },
+      { path: 'payments', component: PaymentTableContainerComponent },
       { path: 'keva-charges', component: PaymentsHistoryComponent },
     ]
   }
@@ -31,10 +30,9 @@ const gridRouter: Routes = [
 @NgModule({
   declarations: [
     GridPaymentsComponent,
-    PaymentsTableComponent,
+
     CustomerSearchComponent,
     // NewPaymentComponent,
-    PaymentsFilterComponent,
     // FirstStepComponent,
     // SecondStepComponent,
     // ThirdStepComponent,
@@ -42,11 +40,10 @@ const gridRouter: Routes = [
     // FifthStepComponent,
     // BankComponent,
     // CreditCardComponent,
-    PaymentsTableHeaderComponent,
     PaymentsHistoryComponent,
     PaymentsTableViewComponent,
-    ChargesByChargeIdComponent,
-    ChargeIdEditModalComponent,
+    PaymentTableContainerComponent,
+    
   ],
   imports: [
     SharedModule,
@@ -56,7 +53,7 @@ const gridRouter: Routes = [
   exports: [
   ],
   providers: [],
-  entryComponents: [ChargesByChargeIdComponent, ChargeIdEditModalComponent]
+  entryComponents: []
 
 })
 export class GridModule { }

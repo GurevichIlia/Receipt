@@ -5,6 +5,17 @@
 .fontSize {
   font-size: 16px
 }
+
 input{
   direction: initial;
+}
+
+.isValid {
+  cursor: pointer;
+
+}
+
+.isValid:hover {
+  /* background-color: whitesmoke; */
+  color: black;
 }

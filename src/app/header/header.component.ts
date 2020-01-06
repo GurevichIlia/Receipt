@@ -1,10 +1,10 @@
 import { PaymentsService } from 'src/app/grid/payments.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthenticationService } from '../receipts/services/authentication.service';
-import { Router, Route, ActivatedRoute } from '@angular/router';
-import { GeneralSrv } from '../receipts/services/GeneralSrv.service';
+import { AuthenticationService } from '../shared/services/authentication.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { GeneralSrv } from '../shared/services/GeneralSrv.service';
 import { Subscription, Observable, Subject } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -73,6 +73,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
   createNewCustomer() {
     this.router.navigate(['new-customer']);
+  }
+
+  goToNewsletter(){
+    this.router.navigate(['newsletter']);
   }
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

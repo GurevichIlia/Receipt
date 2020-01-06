@@ -1,8 +1,8 @@
-import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
+import { CustomerInfoService } from 'src/app/shared/share-components/customer-info/customer-info.service';
 import { CreditCardService } from './../credit-card/credit-card.service';
 import { Component, OnInit, ViewChild, AfterViewInit, DoCheck, OnDestroy } from '@angular/core';
-import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { ReceiptsService } from 'src/app/shared/services/receipts.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import * as moment from 'moment';
 import { NgForm, FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';

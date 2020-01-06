@@ -1,0 +1,33 @@
+<mat-card class="mt-3">
+  will be header
+</mat-card>
+
+<div id="externalSystemContainer">
+  <!--This is external system container where you can place plugin buttons -->
+  <button id="undoButton" class="control-button">Undo</button>
+  <button id="redoButton" class="control-button">Redo</button>
+  <button id="codeEditor" class="btn-orange ml-1 " mat-raised-button>Code editor</button>
+  <button id="SaveEmail" class="btn-blue ml-1" mat-raised-button (click)="saveEmail()">Save Email</button>
+  <button id="SaveEmail" class="btn-blue ml-1" mat-raised-button (click)="openDialog()">Save Template</button>
+
+  <span #changeHistoryContainer style="display: none;">Last change: <a id="changeHistoryLink"></a></span>
+</div>
+<div class="notification-zone"></div>
+<div>
+  <!--Plugin containers -->
+  <div #stripoSettingsContainer id="stripoSettingsContainer">Loading...</div>
+  <div id="stripoPreviewContainer">
+ 
+  </div>
+</div>
+<ng-template #userDialogTemplate>
+  
+  <!-- <button (click)="closeDialog()">close</button> -->
+  <mat-form-field style="width: 100%">
+    <input matInput placeholder="{{'Template name' | translate}}" [formControl]="templateName">
+  </mat-form-field>
+  <div class="row mb-1 " style="justify-content: space-evenly">
+    <button class="submit-button col-xl-5 " mat-raised-button (click)="saveTemplate()">{{'Submit' | translate}}</button>
+    <button class="cancel-button col-xl-5" mat-raised-button (click)="closeDialog()">{{'Cancel' | translate}}</button>
+  </div>
+</ng-template>

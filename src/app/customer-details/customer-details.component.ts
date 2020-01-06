@@ -1,6 +1,6 @@
 import { CustomerGroupsService } from './../core/services/customer-groups.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { CustomerSearchData } from 'src/app/receipts/services/GeneralSrv.service';
+import { CustomerSearchData } from 'src/app/shared/services/GeneralSrv.service';
 import { GlobalStateService } from './../shared/global-state-store/global-state.service';
 import { FullCustomerDetailsById, CustomerPhones } from './../models/fullCustomerDetailsById.model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -43,10 +43,19 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngOnInit() {
-    this.customerId = 1952;
+    setTimeout(() => {
+      if (this.customerDetailsService.getOrgName().toLowerCase() === 'jaffanet1') {
+        this.customerId = 1952;
+      } else {
+        this.customerId = null;
+      }
+      this.customerDetailsService.setCustomerId(this.customerId);
+    }, 1)
+
+
     this.getCustomerSearchData();
 
-    this.customerDetailsService.setCustomerId(this.customerId);
+
     this.getCustomerDetailsByIdFromServer();
     this.getDisplayWidth();
     this.navigation();

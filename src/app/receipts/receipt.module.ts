@@ -12,7 +12,7 @@ import { PaymentComponent } from './payment/payment.component';
 import { ProccessRecieptComponent } from './proccess-reciept/proccess-reciept.component';
 import { DisableControlDirective } from '../shared/directives/disable-control.directive';
 import { FilterProductsByCatPipe } from '../myPipes/filter-products-by-cat.pipe';
-import { ModalFinalScreenComponent } from './modals/modal-final-screen/modal-final-screen.component';
+import { ModalFinalScreenComponent } from '../shared/modals/modal-final-screen/modal-final-screen.component';
 
 const receiptRoutes: Routes = [
       { path: '', component: NewReceiptComponent }

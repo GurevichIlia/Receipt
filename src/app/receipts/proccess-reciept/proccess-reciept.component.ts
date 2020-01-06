@@ -1,23 +1,21 @@
 import { CustomerGroupsService } from './../../core/services/customer-groups.service';
 import { Addresses } from 'src/app/models/addresses.model';
-import { CustomerInfoService } from 'src/app/receipts/customer-info/customer-info.service';
+import { CustomerInfoService } from 'src/app/shared/share-components/customer-info/customer-info.service';
 import { CreditCardService } from './../credit-card/credit-card.service';
 import { LastSelection } from './../../models/lastSelection.model';
 import { Emails } from './../../models/emails.model';
 import { FinalResolve } from 'src/app/models/finalResolve.model';
-import { ModalFinalScreenComponent } from './../modals/modal-final-screen/modal-final-screen.component';
-import { Component, OnInit, Input, OnChanges, ElementRef, ViewChild, NgZone, OnDestroy } from '@angular/core';
-import { ReceiptsService } from 'src/app/receipts/services/receipts.service';
+import { Component, OnInit, Input, OnChanges, NgZone, OnDestroy } from '@angular/core';
+import { ReceiptsService } from 'src/app/shared/services/receipts.service';
 import { MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable, Subscription, Subject } from 'rxjs';
 import { startWith, map, takeUntil, filter } from 'rxjs/operators';
-import { GeneralSrv } from 'src/app/receipts/services/GeneralSrv.service';
+import { GeneralSrv } from 'src/app/shared/services/GeneralSrv.service';
 import { ReceiptHeader } from 'src/app/models/receiptHeader.model';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { emailsFromCustomerById } from 'src/app/models/emailsFromCustomerById.mode';
 
 @Component({
   selector: 'app-proccess-reciept',

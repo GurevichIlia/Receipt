@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Phones } from 'src/app/models/phones.model';
 
@@ -12,9 +12,14 @@ export class SecondStepComponent implements OnInit {
   @Input() secondStep: FormGroup;
   @Input() isSubmit: boolean;
   @Input() customerPhones: Phones[];
+  @Output() validate = new EventEmitter
   constructor() { }
 
   ngOnInit() {
+  }
+
+  checkValidate() {
+    this.validate.emit()
   }
 
 }

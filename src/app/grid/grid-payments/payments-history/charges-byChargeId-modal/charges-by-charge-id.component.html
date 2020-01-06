@@ -1,40 +1,43 @@
 <div class="row">
   <h4>{{'Charge details table' | translate}}</h4>
 
-  <button class="closeBtn" (click)="closeModal()" mat-button ><i class="material-icons">
+  <button class="closeBtn" (click)="closeModal()" mat-button><i class="material-icons">
       close
     </i></button>
 
 </div>
 
 <hr>
-<p *ngIf="columns.length === 0">Loading...</p>
-<div class="row" style="direction: rtl">
-  <div class="col-12">
-    <div class="elevation">
-      <table mat-table [dataSource]="dataSource" matSort>
-        <ng-container matColumnDef="details">
-          <th mat-header-cell *matHeaderCellDef>
-            <span>{{'Edit' | translate}}</span>
-          </th>
-          <td (click)="openChargeEditModal(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
-            <mat-icon>edit</mat-icon>
-          </td>
-        </ng-container>
-        <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header | translate}} </th>
-          <td mat-cell *matCellDef="let row">
-            <ng-container>
-              {{col.cell(row) === 'null'? '' : col.cell(row) | dateTransform: col.header }}
-            </ng-container>
-          </td>
-        </ng-container>
+<span *ngIf="loading">Loading...</span>
+<ng-container *ngIf="columns.length === 0 && !loading">
+  {{'No history' | translate}}
+</ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true"></tr>
-        <tr style="cursor: pointer" (dblclick)="openChargeEditModal(row)" mat-row
-          *matRowDef="let row; columns: listDisplayedColumns;"></tr>
-      </table>
-    </div>
+
+<div class="row" style="direction: rtl">
+  <div class="col-12 elevation" id="style-1">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="details">
+        <th class="tableHeader" mat-header-cell *matHeaderCellDef>
+          <span>{{'Edit' | translate}}</span>
+        </th>
+        <td (click)="openChargeEditModal(row)" style="cursor: pointer" mat-cell *matCellDef="let row">
+          <mat-icon>edit</mat-icon>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
+        <th class="tableHeader" mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header | translate}} </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container>
+            {{col.cell(row) === 'null'? '' : col.cell(row) | dateTransform: col.header }}
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr style="background-color:gainsboro;" mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true"></tr>
+      <tr style="cursor: pointer" (dblclick)="openChargeEditModal(row)" mat-row
+        *matRowDef="let row; columns: listDisplayedColumns;"></tr>
+    </table>
   </div>
 </div>
 <mat-paginator style="direction: rtl" [pageSizeOptions]="[10, 25, 50, 100 ]"></mat-paginator>
