@@ -16,7 +16,8 @@ let serviceConfig = {
   accesTokenStoreName: "XToken",
   accesTokenRequestHeader: "X-Token",
   accesTokenResponceHeader: "XToken",
-  authenticationMode: "JWT-Token"
+  authenticationMode: "JWT-Token",
+   currentBaseURL: 'https://jaffawebapisandbox.amax.co.il/API/'
 };
 
 export var LocalDict = {
@@ -34,7 +35,7 @@ export class MyAppConfig {
   static serviceConfig = {
     serviceBaseUrl: "https://jaffawebapi.amax.co.il/Api.svc/",
     ImageUrl: "http://jaffapms.amax.co.il/orgs/",
-    serviceApiUrl: "https://jaffawebapi.amax.co.il/API/",
+    serviceApiUrl: 'https://jaffawebapisandbox.amax.co.il/API/',
     serviceUrl: "",
     AppUrl: "https://jaffawebapi.amax.co.il/",
     accesTokenStoreName: "XToken",

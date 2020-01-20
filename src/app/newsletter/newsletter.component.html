@@ -1,0 +1,118 @@
+<div class="mb-2">
+      <app-newsletter-builder-header [templateId]="newsletterTemplate.TplCodeId" [showGroups]="showGroups"
+      >
+      </app-newsletter-builder-header>
+</div>
+
+
+<div>
+      <app-newsletter-builder [showGroups]="showGroups" [templateName]="newsletterTemplate.TplTitile">
+      </app-newsletter-builder>
+</div>
+
+
+<!-- ASK NAME FOR TEMPLATE MODAL-->
+<ng-template #userDialogTemplate>
+      <!-- <button (click)="closeDialog()">close</button> -->
+      <mat-form-field style="width: 100%">
+            <input matInput placeholder="{{'Template name' | translate}}" [formControl]="templateName">
+      </mat-form-field>
+      <div class="row mb-1 " style="justify-content: space-evenly">
+            <button class="btn-blue col-xl-5 " mat-raised-button
+                  (click)="saveNewOrEditedTemplate()">{{'Submit' | translate}}</button>
+            <button class="btn-orange col-xl-5" mat-raised-button
+                  (click)="closeTemplateNameModal()">{{'Cancel' | translate}}</button>
+      </div>
+</ng-template>
+
+<!-- LIST OF TEMPLATES MODAL-->
+<ng-template #listOfTemplates>
+      <div class="templatesList" id="style-1">
+            <ng-container *ngIf="newsletterTemplates$ | async as senders; else loader">
+
+                  <app-table #sendersTable [dataSource]="senders" *ngIf="senders.data.length !== 0; else empty"
+                        [listDisplayedColumns]="templateListDisplayedColumns$ | async"
+                        [columns]=" templateListColumns$ | async" [buttons]="templatesTableButtons"
+                        (action)="doAction($event)">
+                  </app-table>
+
+                  <ng-template #empty>
+                        <p> No one template</p>
+                  </ng-template>
+
+
+            </ng-container>
+
+            <ng-template #loader>
+                  <div class="text-center">
+                        <mat-spinner></mat-spinner>
+                  </div>
+            </ng-template>
+
+      </div>
+      <hr>
+
+      <div class="row mb-1">
+            <button type="button" class="btn-blue col-xl-2" mat-raised-button
+                  (click)="refreshTemplate()">{{'Create new' | translate}}</button>
+            <button type="button" class="btn-orange col-xl-2 ml-1" mat-raised-button
+                  (click)="closeListOfTemplates()">{{'Cancel' | translate}}</button>
+      </div>
+</ng-template>
+
+<!-- NEWSLETTER FILES MODAL-->
+<ng-template #newsletterFiles>
+      <button mat-raised-button class="btn-orange" (click)="openUploadFileModal()">Add file</button>
+      <mat-tab-group *ngIf="newsletterFiles$ | async as newsletterFiles; else loader">
+            
+            <mat-tab label="Files">
+                  <div class="templatesList" id="style-1">
+                        <app-table [dataSource]="newsletterFiles[0]"
+                              *ngIf="newsletterFiles[0].data.length !== 0; else empty"
+                              [listDisplayedColumns]="filesListDisplayedColumns$ | async"
+                              [columns]=" filesListColumns$ | async" [buttons]="filesTableButtons">
+                        </app-table>
+                        <ng-template #empty>
+                              <p>No one file</p>
+                        </ng-template>
+                  </div>
+
+
+            </mat-tab>
+
+            <mat-tab label="Images" id="style-1">
+                  <div class="templatesList" id="style-1">
+                        <app-table [dataSource]="newsletterFiles[1]"
+                              *ngIf="newsletterFiles[1].data.length !== 0; else empty"
+                              [listDisplayedColumns]="imagesListDisplayedColumns$ | async"
+                              [columns]="imagesListColumns$ | async" [buttons]="filesTableButtons"
+                              (action)="getActionsFromImagesTable($event)">
+                        </app-table>
+
+                        <ng-template #empty>
+                              No one image
+                        </ng-template>
+                  </div>
+            </mat-tab>
+      </mat-tab-group>
+
+
+
+      <ng-template #loader>
+            <div class="text-center">
+                  <mat-spinner></mat-spinner>
+            </div>
+      </ng-template>
+
+</ng-template>
+
+
+<!-- FULL IMAGE MODAL-->
+<ng-template #fullImage>
+      <img  src="{{imageSrc}}">
+</ng-template>
+
+<!-- UPLOAD FILE MODAL-->
+<ng-template #uploadFile>
+      <app-upload-newsletter-file (action)="doAction($event)"></app-upload-newsletter-file>
+</ng-template>

@@ -43,9 +43,10 @@ export class CustomerGroupsService {
     private customerDetailsService: CustomerDetailsService
   ) { }
 
-  private getGroupsCondidatesToAddition() {
+   getGroupsCondidatesToAddition() {
     return this.groupsCondidatesToAddition;
   }
+
 
   setOriginalGroupsList(newValue: GeneralGroups[]) {
     this.originalCustomerGroups = newValue;
@@ -239,7 +240,7 @@ export class CustomerGroupsService {
     return this.alreadySelectedGroupsFromCustomerInfo$;
   }
 
- saveCustomerGroups(customerGroups: any[]) {
+  saveCustomerGroups(customerGroups: any[]) {
     return this.customerDetailsService.saveChangedCustomerData({ groups: customerGroups });
   }
 }

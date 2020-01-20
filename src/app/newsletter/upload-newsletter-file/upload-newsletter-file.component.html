@@ -1,0 +1,20 @@
+<h3>Upload file</h3>
+
+<div class="mb-3">
+  <span style="color:red;" *ngIf="message">{{message}}</span>
+
+  <input #file type="file" accept='image/*' multiple (change)="preview(file.files)" />
+</div>
+
+
+<div class="mb-3">
+  <img [src]="imgURL" height="200" *ngIf="imgURL">
+</div>
+
+<div class="mb-3">
+  <span *ngIf="fileURL">{{file}}</span>
+</div>
+
+<div>
+  <button mat-raised-button class="btn-blue" (click)="uploadFile()">Save</button>
+</div>

@@ -1,6 +1,10 @@
-input.mat-input-element {
+.mat-form-field input.mat-input-element:disabled {
   color: black
 }
+
+/* ::ng-deep mat-select mat-checkbox input {
+  color: black
+} */
 
 ::ng-deep .mat-select-disabled .mat-select-value {
   color: black
@@ -30,9 +34,10 @@ p.button {
   color: black;
 }
 
-.marginInh{
+.marginInh {
   margin: inherit;
 }
-h4{
+
+h4 {
   font-weight: bold;
 }

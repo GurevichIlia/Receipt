@@ -1,5 +1,10 @@
-<div mat-dialog-content>
-  <p class="dialog-paragraph">{{ data.headerText }}</p>
+<div mat-dialog-content id="style-1">
+  <div class="header">
+    <h3>{{ data.headerText | translate }}</h3>
+    <button type="button" (click)="close()" class="close mr-3" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
   <hr>
   <ng-container [ngTemplateOutlet]="data.template"></ng-container>
 </div>

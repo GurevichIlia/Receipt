@@ -31,8 +31,8 @@ export interface CustomerSearchData {
 
 @Injectable(
   {
-  providedIn: 'root'
-}
+    providedIn: 'root'
+  }
 )
 
 export class GeneralSrv {
@@ -45,6 +45,7 @@ export class GeneralSrv {
   language = new BehaviorSubject('he');
   currentLang$ = this.language.asObservable();
   orgName = localStorage.getItem('OrgName');;
+  orgId: string
 
   sizeOfWindow = new BehaviorSubject<number>(window.innerWidth);
   currentSizeOfWindow$ = this.sizeOfWindow.asObservable();
@@ -75,11 +76,12 @@ export class GeneralSrv {
     private zone: NgZone,
     private translate: TranslateService,
   ) {
-  
+
     console.log(' GENERAL SERVICE LOADED', GeneralSrv)
     this.switchLanguage('he');
     console.log('ORG NAME', this.orgName);
     this.userGuid = localStorage.getItem('userGuid');
+
     console.log('this.userGuid', this.userGuid)
     this.currentLang$.subscribe(lang => {
       this.zone.runOutsideAngular(() => {
@@ -99,6 +101,7 @@ export class GeneralSrv {
     this.baseUrl = 'https://jaffawebapisandbox.amax.co.il/API/'; // serviceConfig.serviceApiUrl;
 
     this.setWindowWidth();
+    this.setOrgId(localStorage.getItem('organizationId'))
   }
 
   switchLanguage(language: string) {
@@ -578,6 +581,19 @@ export class GeneralSrv {
       return birthday;
     }
 
+  }
+
+  setOrgId(orgId: string) {
+    if(orgId){
+      this.orgId = orgId
+    } else {
+      
+    }
+    
+  }
+
+  getOrgId() {
+    return this.orgId;
   }
   // getCurrentAndPreviousRoutes() {
   //   this.currentRoute = this.router.url;

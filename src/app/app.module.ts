@@ -27,9 +27,10 @@ import { FooterComponent } from './footer/footer.component';
 import { TokenInterceptorService } from './shared/services/token-interceptor.service';
 import { NgxMaskModule } from 'ngx-mask'
 import { GeneralSrv } from './shared/services/GeneralSrv.service';
-import { AuthenticationService } from './shared/services/authentication.service';
 import { GlobalStateService } from './shared/global-state-store/global-state.service';
-import { ReceiptsService } from 'src/app/shared/services/receipts.service';
+
+
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 // export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -59,6 +60,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ToastrModule.forRoot(), // ToastrModule added
     NgxUiLoaderModule, // import NgxUiLoaderModule
     NgxUiLoaderRouterModule,
+
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

@@ -1,0 +1,125 @@
+<mat-card class="container mt-4 mainBlock">
+  <h3 class="mb-5"><a routerLink="/newsletter">{{'Newsletter' | translate}}</a> > <a>{{'Sending' | translate}} -
+      "{{(sendingNewsletter$ | async)?.TplTitile}}" </a></h3>
+
+  <div class="row">
+    <div class="col-5">
+      <h4 class="text-left">{{'Customer groups' | translate}}</h4>
+      <div class="groupList content" id="style-1">
+        <div *ngIf="!treeLoading; else loader">
+          <app-tree-of-groups></app-tree-of-groups>
+
+        </div>
+
+        <ng-template #loader>
+            <mat-spinner></mat-spinner>
+        </ng-template>
+
+      </div>
+    </div>
+    <div class="col-7">
+      <div class="row">
+        <div class="col-2 offset-9 mb-2">
+          <button type="button" class="btn-blue " (click)="showListOfSenders()" mat-raised-button>Show
+            senders</button>
+        </div>
+
+
+        <app-sender-form class="mb-3 col-12" (action)="getActionFromSendersModal($event)" [senderForm]="senderForm">
+
+          <app-send-date-picker class="col-12" *ngIf="senderForm.get('sendLater').value === true"
+            [datepickerForm]="datepickerForm">
+          </app-send-date-picker>
+
+        </app-sender-form>
+      </div>
+
+    </div>
+
+  </div>
+</mat-card>
+
+
+
+
+<ng-template #listOfSenders>
+  <!-- <app-items-list [itemsList]="senders$ | async" [itemKeys]="templateKeys"
+        (action)="getActionFromChild($event)">
+  </app-items-list> -->
+  <!-- <button type="button" class="close" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button> -->
+  <div class="sendersList">
+    <ng-container *ngIf="senders$ | async as senders; else loader ">
+      <app-table #sendersTable [dataSource]="senders" [listDisplayedColumns]="sendersListDisplayedColumns$ | async"
+        [columns]=" sendersListColumns$ | async" [buttons]="sendersTableButtons"
+        (action)="getActionFromSendersModal($event)">
+
+      </app-table>
+    </ng-container>
+    <ng-template #loader>
+      <div class="text-center">
+        <mat-spinner style="color: black;"></mat-spinner>
+      </div>
+    </ng-template>
+  </div>
+  <hr>
+  <div class="row mb-1">
+    <button type="button" class="btn-blue col-xl-2" mat-raised-button
+      (click)="openNewSenderModal()">{{'Create new' | translate}}</button>
+    <button type="button" class="btn-orange col-xl-2 ml-1" mat-raised-button
+      (click)="closeDialog(listOfSendersModal)">{{'Cancel' | translate}}</button>
+  </div>
+</ng-template>
+
+
+
+<ng-template #newSenderTemplate>
+  <form [formGroup]="newSenderForm" class="row mb-2">
+
+    <mat-form-field class="col-12 mb-1">
+      <input matInput placeholder="{{'Sender name' | translate}}" formControlName="name">
+      <mat-error *ngIf="newSenderForm.get('name').errors && newSenderForm.get('name').errors['required']">
+        {{'Required'| translate}}
+        {{'Sender name'| translate}}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="col-12 mb-1">
+      <input matInput placeholder="{{'Mail from' | translate}}" formControlName="mailFrom">
+
+      <mat-error *ngIf="newSenderForm.get('mailFrom').errors">
+        <span
+          *ngIf="newSenderForm.get('mailFrom').errors['required']">{{'Required'| translate}}{{'Mail from'| translate}}</span>
+        <span *ngIf="newSenderForm.get('mailFrom').errors['email']">{{'Email format is not correct' | translate}}</span>
+      </mat-error>
+
+    </mat-form-field>
+
+    <mat-form-field class="col-12 mb-1">
+      <input matInput placeholder="{{'Reply mail name' | translate}}" formControlName="replyEmailName">
+
+      <mat-error
+        *ngIf="newSenderForm.get('replyEmailName').errors && newSenderForm.get('replyEmailName').errors['required']">
+        {{'Required'| translate}}{{'Reply mail from'| translate}}</mat-error>
+
+    </mat-form-field>
+
+    <mat-form-field class="col-12 mb-1">
+      <input matInput placeholder="{{'Reply to mail' | translate}}" formControlName="replyToMail">
+
+      <mat-error *ngIf="newSenderForm.get('replyToMail').errors">
+        <span
+          *ngIf="newSenderForm.get('replyToMail').errors['required']">{{'Required'| translate}}{{'Reply to mail'| translate}}</span>
+        <span
+          *ngIf="newSenderForm.get('replyToMail').errors['email']">{{'Email format is not correct' | translate}}</span>
+      </mat-error>
+
+    </mat-form-field>
+    <button type="submit" class="btn-blue col-xl-5" mat-raised-button
+      (click)="saveNewSender()">{{'Submit' | translate}}</button>
+    <button type="button" class="btn-orange col-xl-5" mat-raised-button
+      (click)="closeDialog(newSenderModal)">{{'Cancel' | translate}}</button>
+  </form>
+
+
+</ng-template>

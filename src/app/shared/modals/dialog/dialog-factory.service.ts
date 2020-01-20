@@ -10,9 +10,9 @@ import { DialogComponent } from './dialog.component'
 export interface DialogData<T> { }
 
 export interface DialogOptions {
-  width: string | number;
+  width?: string | number;
   height?: string | number;
-  disableClose: boolean;
+  disableClose?: boolean;
 }
 // Services
 import { DialogService } from './dialogService';

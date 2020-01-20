@@ -11,17 +11,31 @@ export class TableComponent implements OnChanges {
   @Input() buttons: { icon: string, label: string }[];
   @Input() dataSource: MatTableDataSource<any>;
   @Input() columns: { columnDef: string, header: string, cell: any }[];
-  @Input() listDisplayedColumns: string[]
+  @Input() listDisplayedColumns: string[];
+  @Input() isShowMenu: boolean = false
   @ViewChild(MatSort, { read: '' }) sort: MatSort;
   @ViewChild(MatPaginator, { read: '', }) paginator: MatPaginator;
-  @Output() clickedButton = new EventEmitter();
+  @Output() action = new EventEmitter();
   constructor() { }
 
-  ngOnChanges(simpleChange) {
-    console.log('DATA TABLE is CHANGED', this.dataSource, simpleChange)
+  get existButtons() {
+    return this.buttons
   }
 
-  getEvent($event: string, id?) {
-    this.clickedButton.emit({ action: $event, item: id })
+  ngOnChanges(simpleChange) {
+    this.dataSource.sort = this.sort
+    this.dataSource.paginator = this.paginator
+
+    if (this.existButtons) {
+      this.existButtons.map(button => {
+        if (!this.listDisplayedColumns.includes(button.label)) {
+          this.listDisplayedColumns.push(button.label)
+        }
+      })
+    }
+  }
+
+  dispatchAction(action: string, id?) {
+    this.action.emit({ action, item: id })
   }
 }

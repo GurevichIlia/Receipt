@@ -1,7 +1,10 @@
 import { TranslationService } from './translation.service';
-import { TranslateService } from '@ngx-translate/core';
 import { Injectable } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { AskQuestionComponent } from 'src/app/shared/modals/ask-question/ask-question.component';
+import { MatDialog } from '@angular/material';
+import { filter } from 'rxjs/operators';
+import { Observable } from 'rxjs/internal/Observable';
 
 
 @Injectable({
@@ -10,7 +13,8 @@ import { ToastrService } from 'ngx-toastr';
 export class NotificationsService {
       constructor(
             private toastrService: ToastrService,
-            private translate: TranslationService
+            private translate: TranslationService,
+            private matDialog: MatDialog
       ) {
       }
       success(message?: string, title?: string) {
@@ -24,5 +28,16 @@ export class NotificationsService {
 
       error(message?: string, title?: string) {
             this.toastrService.error(this.translate.onTranslate(message), this.translate.onTranslate(title))
+      }
+
+      askQuestion(text: string, item: { name?: string, id?: number }): Observable<MatDialog> {
+            const openedModal$ = this.matDialog.open(AskQuestionComponent,
+                  {
+                        height: '150', width: '350px', disableClose: true, position: { top: 'top' },
+                        panelClass: 'question',
+                        data: { questionText: text, acceptButtonName: 'Confirm', closeButtonName: 'Cancel', item: { name: item.name, id: item.id } }
+                  })
+                  .afterClosed().pipe(filter(answer => answer === true));
+            return openedModal$;
       }
 }

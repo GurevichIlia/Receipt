@@ -1,0 +1,112 @@
+<form [formGroup]="senderForm" class="row senderForm">
+  <mat-form-field class="col-12">
+    <input matInput placeholder="{{'Sender name' | translate}}" formControlName="name">
+    <mat-error *ngIf="senderForm.get('name').errors && senderForm.get('name').errors['required']">
+      {{'Required'| translate}} {{'Sender name'| translate}}</mat-error>
+
+  </mat-form-field>
+
+  <mat-form-field class="col-12">
+    <input matInput placeholder="{{'Mail from' | translate}}" formControlName="mailFrom">
+
+    <mat-error *ngIf="senderForm.get('mailFrom').errors">
+      <span *ngIf="senderForm.get('mailFrom').errors['required']">{{'Required'| translate}}
+        {{'Mail from'| translate}}</span>
+      <span *ngIf="senderForm.get('mailFrom').errors['email']">{{'Email format is not correct' | translate}}</span>
+    </mat-error>
+
+  </mat-form-field>
+
+  <mat-form-field class="col-12">
+    <input matInput placeholder="{{'Reply mail name' | translate}}" formControlName="replyEmailName">
+    <mat-error *ngIf="senderForm.get('replyEmailName').errors && senderForm.get('replyEmailName').errors['required']">
+      {{'Required'| translate}} {{'Reply mail name'| translate}}</mat-error>
+
+  </mat-form-field>
+
+  <mat-form-field class="col-12">
+    <input matInput placeholder="{{'Reply to mail' | translate}}" formControlName="replyToMail">
+
+    <mat-error *ngIf="senderForm.get('replyToMail').errors">
+      <span *ngIf="senderForm.get('replyToMail').errors['required']">{{'Required'| translate}}
+        {{'Reply to mail'| translate}}</span>
+      <span *ngIf="senderForm.get('replyToMail').errors['email']">{{'Email format is not correct' | translate}}</span>
+    </mat-error>
+
+  </mat-form-field>
+
+  <!-- <mat-form-field class="col-12">
+    <input matInput placeholder="{{'Mail to' | translate}}" formControlName="mailTo">
+
+    <mat-error *ngIf="senderForm.get('mailTo').errors">
+      <span *ngIf="senderForm.get('mailTo').errors['required']">{{'Required'| translate}}
+        {{'Reply to mail'| translate}}</span>
+      <span *ngIf="senderForm.get('mailTo').errors['email']">{{'Email format is not correct' | translate}}</span>
+    </mat-error>
+
+  </mat-form-field> -->
+
+  <mat-form-field class="col-12">
+    <textarea class="subject" matInput placeholder="{{'Subject' | translate}}" formControlName="subject"></textarea>
+
+    <mat-error *ngIf="senderForm.get('subject').errors && senderForm.get('subject').errors['required']">
+      {{'Required'| translate}} {{'Subject'| translate}}</mat-error>
+
+  </mat-form-field>
+
+  <div class="col-6 mb-2">
+    <mat-checkbox formControlName="record2customerService"> {{'Record email to customer service' | translate}}?
+    </mat-checkbox>
+    <mat-checkbox formControlName="sendLater"> {{'Send later' | translate}}?</mat-checkbox>
+
+  </div>
+
+  <mat-form-field class="col-3 ">
+    <mat-select formControlName="mailToGender" placeholder="{{'Send to' | translate}}">
+      <mat-option [value]="1">{{ 'Male' | translate}}</mat-option>
+      <mat-option [value]="2">{{ 'Female' | translate}}</mat-option>
+      <mat-option [value]="0">{{ 'All' | translate}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="col-3">
+    <mat-select formControlName="olang" placeholder="{{'Language' | translate}}">
+      <mat-option [value]="0">{{ 'Hebrew' | translate}}</mat-option>
+      <mat-option [value]="1">{{ 'Other' | translate}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- <div class="col-12 mb-2">
+    <mat-checkbox formControlName="record2customerService"> {{'Record email to customer service' | translate}}?
+    </mat-checkbox>
+    <mat-checkbox formControlName="sendLater"> {{'Send later' | translate}}?</mat-checkbox>
+
+  </div> -->
+
+  <!-- <div class="col-8 ">
+
+  </div> -->
+
+  <ng-content></ng-content>
+
+  <div class="col-12 mt-3">
+    <button type="submit" class="btn-blue submit ml-1" (click)="dispatchAction('SEND NEWSLETTER')"
+      mat-raised-button>Send
+      template</button>
+  </div>
+
+</form>
+
+
+
+
+<!-- <h5>{{'Name'| translate}}: {{selectedSender?.Name}}</h5>
+
+
+    <h5>{{'Mail from'| translate}}: {{selectedSender?.MailFrom}}</h5>
+
+
+    <h5>{{'Reply email name'| translate}}: {{selectedSender?.ReplyEmailName}} </h5>
+
+
+    <h5>{{'Reply to mail'| translate}}: {{selectedSender?.ReplytoMail}} </h5> -->

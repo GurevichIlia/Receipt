@@ -42,7 +42,18 @@ mat-card {
 .itemMenuText {
   font-size: 20px
 }
+
 .mainMenuItem {
   justify-content: flex-end;
   align-items: center;
+  height: 70px !important;
+
+}
+
+.listItem:hover {
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+hr{
+  margin: 0px;
 }

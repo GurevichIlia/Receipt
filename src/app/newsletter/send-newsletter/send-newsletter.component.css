@@ -1,0 +1,23 @@
+.groupList {
+  height: 700px;
+  overflow: scroll;
+  width: 400px;
+
+}
+
+.mainBlock {
+  direction: ltr;
+}
+
+h4 {
+  direction: rtl;
+  text-align: justify
+}
+
+form {
+  justify-content: space-evenly;
+}
+
+mat-spinner {
+  margin: auto;
+}

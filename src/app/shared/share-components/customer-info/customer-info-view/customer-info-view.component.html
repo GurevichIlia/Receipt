@@ -315,12 +315,12 @@
     <ng-content></ng-content>
   </div>
   <p class="button">
-    <button style="background-color: rgb(38, 87, 122); color: white" *ngIf="!showMoreInfo" class="mb-2" type="button"
-      mat-raised-button color="primary" (click)="showMore();scrollToElement(target)">
+    <button *ngIf="!showMoreInfo" class="mb-2 btn-blue" type="button"
+      mat-raised-button (click)="showMore();scrollToElement(target)">
       {{'Show customer info' | translate}}
     </button>
-    <button *ngIf="showMoreInfo" class="mb-2" style="background-color:  rgb(38, 87, 122); color: white" type="button"
-      mat-raised-button color="primary" (click)="showMore()">
+    <button *ngIf="showMoreInfo" class="mb-2 btn-blue"   type="button"
+      mat-raised-button  (click)="showMore()">
       {{'Hide customer info' | translate}}
     </button>
   </p>

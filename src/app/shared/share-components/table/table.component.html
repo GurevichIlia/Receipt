@@ -1,24 +1,40 @@
-  <div class="elevation">
-    <table mat-table [dataSource]="dataSource" matSort>
+<div class="elevation" id="style-1">
+  <table mat-table [dataSource]="dataSource" matSort>
 
-      <ng-container *ngIf="buttons">
-        <ng-container *ngFor="let col of buttons" [matColumnDef]="col?.label">
-          <th class="btn-lable-width" mat-header-cell *matHeaderCellDef>
-            <span>{{col?.label | translate}}</span>
-          </th>
-          <td (click)="getEvent(col.icon, row)" class="btn-lable-width" style="cursor: pointer" mat-cell *matCellDef="let row">
-            <mat-icon>{{col?.icon}}</mat-icon>
-          </td>
-        </ng-container>
+    <ng-container *ngIf="buttons">
+      <ng-container *ngFor="let col of buttons" [matColumnDef]="col?.label">
+        <th class="btn-lable-width" mat-header-cell *matHeaderCellDef>
+          <span>{{col?.label | translate}}</span>
+        </th>
+        <td (click)="dispatchAction(col.label, row)" class="btn-lable-width" style="cursor: pointer" mat-cell
+          *matCellDef="let row">
+          <mat-icon>{{col?.icon}}</mat-icon>
+
+        </td>
       </ng-container>
+    </ng-container>
 
-      <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
-        <th class="notBtn" mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header | translate}} </th>
-        <td mat-cell *matCellDef="let row"> {{col.cell(row) | dateTransform: col.header }} </td>
-      </ng-container>
+    <ng-container [matColumnDef]="col.columnDef" *ngFor="let col of columns">
+      <th class="notBtn" mat-header-cell *matHeaderCellDef mat-sort-header>{{col.header | translate}} </th>
+      <td (click)="dispatchAction('SELECT', row)" mat-cell *matCellDef="let row">
+        <span  *ngIf="col.header !== 'fullName'">{{col.cell(row) | dateTransform: col.header }} <span *ngIf="col.header === 'size'">bytes</span></span> 
+        <img *ngIf="col.header === 'fullName'" src="{{col.cell(row)}}" alt="">
+      </td>
 
-      <tr mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true" ></tr>
-      <tr mat-row *matRowDef="let row; columns: listDisplayedColumns;" class="element-row"></tr>
-    </table>
-  </div>
-  <mat-paginator [pageSizeOptions]="[10, 25, 50, 100 ]"></mat-paginator>
+      <!-- [matMenuTriggerFor]="menu" -->
+      <!-- <mat-menu #menu="matMenu">
+        <button mat-menu-item
+          (click)="dispatchAction('UPLOAD', item[itemKeys.keyForItemId])">{{'Edit' | translate}}</button>
+        <button mat-menu-item (click)="dispatchAction('DUPLICATE', item)">{{'Duplicate' | translate}}</button>
+        <button mat-menu-item class="btnDelete"
+          (click)="dispatchAction('DELETE FROM LIST', item)">{{'Delete' | translate}}</button>
+      </mat-menu> -->
+    </ng-container>
+
+    <tr class="headerRow" mat-header-row *matHeaderRowDef="listDisplayedColumns; sticky:true"></tr>
+    <tr mat-row *matRowDef="let row; columns: listDisplayedColumns;" class="element-row"></tr>
+
+  </table>
+
+</div>
+<mat-paginator [pageSizeOptions]="[10, 25, 50, 100 ]"></mat-paginator>

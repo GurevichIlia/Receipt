@@ -1,10 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~@angular/material/prebuilt-themes/indigo-pink.css" ;
 /* @import "~@angular/material/prebuilt-s/deeppurple-amber.css"; */
 
 
-@import url('https://fonts.googleapis.com/css?family=Assistant&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Assistant&display=swap') ;
+
+// @import "~ng-pick-datetime/assets/style/picker.min.css";
 
 body {
   margin: 0;
@@ -308,4 +310,8 @@ button.btn-blue:hover {
 button.btn-orange:hover {
   background-color: rgb(255, 192, 74);
   color: black;
+}
+
+.mat-input-element .mat-form-field-label {
+  caret-color: rgb(56, 111, 150) !important;
 }

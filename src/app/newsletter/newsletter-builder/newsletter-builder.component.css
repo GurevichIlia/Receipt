@@ -1,8 +1,8 @@
 #externalSystemContainer {
-  background-color: gainsboro;
+  /* background-color: gainsboro; */
 
   padding: 5px 0 5px 20px;
-  color: white;
+  /* color: white;  */
 }
 
 #undoButton,
@@ -38,29 +38,12 @@
   cursor: pointer;
 }
 
-/* .button {
-  background-color: rgb(38, 87, 122);
-  color: white;
-
+.title {
+  /* background-color: white;
+  text-align: center; */
+  text-align: center;
+  margin-top: 10px;
 }
-
-.button:hover {
-  background-color: rgb(56, 111, 150);
-  color: whitesmoke;
-
-}
-
-.button.orange:hover {
-  background-color: rgb(255, 192, 74);
-  color: black;
-}
-
-.button.orange {
-  background-color: rgb(250, 174, 33);
-  color: black;
-} */
-
-
 
 #stripoSettingsContainer {
   direction: initial;
@@ -91,4 +74,76 @@
   width: 135px;
   background-color: rgb(38, 87, 122);
   color: white;
+}
+
+.content {
+  direction: ltr;
+
+  float: left;
+}
+
+
+
+.builder {
+
+  /* height: 600px; */
+  /* overflow: scroll; */
+
+}
+
+.flexEnd {
+  display: flex;
+}
+
+.sendButtons {
+  display: flex;
+  width: 400px;
+
+}
+
+.mainContent {
+  display: flex;
+}
+
+.template {
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+  min-height: 500px;
+
+}
+
+.sideBarBuilder {
+  border: gainsboro 2px solid;
+  padding: 5px;
+  border-radius: 10px;
+  display: table;
+}
+
+.expPanel {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  direction: rtl;
+}
+
+.sendTo {
+  font-size: 18px;
+}
+
+.sideBtn {
+  height: 36px;
+  margin-bottom: 5px;
+}
+
+.sideBtnBox {
+  display: grid;
+
+}
+
+.mainContent {
+  margin: auto;
 }

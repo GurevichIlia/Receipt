@@ -2,10 +2,11 @@
   <img class="mb-2" src="assets/images/jaffa300.jpg" alt="Amax-logo">
   <mat-card-title [style.fontSize]="'22px'">{{'SystemLogin' | translate}}</mat-card-title>
   <mat-card-content>
-    <form [formGroup]="form" [style.fontSize]="'18px'" (ngSubmit)="submit()" >
+    <form [formGroup]="form" [style.fontSize]="'18px'" (ngSubmit)="submit()">
       <p>
         <mat-form-field>
-          <input type="text" matInput maxlength="35" placeholder="{{'OrganisationId' | translate}}" formControlName="orgid" />
+          <input type="text" matInput maxlength="35" placeholder="{{'OrganisationId' | translate}}"
+            formControlName="orgid" />
         </mat-form-field>
       </p>
       <p>
@@ -15,7 +16,8 @@
       </p>
       <p>
         <mat-form-field>
-          <input type="password" matInput maxlength="15" placeholder="{{'Password' | translate}}" formControlName="password" />
+          <input type="password" matInput maxlength="15" placeholder="{{'Password' | translate}}"
+            formControlName="password" />
         </mat-form-field>
       </p>
 
@@ -24,8 +26,8 @@
           (click)="generalSrv.switchLanguage('en')">en</button>
         <button type="button" [style.fontSize]="'16px'" mat-button *ngIf="currentLang === 'en'"
           (click)="generalSrv.switchLanguage('he')">he</button>
-        <button  type="submit" mat-raised-button (keydown.enter)="submit()"
-          [ngStyle]="{'background-color': 'rgb(38, 87, 122)', 'color': 'white' }">{{'Login' | translate}}</button>
+        <button [disabled]="form.disabled" class="btn-blue"  type="submit"
+          mat-raised-button (keydown.enter)="submit()">{{'Login' | translate}}</button>
       </div>
     </form>
     <span class="ml-1">v1.3</span>

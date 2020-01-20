@@ -1,6 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { GeneralSrv } from '../shared/services/GeneralSrv.service';
 import { AuthenticationService } from '../shared/services/authentication.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -33,9 +33,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   orgid: string;
 
   form: FormGroup = new FormGroup({
-    username: new FormControl(localStorage.getItem('username')),
-    password: new FormControl(''),
-    orgid: new FormControl(localStorage.getItem('organisationName'))
+    username: new FormControl(localStorage.getItem('username'), Validators.required),
+    password: new FormControl('',Validators.required),
+    orgid: new FormControl(localStorage.getItem('organisationName'),Validators.required)
   });
   submit() {
     if (this.form.valid) {
@@ -61,6 +61,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   DoLogin() {
     // .SaveKevaInfo(value, this.pathArray[this.pathArray.length - 1])
+    this.form.disable()
     this.generalSrv
       .validateLogin(
         'sdsds',
@@ -83,11 +84,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           } else {
             this.toastr.success('', 'מחובר', { positionClass: 'toast-top-center' });
-
             this.auth.login(response.Data);
             this.generalSrv.setOrgName(this.form.controls['orgid'].value, response.Data.EmployeeId);
+            this.generalSrv.setOrgId(response.Data.Organizationid)
             // this.router.navigate(["newreceipt"]);
             // debugger;
+            localStorage.setItem('organizationId', response.Data.Organizationid);
+
             localStorage.setItem('username', this.form.controls['username'].value);
             localStorage.setItem('organisationName', this.form.controls['orgid'].value);
             this.auth.typeOfUser.next(4)
@@ -103,6 +106,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           // this.disableAfterclick = false;
         },
         () => {
+          this.form.enable()
           console.log('CallCompleted');
         }
       );

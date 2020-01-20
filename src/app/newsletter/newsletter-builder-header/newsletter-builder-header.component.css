@@ -1,0 +1,23 @@
+
+
+.btn-color {
+  background-color: gainsboro;
+}
+.btn-color:hover {
+  background-color: whitesmoke;
+}
+
+.deleteBtn {
+  background-color:rgb(212, 12, 12);
+  color: white
+}
+
+.deleteBtn:hover {
+  background-color:rgb(204, 50, 50);
+  color: whitesmoke
+}
+
+.codeEditor{
+  float: right;
+    margin-right: 20px;
+}

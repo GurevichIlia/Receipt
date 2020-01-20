@@ -21,8 +21,13 @@ export class DialogComponent<T> {
       template: TemplateRef<any>
       context: T
     }
-  ) { }
+  ) {
 
+    
+  }
 
+  close() {
+    this.dialogRef.close()
+  }
 
 }

@@ -1,0 +1,19 @@
+<mat-list role="list" *ngIf="itemsList; else loader">
+  <mat-list-item role="listitem" *ngFor="let item of itemsList" [matMenuTriggerFor]="menu">
+    <h5>{{item[itemKeys.keyForItemName]}}</h5>
+    <!-- <button mat-button [matMenuTriggerFor]="menu">Menu</button> -->
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="dispatchAction('UPLOAD', item[itemKeys.keyForItemId])">{{'Edit' | translate}}</button>
+      <button mat-menu-item (click)="dispatchAction('DUPLICATE', item)">{{'Duplicate' | translate}}</button>
+      <button mat-menu-item class="btnDelete" (click)="dispatchAction('DELETE FROM LIST', item)">{{'Delete' | translate}}</button>
+
+    </mat-menu>
+  </mat-list-item>
+</mat-list>
+
+
+<ng-template #loader>
+  <div class="text-center">
+    <mat-spinner style="color: black;"></mat-spinner>
+  </div>
+</ng-template>

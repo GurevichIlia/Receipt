@@ -5,7 +5,7 @@ export interface Response {
 }
 
 export interface ResponseData {
-      error: string;
-      res_description: string;
+      error?: string;
+      res_description?: string;
       customerid?: string;
 }

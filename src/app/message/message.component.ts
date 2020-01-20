@@ -22,10 +22,9 @@ export class MessageComponent implements OnInit, OnDestroy {
   }
 
   setValue(value) {
-    debugger
     this.value = value
   }
-
+S
   // test() {
   //   //   const fanc = this.setValue
   //   //   // const test = setInterval(function () {

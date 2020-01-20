@@ -13,7 +13,7 @@ export class TokenInterceptorService implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let newRequest: HttpRequest<any> = request.clone({
       setHeaders: {
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('id_token'),
         // token: localStorage.getItem('id_newstoken')
 

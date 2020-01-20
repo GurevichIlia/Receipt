@@ -1,0 +1,30 @@
+<form [formGroup]="datepickerForm" class="row datePicker">
+  <mat-form-field class="col-6">
+    <input [min]="today" formControlName="date" matInput [matDatepicker]="picker" placeholder="Choose a date">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  <mat-error *ngIf="datepickerForm.invalid">{{'Date' | translate}}{{'required' | translate}}</mat-error>
+  </mat-form-field>
+  
+  <mat-form-field class="col-2">
+    <input formControlName="hours" min="0" [maxlength]="2" matInput placeholder="HH">
+  </mat-form-field>
+  
+  <span class="timeBlock">
+    <span (click)="incrementHour()" class="ngx-timepicker-control__arrow" role="button"> ▲ </span>
+    <span (click)="dicrementHour()" class="ngx-timepicker-control__arrow" role="button"> ▼ </span>
+  </span>
+  
+  <mat-form-field class="col-2">
+    <input formControlName="minutes" min="0" max="59" [maxlength]="2" matInput placeholder="MM">
+  </mat-form-field>
+  <span class="timeBlock">
+    <span (click)="incrementMinute()" class="ngx-timepicker-control__arrow" role="button"> ▲ </span>
+    <span (click)="dicrementMinute()" class="ngx-timepicker-control__arrow" role="button"> ▼ </span>
+  </span>
+</form>
+<!-- <mat-form-field>
+  <input matInput [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1"  placeholder="Date Time">
+<mat-datepicker  ></mat-datepicker>
+</mat-form-field>
+<owl-date-time #dt1></owl-date-time> -->

@@ -2,3 +2,7 @@ mat-tree-node {
   align-items: flex-end;
   min-height: 35px
 }
+
+.groupTreeContainer{
+  width: fit-content
+}

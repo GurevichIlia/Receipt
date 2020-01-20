@@ -1,0 +1,19 @@
+mat-list-item:hover {
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+
+.btnDelete {
+  color: red;
+}
+
+.btnDuplicate {
+  color: black;
+  margin-left: auto
+
+}
+
+mat-spinner {
+  margin: auto;
+  color: black !important
+}

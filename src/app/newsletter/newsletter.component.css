@@ -1,0 +1,20 @@
+
+
+mat-spinner {
+  margin: auto;
+  color: black !important
+}
+
+.templatesList {
+  height: 400px;
+  
+}
+.sendersList {
+  height: 400px;
+  
+}
+
+img{
+  max-width: 1000px;
+  max-height: 700px;
+}

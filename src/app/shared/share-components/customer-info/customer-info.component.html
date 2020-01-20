@@ -49,26 +49,22 @@
       <!-- NEXT STEP BUTTONS -->
       <mat-action-row>
         <ng-container *ngIf="currentRoute === '/newreceipt'">
-          <button class="mr-1 ml-2" type="button" mat-raised-button
-            [ngStyle]="{'background-color': requiredField === false ? 'rgb(250, 174, 33)' : ''}" (click)="openShop()"
-            [disabled]="requiredField === true">
+          <button class="mr-1 ml-2" type="button" mat-raised-button [ngClass]="{'btn-orange': !requiredField}"
+            (click)="openShop()" [disabled]="requiredField === true">
             {{'Store' | translate}}
           </button>
-          <button (click)="submit()" type="button" mat-raised-button color="primary"
-            [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
+          <button (click)="submit()" type="button" mat-raised-button [ngClass]="{'btn-blue': !requiredField}"
             [disabled]="requiredField === true">
             {{'Next' | translate}}
           </button>
         </ng-container>
 
-        <ng-container  *ngIf="currentRoute !== '/newreceipt'">
-          <button *ngIf="currentRoute === '/payments-grid/customer-search'" class="mr-1 ml-2"  type="button" (click)="goToKevaTable()"
-            [ngStyle]="{'background-color': 'rgb(250, 174, 33)'}" mat-raised-button>{{'Cancel' | translate}}</button>
+        <ng-container *ngIf="currentRoute !== '/newreceipt'">
+          <button *ngIf="currentRoute === '/payments-grid/customer-search'" class="mr-1 ml-2 btn-orange" type="button"
+            (click)="goToKevaTable()" mat-raised-button>{{'Cancel' | translate}}</button>
 
-          <button  (click)="submit()" type="button"
-            mat-raised-button color="primary"
-            [ngStyle]="{'background-color': requiredField === false ? 'rgb(38, 87, 122)' : ''}"
-            [disabled]="requiredField === true">
+          <button (click)="submit()" type="button" mat-raised-button [ngClass]="{'btn-blue': !requiredField}"
+            [disabled]="requiredField">
             {{'Next' | translate}}
           </button>
         </ng-container>

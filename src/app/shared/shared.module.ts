@@ -11,7 +11,7 @@ import { MomentModule } from 'ngx-moment';
 import { ReceiptTypeFilterPipe } from './pipes/receipt-type-filter.pipe';
 import { TableComponent } from './share-components/table/table.component';
 import { SendByEmailComponent } from './modals/send-by-email/send-by-email.component';
-import { SearchComponent } from '../grid/grid-payments/customer-search/search/search.component';
+import { SearchComponent } from './share-components/search/search.component';
 import { CustomerInfoViewComponent } from '../shared/share-components/customer-info/customer-info-view/customer-info-view.component';
 import { CreditCardComponent } from 'src/app/receipts/credit-card/credit-card.component';
 import { SuggestExistingCustomerComponent } from './modals/suggest-existing-customer/suggest-existing-customer.component';
@@ -32,6 +32,8 @@ import { PaymentsTableHeaderComponent } from '../grid/grid-payments/payments-tab
 import { PaymentsFilterComponent } from '../grid/grid-payments/payments-table-header/payments-filter/payments-filter.component';
 import { ChargesByChargeIdComponent } from '../grid/grid-payments/payments-history/charges-byChargeId-modal/charges-by-charge-id.component';
 import { DialogComponent } from './modals/dialog/dialog.component';
+import { ItemsListComponent } from './share-components/items-list/items-list.component';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 
 @NgModule({
@@ -63,6 +65,7 @@ import { DialogComponent } from './modals/dialog/dialog.component';
             ChargesByChargeIdComponent,
             ChargeIdEditModalComponent,
             DialogComponent,
+            ItemsListComponent,
 
 
 
@@ -75,7 +78,9 @@ import { DialogComponent } from './modals/dialog/dialog.component';
             FormsModule,
             ReactiveFormsModule,
             MomentModule,
-            InfiniteScrollModule
+            InfiniteScrollModule,
+            OwlDateTimeModule, 
+            OwlNativeDateTimeModule,
 
 
 
@@ -86,6 +91,8 @@ import { DialogComponent } from './modals/dialog/dialog.component';
             MaterialModule,
             TranslateModule,
             MomentModule,
+            OwlDateTimeModule, 
+            OwlNativeDateTimeModule,
             PaymentsListComponent,
             CustomerPaymentsComponent,
             ReceiptTypeFilterPipe,
@@ -103,7 +110,9 @@ import { DialogComponent } from './modals/dialog/dialog.component';
             PaymentsFilterComponent,
             ChargesByChargeIdComponent,
             ChargeIdEditModalComponent,
-            DialogComponent
+            DialogComponent,
+            ItemsListComponent,
+            CustomerGroupsViewComponent
 
 
 
@@ -124,7 +133,8 @@ import { DialogComponent } from './modals/dialog/dialog.component';
             PaymentsFilterComponent,
             ChargesByChargeIdComponent,
             ChargeIdEditModalComponent,
-            DialogComponent
+            DialogComponent,
+            CustomerGroupsViewComponent
 
 
 

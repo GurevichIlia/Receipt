@@ -13,7 +13,7 @@ export class TranslationService {
   onTranslate(textForTranslate: string) {
     let translation = ''
     if (textForTranslate) {
-    const subs =  this.translate.get(textForTranslate)
+    this.translate.get(textForTranslate)
         .pipe(takeUntil(this.subscription$))
         .subscribe(translated => {
           console.log(translated);
@@ -21,9 +21,8 @@ export class TranslationService {
           this.subscription$.complete();
           translation = translated
         }, err => console.log(err)
-          , () => console.log('Complete', subs )
+          , () => console.log('Complete' )
         )
-        console.log( subs )
       return translation;
     }
 
